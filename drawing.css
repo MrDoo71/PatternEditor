@@ -1,0 +1,34 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 04-Aug-2019, 17:45:21
+    Author     : jase
+*/
+
+span.ps-name {
+    font-weight: bold;
+}
+
+g.j-point > circle {
+    fill:#999;
+}
+
+g.j-point > text {
+    font-family: "sans-serif";
+    fill:#000;
+}
+
+g.j-point.j-active > circle {
+    fill:#000;
+}
+
+g.j-item {
+    fill:#e0e0e0;    
+}
+
+g.j-active {
+    fill:#ffffff;    
+}
