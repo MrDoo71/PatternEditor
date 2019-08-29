@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - twoarcs</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="../drawing.css" type="text/css" />
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  <!-- <script type="text/javascript" src="../d3.v3.js"> </script> -->
+  <script type="text/javascript" src="../geometry.js"> </script>
+  <script type="text/javascript" src="../expression.js"> </script>
+  <script type="text/javascript" src="../patternPiece.js"> </script>
+
+  <script type="text/javascript" src="../drawing/Drawing.js"> </script>
+  <script type="text/javascript" src="../drawing/DrawingObject.js"> </script>
+  <script type="text/javascript" src="../drawing/ArcSimple.js"> </script>
+  <script type="text/javascript" src="../drawing/Line.js"> </script>
+  <script type="text/javascript" src="../drawing/PointAlongLine.js"> </script>
+  <script type="text/javascript" src="../drawing/PointEndLine.js"> </script>
+  <script type="text/javascript" src="../drawing/PointLineIntersect.js"> </script>
+  <script type="text/javascript" src="../drawing/PointSingle.js"> </script>
+
+  <script type="text/javascript" src="../patternEditor.js"> </script>
+
+</head>
+
+<body>
+
+  <div>
+      <div class="container">
+        <div class="row">
+          <h1 class="col-sm-12 ">
+            Arcs
+          </h1>
+        </div>
+        <div id="REP1002132">
+          <div id="v343110_graph1">
+            <script type="text/javascript">
+              function v343110_graph1_init() {
+                kinodbGlue(
+                  {
+                    "pattern":
+                    {
+                      "patternPiece":
+                        [
+                          {
+                            "name": "twoarcs",
+                            "drawingObject":
+                              [
+                                { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "dotLine",
+                                  "color": "cornflowerblue",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "0", "constant": 0 },
+                                  "angle2":
+                                    { "formulaText": "180", "constant": 180 },
+                                  "radius":
+                                    { "formulaText": "5", "constant": 5 }
+                                },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "dotLine",
+                                  "color": "cornflowerblue",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "0", "constant": 0 },
+                                  "angle2":
+                                    { "formulaText": "180", "constant": 180 },
+                                  "radius":
+                                    { "formulaText": "10", "constant": 10 }
+                                },
+                                /*{
+                                  "name": "A1",
+                                  "objectType": "point - curve intersect axis",
+                                  "basePoint": "A",
+                                  "lineStyle": "dotLine",
+                                  "color": "black",
+                                  "mx": 0.132292,
+                                  "my": 0.264583,
+                                  "angle":
+                                    { "formulaText": "45", "constant": 45 }
+                                },
+                                {
+                                  "name": "A2",
+                                  "objectType": "point - curve intersect axis",
+                                  "basePoint": "A",
+                                  "lineStyle": "dotLine",
+                                  "color": "black",
+                                  "mx": 0.132292,
+                                  "my": 0.264583,
+                                  "angle":
+                                    { "formulaText": "135", "constant": 135 }
+                                },
+                                {
+                                  "name": "A3",
+                                  "objectType": "point - curve intersect axis",
+                                  "basePoint": "A",
+                                  "lineStyle": "dotLine",
+                                  "color": "black",
+                                  "mx": 0.132292,
+                                  "my": 0.264583,
+                                  "angle":
+                                    { "formulaText": "90", "constant": 90 }
+                                },*/
+                                /*{
+                                  "name": "A4",
+                                  "objectType": "pointEndLine",
+                                  "basePoint": "A2",
+                                  "lineStyle": "hair",
+                                  "color": "darkviolet",
+                                  "mx": 0.132292,
+                                  "my": 0.264583,
+                                  "angle":
+                                    { "formulaText": "0", "constant": 0 },
+                                  "length":
+                                  {
+                                    "formulaText": "Arc_A_5",
+                                    "expression":
+                                      { "operationType": "Variable", "variableType": "Length of arc", "lengthDrawingObject1": "A" }
+                                  }
+                                },*/
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "hair",
+                                  "color": "darkviolet",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "45", "constant": 45 },
+                                  "angle2":
+                                    { "formulaText": "90", "constant": 90 },
+                                  "radius":
+                                    { "formulaText": "5", "constant": 5 }
+                                },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "hair",
+                                  "color": "black",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "0", "constant": 0 },
+                                  "angle2":
+                                    { "formulaText": "90", "constant": 90 },
+                                  "radius":
+                                    { "formulaText": "6", "constant": 6 }
+                                },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "hair",
+                                  "color": "black",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "180", "constant": 180 },
+                                  "angle2":
+                                    { "formulaText": "270", "constant": 270 },
+                                  "radius":
+                                    { "formulaText": "7", "constant": 7 }
+                                },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "hair",
+                                  "color": "black",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "270", "constant": 270 },
+                                  "angle2":
+                                    { "formulaText": "0", "constant": 0 },
+                                  "radius":
+                                    { "formulaText": "9", "constant": 9 }
+                                },
+                                {
+                                  "objectType": "arcSimple",
+                                  "lineStyle": "hair",
+                                  "color": "black",
+                                  "center": "A",
+                                  "angle1":
+                                    { "formulaText": "270", "constant": 270 },
+                                  "angle2":
+                                    { "formulaText": "90", "constant": 90 },
+                                  "radius":
+                                    { "formulaText": "8", "constant": 8 }
+                                }
+                              ]
+                          }
+                        ]
+                    }
+                  }
+                  , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              }
+              function v343110_graph1_kill() {
+                kinodbGlue(null, 'v343110_graph1', null);
+              }
+
+            </script>
+          </div>
+        </div>
+  </div>
+
+  <script type="text/javascript" src="../../bootstrap/js/bootstrap.js">
+  </script>
+
+  <script type="text/javascript">
+    if (typeof v343110_graph1_init === "function") v343110_graph1_init();
+  </script>
+
+</body>
+
+</html>

@@ -65,3 +65,56 @@ class GeoLine {
     }    
 }
 
+
+//A line
+class GeoArc {
+
+    //center
+    //radius
+    //amgle1
+    //angle2
+
+    constructor( center, radius, angle1, angle2 ) {
+        this.center = center;
+        this.radius = radius;
+        this.angle1 = angle1;
+        this.angle2 = angle2;
+    }
+
+    //TODO based on SVG book 
+    centeredToSVG( cx, cy, rx, ry, theta/*arcStart*/, delta/*arcExtent*/, phi/*x axis rotation*/ )
+    {
+        var endTheta, phiRad;
+        var x0, y0, x1, y1, largeArc, sweep;
+        theta = theta * Math.PI / 180;
+        endTheta = ( theta + delta ) * Math.PI / 180;
+        phiRad = phi * Math.PI / 180;
+
+        x0 = cx + Math.cos( phiRad ) * rx * Math.cos(theta) +
+                  Math.sin( -phiRad ) * ry * Math.sin(theta);
+    
+        y0 = cy + Math.sin( phiRad ) * rx * Math.cos(theta) +
+                  Math.cos( phiRad ) * ry * Math.sin(theta);
+    
+        x1 = cx + Math.cos( phiRad ) * rx * Math.cos(endTheta) +
+                  Math.sin( -phiRad ) * ry * Math.sin(endTheta);
+    
+        y1 = cy + Math.sin( phiRad ) * rx * Math.cos(endTheta) +
+                  Math.cos( phiRad ) * ry * Math.sin(endTheta);
+    
+        largeArc = ( delta > 180 ) ? 1 : 0;
+        sweep = ( delta > 0 ) ? 1 : 0;
+         
+        return { x: x0,
+                 y: y0,
+                rx: rx,
+                ry: ry,
+                xAxisAngle: phi,
+                largeArc: largeArc,
+                sweep: sweep,
+                x1: x1,
+                y1: y1 };
+    }    
+}
+
+

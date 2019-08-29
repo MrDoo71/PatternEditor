@@ -80,6 +80,11 @@ class PatternPiece {
             return new Line(dObj);
         else if (dObj.objectType === "pointLineIntersect")
             return new PointLineIntersect(dObj);
+        else if (dObj.objectType === "arcSimple")
+            return new ArcSimple(dObj);
+
+        throw( "Unsupported drawing object type:" + dObj.objectType );
+
         return null;
     }
 

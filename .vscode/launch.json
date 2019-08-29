@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://127.0.0.1:8080/patternEditor/tests/test1.html",
+            "url": "http://127.0.0.1:8080/patternEditor/tests/test_arcs.html",
             "webRoot": "${workspaceFolder}"
         }
     ]
