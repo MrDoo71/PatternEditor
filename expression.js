@@ -103,4 +103,20 @@ class Expression {
 
         return "EXPRESSION";
     }
+
+
+    addDependencies( source, dependencies ) {
+        if ( typeof this.drawingObject1 !== "undefined" )
+            dependencies.add( source, this.drawingObject1 );
+        if ( typeof this.drawingObject2 !== "undefined" )
+            dependencies.add( source, this.drawingObject2 );
+
+        if ( this.params )
+        {       
+            for (var a = 0; a < this.params.length; a++) {
+                var p = this.params[a];
+                p.addDependencies( source, dependencies );
+            }
+        }
+    }
 }

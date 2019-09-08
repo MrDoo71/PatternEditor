@@ -1,4 +1,9 @@
 class PointAlongLine extends DrawingObject {
+
+    //firstPoint
+    //secondPoint
+    //length
+
     constructor(data) {
         super(data);
     }
@@ -34,7 +39,18 @@ class PointAlongLine extends DrawingObject {
         this.drawDot(g, this);
         this.drawLabel(g, this);
     }
+
+
     html() {
         return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along line from " + this.firstPoint.data.name + " to " + this.secondPoint.data.name;
     }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.firstPoint );
+        dependencies.add( this, this.secondPoint );
+        dependencies.add( this, this.length );
+    }    
+
 }

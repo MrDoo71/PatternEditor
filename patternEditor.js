@@ -5,6 +5,8 @@
 //pattern sharing website. 
 
 var gInteractionPrefix; 
+var selectedObject;
+var linksGroup;
 
 function kinodbGlue( dataAndConfig, ptarget, options )
 {
@@ -104,11 +106,29 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
         d3.event.preventDefault() ;
         console.log( "Click! " );
         $( ".j-active" ).removeClass("j-active");
+        $( ".j-item.source" ).removeClass("source");
+        $( ".j-item.target" ).removeClass("target");
         $(this).addClass("j-active");
         d.tableSvg.each( function(d,i) {
             $(this).addClass("j-active");
         });
-        //$( d.tableSvg ).addClass("j-active");
+        selectedObject = d;
+        //drawLinks( patternPiece1 );
+
+        linksGroup.selectAll("path.link") //rename .link to .dependency
+            .attr("class", function( d ) {                         
+                if ( d.source == selectedObject ) 
+                {
+                    d.target.tableSvg.each( function() { $(this).addClass("source"); } );
+                    return "source link";
+                }
+                if ( d.target == selectedObject ) 
+                {
+                    d.source.tableSvg.each( function() { $(this).addClass("target"); } );
+                    return "target link";
+                }
+                return "link"; 
+            } );
     }
 
     var a = transformGroup.selectAll("g");    
@@ -132,14 +152,112 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
     //https://observablehq.com/@d3/zoom
     //TODO if a point is selected then zoom with it as the focus
     //SEE https://bl.ocks.org/mbostock/a980aba1197350ff2d5a5d0f5244d8d1
+    /*
     function zoomed() {
         transformGroup.attr("transform", d3.event.transform);
-    }; 
+    }; this doesn't quite work well enough
     svg.call(d3.zoom()
         .extent([[0, 0], [width, height]])
         .scaleExtent([1, 8])
         .on("zoom", zoomed));
+    */
+}
 
+
+function doTable( graphdiv, patternPiece1, contextMenu )
+{
+    var margin = 25; 
+    var width = 400;
+    var height = 600;
+    var itemHeight = 30;
+    var itemMargin = 8;
+    var itemWidth = 300;
+    var ypos = 0;
+    var seq = 1; //TODO get these in the XML as data?
+
+    var svg = graphdiv.append("svg")
+                       .attr("width", width + ( 2 * margin ) )
+                       .attr("height", height + ( 2 * margin ));    
+
+    a = svg.selectAll("g");
+    a = a.data( patternPiece1.drawingObjects );
+    a.enter()        
+     .append("g")
+     .each( function(d,i) {
+
+        var divHeight = function( that) {
+            var t = this;//that ? that : this;
+            var h = 0;
+            if ( t.getBoundingClientRect )
+                h = t.getBoundingClientRect().height;
+
+            if ( t.childNodes )    
+            {
+                for( var i=0; i<t.childNodes.length; i++ )
+                {
+                    if ( ! t.childNodes[ i ].getBoundingClientRect )
+                        continue;
+                    var thisH = t.childNodes[ i ].getBoundingClientRect().height ;
+                    if ( thisH > h )
+                        h = thisH;
+                }                
+            }
+            else
+                h = 0;
+            console.log( "divheight ", h );
+            if ( h < itemHeight )
+                return itemHeight;
+            return h;
+        };
+
+        var g = d3.select( this );
+
+        g.attr( "class", "j-item") ;
+
+        d.tableSvg = g;
+        d.tableSvgX = itemWidth;
+        d.tableSvgY = ypos + ( 0.5 * itemHeight );
+
+        var fo = g.append( "foreignObject" )
+         .attr( "x", 0 )
+         .attr( "y", function (d) { 
+             return ypos;
+         } )
+         .attr( "width", itemWidth  );
+
+         var div = fo.append( "xhtml:div" )
+         .html( d.html() );
+
+
+
+        fo.attr( "height", divHeight );
+
+        g.attr( "height", divHeight )
+         .attr( "y", function (d) { 
+                                    var h = this.childNodes[0].getBoundingClientRect().height;
+                                    ypos += h + itemMargin; 
+                                    //console.log("y: " + ypos );
+                                    return ypos } )
+
+        g.on("contextmenu", contextMenu);
+    });                   
+    
+    linksGroup = svg.append("g")
+                    .attr("class", "links");
+
+    this.drawLinks( patternPiece1 );
+}
+
+
+function drawLinks( patternPiece )
+{
+    var linkData = patternPiece.dependencies.dependencies;
+
+    linksGroup.selectAll("path.link") //rename .link to .dependency
+                    .data(linkData)
+                    .enter().append("path")
+                    .attr("class", "link" )
+                    .attr("d", curve);
 }
 
 
@@ -154,79 +272,8 @@ function curve(link) {
         dy = y0 - y1,
         l = Math.log( Math.abs(dy /30 ) ) * 50;
 
-   // return "M" + x0 + "," + y0
-     //   + "A" + dy*5 + "," + dy * 1.1 + " 0 0 1 "
-       // + x1 + "," + y1;
-
-        var path = d3.path();
-        path.moveTo( x0, y0 );
-        path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
-        return path;                      
-  }
-
-
-function doTable( graphdiv, patternPiece1, contextMenu )
-{
-    var margin = 25; 
-    var width = 400;
-    var height = 600;
-    var itemHeight = 30;
-    var itemMargin = 8;
-    var itemWidth = 300;
-    var ypos = -itemHeight;
-    var seq = 1; //TODO get these in the XML as data?
-
-    var svg = graphdiv.append("svg")
-                       .attr("width", width + ( 2 * margin ) )
-                       .attr("height", height + ( 2 * margin ));    
-
-    a = svg.selectAll("g");
-    a = a.data( patternPiece1.drawingObjects );
-    a.enter()        
-     .append("g")
-     .each( function(d,i) {
-        var g = d3.select( this );
-        //d.calculate();
-
-        g.append("rect")
-         .attr( "x", 0 )
-         .attr( "y", function (d) { ypos += itemHeight + itemMargin; return ypos } )
-         .attr( "width", itemWidth )
-         .attr( "height", itemHeight );
-
-        g.attr( "class", "j-item") ;
-        d.tableSvg = g;
-        d.tableSvgX = itemWidth;
-        d.tableSvgY = ypos + ( 0.5 * itemHeight );
-
-        g.append( "foreignObject" )
-         .attr( "x", 5 )
-         .attr( "y", function (d) { 
-             return ypos;// + 5;// + (0.5 * itemHeight); 
-         } )
-         .attr( "width", "290" )
-         .attr( "height", "100" )
-         //.attr( "requiredFeatures", "http://www.w3.org/TR/SVG11/feature#Extensibility" )
-         //.append( "body" )
-         .append( "xhtml:div" )
-         .attr( "style", "color:black" )
-         //.attr( "xmlns", "http://www.w3.org/1999/xhtml" )
-         .html( d.html() );// "hello world <a href=\"www.google.co.uk\">google</a>" );
-
-        g.on("contextmenu", contextMenu);
-    });                                   
-
-    var linkData = [ { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("A1")},
-                     { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("A2")},
-                     { source: patternPiece1.getObject("A1"), target: patternPiece1.getObject("A2")},
-                     { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("X")}  ];
-
-    var links = svg.append("g")
-                    .attr("class", "links")
-                    .selectAll("path")
-                    .data(linkData)
-                    .enter().append("path")
-                    .attr("class","link")
-                    .attr("d", curve);
-
+    var path = d3.path();
+    path.moveTo( x0, y0 );
+    path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
+    return path;                      
 }

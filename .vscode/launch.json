@@ -9,9 +9,17 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:8080/patternEditor/tests/test_angleline.html",
+            "url": "http://localhost:8080/patternEditor/tests/test1.html",
             "webRoot": "${workspaceFolder}"
         },
+/*
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8080/patternEditor/tests/test_angleline.html",
+            "webRoot": "${workspaceFolder}"
+        },*/        
 
         //TODO
         //{

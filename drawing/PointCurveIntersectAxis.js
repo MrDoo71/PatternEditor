@@ -1,5 +1,9 @@
 class PointCurveIntersectAxis extends DrawingObject {
 
+    //basePoint
+    //curve
+    //angle
+
     constructor(data) {
         super(data);
     }
@@ -36,7 +40,17 @@ class PointCurveIntersectAxis extends DrawingObject {
         this.drawLabel(g, this);
     }
 
+
     html() {
         return '<span class="ps-name">' + this.data.name + '</span>: intersect ' + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " with " + this.p1Line2.data.name + "-" + this.p2Line2.data.name;
     }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.basePoint );
+        dependencies.add( this, this.curve );
+        dependencies.add( this, this.angle );
+    }    
+
 }

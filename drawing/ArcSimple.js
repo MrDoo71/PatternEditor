@@ -1,4 +1,10 @@
 class ArcSimple extends DrawingObject {
+
+    //center
+    //angle1
+    //angle2
+    //radius 
+
     constructor(data) {
         super(data);
 
@@ -6,8 +12,11 @@ class ArcSimple extends DrawingObject {
         if ( typeof this.data.name === "undefined" )
             this.data.name = "arc";
     }
+
+
     calculate(bounds) {
         var d = this.data;
+
         if (typeof this.center === "undefined")
             this.center = this.patternPiece.getObject(d.center);
         if (typeof this.angle1 === "undefined")
@@ -38,6 +47,8 @@ class ArcSimple extends DrawingObject {
         bounds.adjust( west );
         bounds.adjust( south );
     }
+
+
     draw(g) {
         var d = this.data;
         var arcPath = d3.path();
@@ -55,7 +66,18 @@ class ArcSimple extends DrawingObject {
         //this.drawDot(g, this);
         this.drawLabel(g, this);
     }
+
+
     html() {
         return '<span class="ps-name">' + this.data.name + '</span>: arc with center ' + this.data.center + " radius " + this.data.radius.html() + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html();
     }
+
+    
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.center );
+        dependencies.add( this, this.angle1 );
+        dependencies.add( this, this.angle2 );
+        dependencies.add( this, this.radius );
+    }    
 }

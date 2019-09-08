@@ -58,6 +58,8 @@ function v343110_graph1_init()
                     
 
     var targetdiv = d3.select( "#v343110_graph1" );
+
+    patternPiece1.analyseDependencies();
     
     doDrawing( targetdiv, patternPiece1, null );
     

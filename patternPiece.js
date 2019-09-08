@@ -61,6 +61,27 @@ class PatternPiece {
             this.drawingObjects[a] = dObj; //these are now the objects with methods
             this.registerObj(dObj);
         }
+        this.analyseDependencies();
+    }
+
+    analyseDependencies()
+    {
+        //Now build up dependency links
+        this.dependencies = { 
+            dependencies: [], 
+            add: function ( source, target ) { 
+                if ( typeof target.expression === "object" )
+                    target.expression.addDependencies( source, this );
+                else if ( target instanceof DrawingObject )
+                    this.dependencies.push( { source: source, target: target } ); 
+            }  
+        };
+        for (var a = 0; a < this.drawingObjects.length; a++) {
+            var dObj = this.drawingObjects[a];
+            dObj.setDependencies( this.dependencies );
+        }
+        //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
+        //so that we can remove duplicates.
     }
 
     getObject(name) {
