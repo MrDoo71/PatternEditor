@@ -19,7 +19,7 @@ class Line extends DrawingObject {
             .attr("x2", this.line.p2.x)
             .attr("y2", this.line.p2.y)
             .attr("stroke-width", 1 / scale)
-            .attr("stroke", "black");
+            .attr("stroke", this.getColor() );
         //we could display the derived name Line_A1_A2 at the mid-point along the line?       
     }
     html() {

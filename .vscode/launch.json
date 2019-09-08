@@ -4,13 +4,30 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://127.0.0.1:8080/patternEditor/tests/test_arcs.html",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8080/patternEditor/tests/test_angleline.html",
             "webRoot": "${workspaceFolder}"
-        }
+        },
+
+        //TODO
+        //{
+        //    "type": "chrome",
+        //    "request": "launch",
+        //    "name": "Launch Chrome",
+         //   "url": "http://localhost:8080/patternEditor/tests/test_pointCurveIntersectAxis.html",
+         //   "webRoot": "${workspaceFolder}"
+        //},
+        
+        //{
+        //    "type": "chrome",
+        //    "request": "launch",
+        //    "name": "Launch Chrome against localhost",
+        //    "url": "http://127.0.0.1:8080/patternEditor/tests/test_arcs.html",
+        //    "webRoot": "${workspaceFolder}"
+        //}   
     ]
 }

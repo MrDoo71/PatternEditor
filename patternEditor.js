@@ -105,8 +105,10 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
         console.log( "Click! " );
         $( ".j-active" ).removeClass("j-active");
         $(this).addClass("j-active");
-        //d.tableSvg.attr("class","j-active");
-        $( d.tableSvg[0] ).addClass("j-active");
+        d.tableSvg.each( function(d,i) {
+            $(this).addClass("j-active");
+        });
+        //$( d.tableSvg ).addClass("j-active");
     }
 
     var a = transformGroup.selectAll("g");    
@@ -125,7 +127,42 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
         if ( typeof d.draw === "function" )
             d.draw( g );
     });
+
+    //Enable Pan and Zoom
+    //https://observablehq.com/@d3/zoom
+    //TODO if a point is selected then zoom with it as the focus
+    //SEE https://bl.ocks.org/mbostock/a980aba1197350ff2d5a5d0f5244d8d1
+    function zoomed() {
+        transformGroup.attr("transform", d3.event.transform);
+    }; 
+    svg.call(d3.zoom()
+        .extent([[0, 0], [width, height]])
+        .scaleExtent([1, 8])
+        .on("zoom", zoomed));
+
 }
+
+
+/*
+ * Curve that connects items in the table.
+ */
+function curve(link) {
+    var x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
+        x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
+
+    var dx = x0 - x1,
+        dy = y0 - y1,
+        l = Math.log( Math.abs(dy /30 ) ) * 50;
+
+   // return "M" + x0 + "," + y0
+     //   + "A" + dy*5 + "," + dy * 1.1 + " 0 0 1 "
+       // + x1 + "," + y1;
+
+        var path = d3.path();
+        path.moveTo( x0, y0 );
+        path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
+        return path;                      
+  }
 
 
 function doTable( graphdiv, patternPiece1, contextMenu )
@@ -155,20 +192,12 @@ function doTable( graphdiv, patternPiece1, contextMenu )
          .attr( "x", 0 )
          .attr( "y", function (d) { ypos += itemHeight + itemMargin; return ypos } )
          .attr( "width", itemWidth )
-         .attr( "height", itemHeight )
-         //.attr("fill", "#e0e0e0");
+         .attr( "height", itemHeight );
 
-//            g.append( "text" )
-//             .text( function (d) { return d.data.name; } )
-//             .attr("x", 5 )
-//             .attr("y", function (d) { return ypos + (0.5 * itemHeight) } )
-//             .attr("font-family", "sans-serif")
-//             .attr("font-size", "14px")
-//             .attr("font-weight", "bold")
-//             .attr("fill", "black");
-
-        g.attr( "class", "j-item");
+        g.attr( "class", "j-item") ;
         d.tableSvg = g;
+        d.tableSvgX = itemWidth;
+        d.tableSvgY = ypos + ( 0.5 * itemHeight );
 
         g.append( "foreignObject" )
          .attr( "x", 5 )
@@ -180,11 +209,24 @@ function doTable( graphdiv, patternPiece1, contextMenu )
          //.attr( "requiredFeatures", "http://www.w3.org/TR/SVG11/feature#Extensibility" )
          //.append( "body" )
          .append( "xhtml:div" )
-         .attr( "style", "color:black")
+         .attr( "style", "color:black" )
          //.attr( "xmlns", "http://www.w3.org/1999/xhtml" )
          .html( d.html() );// "hello world <a href=\"www.google.co.uk\">google</a>" );
 
         g.on("contextmenu", contextMenu);
     });                                   
+
+    var linkData = [ { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("A1")},
+                     { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("A2")},
+                     { source: patternPiece1.getObject("A1"), target: patternPiece1.getObject("A2")},
+                     { source: patternPiece1.getObject("A"), target: patternPiece1.getObject("X")}  ];
+
+    var links = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("path")
+                    .data(linkData)
+                    .enter().append("path")
+                    .attr("class","link")
+                    .attr("d", curve);
 
 }

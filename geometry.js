@@ -63,6 +63,16 @@ class GeoLine {
         var y = this.p1.y + ( this.slope * ( x - this.p1.x ) );
         return new GeoPoint(x,y);
     }    
+
+    angleDeg() {
+        var deltaX = (this.p2.x - this.p1.x);
+        var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
+
+        if ( deltaX === 0 )
+            return deltaY > 0 ? 90 : 270;
+
+        return Math.atan( deltaY / deltaX ) * 180 / Math.PI;
+    }
 }
 
 

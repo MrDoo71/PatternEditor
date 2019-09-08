@@ -24,7 +24,7 @@ class PointEndLine extends DrawingObject {
             .attr("x2", this.line.p2.x)
             .attr("y2", this.line.p2.y)
             .attr("stroke-width", 1 / scale)
-            .attr("stroke", "black");
+            .attr("stroke", this.getColor() );
         this.drawDot(g, this);
         this.drawLabel(g, this);
     }

@@ -32,3 +32,9 @@ g.j-item {
 g.j-active {
     fill:#ffffff;    
 }
+
+path.link {
+    fill:none;
+    stroke: #999;
+    stroke-width: 1.5px;    
+}

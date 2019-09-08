@@ -1,8 +1,9 @@
 class Expression {
 
-    constructor(data) {
+    constructor(data, patternPiece) {
         this.dataDebug = data;
         this.operation = data.operationType;
+        this.patternPiece = patternPiece;
 
         //divide, multiply etc.
         if (typeof data.parameter !== "undefined") 
@@ -10,7 +11,7 @@ class Expression {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
-                this.params[a] = new Expression(p);
+                this.params[a] = new Expression(p, patternPiece);
             }
             this.value = this.operationValue;
         }
@@ -23,9 +24,29 @@ class Expression {
         else if (data.operationType === "Variable") 
         {
             if (data.variableType === "Keyword")
+            {
                 this.variable = data.keyword;
-            this.value = this.keywordValue;
+                this.value = this.keywordValue;
+            }
+            else if ( data.variableType === "angleOfLine" )
+            {
+                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }
         }
+    }
+
+    functionValue() {
+        if ( this.function === "angleOfLine" )
+        {
+            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+            var line = new GeoLine( point1, point2 );
+            return line.angleDeg();
+        }
+        throw ("Unknown function: " + this.data.variableType );
     }
     
     constantValue() {
@@ -33,12 +54,21 @@ class Expression {
     }
 
     operationValue(currentLength) {
+
         if (typeof this.params[0].value !== "function")
             alert("param1 not known");
         if (typeof this.params[1].value !== "function")
             alert("param2 not known");
+
+        if (this.operation === "add")
+            return this.params[0].value(currentLength) + this.params[1].value(currentLength);
+        if (this.operation === "subtract")
+            return this.params[0].value(currentLength) - this.params[1].value(currentLength);
+        if (this.operation === "multiply")
+            return this.params[0].value(currentLength) * this.params[1].value(currentLength);
         if (this.operation === "divide")
             return this.params[0].value(currentLength) / this.params[1].value(currentLength);
+
         throw ("Unknown operation: " + this.operation);
     }
 

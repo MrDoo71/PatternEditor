@@ -80,6 +80,8 @@ class PatternPiece {
             return new Line(dObj);
         else if (dObj.objectType === "pointLineIntersect")
             return new PointLineIntersect(dObj);
+        else if (dObj.objectType === "pointCurveIntersectAxis")
+            return new PointCurveIntersectAxis(dObj);
         else if (dObj.objectType === "arcSimple")
             return new ArcSimple(dObj);
 
@@ -103,7 +105,7 @@ class PatternPiece {
             };
         }
         else if (typeof formula.expression === "object") {
-            f.expression = new Expression(f.expression);
+            f.expression = new Expression( f.expression, this );
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
