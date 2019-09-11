@@ -13,9 +13,7 @@
 
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
-
-
-  <script type="text/javascript" data-main="PatternEditor" src="../lib/require.js"> </script>    
+  <script type="text/javascript" data-main="../scripts/PatternEditor" src="../lib/require.js"> </script>    
 
 </head>
 
@@ -86,16 +84,7 @@
 
   <script type="text/javascript">
 
-  require.config({
-      baseUrl: '../lib', 
-      paths: {
-          scripts: '../scripts',
-          "kld-affine": '../node_modules/kld-affine/dist/index-umd',
-          "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
-      }
-  });
-
-  requirejs(["scripts/PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
+  requirejs(["PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
     
   </script>
 </body>

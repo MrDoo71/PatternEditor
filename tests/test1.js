@@ -21,7 +21,7 @@
 //});
 
 //var requirejs = require('../lib/r.js');
-
+/*
 require.config({
     //Pass the top-level main.js/index.js require
     //function to requirejs so that node modules
@@ -37,7 +37,7 @@ require.config({
         "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
     }
 });
-
+*/
 //var r = requirejs(['r']);
 
 //var rjs = require( 'require' );   ...'require' has not been loaded yet for context.
@@ -45,8 +45,8 @@ require.config({
 //    nodeRequire: require,
 //} );
 
-requirejs(["scripts/PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
-requirejs(["scripts/PatternPiece"]);
+requirejs(["PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
+//requirejs(["scripts/PatternPiece"]);
 
 
 function v343110_graph1_init()

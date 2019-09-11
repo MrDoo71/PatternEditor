@@ -32,8 +32,7 @@ class PointCurveIntersectAxis extends DrawingObject {
 
         this.line = new GeoLine( this.basePoint.p, otherPoint );
 
-        //TODO
-        /*
+
         {
         const {ShapeInfo, Intersection} = require("kld-intersections");
 
@@ -43,7 +42,7 @@ class PointCurveIntersectAxis extends DrawingObject {
         
         intersections.points.forEach(console.log);    
         }
-        */
+        
         
         this.p = this.line.intersect(this.curve);
 
