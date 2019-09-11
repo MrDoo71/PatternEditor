@@ -4,6 +4,51 @@
  * and open the template in the editor.
  */
 
+
+//import {Point2D, Vector2D, Matrix2D} = require("kld-affine");
+//https://github.com/signavio/svg-intersections 
+
+
+
+
+
+//var requirejs = require(['requirejs'], function (requirejs) {
+    //requirejs is now loaded.
+//});
+
+//define(function (require) {
+//    var requirejs = require('requirejs');
+//});
+
+//var requirejs = require('../lib/r.js');
+
+require.config({
+    //Pass the top-level main.js/index.js require
+    //function to requirejs so that node modules
+    //are loaded relative to the top-level JS file.
+
+    baseUrl: '../lib', //or 'lib'?
+
+   // nodeRequire: require,
+
+    paths: {
+        scripts: '../scripts',
+        "kld-affine": '../node_modules/kld-affine/dist/index-umd',
+        "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
+    }
+});
+
+//var r = requirejs(['r']);
+
+//var rjs = require( 'require' );   ...'require' has not been loaded yet for context.
+//rjs.config( {
+//    nodeRequire: require,
+//} );
+
+requirejs(["scripts/PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
+//requirejs(["scripts/PatternPiece"]);
+
+
 function v343110_graph1_init()
 {
     let patternPiece1 = new PatternPiece();
@@ -64,6 +109,33 @@ function v343110_graph1_init()
     doDrawing( targetdiv, patternPiece1, null );
     
     doTable( targetdiv, patternPiece1, null );
+
+
+    //var kldIntersections = require('kld-intersections');
+
+    const {ShapeInfo, Intersection} = require("kld-intersections");
+
+    const path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
+    const line = ShapeInfo.line(15, 75, 355, 140);
+    const intersections = Intersection.intersect(path, line);
+    
+    intersections.points.forEach(console.log);    
+
+
+
+    //import {ShapeInfo, Intersection} from "kld-intersections";    
+    /*
+    
+    var svgIntersections = require('svg-intersections');
+    var intersect = svgIntersections.intersect;
+    var shape = svgIntersections.shape;
+
+    var intersections = intersect(  
+        shape("circle", { cx: 0, cy: 0, r: 50 }),
+        shape("rect", { x: 0, y: 0, width: 60, height: 30 })  
+    );   
+    console.log( "intersection: " + intersections ); 
+    */        
 
 }
 

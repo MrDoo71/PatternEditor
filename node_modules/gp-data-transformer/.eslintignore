@@ -1,0 +1,8 @@
+bin
+dist
+docs/jsdoc
+lib/GrammarTable.js
+lib/GeneratedParser.js
+node_modules
+scratchpad
+test

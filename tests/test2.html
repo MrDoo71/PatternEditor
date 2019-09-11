@@ -9,26 +9,14 @@
 
   <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+  
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
-
-  <link rel="stylesheet" href="../drawing.css" type="text/css" />
   <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
-  <script type="text/javascript" src="../geometry.js"> </script>
-  <script type="text/javascript" src="../expression.js"> </script>
-  <script type="text/javascript" src="../patternPiece.js"> </script>
 
-  <script type="text/javascript" src="../drawing/Drawing.js"> </script>
-  <script type="text/javascript" src="../drawing/DrawingObject.js"> </script>
-  <script type="text/javascript" src="../drawing/Line.js"> </script>
-  <script type="text/javascript" src="../drawing/PointAlongLine.js"> </script>
-  <script type="text/javascript" src="../drawing/PointEndLine.js"> </script>
-  <script type="text/javascript" src="../drawing/PointLineIntersect.js"> </script>
-  <script type="text/javascript" src="../drawing/PointSingle.js"> </script>
+  <script type="text/javascript" data-main="../scripts/PatternEditor" src="../lib/require.js"> </script>    
 
-
-  <script type="text/javascript" src="../patternEditor.js"> </script>
 
 </head>
 
@@ -45,6 +33,7 @@
         <div id="REP1002132">
           <div id="v343110_graph1">
             <script type="text/javascript">
+              
               function v343110_graph1_init() {
                 kinodbGlue({
                   "pattern":
@@ -150,11 +139,21 @@
     </form>
   </div>
 
-  <script type="text/javascript" src="../../bootstrap/js/bootstrap.js">
-  </script>
 
   <script type="text/javascript">
-    if (typeof v343110_graph1_init === "function") v343110_graph1_init();
+
+  require.config({
+      baseUrl: '../lib',
+      paths: {
+          scripts: '../scripts',
+          "kld-affine": '../node_modules/kld-affine/dist/index-umd',
+          "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
+      }
+  });
+
+  requirejs(["scripts/PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
+
+    //if (typeof v343110_graph1_init === "function") v343110_graph1_init();
   </script>
 
 </body>
