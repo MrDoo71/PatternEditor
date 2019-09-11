@@ -46,7 +46,7 @@ require.config({
 //} );
 
 requirejs(["scripts/PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
-//requirejs(["scripts/PatternPiece"]);
+requirejs(["scripts/PatternPiece"]);
 
 
 function v343110_graph1_init()

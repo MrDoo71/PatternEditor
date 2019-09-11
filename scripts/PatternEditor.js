@@ -3,6 +3,16 @@
 //this is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
+/*
+require.config({
+    baseUrl: '../lib',
+    paths: {
+        scripts: './scripts',
+        "kld-affine": '../node_modules/kld-affine/dist/index-umd',
+        "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
+    }
+});
+*/
 
 define(function (require) {
     // Load any app-specific modules
