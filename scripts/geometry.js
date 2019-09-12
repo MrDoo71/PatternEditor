@@ -4,6 +4,7 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
+const {Point2D, ShapeInfo, Intersection} = require("kld-intersections");
 
 //A point
 class GeoPoint {
@@ -24,6 +25,11 @@ class GeoPoint {
         var x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
         var y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
+    }
+
+    asPoint2D()
+    {
+        return new Point2D( this.x, this.y );
     }
 }
 
@@ -124,6 +130,25 @@ class GeoArc {
                 sweep: sweep,
                 x1: x1,
                 y1: y1 };
+    }    
+
+    asShapeInfo()
+    {
+        //static arc(...args) {
+        //    return create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
+        //}        
+        var angle1, angle2;
+        if ( this.angle1 > this.angle2 )
+        {
+            angle1 = this.angle1;
+            angle2 = this.angle2;
+        }
+        else
+        {
+            angle1 = this.angle2;
+            angle2 = this.angle1;
+        }
+        return ShapeInfo.arc( this.center.p.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
 }
 

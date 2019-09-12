@@ -53,6 +53,12 @@ class ArcSimple extends DrawingObject {
         bounds.adjust( south );
     }
 
+    
+    asShapeInfo()
+    {
+        return this.arc.asShapeInfo();
+    }
+
 
     draw(g) {
         var d = this.data;

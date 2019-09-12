@@ -5,6 +5,7 @@ define(function (require) {
 });
 
 //???? const {ShapeInfo, Intersection} = require("kld-intersections");
+//const {ShapeInfo, Intersection} = require("kld-intersections");
 
 class PointCurveIntersectAxis extends DrawingObject {
 
@@ -34,17 +35,16 @@ class PointCurveIntersectAxis extends DrawingObject {
 
 
         {
-        const {ShapeInfo, Intersection} = require("kld-intersections");
+        
 
-        var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
-        var line = ShapeInfo.line(15, 75, 355, 140);
-        var intersections = Intersection.intersect(path, line);
+        //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
+        var arc = this.curve.asShapeInfo();
+        var line = ShapeInfo.line( this.basePoint.p.x, this.basePoint.p.y, otherPoint.x, otherPoint.y);
+        var intersections = Intersection.intersect(arc, line);
         
         intersections.points.forEach(console.log);    
+        this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
-        
-        
-        this.p = this.line.intersect(this.curve);
 
         bounds.adjust(this.p);
     }
@@ -61,7 +61,8 @@ class PointCurveIntersectAxis extends DrawingObject {
 
 
     html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect ' + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " with " + this.p1Line2.data.name + "-" + this.p2Line2.data.name;
+        //TODO use a better name for this.curve, e.g. Arc_A_nn
+        return '<span class="ps-name">' + this.data.name + '</span>: intersect curve ' + this.curve.center.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
     }
 
 
