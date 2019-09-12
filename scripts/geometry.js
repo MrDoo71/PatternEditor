@@ -4,6 +4,10 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
+define(function (require) {
+    require('kld-intersections');
+});
+
 const {Point2D, ShapeInfo, Intersection} = require("kld-intersections");
 
 //A point
@@ -70,6 +74,23 @@ class GeoLine {
         return new GeoPoint(x,y);
     }    
 
+    intersectArc( arc )
+    {
+        //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
+        var arcSI = arc.asShapeInfo();
+        var lineSI = this.asShapeInfo();
+        var intersections = Intersection.intersect(arcSI, lineSI);
+        
+        intersections.points.forEach(console.log);    
+        return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+    }
+
+    asShapeInfo()
+    {
+        return ShapeInfo.line( this.p1.x, this.p1.y, this.p2.x, this.p2.y );
+    }
+
+
     angleDeg() {
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
@@ -133,10 +154,7 @@ class GeoArc {
     }    
 
     asShapeInfo()
-    {
-        //static arc(...args) {
-        //    return create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
-        //}        
+    {        
         var angle1, angle2;
         if ( this.angle1 > this.angle2 )
         {
@@ -148,6 +166,7 @@ class GeoArc {
             angle1 = this.angle2;
             angle2 = this.angle1;
         }
+        //create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
         return ShapeInfo.arc( this.center.p.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
 }

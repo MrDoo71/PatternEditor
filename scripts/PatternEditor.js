@@ -8,7 +8,7 @@ require.config({
     baseUrl: '../lib',
     paths: {
         scripts: '../scripts',
-        "kld-affine": '../node_modules/kld-affine/dist/index-umd',
+       // "kld-affine": '../node_modules/kld-affine/dist/index-umd', //why don't I need this!!!
         "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
     }
 });

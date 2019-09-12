@@ -1,11 +1,8 @@
 define(function (require) {
     require('./DrawingObject');
     require('../geometry');
-    require('kld-intersections');
 });
 
-//???? const {ShapeInfo, Intersection} = require("kld-intersections");
-//const {ShapeInfo, Intersection} = require("kld-intersections");
 
 class PointCurveIntersectAxis extends DrawingObject {
 
@@ -33,18 +30,7 @@ class PointCurveIntersectAxis extends DrawingObject {
 
         this.line = new GeoLine( this.basePoint.p, otherPoint );
 
-
-        {
-        
-
-        //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
-        var arc = this.curve.asShapeInfo();
-        var line = ShapeInfo.line( this.basePoint.p.x, this.basePoint.p.y, otherPoint.x, otherPoint.y);
-        var intersections = Intersection.intersect(arc, line);
-        
-        intersections.points.forEach(console.log);    
-        this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-        }
+        this.p = this.line.intersectArc( this.curve.arc );
 
         bounds.adjust(this.p);
     }
