@@ -45,7 +45,7 @@ require.config({
 //    nodeRequire: require,
 //} );
 
-requirejs(["PatternEditor"], function() { if (typeof v343110_graph1_init === "function") v343110_graph1_init(); } );
+requirejs(["../scripts/PatternEditor"], function() {  v343110_graph1_init(); } );
 //requirejs(["scripts/PatternPiece"]);
 
 
@@ -120,22 +120,6 @@ function v343110_graph1_init()
     const intersections = Intersection.intersect(path, line);
     
     intersections.points.forEach(console.log);    
-
-
-
-    //import {ShapeInfo, Intersection} from "kld-intersections";    
-    /*
-    
-    var svgIntersections = require('svg-intersections');
-    var intersect = svgIntersections.intersect;
-    var shape = svgIntersections.shape;
-
-    var intersections = intersect(  
-        shape("circle", { cx: 0, cy: 0, r: 50 }),
-        shape("rect", { x: 0, y: 0, width: 60, height: 30 })  
-    );   
-    console.log( "intersection: " + intersections ); 
-    */        
 
 }
 

@@ -4,15 +4,27 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
+//NOTE to self from friday before holiday.
+//This config changed from known-working standalone config to see how to get it working within
+//a kinodb page.
+//It looks like it should be possible to do a require in separate places for tests vs embedded
+//and that data-main is not actually needed so long as the config is good, and that something 
+//kicks off the dependencies. 
+//See kinodbglue.js which does its own require.config/
+//Therefore there should be a tests_config that does the config for tests too. 
+//Therefore this PatternEditor shouldn't need to do a config. 
+//The fallback is grunt/gulp and compilation of a merged js.
+// *** also writer.writeScriptLink( "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker", true ); needs to be commented out
+/* TODO put this back into test.js or a generic test_config.js
 require.config({
-    baseUrl: '../lib',
+    baseUrl: 'patternEditor',// ../lib commented out as a trial of working from within kinodb
     paths: {
-        scripts: '../scripts',
+        scripts: 'scripts', //on trial should be ../scripts
        // "kld-affine": '../node_modules/kld-affine/dist/index-umd', //why don't I need this!!!
-        "kld-intersections" : '../node_modules/kld-intersections/dist/index-umd'
+        "kld-intersections" : 'node_modules/kld-intersections/dist/index-umd' //should be ../node
     }
 });
-
+*/
 
 define(function (require) {
     // Load any app-specific modules
@@ -37,7 +49,7 @@ var gInteractionPrefix;
 var selectedObject;
 var linksGroup;
 
-function kinodbGlue( dataAndConfig, ptarget, options )
+function drawPattern( dataAndConfig, ptarget, options ) 
 {
     //Remove the svg if called by graph_kill
     if ( dataAndConfig === null )

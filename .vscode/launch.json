@@ -13,6 +13,15 @@
             "webRoot": "${workspaceFolder}"
         },
         */
+
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8080/patternEditor/tests/test2.html",
+            "webRoot": "${workspaceFolder}"
+        },
+
         /*
         {
             "type": "chrome",
@@ -22,7 +31,7 @@
             "webRoot": "${workspaceFolder}"
         },*/        
 
-        
+        /**/
         {
             "type": "chrome",
             "request": "launch",
@@ -30,7 +39,7 @@
            "url": "http://localhost:8080/patternEditor/tests/test_pointCurveIntersectAxis.html",
            "webRoot": "${workspaceFolder}"
         }
-        ,
+        ,*/
         
         //{
         //    "type": "chrome",
