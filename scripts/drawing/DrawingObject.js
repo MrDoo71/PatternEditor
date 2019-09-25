@@ -29,6 +29,10 @@ class DrawingObject /*abstract*/ {
         return this.data.color;
     }
 
+    lineVisible() {
+        return this.data.lineStyle !== "none";
+    }
+
     pointEndLine(data) {
         data.objectType = "pointEndLine";
         data.basePoint = this;

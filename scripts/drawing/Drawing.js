@@ -12,6 +12,7 @@ define(function (require) {
     require('./ArcSimple');
     require('./Line');
     require('./PointAlongLine');
+    require('./PointAlongPerpendicular');
     require('./PointCurveIntersectAxis');
     require('./PointEndLine');
     require('./PointLineIntersect');

@@ -54,8 +54,11 @@ class GeoLine {
         this.length = Math.sqrt( Math.pow(this.deltaX,2) + Math.pow(this.deltaY,2) );
 
         //angle is anti-clockwise starting east in radians
-        this.angle = ( this.deltaX > this.deltaY ) ? Math.acos( this.deltaX / this.length )
-                                               : Math.asin( -1 * this.deltaY / this.length ); //0 if deltaX==0
+        //this.angle = ( this.deltaX > this.deltaY ) ? Math.acos( this.deltaX / this.length )
+        //                                       : Math.asin ( -1 * this.deltaY / this.length ); //0 if deltaX==0
+        
+        this.angle = Math.atan2( -this.deltaY, this.deltaX );
+
         if ( this.angle < 0 )
             this.angle = this.angle + (2 * Math.PI);          
     
@@ -95,10 +98,10 @@ class GeoLine {
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
-        if ( deltaX === 0 )
-            return deltaY > 0 ? 90 : 270;
+        //if ( deltaX === 0 )
+        //    return deltaY > 0 ? 90 : 270;
 
-        return Math.atan( deltaY / deltaX ) * 180 / Math.PI;
+        return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
     }
 }
 

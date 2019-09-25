@@ -5,16 +5,6 @@ define(function (require) {
     //require('scripts/geometry');
     require('scripts/expression');
     require('scripts/drawing/Drawing');
-    /*
-    require('drawing/DrawingObject');
-    require('drawing/ArcSimple');
-    require('drawing/Line');
-    require('drawing/PointAlongLine');
-    require('drawing/PointCurveIntersectAxis');
-    require('drawing/PointEndLine');
-    require('drawing/PointLineIntersect');
-    require('drawing/PointSingle');
-*/
 });
 
 class PatternPiece {
@@ -115,6 +105,8 @@ class PatternPiece {
             return new PointEndLine(dObj);
         else if (dObj.objectType === "pointAlongLine")
             return new PointAlongLine(dObj);
+        else if (dObj.objectType === "pointAlongPerpendicular")
+            return new PointAlongPerpendicular(dObj);
         else if (dObj.objectType === "line")
             return new Line(dObj);
         else if (dObj.objectType === "pointLineIntersect")
