@@ -37,7 +37,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-           "url": "http://localhost:8080/patternEditor/tests/test_pointCurveIntersectAxis.html",
+           "url": "http://localhost:8080/patternEditor/tests/test_pointIntersectArcAndAxis.html",
            "webRoot": "${workspaceFolder}"
         }
         ,*/

@@ -143,6 +143,8 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
     var transformGroup = transformGroup.append("g")
                                .attr("transform", "translate(" + ( ( -1.0 * patternPiece1.bounds.minX ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");
 
+    //TODO also need to be able to click on a line / curve/ arc
+
     var onclick = function(d) {
         d3.event.preventDefault() ;
         console.log( "Click! " );

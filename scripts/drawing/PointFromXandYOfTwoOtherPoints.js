@@ -3,44 +3,39 @@ define(function (require) {
     require('../geometry');
 });
 
-class PointAlongLine extends DrawingObject {
+class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
     //firstPoint
     //secondPoint
-    //length
 
     constructor(data) {
         super(data);
     }
+
 
     calculate(bounds) {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.patternPiece.getObject(d.firstPoint);
-
         if (typeof this.secondPoint === "undefined")
             this.secondPoint = this.patternPiece.getObject(d.secondPoint);
 
-        if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
-
-        this.baseLine = new GeoLine(this.firstPoint.p, this.secondPoint.p);
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle(this.length.value(this.baseLine.length), this.baseLine.angle);
-        this.line = new GeoLine(this.firstPoint.p, this.p);
-        
-        bounds.adjustForLine(this.line);
+        this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
+        //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
+        bounds.adjust(this.p);
     }
 
+
     draw(g) {
-        this.drawLine( g, this );
+        //TODO check that there is no option to draw a line as part of this tool. 
         this.drawDot( g, this );
         this.drawLabel( g, this );
     }
 
 
     html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along line from " + this.firstPoint.data.name + " to " + this.secondPoint.data.name;
+        return 'line ' + '<span class="ps-name">' + this.firstPoint.data.name + '</span>' + " - " + '<span class="ps-name">' + this.secondPoint.data.name + '</span>';
     }
 
 
@@ -48,7 +43,5 @@ class PointAlongLine extends DrawingObject {
     {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
-        dependencies.add( this, this.length );
     }    
-
 }

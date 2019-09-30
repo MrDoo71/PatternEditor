@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>Test from JSON - point curve intersect axis</title>
+  <title>Test from JSON - point intersect arc and axis</title>
 
   <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
@@ -23,7 +23,7 @@
       <div class="container">
         <div class="row">
           <h1 class="col-sm-12 ">
-            Point Curve Intersect Axis
+            Point Intersect Arc and Axis
           </h1>
         </div>
         <div id="REP1002132">
@@ -48,15 +48,15 @@
                                   "color": "cornflowerblue",
                                   "center": "A",
                                   "angle1":
-                                    { "formulaText": "0", "constant": 0 }, //TODO get rid of formulaText
+                                    { "constant": 0 }, 
                                   "angle2":
-                                    { "formulaText": "180", "constant": 180 },
+                                    { "constant": 180 },
                                   "radius":
-                                    { "formulaText": "5", "constant": 5 }
+                                    { "constant": 5 }
                                 },
                                 {
                                   "name": "A1",
-                                  "objectType": "pointCurveIntersectAxis", //TODO so this through binding
+                                  "objectType": "pointIntersectArcAndAxis", //TODO so this through binding
                                   "basePoint": "A",
                                   "curve": "Arc_A_2",
                                   "lineStyle": "dotLine",

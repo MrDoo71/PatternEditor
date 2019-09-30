@@ -98,6 +98,7 @@ class PatternPiece {
         return this.drawing[name];
     }
 
+    //TODO make this a static method of DrawingObject
     newDrawingObj(dObj) {
         if (dObj.objectType === "pointSingle")
             return new PointSingle(dObj);
@@ -107,14 +108,35 @@ class PatternPiece {
             return new PointAlongLine(dObj);
         else if (dObj.objectType === "pointAlongPerpendicular")
             return new PointAlongPerpendicular(dObj);
+        else if (dObj.objectType === "pointAlongBisector")
+            return new PointAlongBisector(dObj);            
+        else if (dObj.objectType === "pointFromXandYOfTwoOtherPoints")
+            return new PointFromXandYOfTwoOtherPoints(dObj);
+        else if (dObj.objectType === "pointIntersectLineAndAxis")
+            return new PointIntersectLineAndAxis(dObj);
         else if (dObj.objectType === "line")
             return new Line(dObj);
         else if (dObj.objectType === "pointLineIntersect")
             return new PointLineIntersect(dObj);
-        else if (dObj.objectType === "pointCurveIntersectAxis")
-            return new PointCurveIntersectAxis(dObj);
+        else if (dObj.objectType === "pointIntersectArcAndAxis")
+            return new PointIntersectArcAndAxis(dObj);
+        else if (dObj.objectType === "pointIntersectArcAndLine")
+            return new PointIntersectArcAndLine(dObj);
+        else if (dObj.objectType === "perpendicularPointAlongLine")
+            return new PerpendicularPointAlongLine(dObj);
+        else if (dObj.objectType === "pointOfTriangle")
+            return new PointOfTriangle(dObj);            
+        else if (dObj.objectType === "pointShoulder")
+            return new PointShoulder(dObj);            
         else if (dObj.objectType === "arcSimple")
             return new ArcSimple(dObj);
+        else if (dObj.objectType === "splineSimple")
+            return new SplineSimple(dObj);
+        else if (dObj.objectType === "splineUsingPoints")
+            return new SplineUsingControlPoints(dObj);
+        else if (dObj.objectType === "cutSpline")
+            return new CutSpline(dObj);
+
 
         throw( "Unsupported drawing object type:" + dObj.objectType );
 

@@ -1,0 +1,12 @@
+li,
+li a,
+li a:visited {
+    color: darkblue;
+}
+
+
+li.todo,
+li.todo a,
+li.todo a:visited {
+    color: orange;
+}

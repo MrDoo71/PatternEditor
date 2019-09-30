@@ -54,9 +54,6 @@ class GeoLine {
         this.length = Math.sqrt( Math.pow(this.deltaX,2) + Math.pow(this.deltaY,2) );
 
         //angle is anti-clockwise starting east in radians
-        //this.angle = ( this.deltaX > this.deltaY ) ? Math.acos( this.deltaX / this.length )
-        //                                       : Math.asin ( -1 * this.deltaY / this.length ); //0 if deltaX==0
-        
         this.angle = Math.atan2( -this.deltaY, this.deltaX );
 
         if ( this.angle < 0 )
@@ -71,10 +68,23 @@ class GeoLine {
 
     intersect( line2 ) {    
         //intersection
-        // offset - line2.offset / ( line2.slope - slope ) = x
-        var x = this.offset - line2.offset / ( line2.slope - this.slope );
-        var y = this.p1.y + ( this.slope * ( x - this.p1.x ) );
+        //  // offset - line2.offset / ( line2.slope - slope ) = x
+
+        var swap = Math.abs( this.deltaX ) > Math.abs( line2.deltaX );
+        var line1s = swap ? this : line2; //this.p1.x < this.p2.x ? this : new GeoLine( this.p2, this.p1 );
+        var line2s = swap ? line2 : this; //line2.p1.x < line2.p2.x ? line2 : new GeoLine( line2.p2, line2.p1 );
+
+        var x = ( line1s.offset - line2s.offset ) / ( line2s.slope - line1s.slope );
+        var y = line1s.p1.y + ( line1s.slope * ( x - line1s.p1.x ) );
         return new GeoPoint(x,y);
+
+        //Using the Intersection libary requires that the finite lines intersect, rather than
+        //their infinite versions. 
+        //var line1SI = this.asShapeInfo();
+        //var line2SI = line2.asShapeInfo();
+        //var intersections = Intersection.intersect(line1SI, line2SI);        
+        //intersections.points.forEach(console.log);    
+        //return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
     }    
 
     intersectArc( arc )
@@ -106,7 +116,7 @@ class GeoLine {
 }
 
 
-//A line
+
 class GeoArc {
 
     //center
@@ -170,8 +180,66 @@ class GeoArc {
             angle2 = this.angle1;
         }
         //create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
-        return ShapeInfo.arc( this.center.p.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
+        return ShapeInfo.arc( this.center.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
 }
 
+
+class GeoSpline {
+
+    //nodeData - an array of
+    //{ 
+    //  inAngle  : 
+    //  inLength : 
+    //  point    : 
+    //  outAngle : 
+    //  outLength:  
+    //} 
+
+    constructor( nodeData ) {
+        this.nodeData = nodeData;
+    }
+
+    svgPath()
+    {
+        var nodeData = this.nodeData;
+        var i = 0;
+        var path = "M" + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
+
+        var controlPoint1 = ( typeof nodeData[i].outControlPoint !== "undefined" ) ? nodeData[i].outControlPoint
+                                                                                   : nodeData[i].point.pointAtDistanceAndAngle( nodeData[i].outLength, nodeData[i].outAngle / 360 * 2 * Math.PI );
+        var controlPoint2 = ( typeof nodeData[i+1].inControlPoint !== "undefined" ) ? nodeData[i+1].inControlPoint
+                                                                                    : nodeData[i+1].point.pointAtDistanceAndAngle( nodeData[i+1].inLength, nodeData[i+1].inAngle / 360 * 2 * Math.PI );
+
+        path += "C" + controlPoint1.x + " " + controlPoint1.y +
+                " " + controlPoint2.x + " " + controlPoint2.y +
+                " " + nodeData[i+1].point.x + " " + nodeData[i+1].point.y;
+
+        console.log( "GeoSpline: " + path );
+
+        return path;
+    }
+
+    asShapeInfo()
+    {        
+        return ShapeInfo.path( svgPath );
+    }
+    
+    pointAlongCurveFraction( fraction ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var l = path.getTotalLength();
+        var p = path.getPointAtLength( l * fraction );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }       
+
+    pointAlongCurve( length ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var p = path.getPointAtLength( length );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }       
+}
 

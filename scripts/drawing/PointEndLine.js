@@ -19,8 +19,10 @@ class PointEndLine extends DrawingObject {
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.patternPiece.getObject(d.basePoint);
+
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
+            
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
             
@@ -33,16 +35,9 @@ class PointEndLine extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        var d = this.data;
-        g.append("line")
-            .attr("x1", this.line.p1.x)
-            .attr("y1", this.line.p1.y)
-            .attr("x2", this.line.p2.x)
-            .attr("y2", this.line.p2.y)
-            .attr("stroke-width", 1 / scale)
-            .attr("stroke", this.getColor() );
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawLine( g, this );
+        this.drawDot( g, this );
+        this.drawLabel( g, this );
     }
 
 

@@ -13,11 +13,20 @@ define(function (require) {
     require('./Line');
     require('./PointAlongLine');
     require('./PointAlongPerpendicular');
-    require('./PointCurveIntersectAxis');
+    require('./PointAlongBisector');
+    require('./PointIntersectLineAndAxis');    
+    require('./PointIntersectArcAndAxis');
+    require('./PointIntersectArcAndLine');
     require('./PointEndLine');
     require('./PointLineIntersect');
     require('./PointSingle');
-
+    require('./PointFromXandYOfTwoOtherPoints');   
+    require('./PerpendicularPointAlongLine');        
+    require('./PointOfTriangle'); 
+    require('./PointShoulder'); 
+    require('./SplineSimple');    
+    require('./SplineUsingControlPoints');    
+    require('./CutSpline');    
 });
 
 

@@ -15,7 +15,7 @@ class ArcSimple extends DrawingObject {
 
         //TODO output a useful arcID
         if ( typeof this.data.name === "undefined" )
-            this.data.name = "arc";
+            this.data.name = "arcX";
     }
 
 
@@ -31,7 +31,7 @@ class ArcSimple extends DrawingObject {
         if (typeof this.radius === "undefined")
             this.radius = this.patternPiece.newFormula(d.radius);
 
-        this.arc = new GeoArc( this.center, this.radius.value(), this.angle1.value(), this.angle2.value() );
+        this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 
         var arcData = this.arc.centeredToSVG( this.center.p.x, this.center.p.y, 
             this.radius.value(), this.radius.value(), 

@@ -4,10 +4,10 @@ define(function (require) {
 });
 
 
-class PointCurveIntersectAxis extends DrawingObject {
+class PointIntersectArcAndAxis extends DrawingObject {
 
     //basePoint
-    //curve
+    //arc
     //angle
 
     constructor(data) {
@@ -21,7 +21,7 @@ class PointCurveIntersectAxis extends DrawingObject {
             this.basePoint = this.patternPiece.getObject(d.basePoint);
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.curve);
+            this.arc = this.patternPiece.getObject(d.curve);
 
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
@@ -30,7 +30,7 @@ class PointCurveIntersectAxis extends DrawingObject {
 
         this.line = new GeoLine( this.basePoint.p, otherPoint );
 
-        this.p = this.line.intersectArc( this.curve.arc );
+        this.p = this.line.intersectArc( this.arc.arc );
 
         bounds.adjust(this.p);
     }
@@ -48,14 +48,14 @@ class PointCurveIntersectAxis extends DrawingObject {
 
     html() {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect curve ' + this.curve.center.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc ' + this.arc.center.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
     }
 
 
     setDependencies( dependencies )
     {
         dependencies.add( this, this.basePoint );
-        dependencies.add( this, this.curve );
+        dependencies.add( this, this.arc );
         dependencies.add( this, this.angle );
     }    
 

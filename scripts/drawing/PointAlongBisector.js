@@ -3,12 +3,12 @@ define(function (require) {
     require('../geometry');
 });
 
-class PointAlongPerpendicular extends DrawingObject {
+class PointAlongBisector extends DrawingObject {
 
     //firstPoint
     //secondPoint
+    //thirdPoint
     //length
-    //angle
 
     constructor(data) {
         super(data);
@@ -22,16 +22,20 @@ class PointAlongPerpendicular extends DrawingObject {
             this.firstPoint = this.patternPiece.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
             this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+        if (typeof this.thirdPoint === "undefined")
+            this.thirdPoint = this.patternPiece.getObject(d.thirdPoint);
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
-        if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
             
-        var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
-        var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
+        var line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
+        var line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
+
+        //TODO test what happens when this crosses the equator! i.e. one point is just below the equator and one just above (and in either direction)
+        var bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
+
         //Convert degrees to radians
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * totalAngle / 360 );
-        this.line = new GeoLine(this.firstPoint.p, this.p);
+        this.p = this.secondPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * bisectingAngle / 360 );
+        this.line = new GeoLine(this.secondPoint.p, this.p);
         bounds.adjustForLine(this.line);
     }
 
@@ -45,7 +49,8 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " from " + this.firstPoint.data.name + " perpendicular to the line to " + this.secondPoint.data.name + " additional angle:" + this.data.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " along line bisecting " 
+             + this.secondPoint.data.name + "-" + this.firstPoint.data.name + " and " + this.secondPoint.data.name + "-" + this.thirdPoint.data.name;
     }
 
 
@@ -53,8 +58,8 @@ class PointAlongPerpendicular extends DrawingObject {
     {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
+        dependencies.add( this, this.thirdPoint );
         dependencies.add( this, this.length );
-        dependencies.add( this, this.angle );
     }    
 
 }
