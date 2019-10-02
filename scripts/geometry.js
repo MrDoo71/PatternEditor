@@ -203,17 +203,25 @@ class GeoSpline {
     svgPath()
     {
         var nodeData = this.nodeData;
-        var i = 0;
-        var path = "M" + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
+        var path;
+        for ( var i=0; i<nodeData.length; i++ )
+        {
+            if ( i===0 )
+            {
+                path = "M" + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
+            }
+            else
+            {
+                var controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
+                                                                                             : nodeData[i-1].point.pointAtDistanceAndAngle( nodeData[i-1].outLength, nodeData[i-1].outAngle / 360 * 2 * Math.PI );
 
-        var controlPoint1 = ( typeof nodeData[i].outControlPoint !== "undefined" ) ? nodeData[i].outControlPoint
-                                                                                   : nodeData[i].point.pointAtDistanceAndAngle( nodeData[i].outLength, nodeData[i].outAngle / 360 * 2 * Math.PI );
-        var controlPoint2 = ( typeof nodeData[i+1].inControlPoint !== "undefined" ) ? nodeData[i+1].inControlPoint
-                                                                                    : nodeData[i+1].point.pointAtDistanceAndAngle( nodeData[i+1].inLength, nodeData[i+1].inAngle / 360 * 2 * Math.PI );
-
-        path += "C" + controlPoint1.x + " " + controlPoint1.y +
-                " " + controlPoint2.x + " " + controlPoint2.y +
-                " " + nodeData[i+1].point.x + " " + nodeData[i+1].point.y;
+                var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
+                                                                                          : nodeData[i].point.pointAtDistanceAndAngle( nodeData[i].inLength, nodeData[i].inAngle / 360 * 2 * Math.PI );
+                path += "C" + controlPoint1.x + " " + controlPoint1.y +
+                        " " + controlPoint2.x + " " + controlPoint2.y +
+                        " " + nodeData[i].point.x + " " + nodeData[i].point.y;
+            }
+        }
 
         console.log( "GeoSpline: " + path );
 
@@ -222,7 +230,7 @@ class GeoSpline {
 
     asShapeInfo()
     {        
-        return ShapeInfo.path( svgPath );
+        return ShapeInfo.path( this.svgPath() );
     }
     
     pointAlongCurveFraction( fraction ) {

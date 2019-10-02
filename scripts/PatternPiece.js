@@ -134,9 +134,17 @@ class PatternPiece {
             return new SplineSimple(dObj);
         else if (dObj.objectType === "splineUsingPoints")
             return new SplineUsingControlPoints(dObj);
-        else if (dObj.objectType === "cutSpline")
+        else if (dObj.objectType === "splinePathInteractive")
+            return new SplinePathInteractive(dObj);
+        else if (dObj.objectType === "splinePathUsingPoints")
+            return new SplinePathUsingPoints(dObj);
+        else if (dObj.objectType === "cutSpline")   //SHOULD THIS BE pointCutSpline for consistency?
             return new CutSpline(dObj);
-
+        else if (dObj.objectType === "pointCutSplinePath")
+            return new PointCutSplinePath(dObj);      
+        else if (dObj.objectType === "pointIntersectCurves")
+            return new PointIntersectCurves(dObj);      
+            
 
         throw( "Unsupported drawing object type:" + dObj.objectType );
 

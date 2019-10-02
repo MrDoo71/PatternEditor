@@ -26,7 +26,11 @@ define(function (require) {
     require('./PointShoulder'); 
     require('./SplineSimple');    
     require('./SplineUsingControlPoints');    
+    require('./SplinePathInteractive');        
+    require('./SplinePathUsingPoints');            
     require('./CutSpline');    
+    require('./PointCutSplinePath');    
+    require('./PointIntersectCurves');        
 });
 
 

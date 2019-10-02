@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - point of intesection of curves</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  <script type="text/javascript" data-main="test" src="../lib/require.js"> </script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Point of Intersection of Curves
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="text/javascript">
+            function v343110_graph1_init() {
+              drawPattern(
+                {
+                  "pattern":
+                  {
+                    "patternPiece":
+                      [
+                        {
+                          "name": "Pattern piece 1",
+                          "drawingObject":
+                            [
+                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                              {
+                                "name": "A1",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": -1.15844,
+                                "my": -0.511586,
+                                "angle":
+                                  { "constant": 135 },
+                                "length":
+                                  { "constant": 10 }
+                              },
+                              {
+                                "name": "A2",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": 0.290019,
+                                "my": -0.506528,
+                                "angle":
+                                  { "constant": 45 },
+                                "length":
+                                  { "constant": 10 }
+                              },
+                              {
+                                "derivedName": "Spl_A1_A2",
+                                "objectType": "splineSimple",
+                                "point1": "A1",
+                                "point4": "A2",
+                                "lineStyle": "hair",
+                                "color": "darkviolet",
+                                "length1":
+                                  { "constant": 6.29493 },
+                                "length2":
+                                  { "constant": 4.65973 },
+                                "angle1":
+                                  { "constant": 335.61 },
+                                "angle2":
+                                  { "constant": 116.873 }
+                              },
+                              {
+                                "name": "A3",
+                                "objectType": "pointAlongPerpendicular",
+                                "firstPoint": "A1",
+                                "secondPoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 0 },
+                                "length":
+                                  { "constant": 5 }
+                              },
+                              {
+                                "name": "A4",
+                                "objectType": "pointAlongPerpendicular",
+                                "firstPoint": "A2",
+                                "secondPoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 0 },
+                                "length":
+                                  { "constant": 3 }
+                              },
+                              { "derivedName": "Spl_A1_A4", "objectType": "splineUsingPoints", "point1": "A1", "point2": "A3", "point3": "A2", "point4": "A4", "lineStyle": "hair", "color": "green" },
+                              {
+                                "name": "A5",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": -0.358163,
+                                "my": -1.15326,
+                                "angle":
+                                  { "constant": 90 },
+                                "length":
+                                  { "constant": 5 }
+                              },
+                              {
+                                "name": "A6",
+                                "objectType": "pointAlongPerpendicular",
+                                "firstPoint": "A5",
+                                "secondPoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": 0.342289,
+                                "my": -0.593261,
+                                "angle":
+                                  { "constant": 0 },
+                                "length":
+                                  { "constant": 3 }
+                              },
+                              {
+                                "name": "A7",
+                                "objectType": "pointAlongLine",
+                                "firstPoint": "A6",
+                                "secondPoint": "A5",
+                                "lineStyle": "none",
+                                "color": "black",
+                                "mx": 0.14915,
+                                "my": 0.176481,
+                                "length":
+                                  { "constant": 6 }
+                              },
+                              {
+                                "name": "A8",
+                                "objectType": "pointAlongLine",
+                                "firstPoint": "A1",
+                                "secondPoint": "A3",
+                                "lineStyle": "none",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "length":
+                                  { "constant": 7 }
+                              },
+                              {
+                                "name": "A9",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A2",
+                                "lineStyle": "dotLine",
+                                "color": "black",
+                                "mx": 0.167342,
+                                "my": -0.085922,
+                                "angle":
+                                  { "constant": 90 },
+                                "length":
+                                  { "constant": 4.04414 }
+                              },
+                              {
+                                "derivedName": "Spl_A1_A4",
+                                "objectType": "splinePathUsingPoints",
+                                "lineStyle": "hair",
+                                "color": "deeppink",
+                                "pathNode": [{ "point": "A1" }, { "point": "A8" }, { "point": "A7" }, { "point": "A5" }, { "point": "A6" }, { "point": "A9" }, { "point": "A4" }]
+                              },
+                              /*{ "name": "A10", "objectType": "pointIntersectCurves", "curve1": "Spl_A1_A4", "curve2": "Spl_A1_A2", "verticalCrossPoint": "Two", "horizontalCrossPoint": "Two", "mx": -0.130587, "my": -1.24258 },
+                              { "name": "A11", "objectType": "pointIntersectCurves", "curve1": "Spl_A1_A2", "curve2": "Spl_A1_A4", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": 0.0271405, "my": -0.962184 },
+                             */ { "name": "A12", "objectType": "pointIntersectCurves", "curve1": "Spl_A1_A4", "curve2": "Spl_A1_A2", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": -0.586243, "my": -1.15496 }
+                            
+                            ]
+                        }
+                      ]
+                  }
+                }
+                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+            }
+            function v343110_graph1_kill() {
+              drawPattern(null, 'v343110_graph1', null);
+            }
+
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      requirejs(["../scripts/PatternEditor"], function () { v343110_graph1_init(); });
+    </script>
+
+    <div style="margin-top:200px">
+      <img src="expectedResults/pointIntersectionCurves.png" />
+    </div>
+</body>
+
+</html>

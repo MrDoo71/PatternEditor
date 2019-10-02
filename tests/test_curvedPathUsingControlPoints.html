@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - curved path using points as control handles</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  <script type="text/javascript" data-main="test" src="../lib/require.js"> </script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Curved path using points as control handles "tools for creating curves"
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="text/javascript">
+            function v343110_graph1_init() {
+              drawPattern(
+                {
+                  "pattern":
+                  {
+                    "patternPiece":
+                      [
+                        {
+                          "name": "Pattern piece 1",
+                          "drawingObject":
+                            [
+                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                              {
+                                "name": "A1",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 0 },
+                                "length":
+                                  { "constant": 8 }
+                              },
+                              {
+                                "name": "A2",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": 0.223979,
+                                "my": -1.27117,
+                                "angle":
+                                  { "constant": 60 },
+                                "length":
+                                  { "constant": 8 }
+                              },
+                              {
+                                "name": "A3",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 115 },
+                                "length":
+                                  { "constant": 8 }
+                              },
+                              {
+                                "name": "A5",
+                                "objectType": "pointAlongPerpendicular",
+                                "firstPoint": "A3",
+                                "secondPoint": "A",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 0 },
+                                "length":
+                                  { "constant": 2 }
+                              },
+                              {
+                                "name": "A6",
+                                "objectType": "pointAlongLine",
+                                "firstPoint": "A5",
+                                "secondPoint": "A3",
+                                "lineStyle": "none",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "length":
+                                  { "constant": 6 }
+                              },
+                              {
+                                "name": "A7",
+                                "objectType": "pointAlongLine",
+                                "firstPoint": "A2",
+                                "secondPoint": "A",
+                                "lineStyle": "none",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "length":
+                                  { "constant": 12 }
+                              },
+                              {
+                                "name": "A8",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A2",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": -0.532438,
+                                "my": -1.68376,
+                                "angle":
+                                  { "constant": 144.263 },
+                                "length":
+                                  { "constant": 1.33106 }
+                              },
+                              {
+                                "name": "A9",
+                                "objectType": "pointAlongLine",
+                                "firstPoint": "A8",
+                                "secondPoint": "A2",
+                                "lineStyle": "none",
+                                "color": "black",
+                                "mx": 0.567805,
+                                "my": -1.17949,
+                                "length":
+                                  { "constant": 3 }
+                              },
+                              {
+                                "name": "A10",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A1",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 89.9455 },
+                                "length":
+                                  { "constant": 4 }
+                              },
+                              {
+                                "derivedName": "Spl_A_A1",
+                                "objectType": "splinePathUsingPoints",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "pathNode": [{ "point": "A" }, { "point": "A7" }, { "point": "A6" }, { "point": "A3" }, { "point": "A5" }, { "point": "A8" }, { "point": "A2" }, { "point": "A9" }, { "point": "A10" }, { "point": "A1" }]
+                              }
+                            ]
+                        }
+                      ]
+                  }
+                }
+                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+            }
+            function v343110_graph1_kill() {
+              drawPattern(null, 'v343110_graph1', null);
+            }
+
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      requirejs(["../scripts/PatternEditor"], function () { v343110_graph1_init(); });
+    </script>
+
+    <div>
+      <img src="expectedResults/toolsForCreatingCurves.png" />
+    </div>
+</body>
+
+</html>

@@ -65,7 +65,7 @@ g.j-item.target div {
     padding: 3px 7px;
 }
 
-
+span.control-point { color: green }
 
 /* dark mode 
 Note that lines can and often do specify stroke black
