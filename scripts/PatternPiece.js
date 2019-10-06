@@ -142,8 +142,15 @@ class PatternPiece {
             return new CutSpline(dObj);
         else if (dObj.objectType === "pointCutSplinePath")
             return new PointCutSplinePath(dObj);      
+        else if (dObj.objectType === "pointCutArc")
+            return new PointCutArc(dObj);                              
         else if (dObj.objectType === "pointIntersectCurves")
             return new PointIntersectCurves(dObj);      
+        else if (dObj.objectType === "pointIntersectCurveAndAxis")
+            return new PointIntersectCurveAndAxis(dObj);      
+        else if (dObj.objectType === "pointIntersectArcs")
+            return new PointIntersectArcs(dObj);      
+            
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );

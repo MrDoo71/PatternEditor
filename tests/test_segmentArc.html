@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>Test from JSON - segmenting a simple curve</title>
+  <title>Test from JSON - segment arc</title>
 
   <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
@@ -24,7 +24,7 @@
     <div class="container">
       <div class="row">
         <h1 class="col-sm-12 ">
-          Segmenting a Simple curve
+          Segment arc
         </h1>
       </div>
       <div id="REP1002132">
@@ -41,57 +41,64 @@
                           "name": "Pattern piece 1",
                           "drawingObject":
                             [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                              { "name": "A", "objectType": "pointSingle", "x": 1, "y": 1, "mx": 0.0520833, "my": 0.104167 },
+                              {
+                                "derivedName": "Arc_A_2",
+                                "objectType": "arcSimple",
+                                "center": "A",
+                                "lineStyle": "dashDotLine",
+                                "color": "black",
+                                "angle1":
+                                  { "constant": 270 },
+                                "angle2":
+                                  { "constant": 0 },
+                                "radius":
+                                  { "constant": 10 }
+                              },
                               {
                                 "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
+                                "objectType": "pointCutArc",
+                                "arc": "Arc_A_2",
+                                "mx": 0.0520833,
+                                "my": 0.104167,
+                                "length":
+                                  { "constant": 0 }
+                              },
+                              {
+                                "name": "A2",
+                                "objectType": "pointCutArc",
+                                "arc": "Arc_A_2",
+                                "mx": 0.0520833,
+                                "my": 0.104167,
+                                "length":
+                                  { "constant": 5 }
+                              },
+                              {
+                                "name": "A3",
+                                "objectType": "pointCutArc",
+                                "arc": "Arc_A_2",
+                                "mx": 0.0520833,
+                                "my": 0.104167,
                                 "length":
                                   { "constant": 10 }
                               },
                               {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 45 },
+                                "name": "A4",
+                                "objectType": "pointCutArc",
+                                "arc": "Arc_A_2",
+                                "mx": 0.0520833,
+                                "my": 0.104167,
                                 "length":
-                                  { "constant": 8 }
+                                  { "constant": 15 }
                               },
                               {
-                                "derivedName": "Spl_A2_A1",
-                                "objectType": "splineSimple",
-                                "point1": "A2",
-                                "point4": "A1",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "length1":
-                                  { "constant": 2.47958 },
-                                "length2":
-                                  { "constant": 3.57381 },
-                                "angle1":
-                                  { "constant": 224.835 },
-                                "angle2":
-                                  { "constant": 180.026 }
-                              },
-                              {
-                                "name": "A3",
-                                "objectType": "cutSpline",
-                                "spline": "Spl_A2_A1",
-                                "mx": 0.132292,
-                                "my": 0.264583,
+                                "name": "A5",
+                                "objectType": "pointCutArc",
+                                "arc": "Arc_A_2",
+                                "mx": 0.207129,
+                                "my": -0.257606,
                                 "length":
-                                  { "constant": 5 }
+                                  { "constant": 20 }
                               }
                             ]
                         }
@@ -114,7 +121,7 @@
     </script>
 
     <div>
-      <img src="expectedResults/segmentingASimpleCurve.png" />
+      <img src="expectedResults/segmentingAnArc.png" />   
     </div>
 </body>
 

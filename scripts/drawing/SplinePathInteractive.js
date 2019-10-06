@@ -39,7 +39,7 @@ class SplinePathInteractive extends DrawingObject {
 
         this.curve = new GeoSpline( this.nodes );
 
-        this.midPoint = this.curve.pointAlongCurveFraction( 0.5 );        
+        this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
         bounds.adjust( this.p );
 
@@ -66,8 +66,8 @@ class SplinePathInteractive extends DrawingObject {
     }
 
 
-    pointAlongCurve( length ) {
-        return this.curve.pointAlongCurve( length );
+    pointAlongPath( length ) {
+        return this.curve.pointAlongPath( length );
     }   
 
 

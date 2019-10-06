@@ -30,7 +30,10 @@ define(function (require) {
     require('./SplinePathUsingPoints');            
     require('./CutSpline');    
     require('./PointCutSplinePath');    
+    require('./PointCutArc');        
     require('./PointIntersectCurves');        
+    require('./PointIntersectCurveAndAxis');        
+    require('./PointIntersectArcs');            
 });
 
 

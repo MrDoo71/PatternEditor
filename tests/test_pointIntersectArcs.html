@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>Test from JSON - point intersect arc and axis</title>
+  <title>Test from JSON - point intersect arcs</title>
 
   <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
@@ -24,7 +24,7 @@
     <div class="container">
       <div class="row">
         <h1 class="col-sm-12 ">
-          Point Intersect Arc and Axis
+          Point Intersect Arcs
         </h1>
       </div>
       <div id="REP1002132">
@@ -41,13 +41,13 @@
                           "name": "Pattern piece 1",
                           "drawingObject":
                             [
-                              { "name": "A", "objectType": "pointSingle", "x": 11, "y": 1, "mx": 0.0520833, "my": 0.104167 },
+                              { "name": "A", "objectType": "pointSingle", "x": 11, "y": 1, "mx": -0.637626, "my": -0.252579 },
                               {
                                 "derivedName": "Arc_A_2",
                                 "objectType": "arcSimple",
                                 "center": "A",
                                 "lineStyle": "dashDotLine",
-                                "color": "black",
+                                "color": "blue",
                                 "angle1":
                                   { "constant": 180 },
                                 "angle2":
@@ -66,20 +66,38 @@
                                 "angle":
                                   { "constant": 295.323 },
                                 "length":
-                                  { "constant": 4.99245 }
+                                  { "constant": 15 }
                               },
                               {
-                                "name": "A2",
-                                "objectType": "pointIntersectArcAndAxis",
-                                "basePoint": "A1",
-                                "curve": "Arc_A_2",
+                                "derivedName": "Arc_A1_4",
+                                "objectType": "arcSimple",
+                                "center": "A1",
                                 "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.0520833,
-                                "my": 0.104167,
-                                "angle":
-                                  { "constant": 220 }
-                              }
+                                "color": "deeppink",
+                                "angle1":
+                                  { "constant": 10 },
+                                "angle2":
+                                  { "constant": 170 },
+                                "radius":
+                                  { "constant": 10 }
+                              },
+                              { "name": "A2", "objectType": "pointIntersectArcs", "firstArc": "Arc_A_2", "secondArc": "Arc_A1_4", "crossPoint": "One", "mx": 0.0520833, "my": 0.104167 },
+                              { "name": "A3", "objectType": "pointIntersectArcs", "firstArc": "Arc_A1_4", "secondArc": "Arc_A_2", "crossPoint": "One", "mx": -1.16085, "my": -0.0147484 },
+                              { "name": "A4", "objectType": "pointIntersectArcs", "firstArc": "Arc_A_2", "secondArc": "Arc_A1_4", "crossPoint": "Two", "mx": 0.599094, "my": -0.466627 },
+                              {
+                                "derivedName": "Arc_A1_8",
+                                "objectType": "arcSimple",
+                                "center": "A1",
+                                "lineStyle": "hair",
+                                "color": "darkRed",
+                                "angle1":
+                                  { "constant": 160 },
+                                "angle2":
+                                  { "constant": 180 },
+                                "radius":
+                                  { "constant": 15 }
+                              },
+                              { "name": "A5", "objectType": "pointIntersectArcs", "firstArc": "Arc_A_2", "secondArc": "Arc_A1_8", "crossPoint": "One", "mx": 0.0520833, "my": 0.104167 }
                             ]
                         }
                       ]
@@ -101,7 +119,7 @@
     </script>
 
     <div>
-      <img src="expectedResults/pointIntersectArcAndAxis.png" />
+      <img src="expectedResults/pointIntersectionArcs.png" />
     </div>
 
 </body>

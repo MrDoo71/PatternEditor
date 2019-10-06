@@ -3,9 +3,9 @@ define(function (require) {
     require('../geometry');
 });
 
-class CutSpline extends DrawingObject { //TODO for consistency should be PointCutSpline ???
+class PointCutArc extends DrawingObject {
 
-    //curve
+    //arc
     //length
 
     constructor(data) {
@@ -15,32 +15,31 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     calculate(bounds) {
         var d = this.data;
 
-        if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.spline);
+        if (typeof this.arc === "undefined")
+            this.arc = this.patternPiece.getObject(d.arc);
 
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
 
-        this.p = this.curve.pointAlongPath( this.length.value() );
+        this.p = this.arc.pointAlongPath( this.length.value() );
         
         bounds.adjust(this.p);
     }
 
     draw(g) {
-        //this.drawLine( g, this );
         this.drawDot( g, this );
         this.drawLabel( g, this );
     }
 
 
     html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along curve " + this.curve.data.name;
+        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along arc " + this.arc.data.name;
     }
 
 
     setDependencies( dependencies )
     {
-        dependencies.add( this, this.curve );
+        dependencies.add( this, this.arc );
         dependencies.add( this, this.length );
     }    
 

@@ -45,7 +45,7 @@ class SplineSimple extends DrawingObject {
         this.curve = new GeoSpline( [ { inAngle: undefined, inLength: undefined, point: this.startPoint.p, outAngle: this.angle1.value(), outLength: this.length1.value() },
                                        { inAngle: this.angle2.value(), inLength: this.length2.value(), point: this.endPoint.p, outAngle: undefined, outLength: undefined } ] );
 
-        this.midPoint = this.curve.pointAlongCurveFraction( 0.5 );        
+        this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
 
         bounds.adjust( this.startPoint );
@@ -74,8 +74,8 @@ class SplineSimple extends DrawingObject {
     }
 
 
-    pointAlongCurve( length ) {
-        return this.curve.pointAlongCurve( length );
+    pointAlongPath( length ) {
+        return this.curve.pointAlongPath( length );
     }   
 
 

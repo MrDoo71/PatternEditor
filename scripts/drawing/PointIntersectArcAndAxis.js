@@ -6,8 +6,8 @@ define(function (require) {
 
 class PointIntersectArcAndAxis extends DrawingObject {
 
+    //arc (provided as "curve")
     //basePoint
-    //arc
     //angle
 
     constructor(data) {
@@ -20,27 +20,26 @@ class PointIntersectArcAndAxis extends DrawingObject {
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.patternPiece.getObject(d.basePoint);
 
-        if (typeof this.curve === "undefined")
-            this.arc = this.patternPiece.getObject(d.curve);
+        if (typeof this.arc === "undefined")
+            this.arc = this.patternPiece.getObject(d.curve); //An anomaly, would be better if this were arc.
 
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
+            //TODO replace 1000 with a calculation of the longest line that may be needed
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * this.angle.value() / 180 );
 
-        this.line = new GeoLine( this.basePoint.p, otherPoint );
+        var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        this.p = this.line.intersectArc( this.arc.arc );
+        this.p = longLine.intersectArc( this.arc.arc );
+        this.line = new GeoLine( this.basePoint.p, this.p );
 
         bounds.adjust(this.p);
     }
 
     draw(g) {
-
-        //TODO draw the line between basePoint and p
-
         //g is the svg group
-        var d = this.data; //the original json data
+        this.drawLine(g, this);
         this.drawDot(g, this);
         this.drawLabel(g, this);
     }
@@ -48,7 +47,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
     html() {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc ' + this.arc.center.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc ' + this.arc.data.derivedName + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
     }
 
 

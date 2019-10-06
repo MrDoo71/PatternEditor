@@ -21,7 +21,7 @@ class PointCutSplinePath extends DrawingObject {
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
 
-        this.p = this.splinePath.pointAlongCurve( this.length.value() );
+        this.p = this.splinePath.pointAlongPath( this.length.value() );
         
         bounds.adjust(this.p);
     }

@@ -116,7 +116,6 @@ class GeoLine {
 }
 
 
-
 class GeoArc {
 
     //center
@@ -129,6 +128,10 @@ class GeoArc {
         this.radius = radius;
         this.angle1 = angle1;
         this.angle2 = angle2;
+
+        //Correct 180-0 to 180-360
+        if ( this.angle2 < this.angle1 )
+        this.angle2+=360;
     }
 
     //TODO based on SVG book 
@@ -165,6 +168,61 @@ class GeoArc {
                 x1: x1,
                 y1: y1 };
     }    
+
+
+    svgPath()
+    {
+        var arcPath = d3.path();
+        arcPath.arc( this.center.x, this.center.y, 
+                     this.radius, 
+                     -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
+        console.log( "Could have used d3:", arcPath.toString() );
+        return arcPath.toString();
+
+        //var a2 = this.angle2;
+        //if ( this.angle2 < this.angle1 )
+        //    a2 = a2 + 360;
+
+        //THIS NOT WORKING
+        //var svgParams = this.centeredToSVG( this.center.x, this.center.y, this.radius, this.radius, -this.angle1, a2-this.angle1, 0 );
+        //var path = "M" + svgParams.x + "," + svgParams.y 
+        //     + "A" + svgParams.rx + "," + svgParams.ry 
+        //     + "," + svgParams.xAxisAngle + "," + svgParams.largeArc + "," + svgParams.sweep + ","
+        //     + svgParams.x1 + "," + svgParams.y1 
+        //
+        //console.log( "svgPath() - ", path );
+
+        //return path;
+    }    
+
+    
+    pointAlongPath( length ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        if ( length > path.getTotalLength() )
+            length = path.getTotalLength();
+        var p = path.getPointAtLength( length );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }        
+
+    
+    pointAlongPathFraction( fraction ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var l = path.getTotalLength();
+        var p = path.getPointAtLength( l * fraction );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }         
+    
+    
+    pathLength() {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        return path.getTotalLength();
+    }             
+
 
     asShapeInfo()
     {        
@@ -233,7 +291,7 @@ class GeoSpline {
         return ShapeInfo.path( this.svgPath() );
     }
     
-    pointAlongCurveFraction( fraction ) {
+    pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
@@ -242,7 +300,7 @@ class GeoSpline {
         return new GeoPoint( p.x, p.y );
     }       
 
-    pointAlongCurve( length ) {
+    pointAlongPath( length ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );

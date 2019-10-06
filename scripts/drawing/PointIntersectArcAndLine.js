@@ -50,7 +50,7 @@ class PointIntersectArcAndLine extends DrawingObject {
 
 
     html() {
-        //TODO use a better name for this.curve, e.g. Arc_A_nn
+        //TODO use a better name for this.arc, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: intersect arc with center ' + this.center.data.name + ", radius " + this.radius.value() +  " with line " + this.firstPoint.data.name + "-" + this.secondPoint.data.name;
     }
 

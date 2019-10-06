@@ -36,7 +36,7 @@ class SplineUsingControlPoints extends DrawingObject {
         this.curve = new GeoSpline( [ { point: this.startPoint.p, outControlPoint: this.startControlPoint.p },
                                       { inControlPoint: this.endControlPoint.p,  point: this.endPoint.p } ] );
 
-        this.midPoint = this.curve.pointAlongCurveFraction( 0.5 );        
+        this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
 
         bounds.adjust( this.startPoint );
@@ -65,8 +65,8 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
 
-    pointAlongCurve( length ) {
-        return this.curve.pointAlongCurve( length );
+    pointAlongPath( length ) {
+        return this.curve.pointAlongPath( length );
     }   
 
 

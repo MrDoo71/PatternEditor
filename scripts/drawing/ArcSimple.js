@@ -13,9 +13,8 @@ class ArcSimple extends DrawingObject {
     constructor(data) {
         super(data);
 
-        //TODO output a useful arcID
         if ( typeof this.data.name === "undefined" )
-            this.data.name = "arcX";
+            this.data.name = data.derivedName;
     }
 
 
@@ -33,6 +32,11 @@ class ArcSimple extends DrawingObject {
 
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 
+        this.p = this.arc.pointAlongPathFraction( 0.5 );
+        bounds.adjust( this.p );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
+        /*
         var arcData = this.arc.centeredToSVG( this.center.p.x, this.center.p.y, 
             this.radius.value(), this.radius.value(), 
             -this.angle1.value(), -(this.angle1.value() + this.angle2.value()) /2, 0 ); 
@@ -51,9 +55,16 @@ class ArcSimple extends DrawingObject {
         bounds.adjust( north );
         bounds.adjust( west );
         bounds.adjust( south );
+        */
     }
 
+
+    pointAlongPath( length )
+    {
+        return this.arc.pointAlongPath( length );
+    }
     
+
     asShapeInfo()
     {
         return this.arc.asShapeInfo();
@@ -63,10 +74,15 @@ class ArcSimple extends DrawingObject {
     draw(g) {
         var d = this.data;
         var arcPath = d3.path();
+        var a2 = this.angle2.value();
+        if ( a2 < this.angle1.value() )
+            a2 += 360;
         arcPath.arc( this.center.p.x, this.center.p.y, 
                      this.radius.value(), 
-                     -this.angle1.value() * Math.PI / 180, -this.angle2.value() * Math.PI / 180, true );
+                     -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
         
+        console.log( "ArcSimple d3 path ", arcPath );
+
         g.append("path")
               .attr("d", arcPath )
               .attr("fill", "none")
