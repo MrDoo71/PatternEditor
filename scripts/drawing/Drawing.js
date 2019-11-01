@@ -34,6 +34,7 @@ define(function (require) {
     require('./PointIntersectCurves');        
     require('./PointIntersectCurveAndAxis');        
     require('./PointIntersectArcs');            
+    require('./PointIntersectCircles');            
 });
 
 

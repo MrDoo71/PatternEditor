@@ -32,7 +32,99 @@
           <script type="text/javascript">
             function v343110_graph1_init() {
               drawPattern(
-              TODO schema, binding, copy and paste here.
+                {
+                  "pattern":
+                  {
+                    "patternPiece":
+                      [
+                        {
+                          "name": "Pattern piece 1",
+                          "drawingObject":
+                            [
+                              { "name": "A", "objectType": "pointSingle", "x": 17, "y": 3, "mx": 0.132292, "my": 0.264583 },
+                              {
+                                "name": "A1",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "cornflowerblue",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 225 },
+                                "length":
+                                  { "constant": 10 }
+                              },
+                              {
+                                "name": "A2",
+                                "objectType": "pointEndLine",
+                                "basePoint": "A",
+                                "lineStyle": "dotLine",
+                                "color": "cornflowerblue",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "angle":
+                                  { "constant": 315 },
+                                "length":
+                                  { "constant": 10 }
+                              },
+                              {
+                                "name": "A3",
+                                "objectType": "pointIntersectCircles",
+                                "center1": "A1",
+                                "center2": "A2",
+                                "crossPoint": "One",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "radius1":
+                                  { "constant": 9 },
+                                "radius2":
+                                  { "constant": 8 }
+                              },
+                              {
+                                "derivedName": "Arc_A1_5",
+                                "objectType": "arcSimple",
+                                "center": "A1",
+                                "lineStyle": "hair",
+                                "color": "darkviolet",
+                                "angle1":
+                                  { "constant": 0 },
+                                "angle2":
+                                  { "constant": 360 },
+                                "radius":
+                                  { "constant": 9 }
+                              },
+                              {
+                                "derivedName": "Arc_A2_6",
+                                "objectType": "arcSimple",
+                                "center": "A2",
+                                "lineStyle": "hair",
+                                "color": "black",
+                                "angle1":
+                                  { "constant": 0 },
+                                "angle2":
+                                  { "constant": 360 },
+                                "radius":
+                                  { "constant": 8 }
+                              },
+                              {
+                                "name": "A4",
+                                "objectType": "pointIntersectCircles",
+                                "center1": "A1",
+                                "center2": "A2",
+                                "crossPoint": "Two",
+                                "mx": 0.132292,
+                                "my": 0.264583,
+                                "radius1":
+                                  { "constant": 9 },
+                                "radius2":
+                                  { "constant": 8 }
+                              }
+                            ]
+                        }
+                      ]
+                  }
+                }
                 , 'v343110_graph1', { interactionPrefix: 'RF346740' });
             }
             function v343110_graph1_kill() {

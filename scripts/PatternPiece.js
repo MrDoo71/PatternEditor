@@ -150,7 +150,8 @@ class PatternPiece {
             return new PointIntersectCurveAndAxis(dObj);      
         else if (dObj.objectType === "pointIntersectArcs")
             return new PointIntersectArcs(dObj);      
-            
+        else if (dObj.objectType === "pointIntersectCircles")
+            return new PointIntersectCircles(dObj);                  
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );
