@@ -14,7 +14,6 @@
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
-  <script type="text/javascript" data-main="test" src="../lib/require.js"> </script>
 
 </head>
 
@@ -29,10 +28,10 @@
       </div>
       <div id="REP1002132">
         <div id="v343110_graph1">
-          <script type="text/javascript">
-            function v343110_graph1_init() {
-              drawPattern(
-                {
+          <script type="module">
+            import  { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
                   "pattern":
                   {
                     "patternPiece":
@@ -89,19 +88,10 @@
                   }
                 }
                 , 'v343110_graph1', { interactionPrefix: 'RF346740' });
-            }
-            function v343110_graph1_kill() {
-              drawPattern(null, 'v343110_graph1', null);
-            }
-
           </script>
         </div>
       </div>
     </div>
-
-    <script type="text/javascript">
-      requirejs(["../scripts/PatternEditor"], function () { v343110_graph1_init(); });
-    </script>
 
     <div>
       <img src="expectedResults/triangleTool.png" />

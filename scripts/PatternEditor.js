@@ -15,35 +15,8 @@
 //Therefore this PatternEditor shouldn't need to do a config. 
 //The fallback is grunt/gulp and compilation of a merged js.
 // *** also writer.writeScriptLink( "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker", true ); needs to be commented out
-/* TODO put this back into test.js or a generic test_config.js
-require.config({
-    baseUrl: 'patternEditor',// ../lib commented out as a trial of working from within kinodb
-    paths: {
-        scripts: 'scripts', //on trial should be ../scripts
-       // "kld-affine": '../node_modules/kld-affine/dist/index-umd', //why don't I need this!!!
-        "kld-intersections" : 'node_modules/kld-intersections/dist/index-umd' //should be ../node
-    }
-});
-*/
 
-define(function (require) {
-    // Load any app-specific modules
-    // with a relative require call,
-    // like:
-    //var messages = require('./messages');
-    require('kld-intersections');
-    require('scripts/PatternPiece');
-    require('scripts/drawing/Drawing');
-    require('scripts/drawing/DrawingObject');
 
-    // Load library/vendor modules using
-    // full IDs, like:
-    //var print = require('print');
-    //print(messages.getHello());
-});
-
-//requirejs(["scripts/PatternPiece"]);
-//requirejs(["scripts/drawing/Drawing"]);
 
 var gInteractionPrefix; 
 var selectedObject;
@@ -222,7 +195,7 @@ function doTable( graphdiv, patternPiece1, contextMenu )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));    
 
-    a = svg.selectAll("g");
+    var a = svg.selectAll("g");
     a = a.data( patternPiece1.drawingObjects );
     a.enter()        
      .append("g")
@@ -288,7 +261,7 @@ function doTable( graphdiv, patternPiece1, contextMenu )
     linksGroup = svg.append("g")
                     .attr("class", "links");
 
-    this.drawLinks( patternPiece1 );
+    drawLinks( patternPiece1 );
 }
 
 
@@ -320,3 +293,5 @@ function curve(link) {
     path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
     return path;                      
 }
+
+export{ PatternPiece, doDrawing, doTable, drawPattern  };

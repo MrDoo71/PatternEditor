@@ -1,7 +1,7 @@
-define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});
+//define(function (require) {
+//    require('./DrawingObject');
+//    require('../geometry');
+//});
 
 class ArcSimple extends DrawingObject {
 

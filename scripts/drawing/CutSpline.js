@@ -1,7 +1,7 @@
-define(function (require) {
+/*define(function (require) {
     require('./DrawingObject');
     require('../geometry');
-});
+});*/
 
 class CutSpline extends DrawingObject { //TODO for consistency should be PointCutSpline ???
 

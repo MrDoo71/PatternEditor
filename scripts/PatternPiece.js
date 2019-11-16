@@ -1,11 +1,12 @@
 
 //requirejs(["scripts/geometry"]);
-
+/*
 define(function (require) {
     //require('scripts/geometry');
     require('scripts/expression');
     require('scripts/drawing/Drawing');
 });
+*/
 
 class PatternPiece {
 
@@ -220,3 +221,4 @@ class PatternPiece {
         this.defaults = defaults;
     }
 }
+

@@ -5,7 +5,7 @@
 //pattern sharing website. 
 
 //var Point2D = require('kld-affine/Point2D');
-
+/*
 define(function (require) {
     require('../expression');
     require('./DrawingObject');
@@ -35,7 +35,7 @@ define(function (require) {
     require('./PointIntersectCurveAndAxis');        
     require('./PointIntersectArcs');            
     require('./PointIntersectCircles');            
-});
+});*/
 
 
 var scale;

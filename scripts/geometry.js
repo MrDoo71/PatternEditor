@@ -4,11 +4,12 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
+/*
 define(function (require) {
     require('kld-intersections');
 });
-
 const {Point2D, ShapeInfo, Intersection} = require("kld-intersections");
+*/
 
 //A point
 class GeoPoint {

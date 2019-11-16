@@ -1,7 +1,7 @@
-define(function (require) {
+/*define(function (require) {
     require('./DrawingObject');
     require('../geometry');
-});
+});*/
 
 class PointCutSplinePath extends DrawingObject {
 
