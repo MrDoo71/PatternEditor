@@ -1,0 +1,43 @@
+{
+  "name": "patterneditor",
+  "version": "1.0.0",
+  "description": "JS pattern editor",
+  "main": "gulpfile.js",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "kld-affine": "^2.1.1",
+    "kld-intersections": "^0.6.0",
+    "kld-polynomial": "^0.3.0",
+    "requirejs": "^2.3.6",
+    "svg-intersections": "^0.4.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.7.1",
+    "cssnano": "^4.1.10",
+    "gulp-concat": "^2.6.1",
+    "gulp-order": "^1.2.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-print": "^5.0.2",
+    "gulp-replace": "^1.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrDoo71/PatternEditor.git"
+  },
+  "author": "Jason Dore",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrDoo71/PatternEditor/issues"
+  },
+  "homepage": "https://github.com/MrDoo71/PatternEditor#readme"
+}
