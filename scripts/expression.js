@@ -1,8 +1,9 @@
 class Expression {
 
-    constructor(data, patternPiece) {
+    constructor(data, pattern, patternPiece) {
         this.dataDebug = data;
         this.operation = data.operationType;
+        this.pattern = pattern;
         this.patternPiece = patternPiece;
 
         //divide, multiply etc.
@@ -11,7 +12,7 @@ class Expression {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
-                this.params[a] = new Expression(p, patternPiece);
+                this.params[a] = new Expression(p, pattern, patternPiece);
             }
             this.value = this.operationValue;
         }
@@ -21,12 +22,22 @@ class Expression {
             this.constant = data.integerValue;
             this.value = this.constantValue; //eh?
         }
+        else if (typeof data.decimalValue !== "undefined") 
+        {
+            this.constant = data.decimalValue;
+            this.value = this.constantValue; //eh?
+        }
         else if (data.operationType === "Variable") 
         {
             if (data.variableType === "Keyword")
             {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
+            }
+            else if (data.variableType === "Increment")
+            {
+                this.variable = pattern.getIncrement( data.incrementVar );
+                this.value = this.incrementValue;
             }
             else if ( data.variableType === "angleOfLine" )
             {
@@ -37,6 +48,10 @@ class Expression {
             }
         }
     }
+
+    incrementValue() {
+        return this.variable.value();
+    }    
 
     functionValue() {
         if ( this.function === "angleOfLine" )

@@ -4,21 +4,10 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
-//NOTE to self from friday before holiday.
-//This config changed from known-working standalone config to see how to get it working within
-//a kinodb page.
-//It looks like it should be possible to do a require in separate places for tests vs embedded
-//and that data-main is not actually needed so long as the config is good, and that something 
-//kicks off the dependencies. 
-//See kinodbglue.js which does its own require.config/
-//Therefore there should be a tests_config that does the config for tests too. 
-//Therefore this PatternEditor shouldn't need to do a config. 
-//The fallback is grunt/gulp and compilation of a merged js.
-// *** also writer.writeScriptLink( "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker", true ); needs to be commented out
 
 
 
-var gInteractionPrefix; 
+//var gInteractionPrefix; 
 var selectedObject;
 var linksGroup;
 
@@ -32,9 +21,12 @@ function drawPattern( dataAndConfig, ptarget, options )
         parent.removeChild(child);
         return ;
     } 
-      
+
     //This is a graph initialisation
-    gInteractionPrefix = options.interactionPrefix;    
+
+    var pattern = new Pattern( dataAndConfig, options );
+      
+    pattern.gInteractionPrefix = options.interactionPrefix;    
     
     function newkvpSet(noRefresh)
     {
@@ -76,13 +68,14 @@ function drawPattern( dataAndConfig, ptarget, options )
     }      
     
     //Convert the JSON data into Javascript drawing objects
-    var patternData = dataAndConfig.pattern;
-    var patternPiece1 = new PatternPiece( patternData.patternPiece[0] );
+    //var patternData = dataAndConfig.pattern;
+    //var increments = dataAndConfig.increment;
+    //var patternPiece1 = new PatternPiece( patternData.patternPiece[0], this );
     var targetdiv = d3.select( "#" + ptarget );
     
-    doDrawing( targetdiv, patternPiece1, contextMenu );
+    doDrawing( targetdiv, pattern.patternPiece1, contextMenu );
     
-    doTable( targetdiv, patternPiece1, contextMenu );
+    doTable( targetdiv, pattern.patternPiece1, contextMenu );
 }
 
 

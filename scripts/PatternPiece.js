@@ -1,18 +1,9 @@
-
-//requirejs(["scripts/geometry"]);
-/*
-define(function (require) {
-    //require('scripts/geometry');
-    require('scripts/expression');
-    require('scripts/drawing/Drawing');
-});
-*/
-
 class PatternPiece {
 
-    constructor (data) {
+    constructor (data, pattern) {
         this.data = data;
         this.drawing = {};
+        this.pattern = pattern;
 
         if (data) {
             this.name = data.name;
@@ -175,7 +166,7 @@ class PatternPiece {
             };
         }
         else if (typeof formula.expression === "object") {
-            f.expression = new Expression( f.expression, this );
+            f.expression = new Expression( f.expression, this.pattern, this );
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };

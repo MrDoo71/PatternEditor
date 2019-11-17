@@ -37,12 +37,14 @@ function jsTask(){
         files.jsPath
         ,'!' + 'scripts/kinodbglue*.js', // to exclude any specific files
         ])
+        .pipe(sourcemaps.init()) // initialize sourcemaps first
         .pipe(order([ 
             "nodefine.js",
-            "expression.js",
-            "geometry.js",
+            "Expression.js",
+            "Geometry.js",
             "drawing/DrawingObject.js",
             "drawing/*.js",
+            "Pattern.js",
             "PatternPiece.js",
             "PatternEditor.js",
             "*.js"
@@ -50,6 +52,7 @@ function jsTask(){
         .pipe(print(filepath => `built: ${filepath}`))
         .pipe(concat('patterneditor.js'))
         //.pipe(uglify())
+        .pipe(sourcemaps.write('.')) // write sourcemaps file in current directory        
         .pipe(dest('dist')
     );
 }

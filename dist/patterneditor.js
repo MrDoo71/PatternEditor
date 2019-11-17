@@ -8,9 +8,10 @@ import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersecti
 
 class Expression {
 
-    constructor(data, patternPiece) {
+    constructor(data, pattern, patternPiece) {
         this.dataDebug = data;
         this.operation = data.operationType;
+        this.pattern = pattern;
         this.patternPiece = patternPiece;
 
         //divide, multiply etc.
@@ -19,7 +20,7 @@ class Expression {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
-                this.params[a] = new Expression(p, patternPiece);
+                this.params[a] = new Expression(p, pattern, patternPiece);
             }
             this.value = this.operationValue;
         }
@@ -29,12 +30,22 @@ class Expression {
             this.constant = data.integerValue;
             this.value = this.constantValue; //eh?
         }
+        else if (typeof data.decimalValue !== "undefined") 
+        {
+            this.constant = data.decimalValue;
+            this.value = this.constantValue; //eh?
+        }
         else if (data.operationType === "Variable") 
         {
             if (data.variableType === "Keyword")
             {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
+            }
+            else if (data.variableType === "Increment")
+            {
+                this.variable = pattern.getIncrement( data.incrementVar );
+                this.value = this.incrementValue;
             }
             else if ( data.variableType === "angleOfLine" )
             {
@@ -45,6 +56,10 @@ class Expression {
             }
         }
     }
+
+    incrementValue() {
+        return this.variable.value();
+    }    
 
     functionValue() {
         if ( this.function === "angleOfLine" )
@@ -2401,21 +2416,60 @@ class SplineUsingControlPoints extends DrawingObject {
     }    
 }
 
+class Pattern {
 
-//requirejs(["scripts/geometry"]);
-/*
-define(function (require) {
-    //require('scripts/geometry');
-    require('scripts/expression');
-    require('scripts/drawing/Drawing');
-});
-*/
+    constructor (data, options ) {
+        this.data = data;
+        this.options = options;
+        this.patternData = data.pattern;
+        this.increment = {};//patternData.increment;
 
+        if ( typeof this.patternData.increment !== "undefined" )
+        {
+            for (var a = 0; a < this.patternData.increment.length; a++) {
+                var inc = this.patternData.increment[a];
+
+                //TODO test this increment that is a simple value...            
+                if (typeof inc.constant !== "undefined") 
+                {
+                    inc.value = function () {
+                        return this.constant;
+                    };
+                    inc.html = function() {
+                        return this.constant;
+                    };
+                }
+                else
+                {
+                    inc.expression = new Expression( inc.expression, this, null );
+                    inc.value = function () {
+                        return this.expression.value();
+                    };
+                    inc.html = function() {
+                        return this.expression.html();
+                    };
+                }
+                this.increment[ inc.name ] = inc;
+            }
+        }
+
+        //TODO support multiple pattern pieces
+        this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
+    }
+
+    getIncrement(name) {
+        if (typeof name === "object")
+            return name;
+        return this.increment[name];
+    }
+
+}
 class PatternPiece {
 
-    constructor (data) {
+    constructor (data, pattern) {
         this.data = data;
         this.drawing = {};
+        this.pattern = pattern;
 
         if (data) {
             this.name = data.name;
@@ -2578,7 +2632,7 @@ class PatternPiece {
             };
         }
         else if (typeof formula.expression === "object") {
-            f.expression = new Expression( f.expression, this );
+            f.expression = new Expression( f.expression, this.pattern, this );
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
@@ -2632,21 +2686,10 @@ class PatternPiece {
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
-//NOTE to self from friday before holiday.
-//This config changed from known-working standalone config to see how to get it working within
-//a kinodb page.
-//It looks like it should be possible to do a require in separate places for tests vs embedded
-//and that data-main is not actually needed so long as the config is good, and that something 
-//kicks off the dependencies. 
-//See kinodbglue.js which does its own require.config/
-//Therefore there should be a tests_config that does the config for tests too. 
-//Therefore this PatternEditor shouldn't need to do a config. 
-//The fallback is grunt/gulp and compilation of a merged js.
-// *** also writer.writeScriptLink( "bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker", true ); needs to be commented out
 
 
 
-var gInteractionPrefix; 
+//var gInteractionPrefix; 
 var selectedObject;
 var linksGroup;
 
@@ -2660,9 +2703,12 @@ function drawPattern( dataAndConfig, ptarget, options )
         parent.removeChild(child);
         return ;
     } 
-      
+
     //This is a graph initialisation
-    gInteractionPrefix = options.interactionPrefix;    
+
+    var pattern = new Pattern( dataAndConfig, options );
+      
+    pattern.gInteractionPrefix = options.interactionPrefix;    
     
     function newkvpSet(noRefresh)
     {
@@ -2704,13 +2750,14 @@ function drawPattern( dataAndConfig, ptarget, options )
     }      
     
     //Convert the JSON data into Javascript drawing objects
-    var patternData = dataAndConfig.pattern;
-    var patternPiece1 = new PatternPiece( patternData.patternPiece[0] );
+    //var patternData = dataAndConfig.pattern;
+    //var increments = dataAndConfig.increment;
+    //var patternPiece1 = new PatternPiece( patternData.patternPiece[0], this );
     var targetdiv = d3.select( "#" + ptarget );
     
-    doDrawing( targetdiv, patternPiece1, contextMenu );
+    doDrawing( targetdiv, pattern.patternPiece1, contextMenu );
     
-    doTable( targetdiv, patternPiece1, contextMenu );
+    doTable( targetdiv, pattern.patternPiece1, contextMenu );
 }
 
 
@@ -2923,3 +2970,4 @@ function curve(link) {
 }
 
 export{ PatternPiece, doDrawing, doTable, drawPattern  };
+//# sourceMappingURL=patterneditor.js.map
