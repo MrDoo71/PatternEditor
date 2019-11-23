@@ -4,7 +4,8 @@ class Pattern {
         this.data = data;
         this.options = options;
         this.patternData = data.pattern;
-        this.increment = {};//patternData.increment;
+        this.increment = {};
+        this.measurement = {};
 
         if ( typeof this.patternData.increment !== "undefined" )
         {
@@ -35,6 +36,36 @@ class Pattern {
             }
         }
 
+        if ( typeof this.patternData.measurement !== "undefined" )
+        {
+            for (var a = 0; a < this.patternData.measurement.length; a++) {
+                var m = this.patternData.measurement[a];
+
+                //TODO test this increment that is a simple value...            
+                if (typeof m.value !== "undefined") 
+                {
+                    m.constant = m.value;
+                    m.value = function () {
+                        return this.constant;
+                    };
+                    m.html = function() {
+                        return this.constant;
+                    };
+                }
+                else
+                {
+                    m.expression = new Expression( m.expression, this, null );
+                    m.value = function () {
+                        return this.expression.value();
+                    };
+                    m.html = function() {
+                        return this.expression.html();
+                    };
+                }
+                this.measurement[ m.name ] = m;
+            }
+        }        
+
         //TODO support multiple pattern pieces
         this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
     }
@@ -44,5 +75,12 @@ class Pattern {
             return name;
         return this.increment[name];
     }
+
+    getMeasurement(name) {
+        if (typeof name === "object")
+            return name;
+        return this.measurement[name];
+    }
+
 
 }

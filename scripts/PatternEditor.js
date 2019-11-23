@@ -67,10 +67,6 @@ function drawPattern( dataAndConfig, ptarget, options )
     			 v ) ;
     }      
     
-    //Convert the JSON data into Javascript drawing objects
-    //var patternData = dataAndConfig.pattern;
-    //var increments = dataAndConfig.increment;
-    //var patternPiece1 = new PatternPiece( patternData.patternPiece[0], this );
     var targetdiv = d3.select( "#" + ptarget );
     
     doDrawing( targetdiv, pattern.patternPiece1, contextMenu );

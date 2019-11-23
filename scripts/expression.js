@@ -39,6 +39,11 @@ class Expression {
                 this.variable = pattern.getIncrement( data.incrementVar );
                 this.value = this.incrementValue;
             }
+            else if ( data.measurement )
+            {
+                this.variable = pattern.getMeasurement( data.measurement );
+                this.value = this.measurementValue;
+            }
             else if ( data.variableType === "angleOfLine" )
             {
                 this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
@@ -50,6 +55,10 @@ class Expression {
     }
 
     incrementValue() {
+        return this.variable.value();
+    }    
+
+    measurementValue() {
         return this.variable.value();
     }    
 
