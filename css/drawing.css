@@ -1,8 +1,3 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
 /* 
     Created on : 04-Aug-2019, 17:45:21
     Author     : jase
@@ -25,12 +20,12 @@ g.j-point.j-active > circle {
     fill:#000;
 }
 
-g.j-item div {
+g.j-item div.desc {
     padding: 4px 8px;
     border:1px solid #ccc;
 }
 
-g.j-item.j-active div {    
+g.j-item.j-active div.desc {    
     padding: 3px 7px;
     border:2px solid #333;
 }
@@ -53,13 +48,13 @@ path.link.target {
     stroke-width: 3px;    
 }
 
-g.j-item.source div {
+g.j-item.source div.desc {
     border-width:2px;
     border-color: #449fdc;
     padding: 3px 7px;
 }
 
-g.j-item.target div {
+g.j-item.target div.desc {
     border-width:2px;
     border-color: #4ddc44;
     padding: 3px 7px;

@@ -174,7 +174,7 @@ function doTable( graphdiv, patternPiece1, contextMenu )
     var margin = 25; 
     var width = 400;
     var height = 600;
-    var itemHeight = 30;
+    var minItemHeight = 30; //should not be required
     var itemMargin = 8;
     var itemWidth = 300;
     var ypos = 0;
@@ -190,29 +190,20 @@ function doTable( graphdiv, patternPiece1, contextMenu )
      .append("g")
      .each( function(d,i) {
 
-        var divHeight = function( that) {
-            var t = this;//that ? that : this;
-            var h = 0;
-            if ( t.getBoundingClientRect )
-                h = t.getBoundingClientRect().height;
+        var divHeight = function(that) {
 
-            if ( t.childNodes )    
-            {
-                for( var i=0; i<t.childNodes.length; i++ )
-                {
-                    if ( ! t.childNodes[ i ].getBoundingClientRect )
-                        continue;
-                    var thisH = t.childNodes[ i ].getBoundingClientRect().height ;
-                    if ( thisH > h )
-                        h = thisH;
-                }                
-            }
-            else
-                h = 0;
-            //console.log( "divheight ", h );
-            if ( h < itemHeight )
-                return itemHeight;
+            //this - the dom svg element
+            //that - the data object
+
+            //console.log( "divHeight() of this:" + this + " that:" + that );
+
+            //var div = $(this).find( "div.nodedesc" );
+            var h = $(this).find( "div.outer" ).height();
+            
+            if ( h < minItemHeight )
+                return minItemHeight;
             return h;
+            
         };
 
         var g = d3.select( this );
@@ -221,7 +212,7 @@ function doTable( graphdiv, patternPiece1, contextMenu )
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
-        d.tableSvgY = ypos + ( 0.5 * itemHeight );
+        d.tableSvgY = ypos + ( 0.5 * minItemHeight );
 
         var fo = g.append( "foreignObject" )
          .attr( "x", 0 )
@@ -231,14 +222,17 @@ function doTable( graphdiv, patternPiece1, contextMenu )
          .attr( "width", itemWidth  );
 
          var div = fo.append( "xhtml:div" )
-         .html( d.html() );
+           .attr("class","outer")
+           .append( "xhtml:div" )
+           .attr("class","desc")
+           .html( d.html() );
 
-
-
+        fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
         fo.attr( "height", divHeight );
 
         g.attr( "height", divHeight )
          .attr( "y", function (d) { 
+                                    //Get the height of the foreignObject.
                                     var h = this.childNodes[0].getBoundingClientRect().height;
                                     ypos += h + itemMargin; 
                                     //console.log("y: " + ypos );
@@ -282,5 +276,6 @@ function curve(link) {
     path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
     return path;                      
 }
+
 
 export{ PatternPiece, doDrawing, doTable, drawPattern  };
