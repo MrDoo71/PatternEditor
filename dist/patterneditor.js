@@ -59,6 +59,15 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
+            else if ( data.variableType === "lengthOfLine" )
+            {
+                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }
+            else 
+                throw "Unsupported variableType:" + data.variableType;
         }
     }
 
@@ -77,6 +86,13 @@ class Expression {
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
             return line.angleDeg();
+        }
+        else if ( this.function === "lengthOfLine" )
+        {
+            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+            var line = new GeoLine( point1, point2 );
+            return line.getLength();
         }
         throw ("Unknown function: " + this.data.variableType );
     }
@@ -264,6 +280,11 @@ class GeoLine {
         //    return deltaY > 0 ? 90 : 270;
 
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
+    }
+
+
+    getLength() {
+        return this.length;
     }
 }
 
@@ -2922,8 +2943,7 @@ function doTable( graphdiv, patternPiece1, contextMenu )
 
             //var div = $(this).find( "div.nodedesc" );
             var h = $(this).find( "div.outer" ).height();
-            //h += 10; //2 * 4px padding; 2 x 1px border
-            //console.log( "divheight:" + h + " of " + div.get(0).nodeName );
+            
             if ( h < minItemHeight )
                 return minItemHeight;
             return h;

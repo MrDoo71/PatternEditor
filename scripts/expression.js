@@ -51,6 +51,15 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
+            else if ( data.variableType === "lengthOfLine" )
+            {
+                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }
+            else 
+                throw "Unsupported variableType:" + data.variableType;
         }
     }
 
@@ -69,6 +78,13 @@ class Expression {
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
             return line.angleDeg();
+        }
+        else if ( this.function === "lengthOfLine" )
+        {
+            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+            var line = new GeoLine( point1, point2 );
+            return line.getLength();
         }
         throw ("Unknown function: " + this.data.variableType );
     }

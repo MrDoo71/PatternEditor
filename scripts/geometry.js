@@ -108,6 +108,11 @@ class GeoLine {
 
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
     }
+
+
+    getLength() {
+        return this.length;
+    }
 }
 
 
