@@ -187,6 +187,12 @@ class GeoPoint {
     constructor( x, y ) {
         this.x = x;
         this.y = y;
+
+        if ( isNaN( this.x ) )
+            throw "GeoPoint x not a number.";
+            
+        if ( isNaN( this.y ) )
+            throw "GeoPoint y not a number.";
     }
 
     line( point2 ) {    
@@ -242,8 +248,22 @@ class GeoLine {
         var line1s = swap ? this : line2; //this.p1.x < this.p2.x ? this : new GeoLine( this.p2, this.p1 );
         var line2s = swap ? line2 : this; //line2.p1.x < line2.p2.x ? line2 : new GeoLine( line2.p2, line2.p1 );
 
-        var x = ( line1s.offset - line2s.offset ) / ( line2s.slope - line1s.slope );
-        var y = line1s.p1.y + ( line1s.slope * ( x - line1s.p1.x ) );
+
+        var x, y;
+
+        //A vertical line and horizontal line need special handling.
+
+        if (    ( line2s.slope === Infinity ) 
+             || ( line2s.slope === -Infinity )  )
+            x = line2s.p1.x;
+        else
+            x = ( line1s.offset - line2s.offset ) / ( line2s.slope - line1s.slope );
+
+        if ( line1s.slope === 0 )
+            y = line1s.p1.y;
+        else
+            y = line1s.p1.y + ( line1s.slope * ( x - line1s.p1.x ) );
+
         return new GeoPoint(x,y);
 
         //Using the Intersection libary requires that the finite lines intersect, rather than

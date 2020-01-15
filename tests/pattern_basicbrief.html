@@ -27,7 +27,13 @@
         </h1>
       </div>
       <div id="REP1002132">
-        <div id="v343110_graph1">
+
+        <div style="position:absolute; z-index:1; opacity:0.3; padding-left:13px; padding-top:24px">
+          <img src="expectedResults/pattern_basicbrief.png" width="424" />
+        </div>
+
+
+        <div id="v343110_graph1" style="z-index:2">
           <script type="module">
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
@@ -38,14 +44,13 @@
                     "Lingerie Design a Complete Course\u000apg. 39 Basic brief sloper\u000a",
                   "notes":
                     "Crotch length for standard size 12 is just a guess based on the illustrations in the book. ",
-                  "measurement": [{ "name": "waist_circ", "value": 94 }, 
-                                  { "name": "highhip_circ", "value": 100 }, 
-                                  { "name": "hip_circ", "value": 104.1 }, 
-                                  { "name": "crotch_length_b", "value": 38.5 }, 
-                                  { "name": "crotch_length_f", "value": 31.5 }, 
-                                  { "name": "rise_length_side_sitting", "value": 25.4 }],
-                  "increment":
-                    [{ "name": "#CrotchWidth", "constant": 6.6 }],
+                  "measurement": [{ "name": "crotch_length_b", "value": 43 }, 
+                      { "name": "crotch_length_f", "value": 32.5 }, 
+                      { "name": "rise_length_side_sitting", "value": 28 }, 
+                      { "name": "waist_circ", "value": 78 }, 
+                      { "name": "highhip_circ", "value": 92 }, 
+                      { "name": "hip_circ", "value": 107 }],
+                  "increment": [{ "name": "#CrotchWidth", "constant": 6.6 }],
                   "patternPiece":
                     [
                       {
@@ -70,19 +75,6 @@
                               }
                             },
                             {
-                              "name": "A1",
-                              "objectType": "pointEndLine",
-                              "basePoint": "WAIST",
-                              "lineStyle": "dashDotLine",
-                              "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
-                              "angle":
-                                { "constant": 90 },
-                              "length":
-                                { "constant": 5 }
-                            },
-                            {
                               "name": "SIDESEAM",
                               "objectType": "pointEndLine",
                               "basePoint": "A0",
@@ -96,30 +88,24 @@
                                 { "constant": 20 }
                             },
                             {
-                              "name": "A3",
+                              "name": "A1",
                               "objectType": "pointEndLine",
                               "basePoint": "WAIST",
-                              "lineStyle": "dotLine",
+                              "lineStyle": "dashDotLine",
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "angle":
-                                { "constant": 0 },
+                                { "constant": 90 },
                               "length":
-                              {
-                                "expression":
-                                {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
-                                }
-                              }
+                                { "constant": 5 }
                             },
                             {
-                              "name": "A4",
+                              "name": "CB4",
                               "objectType": "pointEndLine",
                               "basePoint": "WAIST",
                               "lineStyle": "dotLine",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "angle":
@@ -134,9 +120,28 @@
                               }
                             },
                             {
+                              "name": "CF4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "WAIST",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                }
+                              }
+                            },
+                            {
                               "name": "CF",
                               "objectType": "pointEndLine",
-                              "basePoint": "A3",
+                              "basePoint": "CF4",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": 0.0782575,
@@ -152,7 +157,7 @@
                             {
                               "name": "CB",
                               "objectType": "pointEndLine",
-                              "basePoint": "A4",
+                              "basePoint": "CB4",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": 0.132292,
@@ -165,10 +170,22 @@
                                   { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
                               }
                             },
-                            { "derivedName": "Line_A0_CF", "objectType": "line", "firstPoint": "A0", "secondPoint": "CF", "lineStyle": "dotLine", "color": "black" },
-                            { "derivedName": "Line_A0_CB", "objectType": "line", "firstPoint": "A0", "secondPoint": "CB", "lineStyle": "dotLine", "color": "black" },
+                            { "derivedName": "Line_A0_CF", "objectType": "line", "firstPoint": "A0", "secondPoint": "CF", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            { "derivedName": "Line_A0_CB", "objectType": "line", "firstPoint": "A0", "secondPoint": "CB", "lineStyle": "dotLine", "color": "cornflowerblue" },
                             {
-                              "name": "TOPHIP",
+                              "name": "LOWWAIST",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "WAIST",
+                              "secondPoint": "A0",
+                              "lineStyle": "none",
+                              "color": "cornflowerblue",
+                              "mx": 0.19537,
+                              "my": -1.1862,
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "HIGHHIP",
                               "objectType": "pointAlongLine",
                               "firstPoint": "WAIST",
                               "secondPoint": "A0",
@@ -192,32 +209,34 @@
                               "secondPoint": "A0",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
+                              "mx": 0.175375,
+                              "my": -1.15715,
                               "length":
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operationType": "multiply",
                                   "parameter":
                                     [
-                                      { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" },
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Integer value", "integerValue": 3 }, { "operationType": "Integer value", "integerValue": 2 }]
-                                      }
+                                        "operationType": "divide",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
                                     ]
                                 }
                               }
                             },
-                            { "name": "A7", "objectType": "perpendicularPointAlongLine", "basePoint": "TOPHIP", "p1Line1": "A3", "p2Line1": "CF", "lineStyle": "dotLine", "color": "black", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "A8", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "A3", "p2Line1": "CF", "lineStyle": "dotLine", "color": "black", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "A10", "objectType": "perpendicularPointAlongLine", "basePoint": "TOPHIP", "p1Line1": "A4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "black", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "A9", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "A4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "black", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "CF1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "CF2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "CF3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CF", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "CB1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.0692145, "my": 0.264583 },
+                            { "name": "CB2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "CB3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CB", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 },
                             {
                               "name": "A12",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A3",
+                              "firstPoint": "CF4",
                               "secondPoint": "WAIST",
                               "lineStyle": "none",
                               "color": "black",
@@ -235,7 +254,7 @@
                             {
                               "name": "A11",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A4",
+                              "firstPoint": "CB4",
                               "secondPoint": "WAIST",
                               "lineStyle": "none",
                               "color": "black",
@@ -279,8 +298,8 @@
                             {
                               "name": "C",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A10",
-                              "secondPoint": "TOPHIP",
+                              "firstPoint": "CB2",
+                              "secondPoint": "HIGHHIP",
                               "lineStyle": "none",
                               "color": "black",
                               "mx": -0.299981,
@@ -297,8 +316,8 @@
                             {
                               "name": "D",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A7",
-                              "secondPoint": "TOPHIP",
+                              "firstPoint": "CF2",
+                              "secondPoint": "HIGHHIP",
                               "lineStyle": "none",
                               "color": "black",
                               "mx": -0.0298106,
@@ -330,41 +349,41 @@
                                 }
                               }
                             },
-                            { "derivedName": "Line_B_TOPHIP", "objectType": "line", "firstPoint": "B", "secondPoint": "TOPHIP", "lineStyle": "dotLine", "color": "black" },
-                            { "derivedName": "Line_A_TOPHIP", "objectType": "line", "firstPoint": "A", "secondPoint": "TOPHIP", "lineStyle": "dotLine", "color": "black" },
+                            { "derivedName": "Line_B_HIGHHIP", "objectType": "line", "firstPoint": "B", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            { "derivedName": "Line_A_HIGHHIP", "objectType": "line", "firstPoint": "A", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" },
                             {
                               "name": "A2",
                               "objectType": "pointAlongLine",
                               "firstPoint": "A",
-                              "secondPoint": "TOPHIP",
+                              "secondPoint": "HIGHHIP",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.0782578,
-                              "my": 0.264583,
+                              "mx": 0.450925,
+                              "my": -0.530441,
                               "length":
                               {
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.3 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
                                 }
                               }
                             },
                             {
-                              "name": "A5",
+                              "name": "A18",
                               "objectType": "pointAlongLine",
                               "firstPoint": "B",
-                              "secondPoint": "TOPHIP",
+                              "secondPoint": "HIGHHIP",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
+                              "mx": -1.74099,
+                              "my": -0.5499,
                               "length":
                               {
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -372,7 +391,7 @@
                               "name": "A6",
                               "objectType": "pointAlongPerpendicular",
                               "firstPoint": "B",
-                              "secondPoint": "A5",
+                              "secondPoint": "A18",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": 0.132292,
@@ -399,7 +418,7 @@
                             {
                               "name": "A14",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A4",
+                              "firstPoint": "CB4",
                               "secondPoint": "WAIST",
                               "lineStyle": "none",
                               "color": "black",
@@ -417,7 +436,7 @@
                             {
                               "name": "A15",
                               "objectType": "pointAlongLine",
-                              "firstPoint": "A3",
+                              "firstPoint": "CF4",
                               "secondPoint": "WAIST",
                               "lineStyle": "none",
                               "color": "black",
@@ -432,96 +451,12 @@
                                 }
                               }
                             },
-                            { "derivedName": "Spl__", "objectType": "splineUsingPoints", "point1": "A4", "point2": "A14", "point3": "A13", "point4": "A", "color": "black" },
-                            { "derivedName": "Spl__", "objectType": "splineUsingPoints", "point1": "B", "point2": "A6", "point3": "A15", "point4": "A3", "color": "black" },
-                            {
-                              "name": "A16",
-                              "objectType": "pointAlongLine",
-                              "firstPoint": "A",
-                              "secondPoint": "C",
-                              "lineStyle": "none",
-                              "color": "black",
-                              "mx": -2.35328,
-                              "my": -0.275759,
-                              "length":
-                              {
-                                "expression":
-                                {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 1.2 }]
-                                }
-                              }
-                            },
-                            {
-                              "name": "A17",
-                              "objectType": "pointAlongLine",
-                              "firstPoint": "A",
-                              "secondPoint": "TOPHIP",
-                              "lineStyle": "none",
-                              "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
-                                {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
-                                }
-                              }
-                            },
-                            {
-                              "derivedName": "Spl__",
-                              "objectType": "splinePathUsingPoints",
-                              "color": "black",
-                              "pathNode": [{ "point": "A" }, { "point": "A2" }, { "point": "A17" }, { "point": "C" }, { "point": "A16" }, { "point": "LOWHIP" }, { "point": "E" }]
-                            },
-                            {
-                              "name": "A18",
-                              "objectType": "pointAlongLine",
-                              "firstPoint": "B",
-                              "secondPoint": "TOPHIP",
-                              "lineStyle": "none",
-                              "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
-                                {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.3 }]
-                                }
-                              }
-                            },
-                            {
-                              "name": "A19",
-                              "objectType": "pointAlongLine",
-                              "firstPoint": "B",
-                              "secondPoint": "D",
-                              "lineStyle": "none",
-                              "color": "black",
-                              "mx": 1.10491,
-                              "my": -0.599964,
-                              "length":
-                              {
-                                "expression":
-                                {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 1.2 }]
-                                }
-                              }
-                            },
-                            {
-                              "derivedName": "Spl__",
-                              "objectType": "splinePathUsingPoints",
-                              "color": "black",
-                              "pathNode": [{ "point": "B" }, { "point": "A18" }, { "point": "A5" }, { "point": "D" }, { "point": "A19" }, { "point": "LOWHIP" }, { "point": "E" }]
-                            },
+                            { "derivedName": "Spl_CB4_A", "objectType": "splineUsingPoints", "point1": "CB4", "point2": "A14", "point3": "A13", "point4": "A", "color": "black" },
+                            { "derivedName": "Spl_B_CF4", "objectType": "splineUsingPoints", "point1": "B", "point2": "A6", "point3": "A15", "point4": "CF4", "color": "black" },
                             {
                               "name": "F",
                               "objectType": "pointEndLine",
-                              "basePoint": "A3",
+                              "basePoint": "CF4",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": 0.132292,
@@ -584,19 +519,19 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operationType": "multiply",
                                   "parameter":
                                     [
-                                      { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" },
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Integer value", "integerValue": 3 }, { "operationType": "Integer value", "integerValue": 2 }]
-                                      }
+                                        "operationType": "divide",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
                                     ]
                                 }
                               }
                             },
-                            { "name": "A20", "objectType": "perpendicularPointAlongLine", "basePoint": "G", "p1Line1": "A8", "p2Line1": "LOWHIP", "lineStyle": "dotLine", "color": "black", "mx": 0.132292, "my": 0.264583 },
+                            { "name": "A20", "objectType": "perpendicularPointAlongLine", "basePoint": "G", "p1Line1": "CF1", "p2Line1": "LOWHIP", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
                             { "name": "A21", "objectType": "pointLineIntersect", "p1Line1": "G", "p2Line1": "A20", "p1Line2": "CF", "p2Line2": "A0", "mx": 0.584479, "my": -2.12935 },
                             {
                               "name": "H",
@@ -613,7 +548,7 @@
                             {
                               "name": "I",
                               "objectType": "pointEndLine",
-                              "basePoint": "A4",
+                              "basePoint": "CB4",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": 0.132292,
@@ -649,7 +584,7 @@
                               "objectType": "pointEndLine",
                               "basePoint": "J",
                               "lineStyle": "dotLine",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "angle":
@@ -679,15 +614,15 @@
                                 }
                               }
                             },
-                            { "derivedName": "Line_K_E", "objectType": "line", "firstPoint": "K", "secondPoint": "E", "lineStyle": "dotLine", "color": "black" },
-                            { "derivedName": "Line_E_H", "objectType": "line", "firstPoint": "E", "secondPoint": "H", "lineStyle": "dotLine", "color": "black" },
+                            { "derivedName": "Line_K_E", "objectType": "line", "firstPoint": "K", "secondPoint": "E", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            { "derivedName": "Line_E_H", "objectType": "line", "firstPoint": "E", "secondPoint": "H", "lineStyle": "dotLine", "color": "cornflowerblue" },
                             {
                               "name": "P",
                               "objectType": "pointAlongLine",
                               "firstPoint": "K",
                               "secondPoint": "E",
                               "lineStyle": "none",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "length":
@@ -706,7 +641,7 @@
                               "p1Line1": "E",
                               "p2Line1": "H",
                               "lineStyle": "hair",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "angle":
@@ -719,7 +654,7 @@
                               "p1Line1": "E",
                               "p2Line1": "H",
                               "lineStyle": "hair",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": -2.36804,
                               "my": -0.400398,
                               "angle":
@@ -732,7 +667,7 @@
                               "firstPoint": "P",
                               "secondPoint": "K",
                               "lineStyle": "hair",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "angle":
@@ -777,7 +712,7 @@
                               }
                             },
                             {
-                              "derivedName": "Spl__",
+                              "derivedName": "Spl_H_E",
                               "objectType": "splinePathInteractive",
                               "color": "black",
                               "pathNode":
@@ -829,7 +764,7 @@
                                 ]
                             },
                             {
-                              "derivedName": "Spl__",
+                              "derivedName": "Spl_E_L",
                               "objectType": "splinePathInteractive",
                               "color": "black",
                               "pathNode":
@@ -879,6 +814,107 @@
                                       { "constant": 1.3038 }
                                   }
                                 ]
+                            },
+                            {
+                              "name": "A32",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A0",
+                              "secondPoint": "LOWHIP",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.844706,
+                              "my": 0.162951,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }
+                              }
+                            },
+                            { "derivedName": "Line_CF3_LOWWAIST", "objectType": "line", "firstPoint": "CF3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            { "derivedName": "Line_CB3_LOWWAIST", "objectType": "line", "firstPoint": "CB3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            { "derivedName": "Line_A2_A32", "objectType": "line", "firstPoint": "A2", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            {
+                              "name": "A16",
+                              "objectType": "pointEndLine",
+                              "basePoint": "C",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": -1.83745,
+                              "my": -0.410825,
+                              "angle":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A2", "drawingObject2": "A32" }
+                              },
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A19",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A16",
+                              "secondPoint": "C",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": -1.82464,
+                              "my": -0.516674,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                }
+                              }
+                            },
+                            { "derivedName": "Line_A18_A32", "objectType": "line", "firstPoint": "A18", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            {
+                              "name": "A31",
+                              "objectType": "pointEndLine",
+                              "basePoint": "D",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.365122,
+                              "my": -0.406339,
+                              "angle":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A18", "drawingObject2": "A32" }
+                              },
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A33",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A31",
+                              "secondPoint": "D",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.365305,
+                              "my": -0.467166,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_A_E",
+                              "objectType": "splinePathUsingPoints",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode": [{ "point": "A" }, { "point": "A2" }, { "point": "A19" }, { "point": "C" }, { "point": "A16" }, { "point": "A32" }, { "point": "E" }]
+                            },
+                            {
+                              "derivedName": "Spl_B_E",
+                              "objectType": "splinePathUsingPoints",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode": [{ "point": "B" }, { "point": "A18" }, { "point": "A33" }, { "point": "D" }, { "point": "A31" }, { "point": "A32" }, { "point": "E" }]
                             }
                           ]
                       }
@@ -891,9 +927,6 @@
       </div>
     </div>
 
-    <div>
-      <img src="expectedResults/pattern_basicbrief.svg" />
-    </div>
 </body>
 
 </html>
