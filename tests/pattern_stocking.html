@@ -1,0 +1,2723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test Pattern - Stocking</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Stocking
+        </h1>
+      </div>
+      <div id="REP1002132">
+
+        <!-- replace with correct picture
+        <div style="position:absolute; z-index:1; opacity:0.3; padding-left:13px; padding-top:24px">
+          <img src="expectedResults/pattern_basicbrief.png" width="424" />
+        </div>
+      -->
+
+        <div id="v343110_graph1" style="z-index:2">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+
+              {
+                "pattern":
+                {
+                  "description":
+                    "Stockings Pattern\u000aSecond attempt with Seamly2D.\u000aRe-worked to use standard measurements wherevever possible.\u000aHas variable stocking length (e.g. top of thigh, mid-thigh), stocking-top height, and variable heel design. ",
+                  "notes":
+                    "Pattern contains some constants based on observation.",
+                  "measurement": [{ "name": "height_gluteal_fold", "value": 87 }, { "name": "height_knee", "value": 53 }, { "name": "height_calf", "value": 39 }, { "name": "height_ankle_high", "value": 12 }, { "name": "foot_length", "value": 27 }, { "name": "foot_circ", "value": 23 }, { "name": "foot_instep_circ", "value": 25 }, { "name": "leg_thigh_upper_circ", "value": 58 }, { "name": "leg_thigh_mid_circ", "value": 47 }, { "name": "leg_knee_circ", "value": 36 }, { "name": "leg_knee_small_circ", "value": 31 }, { "name": "leg_calf_circ", "value": 35 }, { "name": "leg_ankle_high_circ", "value": 21 }, { "name": "leg_ankle_diag_circ", "value": 31 }],
+                  "increment":
+                    [
+                      { "name": "#EaseMultiplier", "constant": 0.85 },
+                      { "name": "#EaseMultiplierThigh", "constant": 0.9 },
+                      { "name": "#EaseMultiplierFoot", "constant": 0.95 },
+                      { "name": "#SeamOverlap", "constant": 0.4 },
+                      {
+                        "name": "#SeamOverlapHalved",
+                        "expression":
+                        {
+                          "operationType": "divide",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SeamOverlap" }, { "operationType": "Integer value", "integerValue": 2 }]
+                        }
+                      },
+                      { "name": "#StockingHeight", "constant": 1 },
+                      { "name": "#TopPanelHeight", "constant": 8 },
+                      { "name": "#HeelPointWidth", "constant": 1.5 },
+                      { "name": "#height_ankle_diagonal", "constant": 6 },
+                      {
+                        "name": "#ankle_to_glutealfold",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_gluteal_fold" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_thigh",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "parenthesis",
+                                "parameter":
+                                  [
+                                    {
+                                      "operationType": "divide",
+                                      "parameter":
+                                        [
+                                          {
+                                            "operationType": "parenthesis",
+                                            "parameter":
+                                              [
+                                                {
+                                                  "operationType": "add",
+                                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_gluteal_fold" }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_knee" }]
+                                                }
+                                              ]
+                                          },
+                                          { "operationType": "Integer value", "integerValue": 2 }
+                                        ]
+                                    }
+                                  ]
+                              },
+                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_knee",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_knee" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_knee_small",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee" }, { "operationType": "Decimal value", "decimalValue": 0.9 }]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_calf",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_calf" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_above_ankle",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_ankle_high" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_instep",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "divide",
+                                "parameter": [{ "operationType": "Integer value", "integerValue": 4 }, { "operationType": "Integer value", "integerValue": 27 }]
+                              },
+                              { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_widest_foot",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "divide",
+                                "parameter": [{ "operationType": "Integer value", "integerValue": 14 }, { "operationType": "Integer value", "integerValue": 27 }]
+                              },
+                              { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#ankle_to_tip",
+                        "expression":
+                        {
+                          "operationType": "subtract",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "subtract",
+                                "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                              },
+                              { "operationType": "Integer value", "integerValue": 1 }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#ThighGF",
+                        "expression":
+                        {
+                          "operationType": "divide",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "parenthesis",
+                                "parameter":
+                                  [
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_thigh_upper_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierThigh" }]
+                                    }
+                                  ]
+                              },
+                              { "operationType": "Integer value", "integerValue": 2 }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#ThighCircEased",
+                        "expression":
+                        {
+                          "operationType": "divide",
+                          "parameter":
+                            [
+                              {
+                                "operationType": "parenthesis",
+                                "parameter":
+                                  [
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_thigh_mid_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierThigh" }]
+                                    }
+                                  ]
+                              },
+                              { "operationType": "Integer value", "integerValue": 2 }
+                            ]
+                        }
+                      },
+                      {
+                        "name": "#KneeEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_knee_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                        }
+                      },
+                      {
+                        "name": "#KneeSmallEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_knee_small_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                        }
+                      },
+                      {
+                        "name": "#CalfEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_calf_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                        }
+                      },
+                      {
+                        "name": "#AboveAnkleEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_high_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                        }
+                      },
+                      {
+                        "name": "#AnkleDiagEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_diag_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                        }
+                      },
+                      {
+                        "name": "#InstepEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_instep_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                        }
+                      },
+                      {
+                        "name": "#footWidestEased",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                        }
+                      },
+                      {
+                        "name": "#ToeWidth",
+                        "expression":
+                        {
+                          "operationType": "multiply",
+                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#footWidestEased" }, { "operationType": "Decimal value", "decimalValue": 0.95 }]
+                        }
+                      },
+                      { "name": "#___sole_shape_parameters____", "constant": 0 },
+                      { "name": "#SolePrcntageHeel", "constant": 0.25 },
+                      { "name": "#SolePanelMid", "constant": 0.15 },
+                      { "name": "#SolePanelToe", "constant": 0.44 },
+                      { "name": "#proportionOfToeSection", "constant": 0.825 },
+                      { "name": "#verticalEase", "constant": 0 }
+                    ],
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Stocking",
+                        "drawingObject":
+                          [
+                            { "name": "L0", "objectType": "pointSingle", "x": 1, "y": 13.83, "mx": -1.57833, "my": -0.623926 },
+                            {
+                              "name": "GF",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L0",
+                              "lineStyle": "dashDotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_glutealfold" }
+                              }
+                            },
+                            {
+                              "name": "L1",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "GF",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.51429,
+                              "my": -0.718632,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }
+                              }
+                            },
+                            {
+                              "name": "L2calf",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "GF",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_calf" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "GF",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee_small" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L4knee",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "GF",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.166596,
+                              "my": -0.0472107,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L5_Mid",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "GF",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -3.24906,
+                              "my": -0.666829,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_thigh" }
+                              }
+                            },
+                            {
+                              "name": "GF_C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "GF",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.0664267,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ThighGF" }
+                              }
+                            },
+                            {
+                              "name": "L2C",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "L2calf",
+                              "secondPoint": "L1",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CalfEased" }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L3C",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "L3",
+                              "secondPoint": "L2calf",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.230279,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#KneeSmallEased" }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L4C",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "L4knee",
+                              "secondPoint": "L0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.269507,
+                              "my": 0.0587604,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#KneeEased" }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L5C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L5_Mid",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.25821,
+                              "my": -1.57579,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ThighCircEased" }
+                              }
+                            },
+                            {
+                              "name": "LF4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L0",
+                              "lineStyle": "dashDotLine",
+                              "color": "black",
+                              "mx": -1.99976,
+                              "my": -0.558092,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" },
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter":
+                                                      [
+                                                        {
+                                                          "operationType": "subtract",
+                                                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }]
+                                                        }
+                                                      ]
+                                                  },
+                                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#proportionOfToeSection" }
+                                                ]
+                                            }
+                                          ]
+                                      }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S0",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "L0",
+                              "secondPoint": "LF4",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.14454,
+                              "my": -0.0167065,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "add",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_diag_circ" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                      },
+                                      { "operationType": "Decimal value", "decimalValue": 4.6 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S0",
+                              "secondPoint": "L0",
+                              "lineStyle": "dashDotLine",
+                              "color": "darkRed",
+                              "mx": -2.1025,
+                              "my": -0.409342,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S1",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S0",
+                              "secondPoint": "S5",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.16559,
+                              "my": -0.167711,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_instep" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S2",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S0",
+                              "secondPoint": "S5",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -0.376398,
+                              "my": 0.193753,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 0.33 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Decimal value", "decimalValue": 1.22 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S0",
+                              "secondPoint": "S5",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.53518,
+                              "my": -0.684178,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S5",
+                              "secondPoint": "S0",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.43791,
+                              "my": 0.0229116,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "parenthesis",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "parenthesis",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "subtract",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }]
+                                                  }
+                                                ]
+                                            },
+                                            { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#proportionOfToeSection" }
+                                          ]
+                                      }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S0B",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S0",
+                              "secondPoint": "S5",
+                              "lineStyle": "dotLine",
+                              "color": "darkRed",
+                              "mx": 0.42325,
+                              "my": -0.802263,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AnkleDiagEased" }]
+                                                  },
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePrcntageHeel" }]
+                                                  }
+                                                ]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S2B",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S2",
+                              "secondPoint": "S5",
+                              "lineStyle": "dotLine",
+                              "color": "darkRed",
+                              "mx": 0.307878,
+                              "my": -0.754939,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Decimal value", "decimalValue": 0.87 }]
+                                            },
+                                            { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelMid" }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4B",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S4",
+                              "secondPoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.26273,
+                              "my": 0.328926,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                                  },
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelToe" }]
+                                                  }
+                                                ]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4B2",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S4",
+                              "secondPoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "darkRed",
+                              "mx": 0.42089,
+                              "my": -0.484054,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5B",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S5",
+                              "secondPoint": "S2",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "parenthesis",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                            },
+                                            {
+                                              "operationType": "parenthesis",
+                                              "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S0BL",
+                              "objectType": "pointEndLine",
+                              "basePoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.29031,
+                              "my": -0.446499,
+                              "angle":
+                                { "constant": -17.5321 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
+                              }
+                            },
+                            {
+                              "name": "S0BH",
+                              "objectType": "pointEndLine",
+                              "basePoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.393668,
+                              "my": -0.631351,
+                              "angle":
+                                { "constant": 17.5321 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_S0_S0BH",
+                              "objectType": "splineSimple",
+                              "point1": "S0",
+                              "point4": "S0BH",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "length1":
+                                { "constant": 2 },
+                              "length2":
+                                { "constant": 0 },
+                              "angle1":
+                                { "constant": 0 },
+                              "angle2":
+                                { "constant": 0 }
+                            },
+                            {
+                              "derivedName": "Spl_S0_S0BL",
+                              "objectType": "splineSimple",
+                              "point1": "S0",
+                              "point4": "S0BL",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "length1":
+                                { "constant": 2 },
+                              "length2":
+                                { "constant": 0 },
+                              "angle1":
+                                { "constant": 0 },
+                              "angle2":
+                                { "constant": 0 }
+                            },
+                            {
+                              "derivedName": "Spl_S0BL_S4B",
+                              "objectType": "splinePathInteractive",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "S0BL",
+                                    "angle1":
+                                      { "constant": 70 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 250 },
+                                    "length2":
+                                      { "constant": 2.4 }
+                                  },
+                                  {
+                                    "point": "S2B",
+                                    "angle1":
+                                      { "constant": 90 },
+                                    "length1":
+                                      { "constant": 1.2 },
+                                    "angle2":
+                                      { "constant": 270 },
+                                    "length2":
+                                      { "constant": 4 }
+                                  },
+                                  {
+                                    "point": "S4B",
+                                    "angle1":
+                                      { "constant": 80 },
+                                    "length1":
+                                      { "constant": 2.4 },
+                                    "angle2":
+                                      { "constant": 260 },
+                                    "length2":
+                                      { "constant": 0 }
+                                  }
+                                ]
+                            },
+                            {
+                              "name": "S1B",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "S1",
+                              "curve": "Spl_S0BL_S4B",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.50902,
+                              "my": -0.887539,
+                              "angle":
+                                { "constant": 0 }
+                            },
+                            {
+                              "name": "S3B",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "S3",
+                              "curve": "Spl_S0BL_S4B",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.82103,
+                              "my": -0.982318,
+                              "angle":
+                                { "constant": 0 }
+                            },
+                            { "derivedName": "Line_S3_S3B", "objectType": "line", "firstPoint": "S3", "secondPoint": "S3B", "lineStyle": "dotLine", "color": "black" },
+                            {
+                              "name": "SL2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "S0",
+                              "lineStyle": "dashDotLine",
+                              "color": "darkGreen",
+                              "mx": -0.888026,
+                              "my": -1.31504,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 2.11 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SL1",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S0",
+                              "secondPoint": "SL2",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SL2C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "SL2",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "mx": 0.374105,
+                              "my": -0.464493,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#HeelPointWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SL2CB",
+                              "objectType": "pointEndLine",
+                              "basePoint": "SL2C",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "mx": 0.379217,
+                              "my": -0.508335,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SL1B",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "SL1",
+                              "secondPoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "darkGreen",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_SL2CB_S0BH",
+                              "objectType": "splineSimple",
+                              "point1": "SL2CB",
+                              "point4": "S0BH",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "length1":
+                                { "constant": 3 },
+                              "length2":
+                                { "constant": 2.2 },
+                              "angle1":
+                                { "constant": 270 },
+                              "angle2":
+                                { "constant": 125 }
+                            },
+                            {
+                              "name": "SL1C",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "SL1",
+                              "curve": "Spl_SL2CB_S0BH",
+                              "lineStyle": "dotLine",
+                              "color": "darkGreen",
+                              "mx": 0.71396,
+                              "my": -1.37121,
+                              "angle":
+                                { "constant": 360 }
+                            },
+                            { "derivedName": "Line_SL1_SL1C", "objectType": "line", "firstPoint": "SL1", "secondPoint": "SL1C", "lineStyle": "dashLine", "color": "darkRed" },
+                            {
+                              "name": "L0C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.405578,
+                              "my": -0.630524,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AnkleDiagEased" }]
+                                                  },
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter":
+                                                      [
+                                                        {
+                                                          "operationType": "subtract",
+                                                          "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePrcntageHeel" }]
+                                                        }
+                                                      ]
+                                                  }
+                                                ]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "L1C",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "L1",
+                              "secondPoint": "L0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.399463,
+                              "my": -0.652888,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "divide",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AboveAnkleEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL1C" }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF1",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "LF4",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -2.00116,
+                              "my": -0.65823,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_instep" }
+                              }
+                            },
+                            {
+                              "name": "LF2",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "LF4",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -2.28192,
+                              "my": -0.641447,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "parenthesis",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 0.33 }]
+                                      }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "L0",
+                              "secondPoint": "LF4",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.9795,
+                              "my": -0.536748,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }
+                              }
+                            },
+                            {
+                              "name": "LF5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L0",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.73762,
+                              "my": 0.5705,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }
+                              }
+                            },
+                            {
+                              "name": "LF1C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "LF1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -2.0303,
+                              "my": -0.00412448,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "divide",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S1", "drawingObject2": "S1B" }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF3C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "LF3",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.99419,
+                              "my": -0.91394,
+                              "angle":
+                                { "constant": -5 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "divide",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#footWidestEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S3", "drawingObject2": "S3B" }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF4C",
+                              "objectType": "pointEndLine",
+                              "basePoint": "LF4",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.180327,
+                              "my": 0.17398,
+                              "angle":
+                                { "constant": -10 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "divide",
+                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B" }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF2C",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "LF2",
+                              "secondPoint": "LF4",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -2.08806,
+                              "my": -0.0434441,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "divide",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                                  },
+                                                  { "operationType": "Decimal value", "decimalValue": 0.87 }
+                                                ]
+                                            }
+                                          ]
+                                      },
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "subtract",
+                                              "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelMid" }]
+                                            }
+                                          ]
+                                      }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_LF4_LF4C",
+                              "objectType": "splineSimple",
+                              "point1": "LF4",
+                              "point4": "LF4C",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "length1":
+                                { "constant": 2.34146 },
+                              "length2":
+                                { "constant": 1.50399 },
+                              "angle1":
+                                { "constant": 1.36719 },
+                              "angle2":
+                                { "constant": 144.999 }
+                            },
+                            {
+                              "name": "LF4B",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_LF4_LF4C",
+                              "mx": -1.02592,
+                              "my": 1.19049,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B2" }
+                              }
+                            },
+                            {
+                              "name": "A27",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "LF4C",
+                              "secondPoint": "LF4B",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -1.2027,
+                              "my": -0.945579,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                                { "constant": 0.5 }
+                            },
+                            {
+                              "name": "ST",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L0",
+                              "lineStyle": "dashDotLine",
+                              "color": "black",
+                              "mx": -1.73354,
+                              "my": 0.54139,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#StockingHeight" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_glutealfold" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "STA",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "ST",
+                              "secondPoint": "L0",
+                              "lineStyle": "hair",
+                              "color": "blue",
+                              "mx": 0.312236,
+                              "my": -1.35491,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#TopPanelHeight" }
+                              }
+                            },
+                            { "derivedName": "Line_S4B_S4B2", "objectType": "line", "firstPoint": "S4B", "secondPoint": "S4B2", "lineStyle": "hair", "color": "darkRed" },
+                            {
+                              "derivedName": "Spl_S4B2_S5B",
+                              "objectType": "splineSimple",
+                              "point1": "S4B2",
+                              "point4": "S5B",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "length1":
+                                { "constant": 2.23949 },
+                              "length2":
+                                { "constant": 1.4417 },
+                              "angle1":
+                                { "constant": 270 },
+                              "angle2":
+                                { "constant": 360 }
+                            },
+                            {
+                              "name": "S4A2",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S4",
+                              "secondPoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "darkRed",
+                              "mx": -2.37148,
+                              "my": -1.22264,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_S5B_S4A2",
+                              "objectType": "splineSimple",
+                              "point1": "S5B",
+                              "point4": "S4A2",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "length1":
+                                { "constant": 2.32081 },
+                              "length2":
+                                { "constant": 2.74314 },
+                              "angle1":
+                                { "constant": 180 },
+                              "angle2":
+                                { "constant": 270 }
+                            },
+                            {
+                              "name": "S4A",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "S4",
+                              "secondPoint": "S0",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.00983,
+                              "my": 0.200525,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "parenthesis",
+                                        "parameter":
+                                          [
+                                            {
+                                              "operationType": "multiply",
+                                              "parameter":
+                                                [
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                                  },
+                                                  {
+                                                    "operationType": "parenthesis",
+                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelToe" }]
+                                                  }
+                                                ]
+                                            }
+                                          ]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 2 }
+                                    ]
+                                }
+                              }
+                            },
+                            { "derivedName": "Line_S4A2_S4A", "objectType": "line", "firstPoint": "S4A2", "secondPoint": "S4A", "lineStyle": "hair", "color": "darkRed" },
+                            { "objectType": "operation - flipping by axis", "center": "SL2" },
+                            { "derivedName": "SL2CR", "objectType": "operation - result", "basePoint": "SL2C", "mx": -2.9901, "my": -0.632975 },
+                            { "derivedName": "SL2CBR", "objectType": "operation - result", "basePoint": "SL2CB", "mx": -3.65128, "my": -0.593678 },
+                            { "derivedName": "S0BHR", "objectType": "operation - result", "basePoint": "S0BH", "mx": -3.06285, "my": -0.583613 },
+                            { "derivedName": "S0BLR", "objectType": "operation - result", "basePoint": "S0BL", "mx": -2.85764, "my": -0.513732 },
+                            { "derivedName": "S2BR", "objectType": "operation - result", "basePoint": "S2B", "mx": 0.107432, "my": -0.846508 },
+                            { "derivedName": "Line_SL2CR_SL2", "objectType": "line", "firstPoint": "SL2CR", "secondPoint": "SL2", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_SL2CR_SL2CBR", "objectType": "line", "firstPoint": "SL2CR", "secondPoint": "SL2CBR", "lineStyle": "hair", "color": "darkviolet" },
+                            {
+                              "derivedName": "Spl_SL2CBR_S0BHR",
+                              "objectType": "splineSimple",
+                              "point1": "SL2CBR",
+                              "point4": "S0BHR",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "length1":
+                                { "constant": 3 },
+                              "length2":
+                                { "constant": 2.2 },
+                              "angle1":
+                                { "constant": 270 },
+                              "angle2":
+                                { "constant": 55 }
+                            },
+                            {
+                              "derivedName": "Spl_S0_S0BHR",
+                              "objectType": "splineSimple",
+                              "point1": "S0",
+                              "point4": "S0BHR",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "length1":
+                                { "constant": 2 },
+                              "length2":
+                                { "constant": 0 },
+                              "angle1":
+                                { "constant": 180 },
+                              "angle2":
+                                { "constant": 0 }
+                            },
+                            {
+                              "derivedName": "Spl_S0_S0BLR",
+                              "objectType": "splineSimple",
+                              "point1": "S0",
+                              "point4": "S0BLR",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "length1":
+                                { "constant": 2 },
+                              "length2":
+                                { "constant": 0 },
+                              "angle1":
+                                { "constant": 180 },
+                              "angle2":
+                                { "constant": 0 }
+                            },
+                            {
+                              "derivedName": "Spl_S0BLR_S4A",
+                              "objectType": "splinePathInteractive",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "S0BLR",
+                                    "angle1":
+                                      { "constant": 110 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 290 },
+                                    "length2":
+                                      { "constant": 2.4 }
+                                  },
+                                  {
+                                    "point": "S2BR",
+                                    "angle1":
+                                      { "constant": 90 },
+                                    "length1":
+                                      { "constant": 1.2 },
+                                    "angle2":
+                                      { "constant": 270 },
+                                    "length2":
+                                      { "constant": 4 }
+                                  },
+                                  {
+                                    "point": "S4A",
+                                    "angle1":
+                                      { "constant": 100 },
+                                    "length1":
+                                      { "constant": 2.4 },
+                                    "angle2":
+                                      { "constant": 280 },
+                                    "length2":
+                                      { "constant": 3.68146 }
+                                  }
+                                ]
+                            },
+                            { "derivedName": "Line_L4C_L5C", "objectType": "line", "firstPoint": "L4C", "secondPoint": "L5C", "lineStyle": "dotLine", "color": "black" },
+                            { "derivedName": "Line_L5C_GF_C", "objectType": "line", "firstPoint": "L5C", "secondPoint": "GF_C", "lineStyle": "dotLine", "color": "black" },
+                            {
+                              "name": "ARC",
+                              "objectType": "pointIntersectLineAndAxis",
+                              "basePoint": "L0",
+                              "p1Line1": "GF_C",
+                              "p2Line1": "L4C",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -2.73172,
+                              "my": -0.05364,
+                              "angle":
+                                { "constant": 270 }
+                            },
+                            { "derivedName": "Line_ST_ARC", "objectType": "line", "firstPoint": "ST", "secondPoint": "ARC", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            {
+                              "derivedName": "Arc_ARC_227",
+                              "objectType": "arcSimple",
+                              "center": "ARC",
+                              "lineStyle": "hair",
+                              "color": "cornflowerblue",
+                              "angle1":
+                                { "constant": 65 },
+                              "angle2":
+                                { "constant": 95 },
+                              "radius":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }
+                              }
+                            },
+                            {
+                              "derivedName": "Arc_ARC_228",
+                              "objectType": "arcSimple",
+                              "center": "ARC",
+                              "lineStyle": "hair",
+                              "color": "cornflowerblue",
+                              "angle1":
+                                { "constant": 65 },
+                              "angle2":
+                                { "constant": 95 },
+                              "radius":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "STA" }]
+                                }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_L0C_GF_C",
+                              "objectType": "splinePathInteractive",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "L0C",
+                                    "angle1":
+                                      { "constant": 265.392 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 85.3923 },
+                                    "length2":
+                                      { "constant": 3.37484 }
+                                  },
+                                  {
+                                    "point": "L1C",
+                                    "angle1":
+                                      { "constant": 269.045 },
+                                    "length1":
+                                      { "constant": 1.51191 },
+                                    "angle2":
+                                      { "constant": 89.045 },
+                                    "length2":
+                                      { "constant": 9.90025 }
+                                  },
+                                  {
+                                    "point": "L2C",
+                                    "angle1":
+                                      { "constant": 267.105 },
+                                    "length1":
+                                      { "constant": 8.76527 },
+                                    "angle2":
+                                      { "constant": 87.105 },
+                                    "length2":
+                                      { "constant": 4.18519 }
+                                  },
+                                  {
+                                    "point": "L3C",
+                                    "angle1":
+                                      { "constant": 270 },
+                                    "length1":
+                                      { "constant": 1.48106 },
+                                    "angle2":
+                                      { "constant": 90 },
+                                    "length2":
+                                      { "constant": 1.3456 }
+                                  },
+                                  {
+                                    "point": "L4C",
+                                    "angle1":
+                                      { "constant": 245.304 },
+                                    "length1":
+                                      { "constant": 1.98596 },
+                                    "angle2":
+                                      { "constant": 65.304 },
+                                    "length2":
+                                      { "constant": 2.30464 }
+                                  },
+                                  {
+                                    "point": "L5C",
+                                    "angle1":
+                                      { "constant": 253.917 },
+                                    "length1":
+                                      { "constant": 2 },
+                                    "angle2":
+                                      { "constant": 73.917 },
+                                    "length2":
+                                      { "constant": 2 }
+                                  },
+                                  {
+                                    "point": "GF_C",
+                                    "angle1":
+                                      { "constant": 254.542 },
+                                    "length1":
+                                      { "constant": 2 },
+                                    "angle2":
+                                      { "constant": 74.542 },
+                                    "length2":
+                                      { "constant": 3.22264 }
+                                  }
+                                ]
+                            },
+                            { "name": "STC", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_227", "curve2": "Spl_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": -2.26276, "my": -0.034798 },
+                            { "name": "STD", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_228", "curve2": "Spl_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": 0.452645, "my": -1.29487 },
+                            { "derivedName": "Line_S4A2_S4B2", "objectType": "line", "firstPoint": "S4A2", "secondPoint": "S4B2", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "P1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L1C",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.81892,
+                              "my": -1.91681,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL2" }
+                              }
+                            },
+                            {
+                              "name": "P3",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "P1",
+                              "curve": "Spl_L0C_GF_C",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.32466,
+                              "my": -0.502602,
+                              "angle":
+                                { "constant": 0 }
+                            },
+                            {
+                              "name": "P2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "P1",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -0.675392,
+                              "my": -0.917631,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "P4",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "P2",
+                              "curve": "Spl_L0C_GF_C",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.181728,
+                              "my": -0.649561,
+                              "angle":
+                                { "constant": 0 }
+                            },
+                            {
+                              "name": "P5",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "P3",
+                              "secondPoint": "P4",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -1.5038,
+                              "my": -0.254424,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL2", "drawingObject2": "SL2C" }
+                              }
+                            },
+                            {
+                              "derivedName": "Spl_L0C_P5",
+                              "objectType": "splinePathInteractive",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "L0C",
+                                    "angle1":
+                                      { "constant": 265.469 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 85.469 },
+                                    "length2":
+                                      { "constant": 3.37801 }
+                                  },
+                                  {
+                                    "point": "L1C",
+                                    "angle1":
+                                      { "constant": 280.784 },
+                                    "length1":
+                                      { "constant": 1.48115 },
+                                    "angle2":
+                                      { "constant": 100.784 },
+                                    "length2":
+                                      { "constant": 1.72051 }
+                                  },
+                                  {
+                                    "point": "P5",
+                                    "angle1":
+                                      { "constant": 260.979 },
+                                    "length1":
+                                      { "constant": 1.04153 },
+                                    "angle2":
+                                      { "constant": 80.979 },
+                                    "length2":
+                                      { "constant": 0.813547 }
+                                  }
+                                ]
+                            },
+                            {
+                              "name": "S1BR",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "S1",
+                              "curve": "Spl_S0BLR_S4A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.199865,
+                              "my": -0.888052,
+                              "angle":
+                                { "constant": 180 }
+                            },
+                            {
+                              "name": "S3BR",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "S3",
+                              "curve": "Spl_S0BLR_S4A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -2.47501,
+                              "my": -0.683526,
+                              "angle":
+                                { "constant": 180.421 }
+                            },
+                            {
+                              "name": "SL1CR",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "SL1",
+                              "curve": "Spl_SL2CBR_S0BHR",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -3.06778,
+                              "my": -0.2526,
+                              "angle":
+                                { "constant": 180 }
+                            },
+                            {
+                              "derivedName": "Spl_L0C_LF4C",
+                              "objectType": "splinePathInteractive",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "L0C",
+                                    "angle1":
+                                      { "constant": 80.1 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 260.1 },
+                                    "length2":
+                                      { "constant": 1.405 }
+                                  },
+                                  {
+                                    "point": "LF1C",
+                                    "angle1":
+                                      { "constant": 67 },
+                                    "length1":
+                                      { "constant": 1.554 },
+                                    "angle2":
+                                      { "constant": 247 },
+                                    "length2":
+                                      { "constant": 1.095 }
+                                  },
+                                  {
+                                    "point": "LF2C",
+                                    "angle1":
+                                      { "constant": 76.6 },
+                                    "length1":
+                                      { "constant": 1.217 },
+                                    "angle2":
+                                      { "constant": 256.6 },
+                                    "length2":
+                                      { "constant": 1.699 }
+                                  },
+                                  {
+                                    "point": "LF3C",
+                                    "angle1":
+                                      { "constant": 75.15 },
+                                    "length1":
+                                      { "constant": 1.562 },
+                                    "angle2":
+                                      { "constant": 255.15 },
+                                    "length2":
+                                      { "constant": 0.644 }
+                                  },
+                                  {
+                                    "point": "LF4C",
+                                    "angle1":
+                                      { "constant": 74.4 },
+                                    "length1":
+                                      { "constant": 0.482 },
+                                    "angle2":
+                                      { "constant": 254.4 },
+                                    "length2":
+                                      { "constant": 0.433924 }
+                                  }
+                                ]
+                            },
+                            {
+                              "name": "LP20",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_L0C_LF4C",
+                              "mx": 0.330991,
+                              "my": -0.419826,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LP40",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_L0C_LF4C",
+                              "mx": 0.375147,
+                              "my": -0.486057,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LP60",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_L0C_LF4C",
+                              "mx": 0.330991,
+                              "my": -0.419825,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LP80",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_L0C_LF4C",
+                              "mx": 0.286836,
+                              "my": -0.397747,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP20",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BL_S4B",
+                              "mx": 0.330991,
+                              "my": -0.441903,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP40",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BL_S4B",
+                              "mx": 0.330991,
+                              "my": -0.331514,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP60",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BL_S4B",
+                              "mx": 0.24268,
+                              "my": -0.508136,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP80",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BL_S4B",
+                              "mx": 0.397224,
+                              "my": -0.486058,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP20R",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BLR_S4A",
+                              "mx": -2.5391,
+                              "my": -0.331515,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP40R",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BLR_S4A",
+                              "mx": -2.62742,
+                              "my": -0.397747,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP60R",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BLR_S4A",
+                              "mx": -2.53911,
+                              "my": -0.486058,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "SP80R",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "Spl_S0BLR_S4A",
+                              "mx": -2.60534,
+                              "my": -0.552291,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "Length of spline path", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "L4knee",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.14861,
+                              "my": -1.52867,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "name": "L50cm",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 50 }
+                            },
+                            {
+                              "name": "ST2",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -1.22274,
+                              "my": 0.3359,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "Length of arc" }
+                              }
+                            },
+                            {
+                              "name": "ST8",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -0.224295,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of arc", "drawingObject1": "ARC" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "ST6",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -0.723516,
+                              "my": 0.407218,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of arc", "drawingObject1": "ARC" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "ST4",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -0.937468,
+                              "my": 0.407218,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of arc", "drawingObject1": "ARC" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "ST5",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -1.00879,
+                              "my": 0.407218,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of arc", "drawingObject1": "ARC" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "ST7",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_ARC_228",
+                              "mx": -0.723516,
+                              "my": 0.407218,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of arc", "drawingObject1": "ARC" }, { "operationType": "Decimal value", "decimalValue": 0.7 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF25",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_LF4_LF4C",
+                              "mx": -0.994513,
+                              "my": 0.230437,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LF50",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_LF4_LF4C",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "LB1A",
+                              "objectType": "pointEndLine",
+                              "basePoint": "STA",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 315 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "LB2A",
+                              "objectType": "pointEndLine",
+                              "basePoint": "LB1A",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointEndLine",
+                              "basePoint": "S4",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.01912,
+                              "my": 0.227441,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "L0", "drawingObject2": "S0" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5B60",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S5B_S4A2",
+                              "mx": -3.95335,
+                              "my": 2.22299,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5B40",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S5B_S4A2",
+                              "mx": -2.77155,
+                              "my": 2.42558,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5B80",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S5B_S4A2",
+                              "mx": -3.5144,
+                              "my": 0.939896,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S5B20",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S5B_S4A2",
+                              "mx": -1.04951,
+                              "my": 2.05416,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.2 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4B50",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S4B2_S5B",
+                              "mx": 0.773839,
+                              "my": 0.332114,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4B25",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S4B2_S5B",
+                              "mx": 1.21279,
+                              "my": 0.230817,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "S4B75",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_S4B2_S5B",
+                              "mx": 0.942667,
+                              "my": 1.04119,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
+                                }
+                              }
+                            },
+                            { "objectType": "operation - flipping by axis", "center": "A3" },
+                            { "derivedName": "S4A2t", "objectType": "operation - result", "basePoint": "S4A2", "mx": -2.37148, "my": -1.22264 },
+                            { "derivedName": "S4t", "objectType": "operation - result", "basePoint": "S4", "mx": -0.492472, "my": -1.66537 },
+                            { "derivedName": "S4B2t", "objectType": "operation - result", "basePoint": "S4B2", "mx": -3.36086, "my": -0.585351 },
+                            { "derivedName": "Spl_S4B2_S5Bt", "objectType": "operation - result", "basePoint": "Spl_S4B2_S5B", "mx": 0, "my": 0 },
+                            { "derivedName": "S4B25t", "objectType": "operation - result", "basePoint": "S4B25", "mx": -3.4131, "my": -0.309433 },
+                            { "derivedName": "S4B50t", "objectType": "operation - result", "basePoint": "S4B50", "mx": -3.64946, "my": 0.0957545 },
+                            { "derivedName": "S4B75t", "objectType": "operation - result", "basePoint": "S4B75", "mx": -2.97415, "my": 0.298349 },
+                            { "derivedName": "S5Bt", "objectType": "operation - result", "basePoint": "S5B", "mx": -2.4339, "my": 1.17626 },
+                            { "derivedName": "S5B20t", "objectType": "operation - result", "basePoint": "S5B20", "mx": -1.58976, "my": 1.78403 },
+                            { "derivedName": "S5t", "objectType": "operation - result", "basePoint": "S5", "mx": 0.159798, "my": 0.265971 },
+                            { "derivedName": "S5B40t", "objectType": "operation - result", "basePoint": "S5B40", "mx": 0.301124, "my": 0.939892 },
+                            { "derivedName": "S5B60t", "objectType": "operation - result", "basePoint": "S5B60", "mx": 0.132293, "my": 0.568473 },
+                            { "derivedName": "S5B80t", "objectType": "operation - result", "basePoint": "S5B80", "mx": 0.13229, "my": 0.163286 },
+                            { "derivedName": "Spl_S5B_S4A2t", "objectType": "operation - result", "basePoint": "Spl_S5B_S4A2", "mx": 0, "my": 0 },
+                            { "derivedName": "Line_S4t_S5t", "objectType": "line", "firstPoint": "S4t", "secondPoint": "S5t", "lineStyle": "dashDotLine", "color": "black" },
+                            { "derivedName": "Line_S4B2t_S4A2t", "objectType": "line", "firstPoint": "S4B2t", "secondPoint": "S4A2t", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "T25a",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S4t",
+                              "secondPoint": "S4A2t",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "T50a",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S4t",
+                              "secondPoint": "S4A2t",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "T25b",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S4t",
+                              "secondPoint": "S4B2t",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.11704,
+                              "my": -1.72759,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "T50b",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "S4t",
+                              "secondPoint": "S4B2t",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.3534,
+                              "my": 0.602239,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "multiply",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "Length of spline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                }
+                              }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "T50b",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 0.5 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "T25b",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 0.5 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointEndLine",
+                              "basePoint": "S4t",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointEndLine",
+                              "basePoint": "T25a",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 0.5 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointEndLine",
+                              "basePoint": "T50a",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 0.5 }
+                            }
+                          ]
+                      }
+                    ]
+                }
+              }
+
+
+
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+      </div>
+    </div>
+
+</body>
+
+</html>

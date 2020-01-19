@@ -14,18 +14,18 @@ class Expression {
         this.pattern = pattern;
         this.patternPiece = patternPiece;
 
-        //divide, multiply etc.
+        //divide, multiply etc. and functions too
         if (typeof data.parameter !== "undefined") 
         {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
                 this.params[a] = new Expression(p, pattern, patternPiece);
-            }
-            this.value = this.operationValue;
+            }            
         }
+
         //integer constant
-        else if (typeof data.integerValue !== "undefined") 
+        if (typeof data.integerValue !== "undefined") 
         {
             this.constant = data.integerValue;
             this.value = this.constantValue; //eh?
@@ -66,9 +66,27 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
+            else if ( data.variableType === "lengthOfSplinePath" )
+            {
+                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
             else 
                 throw "Unsupported variableType:" + data.variableType;
         }
+        else if ( typeof data.functionName !== "undefined" )
+        {
+            this.function = data.functionName;
+            this.value = this.functionValue;
+            //having done the parameters earlier. 
+        }
+        else if ( this.operationType !== "undefined" )
+        {
+            //add, multiply etc.
+            this.value = this.operationValue;
+        }
+        else throw "Unsupported expression." ;
     }
 
     incrementValue() {
@@ -79,7 +97,7 @@ class Expression {
         return this.variable.value();
     }    
 
-    functionValue() {
+    functionValue(currentLength) {
         if ( this.function === "angleOfLine" )
         {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
@@ -94,7 +112,16 @@ class Expression {
             var line = new GeoLine( point1, point2 );
             return line.getLength();
         }
-        throw ("Unknown function: " + this.data.variableType );
+        else if ( this.function === "lengthOfSplinePath" )
+        {
+            return this.drawingObject.curve.pathLength();
+        }        
+        else if  ( this.function === "sqrt" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.sqrt( p1 ); 
+        }
+        else throw ("Unknown function: " + this.function );
     }
     
     constantValue() {
@@ -105,17 +132,61 @@ class Expression {
 
         if (typeof this.params[0].value !== "function")
             alert("param1 not known");
-        if (typeof this.params[1].value !== "function")
-            alert("param2 not known");
+
+        if ( this.operation !== "parenthesis" )    
+        {
+            if (typeof this.params[1].value !== "function")
+                alert("param2 not known");
+        }
 
         if (this.operation === "add")
             return this.params[0].value(currentLength) + this.params[1].value(currentLength);
-        if (this.operation === "subtract")
+
+        else if (this.operation === "subtract")
             return this.params[0].value(currentLength) - this.params[1].value(currentLength);
-        if (this.operation === "multiply")
+
+        else if (this.operation === "multiply")
             return this.params[0].value(currentLength) * this.params[1].value(currentLength);
-        if (this.operation === "divide")
+
+        else if (this.operation === "divide")
             return this.params[0].value(currentLength) / this.params[1].value(currentLength);
+            
+        else if (this.operation === "equalTo")
+            return this.params[0].value(currentLength) == this.params[1].value(currentLength);
+
+        else if (this.operation === "notEqualTo")
+            return this.params[0].value(currentLength) != this.params[1].value(currentLength);
+
+        else if (this.operation === "lessThan")
+            return this.params[0].value(currentLength) < this.params[1].value(currentLength);
+
+        else if (this.operation === "lessThanOrEqualTo")
+            return this.params[0].value(currentLength) <= this.params[1].value(currentLength);
+            
+        else if (this.operation === "greaterThan")
+            return this.params[0].value(currentLength) > this.params[1].value(currentLength);
+
+        else if (this.operation === "greaterThanOrEqualTo")
+            return this.params[0].value(currentLength) >= this.params[1].value(currentLength);
+
+        else if (this.operation === "parenthesis")
+            return this.params[0].value(currentLength);
+
+        else if  ( this.operation === "power" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            var p2 = this.params[1].value(currentLength);
+            return Math.pow( p1, p2 );
+        }    
+        else if (this.operation === "ternary")
+        {
+            var conditionTestResult = this.params[0].value(currentLength);
+            if ( conditionTestResult )
+                return this.params[1].value(currentLength);
+            else
+                return this.params[2].value(currentLength);
+        }
+
 
         throw ("Unknown operation: " + this.operation);
     }
@@ -250,8 +321,6 @@ class GeoLine {
 
 
         var x, y;
-
-        //A vertical line and horizontal line need special handling.
 
         if (    ( line2s.slope === Infinity ) 
              || ( line2s.slope === -Infinity )  )
@@ -500,6 +569,14 @@ class GeoSpline {
         console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
+
+
+    pathLength() {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        return path.getTotalLength();
+    }             
+
 }
 
 
@@ -1276,7 +1353,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 class PointIntersectArcAndAxis extends DrawingObject {
 
-    //arc (provided as "curve")
+    //arc (provided as "curve"), and may be an arc or a spline (ob observation)
     //basePoint
     //angle
 
@@ -1301,7 +1378,11 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        this.p = longLine.intersectArc( this.arc.arc );
+        if ( this.arc.arc )
+            this.p = longLine.intersectArc( this.arc.arc );
+        else
+            this.p = longLine.intersectArc( this.arc.curve );
+
         this.line = new GeoLine( this.basePoint.p, this.p );
 
         bounds.adjust(this.p);
@@ -2469,35 +2550,6 @@ class Pattern {
         this.increment = {};
         this.measurement = {};
 
-        if ( typeof this.patternData.increment !== "undefined" )
-        {
-            for (var a = 0; a < this.patternData.increment.length; a++) {
-                var inc = this.patternData.increment[a];
-
-                //TODO test this increment that is a simple value...            
-                if (typeof inc.constant !== "undefined") 
-                {
-                    inc.value = function () {
-                        return this.constant;
-                    };
-                    inc.html = function() {
-                        return this.constant;
-                    };
-                }
-                else
-                {
-                    inc.expression = new Expression( inc.expression, this, null );
-                    inc.value = function () {
-                        return this.expression.value();
-                    };
-                    inc.html = function() {
-                        return this.expression.html();
-                    };
-                }
-                this.increment[ inc.name ] = inc;
-            }
-        }
-
         if ( typeof this.patternData.measurement !== "undefined" )
         {
             for (var a = 0; a < this.patternData.measurement.length; a++) {
@@ -2527,6 +2579,35 @@ class Pattern {
                 this.measurement[ m.name ] = m;
             }
         }        
+        
+        if ( typeof this.patternData.increment !== "undefined" )
+        {
+            for (var a = 0; a < this.patternData.increment.length; a++) {
+                var inc = this.patternData.increment[a];
+
+                //TODO test this increment that is a simple value...            
+                if (typeof inc.constant !== "undefined") 
+                {
+                    inc.value = function () {
+                        return this.constant;
+                    };
+                    inc.html = function() {
+                        return this.constant;
+                    };
+                }
+                else
+                {
+                    inc.expression = new Expression( inc.expression, this, null );
+                    inc.value = function () {
+                        return this.expression.value();
+                    };
+                    inc.html = function() {
+                        return this.expression.html();
+                    };
+                }
+                this.increment[ inc.name ] = inc;
+            }
+        }        
 
         //TODO support multiple pattern pieces
         this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
@@ -2541,7 +2622,12 @@ class Pattern {
     getMeasurement(name) {
         if (typeof name === "object")
             return name;
-        return this.measurement[name];
+        var m = this.measurement[name];
+
+        if ( !m )
+            throw "Measurment not found:" + name;
+
+        return m;
     }
 
 

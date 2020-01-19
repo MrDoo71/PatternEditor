@@ -7,35 +7,6 @@ class Pattern {
         this.increment = {};
         this.measurement = {};
 
-        if ( typeof this.patternData.increment !== "undefined" )
-        {
-            for (var a = 0; a < this.patternData.increment.length; a++) {
-                var inc = this.patternData.increment[a];
-
-                //TODO test this increment that is a simple value...            
-                if (typeof inc.constant !== "undefined") 
-                {
-                    inc.value = function () {
-                        return this.constant;
-                    };
-                    inc.html = function() {
-                        return this.constant;
-                    };
-                }
-                else
-                {
-                    inc.expression = new Expression( inc.expression, this, null );
-                    inc.value = function () {
-                        return this.expression.value();
-                    };
-                    inc.html = function() {
-                        return this.expression.html();
-                    };
-                }
-                this.increment[ inc.name ] = inc;
-            }
-        }
-
         if ( typeof this.patternData.measurement !== "undefined" )
         {
             for (var a = 0; a < this.patternData.measurement.length; a++) {
@@ -65,6 +36,35 @@ class Pattern {
                 this.measurement[ m.name ] = m;
             }
         }        
+        
+        if ( typeof this.patternData.increment !== "undefined" )
+        {
+            for (var a = 0; a < this.patternData.increment.length; a++) {
+                var inc = this.patternData.increment[a];
+
+                //TODO test this increment that is a simple value...            
+                if (typeof inc.constant !== "undefined") 
+                {
+                    inc.value = function () {
+                        return this.constant;
+                    };
+                    inc.html = function() {
+                        return this.constant;
+                    };
+                }
+                else
+                {
+                    inc.expression = new Expression( inc.expression, this, null );
+                    inc.value = function () {
+                        return this.expression.value();
+                    };
+                    inc.html = function() {
+                        return this.expression.html();
+                    };
+                }
+                this.increment[ inc.name ] = inc;
+            }
+        }        
 
         //TODO support multiple pattern pieces
         this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
@@ -79,7 +79,12 @@ class Pattern {
     getMeasurement(name) {
         if (typeof name === "object")
             return name;
-        return this.measurement[name];
+        var m = this.measurement[name];
+
+        if ( !m )
+            throw "Measurment not found:" + name;
+
+        return m;
     }
 
 

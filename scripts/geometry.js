@@ -325,5 +325,13 @@ class GeoSpline {
         console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
+
+
+    pathLength() {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        return path.getTotalLength();
+    }             
+
 }
 

@@ -6,7 +6,7 @@
 
 class PointIntersectArcAndAxis extends DrawingObject {
 
-    //arc (provided as "curve")
+    //arc (provided as "curve"), and may be an arc or a spline (ob observation)
     //basePoint
     //angle
 
@@ -31,7 +31,11 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        this.p = longLine.intersectArc( this.arc.arc );
+        if ( this.arc.arc )
+            this.p = longLine.intersectArc( this.arc.arc );
+        else
+            this.p = longLine.intersectArc( this.arc.curve );
+
         this.line = new GeoLine( this.basePoint.p, this.p );
 
         bounds.adjust(this.p);
