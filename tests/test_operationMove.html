@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - Operation Move</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Operation - Move
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "pattern":
+                {
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 1, "y": 1, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.0479271,
+                              "my": 0.0789802,
+                              "angle":
+                                { "constant": 315 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.301022,
+                              "my": -0.697177,
+                              "angle":
+                                { "constant": 45 },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            { "name": "A3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "A2", "secondPoint": "A1", "mx": 0.23353, "my": -0.123496 },
+                            { "derivedName": "Line_A2_A3", "objectType": "line", "firstPoint": "A2", "secondPoint": "A3", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_A1_A3", "objectType": "line", "firstPoint": "A1", "secondPoint": "A3", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "A4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "objectType": "operationMove",
+                              "suffix": "B",
+                              "operationName": "ObjectID: 8",
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "ObjectID: 8", "mx": -0.205168, "my": 0.129599 },
+                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "ObjectID: 8", "mx": -0.0195648, "my": 0.0283613 },
+                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "ObjectID: 8", "mx": 0.182911, "my": -0.697177 },
+                            { "derivedName": "Line_A1B_A3B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A3B_A2B", "objectType": "line", "firstPoint": "A3B", "secondPoint": "A2B", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A1B_A2B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A2B", "lineStyle": "hair", "color": "deeppink" },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "dashDotLine",
+                              "color": "cornflowerblue",
+                              "mx": -1.31878,
+                              "my": -0.764669,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 5 }
+                            }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+
+        <div style="opacity:0.6; margin-left:0px; margin-top:0px; padding-left:0px; padding-top:0px">
+          <img src="expectedResults/operationMove.png" width="400" />
+        </div>
+
+      </div>
+    </div>
+
+</body>
+
+</html>

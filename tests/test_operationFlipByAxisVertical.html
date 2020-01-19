@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - Operation Flip by Axis Vertical</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Operation - Flip by Axis - Vertical
+        </h1>
+      </div>
+
+
+
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "pattern":
+                {
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 1, "y": 1, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "cornflowerblue",
+                              "mx": -0.298567,
+                              "my": 0.192773,
+                              "angle":
+                                { "constant": 315 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.186149,
+                              "my": -0.956184,
+                              "angle":
+                                { "constant": 45 },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            { "name": "A3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "A2", "secondPoint": "A1", "mx": -0.0292801, "my": 0.0671059 },
+                            { "derivedName": "Line_A2_A3", "objectType": "line", "firstPoint": "A2", "secondPoint": "A3", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_A1_A3", "objectType": "line", "firstPoint": "A1", "secondPoint": "A3", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "A4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            { "objectType": "operationFlipByAxis", "center": "A", "suffix": "B", "operationName": "ObjectID: 8", "axis": "Vertical" },
+                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "ObjectID: 8", "mx": -0.0651851, "my": 0.156868 },
+                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "ObjectID: 8", "mx": -1.21414, "my": 0.17482 },
+                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "ObjectID: 8", "mx": -0.370377, "my": -1.15366 },
+                            { "derivedName": "Line_A2B_A1B", "objectType": "line", "firstPoint": "A2B", "secondPoint": "A1B", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A1B_A3B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A2B_A3B", "objectType": "line", "firstPoint": "A2B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A1B_A1", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A1", "lineStyle": "dashLine", "color": "cornflowerblue" }
+                          ]
+                      }
+                    ]
+                }
+              }
+
+
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+
+        <div style="opacity:0.6; margin-left:-29px; margin-top:-16px; padding-left:0px; padding-top:0px">
+          <img src="expectedResults/flipByAxisVertical.png" width="400" />
+        </div>
+  
+      </div>
+    </div>
+
+</body>
+
+</html>

@@ -144,6 +144,14 @@ class PatternPiece {
             return new PointIntersectArcs(dObj);      
         else if (dObj.objectType === "pointIntersectCircles")
             return new PointIntersectCircles(dObj);                  
+        else if (dObj.objectType === "operationMove")
+            return new OperationMove(dObj);                  
+        else if (dObj.objectType === "operationRotate")
+            return new OperationRotate(dObj);                  
+        else if (dObj.objectType === "operationFlipByAxis")
+            return new OperationFlipByAxis(dObj);                  
+        else if (dObj.objectType === "operationResult")
+            return new OperationResult(dObj);                  
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );

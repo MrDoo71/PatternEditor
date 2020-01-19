@@ -581,6 +581,7 @@ class GeoSpline {
 
 
 class DrawingObject /*abstract*/ {
+    
     constructor(data) {
         this.data = data;
     }
@@ -903,6 +904,267 @@ class Line extends DrawingObject {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
     }    
+}
+
+
+
+class OperationFlipByAxis extends DrawingObject {
+
+    //operationName
+    //suffix
+    //center
+    //axis
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.operationName;
+        this.axis = data.axis;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.center === "undefined")
+            this.center = this.patternPiece.getObject(d.center);
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        //this.drawLine( g, this ); //TODO put an arrow head on this!
+        //this.drawDot( g, this );
+        //this.drawLabel( g, this );
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: Flip operation: axis:' + this.axis + 
+                        " around " + this.center.data.name +
+                         //" angle:" + this.data.angle.value() +
+                         " suffix:" + this.data.suffix;
+    }
+
+
+    applyOperationToPoint( source )
+    {
+        var result = new GeoPoint( source.p.x, source.p.y );
+
+        if (    ( this.axis === "Vertical" ) 
+             || ( this.axis === "vertical" )) //just in case.
+            result.x = this.center.p.y - ( source.p.x - this.center.p.x );
+        else
+            result.y = this.center.p.y - ( source.p.y - this.center.p.y );
+
+        console.log("Axis:" + this.axis );
+        console.log( "Center y " + this.center.p.y );
+        console.log( "Source y " + source.p.y );
+        console.log( "Result y " + result.y );
+
+        return result;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.center );
+    }    
+
+}
+
+
+
+class OperationMove extends DrawingObject {
+
+    //operationName
+    //suffix
+    //angle
+    //length
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.operationName;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        //if (typeof this.basePoint === "undefined")
+        //    this.basePoint = this.patternPiece.getObject(d.basePoint);
+
+        if (typeof this.length === "undefined")
+            this.length = this.patternPiece.newFormula(d.length);
+            
+        if (typeof this.angle === "undefined")
+            this.angle = this.patternPiece.newFormula(d.angle);
+            
+        //Convert degrees to radians
+        //this.p = this.basePoint.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        //this.line = new GeoLine(this.basePoint.p, this.p);
+        //bounds.adjustForLine(this.line);
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        //this.drawLine( g, this ); //TODO put an arrow head on this!
+        //this.drawDot( g, this );
+        //this.drawLabel( g, this );
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: Move operation: ' + this.data.length.value() + 
+                        //" from " + this.basePoint.data.name +
+                         " angle:" + this.data.angle.value() +
+                         " suffix:" + this.data.suffix;
+    }
+
+
+    applyOperationToPoint( source )
+    {
+        //Convert degrees to radians
+        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        //var line = new GeoLine( source.p, result.p );
+        return result;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        //dependencies.add( this, this.basePoint );
+        dependencies.add( this, this.length );
+        dependencies.add( this, this.angle );
+    }    
+
+}
+
+
+
+class OperationResult extends DrawingObject {
+
+    //basePoint
+    //fromOperation
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.derivedName;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.basePoint === "undefined")
+            this.basePoint = this.patternPiece.getObject(d.basePoint);
+
+        if (typeof this.fromOperation === "undefined")
+            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+
+        //Convert degrees to radians
+        this.p = this.fromOperation.applyOperationToPoint( this.basePoint );
+        this.line = new GeoLine(this.basePoint.p, this.p);
+        bounds.adjust( this.p );
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        this.drawLine( g, this ); //TODO put an arrow head on this!
+        this.drawDot( g, this );
+        this.drawLabel( g, this );
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: Operation result: ';
+         //+ this.data.length.value() + 
+           //             " from " + this.basePoint.data.name +
+             //            " angle:" + this.data.angle.value() +
+               //          " suffix:" + this.data.suffix;
+    }
+
+
+    applyOperationToPoint( source )
+    {
+        //Convert degrees to radians
+        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        //var line = new GeoLine( source.p, result.p );
+        return result;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.basePoint );
+        dependencies.add( this, this.fromOperation );
+    }    
+
+}
+
+
+
+class OperationRotate extends DrawingObject {
+
+    //operationName
+    //suffix
+    //angle
+    //center
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.operationName;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.center === "undefined")
+            this.center = this.patternPiece.getObject(d.center);
+            
+        if (typeof this.angle === "undefined")
+            this.angle = this.patternPiece.newFormula(d.angle);            
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        //this.drawLine( g, this ); //TODO put an arrow head on this!
+        //this.drawDot( g, this );
+        //this.drawLabel( g, this );
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: Move rotate: ' +
+                         " center: " + this.center.data.name +
+                         " angle:" + this.data.angle.value() +
+                         " suffix:" + this.data.suffix;
+    }
+
+
+    applyOperationToPoint( source )
+    {
+        //Convert degrees to radians
+        
+        var centerToSourceLine = new GeoLine( this.center.p, source.p );
+        var distance = centerToSourceLine.getLength();
+        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + this.angle.value() ) / 360 );
+
+        var result = this.center.p.pointAtDistanceAndAngle( distance, angle );
+        //var line = new GeoLine( source.p, result.p );
+        return result;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.center );
+        dependencies.add( this, this.angle );
+    }    
+
 }
 
 /*define(function (require) {
@@ -2778,6 +3040,14 @@ class PatternPiece {
             return new PointIntersectArcs(dObj);      
         else if (dObj.objectType === "pointIntersectCircles")
             return new PointIntersectCircles(dObj);                  
+        else if (dObj.objectType === "operationMove")
+            return new OperationMove(dObj);                  
+        else if (dObj.objectType === "operationRotate")
+            return new OperationRotate(dObj);                  
+        else if (dObj.objectType === "operationFlipByAxis")
+            return new OperationFlipByAxis(dObj);                  
+        else if (dObj.objectType === "operationResult")
+            return new OperationResult(dObj);                  
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );

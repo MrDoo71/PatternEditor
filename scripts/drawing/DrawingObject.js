@@ -1,4 +1,5 @@
 class DrawingObject /*abstract*/ {
+    
     constructor(data) {
         this.data = data;
     }
