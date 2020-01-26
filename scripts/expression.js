@@ -64,6 +64,20 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
+            else if ( data.variableType === "lengthOfSpline" )
+            {
+                //TODO TEST! if this works, combine with the one above as this is an exact copy
+                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
+            else if ( data.variableType === "lengthOfArc" )
+            {
+                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.arcSelection = data.arcSelection;
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
             else 
                 throw "Unsupported variableType:" + data.variableType;
         }
@@ -104,9 +118,37 @@ class Expression {
             var line = new GeoLine( point1, point2 );
             return line.getLength();
         }
-        else if ( this.function === "lengthOfSplinePath" )
+        else if (    ( this.function === "lengthOfSplinePath" )
+                  || ( this.function === "lengthOfSpline" ) )
         {
             return this.drawingObject.curve.pathLength();
+        }        
+        else if ( this.function === "lengthOfArc" )
+        {
+            if ( this.arcSelection === "wholeArc")
+                return this.drawingObject.arc.pathLength();
+            else
+            {
+                var arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
+
+                //where in the arc is this.drawingObject.curve?
+                var radiusToIntersectLine = new GeoLine( arcDrawingObject.center.p, this.drawingObject.p );
+                var angleToIntersectRad = radiusToIntersectLine.angle;
+                if ( this.arcSelection === "beforeArcCut")
+                {
+                    var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
+                    var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
+                    var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+                    return length;
+                }
+                else
+                {
+                    var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
+                    var segmentRad = arcEndAngleRad - angleToIntersectRad;
+                    var length = radiusToIntersectLine.length * segmentRad;
+                    return length;
+                }
+            }
         }        
         else if  ( this.function === "sqrt" )
         {

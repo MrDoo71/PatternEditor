@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - length of arc</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Length of arc
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "pattern":
+                {
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 5, "y": 5, "mx": 0.307213, "my": -1.37968 },
+                            {
+                              "derivedName": "Arc_A_2",
+                              "objectType": "arcSimple",
+                              "center": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "angle1":
+                                { "constant": 0 },
+                              "angle2":
+                                { "constant": 180 },
+                              "radius":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "TEST_A12",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -5.36978,
+                              "my": -0.848553,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A",
+                              "secondPoint": "TEST_A12",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -1.6519,
+                              "my": -0.679992,
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "ARC_A_2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.44715,
+                              "my": -0.679992,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_A_2", "arcSelection": "wholeArc" }
+                              }
+                            },
+                            {
+                              "name": "TEST_A6",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A",
+                              "secondPoint": "TEST_A12",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -4.71143,
+                              "my": -0.772224,
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -0.567393,
+                              "my": -1.72952,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointCutArc",
+                              "arc": "Arc_A_2",
+                              "mx": 0.517119,
+                              "my": -1.20476,
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "ARC_A_9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "TEST_A6",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.304033,
+                              "my": -1.24929,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A6", "arcSelection": "beforeArcCut" }
+                              }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A",
+                              "curve": "Arc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -1.26708,
+                              "my": -1.58958,
+                              "angle":
+                                { "constant": 130 }
+                            },
+                            {
+                              "name": "TEST_A8",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A",
+                              "secondPoint": "TEST_A12",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -4.74324,
+                              "my": -0.873995,
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "ARC_A_13",
+                              "objectType": "pointEndLine",
+                              "basePoint": "TEST_A8",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -5.25529,
+                              "my": -1.2461,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A8", "arcSelection": "beforeArcCut" }
+                              }
+                            },
+                            {
+                              "name": "A11",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A",
+                              "curve": "Arc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -0.497425,
+                              "my": -2.11435,
+                              "angle":
+                                { "constant": 45 }
+                            },
+                            {
+                              "name": "A12",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A",
+                              "curve": "Arc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -0.987204,
+                              "my": -2.07936,
+                              "angle":
+                                { "constant": 66 }
+                            },
+                            {
+                              "name": "TEST_A11",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A",
+                              "secondPoint": "TEST_A12",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -5.26801,
+                              "my": -0.813569,
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "ARC_A_18",
+                              "objectType": "pointEndLine",
+                              "basePoint": "TEST_A11",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.281771,
+                              "my": -1.2461,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A11", "arcSelection": "beforeArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ARC_A_10",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ARC_A_9",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.482135,
+                              "my": -0.854913,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A6", "arcSelection": "afterArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ARC_A_14",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ARC_A_13",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.412166,
+                              "my": -1.02984,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A8", "arcSelection": "afterArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ARC_A_19",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ARC_A_18",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.354919,
+                              "my": -0.91216,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A11", "arcSelection": "afterArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ARC_A_21",
+                              "objectType": "pointEndLine",
+                              "basePoint": "TEST_A12",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.0686842,
+                              "my": -1.32561,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A12", "arcSelection": "beforeArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ARC_A_22",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ARC_A_21",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.227704,
+                              "my": -1.262,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A12", "arcSelection": "afterArcCut" }
+                              }
+                            },
+                            { "derivedName": "Line_ARC_A_2_ARC_A_22", "objectType": "line", "firstPoint": "ARC_A_2", "secondPoint": "ARC_A_22", "lineStyle": "hair", "color": "black" }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <img src="expectedResults/lengthOfArc.png" />
+    </div>
+</body>
+
+</html>
