@@ -102,6 +102,7 @@ class ArcSimple extends DrawingObject {
     
     setDependencies( dependencies )
     {
+        //notify 
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );

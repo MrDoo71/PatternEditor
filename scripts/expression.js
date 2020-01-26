@@ -258,12 +258,19 @@ class Expression {
     }
 
 
-    addDependencies( source, dependencies ) {
+    //The dependencies of this expression need adding to the source drawingObject that uses this expression
+    addDependencies( source, dependencies ) 
+    {
         if ( typeof this.drawingObject1 !== "undefined" )
             dependencies.add( source, this.drawingObject1 );
+
         if ( typeof this.drawingObject2 !== "undefined" )
             dependencies.add( source, this.drawingObject2 );
 
+        if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
+            dependencies.add( source, this.drawingObject );
+
+        //recurse into the expression parameters.
         if ( this.params )
         {       
             for (var a = 0; a < this.params.length; a++) {
@@ -271,6 +278,8 @@ class Expression {
                 p.addDependencies( source, dependencies );
             }
         }
+
+        //TODO also add dependencies on measurements and increments and (optionally) show these in the list too. 
     }
 }
 

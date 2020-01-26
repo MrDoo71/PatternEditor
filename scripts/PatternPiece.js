@@ -76,7 +76,9 @@ class PatternPiece {
                     this.dependencies.push( { source: source, target: target } ); 
             }  
         };
-        for (var a = 0; a < this.drawingObjects.length; a++) {
+        
+        for (var a = 0; a < this.drawingObjects.length; a++) 
+        {
             var dObj = this.drawingObjects[a];
             dObj.setDependencies( this.dependencies );
         }
