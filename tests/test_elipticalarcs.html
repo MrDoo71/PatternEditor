@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - eliptical arcs</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Eliptical Arcs
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "pattern":
+                {
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0, "y": 0, "mx": 0.392506, "my": -0.342582 },     
+                            {
+                              "derivedName": "ElArc_A_2",
+                              "objectType": "arcElliptical",
+                              "center": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "angle1":
+                                { "constant": 45 },
+                              "angle2":
+                                { "constant": 270 },
+                              "radius1":
+                                { "constant": 3 },
+                              "radius2":
+                                { "constant": 5 },
+                              "rotationAngle":
+                                { "constant": 30 } //30
+                            },                                                            
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "mx": 0.450331,
+                              "my": -0.458232,
+                              "angle":
+                                { "constant": 75 },
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "none",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 30 },
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": -0.301397,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A",
+                              "secondPoint": "A2",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.363593,
+                              "my": -1.23887,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A4",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 14 }
+                            },
+                            {
+                              "name": "A6_",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A5",
+                              "lineStyle": "solid",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 146.474 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "ZZ",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A",
+                              "curve": "ElArc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -1.4579,
+                              "my": 0.0911073,
+                              "angle":
+                                { "constant": 180}
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A5",
+                              "curve": "ElArc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -1.4579,
+                              "my": 0.0911073,
+                              "angle":
+                                { "constant": 146.474 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A5",
+                              "secondPoint": "A6",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": -1.60246,
+                              "my": -1.55691,
+                              "length":
+                                { "constant": 10 }
+                            }
+                            ,
+                            {
+                              "name": "A7",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A8",
+                              "curve": "ElArc_A_2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.21903,
+                              "my": -1.32561,
+                              "angle":
+                                { "constant": 0 }
+                            } 
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+      </div>
+    </div>
+    <div>
+      <img src="expectedResults/ellipse.png" />
+    </div>
+</body>
+
+</html>

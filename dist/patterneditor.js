@@ -266,7 +266,7 @@ class Expression {
     }
 
 
-    //The dependencies of this expression need adding to the source drawinObject that uses this expression
+    //The dependencies of this expression need adding to the source drawingObject that uses this expression
     addDependencies( source, dependencies ) 
     {
         if ( typeof this.drawingObject1 !== "undefined" )
@@ -275,9 +275,8 @@ class Expression {
         if ( typeof this.drawingObject2 !== "undefined" )
             dependencies.add( source, this.drawingObject2 );
 
-        if ( typeof this.drawingObject !== "undefined" )
+        if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );
-
 
         //recurse into the expression parameters.
         if ( this.params )
@@ -319,6 +318,7 @@ class GeoPoint {
     }
 
     line( point2 ) {    
+        throw "this looks broken, two params, not four";
         return new GeoLine( this.x, this.y, point2.x, point2.y );
     }
 
@@ -327,6 +327,20 @@ class GeoPoint {
         var y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
     }
+
+
+    rotate( center, rotateAngleDeg )
+    {
+        //Convert degrees to radians
+        
+        var centerToSourceLine = new GeoLine( center, this );
+        var distance = centerToSourceLine.getLength();
+        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + rotateAngleDeg ) / 360 );
+
+        var result = center.pointAtDistanceAndAngle( distance, angle );
+        return result;
+    }
+
 
     asPoint2D()
     {
@@ -398,13 +412,52 @@ class GeoLine {
 
     intersectArc( arc )
     {
+        var arcSI,lineSI;
+
+        //nb there is a special case for GeoEllipticalArc where this.p1 == arc.center in 
+        //which case a simple formula gives the intersect.
+        if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
+        {            
+            console.log("elliptical arc ");
+            
+            //create an equivalent arc that is not rotated.
+            //create a new line, rotate the startpoint by -rotationAngle, the new lines angle should also be less by -rotationAngle
+            //finally rotate the intersect point back
+            var nrArc = new GeoEllipticalArc( arc.center,
+                                              arc.radius1,
+                                              arc.radius2, 
+                                              arc.angle1, 
+                                              arc.angle2,
+                                              0 );
+            var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
+            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngle( 1000, (this.angleDeg() - arc.rotationAngle) /180 * Math.PI  ) );
+
+            arcSI = nrArc.asShapeInfo();
+            lineSI = lineRotated.asShapeInfo();    
+        }
+        else
+        {
+            arcSI = arc.asShapeInfo();
+            lineSI = this.asShapeInfo();    
+        }
+
         //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
-        var arcSI = arc.asShapeInfo();
-        var lineSI = this.asShapeInfo();
+    
         var intersections = Intersection.intersect(arcSI, lineSI);
         
         intersections.points.forEach(console.log);    
-        return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+        if ( intersections.points.length === 0 )
+            throw "no intersection with arc";
+
+        var intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+        if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
+        {
+            intersect = intersect.rotate( arc.center, +arc.rotationAngle );
+        }
+
+        return intersect;
     }
 
     asShapeInfo()
@@ -442,46 +495,13 @@ class GeoArc {
         this.radius = radius;
         this.angle1 = angle1;
         this.angle2 = angle2;
+        //radius2
+        //rotationAngle
 
         //Correct 180-0 to 180-360
         if ( this.angle2 < this.angle1 )
-        this.angle2+=360;
+            this.angle2+=360;
     }
-
-    //TODO based on SVG book 
-    centeredToSVG( cx, cy, rx, ry, theta/*arcStart*/, delta/*arcExtent*/, phi/*x axis rotation*/ )
-    {
-        var endTheta, phiRad;
-        var x0, y0, x1, y1, largeArc, sweep;
-        theta = theta * Math.PI / 180;
-        endTheta = ( theta + delta ) * Math.PI / 180;
-        phiRad = phi * Math.PI / 180;
-
-        x0 = cx + Math.cos( phiRad ) * rx * Math.cos(theta) +
-                  Math.sin( -phiRad ) * ry * Math.sin(theta);
-    
-        y0 = cy + Math.sin( phiRad ) * rx * Math.cos(theta) +
-                  Math.cos( phiRad ) * ry * Math.sin(theta);
-    
-        x1 = cx + Math.cos( phiRad ) * rx * Math.cos(endTheta) +
-                  Math.sin( -phiRad ) * ry * Math.sin(endTheta);
-    
-        y1 = cy + Math.sin( phiRad ) * rx * Math.cos(endTheta) +
-                  Math.cos( phiRad ) * ry * Math.sin(endTheta);
-    
-        largeArc = ( delta > 180 ) ? 1 : 0;
-        sweep = ( delta > 0 ) ? 1 : 0;
-         
-        return { x: x0,
-                 y: y0,
-                rx: rx,
-                ry: ry,
-                xAxisAngle: phi,
-                largeArc: largeArc,
-                sweep: sweep,
-                x1: x1,
-                y1: y1 };
-    }    
 
 
     svgPath()
@@ -632,6 +652,126 @@ class GeoSpline {
 }
 
 
+class GeoEllipticalArc {
+
+    constructor( center, radius1, radius2, angle1, angle2, rotationAngle ) 
+    {
+        this.center = center;
+        this.radius1 = radius1;
+        this.radius2 = radius2;
+        this.angle1 = angle1;
+        this.angle2 = angle2;
+        this.rotationAngle = rotationAngle;
+    }
+
+
+    //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
+    getEllipsePointForAngle(cx, cy, rx, ry, phi, theta) 
+    {
+        const { abs, sin, cos } = Math;
+        
+        //https://en.wikipedia.org/wiki/Ellipse#Polar_form_relative_to_focus
+        const radius=   ( rx * ry )
+                      / Math.sqrt( Math.pow( rx * Math.sin( theta ),2 ) + Math.pow( ry * Math.cos( theta ), 2 ) ); 
+
+        const M = radius * cos(theta),
+              N = radius * sin(theta);  
+
+        return { x: cx + cos(phi) * M - sin(phi) * N,
+                 y: cy + sin(phi) * M + cos(phi) * N };
+     }
+
+
+    //TODO based on SVG book, but corrected
+    centeredToSVG( cx, cy, rx, ry, thetaDeg/*arcStart*/, deltaDeg/*arcExtent*/, phiDeg/*x axis rotation*/ )
+    {
+        var theta, endTheta, phiRad;
+        var largeArc, sweep;
+        theta = thetaDeg * Math.PI / 180;
+        endTheta = ( thetaDeg + deltaDeg ) * Math.PI / 180;
+        phiRad = phiDeg * Math.PI / 180;
+
+        //console.log( "centeredToSVG thetaDeg: " + thetaDeg );
+        //console.log( "centeredToSVG deltaDeg: " + deltaDeg );
+        //console.log( "centeredToSVG endThetaDeg: " + ( thetaDeg + deltaDeg ) );
+        //console.log( "centeredToSVG endTheta: " + endTheta );
+
+        var start = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, theta);
+        var end = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, endTheta);
+
+        //console.log( "3. centeredToSVG x0,y0: " + x0 + "," + y0 );
+        //console.log( "3. centeredToSVG x1,y1: " + x1 + "," + y1 );
+
+        largeArc = ( deltaDeg > 180 ) || ( deltaDeg < -180 ) ? 1 : 0;
+        sweep = ( deltaDeg > 0 ) ? 0 : 1;
+         
+        return { x: start.x,
+                 y: start.y,
+                rx: rx,
+                ry: ry,
+                xAxisAngle: phiDeg,
+                largeArc: largeArc,
+                sweep: sweep,
+                x1: end.x,
+                y1: end.y };
+    }    
+
+
+    svgPath()
+    {
+        // 90->180   -90 -> -180     -90,-90
+        // 0->90   -0 +-90
+        var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
+        var path = "M" + d2.x + "," + d2.y;
+        path += " A" + d2.rx + " " + d2.ry;
+        path += " " + d2.xAxisAngle;
+        path += " " + d2.largeArc + ",0";// + d2.sweep;
+        path += " " + d2.x1 + "," + d2.y1 + " ";
+
+        console.log( "GeoEllipticalArc: " + path );
+
+        return path;
+    }
+
+    asShapeInfo()
+    {     
+        //TEMPORARY ON TRIAL - THIS WORKS, SO ROTATE TRANSLATE 
+        //              cx, cy, rx, ry. start, end   
+        if ( this.rotationAngle === 0 )
+            return ShapeInfo.arc( this.center.x, this.center.y, this.radius1, this.radius2, this.angle1/180*Math.PI, this.angle2/180*Math.PI)
+
+        var svgPath = this.svgPath();
+        console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
+        return ShapeInfo.path( svgPath );
+    }
+    
+    pointAlongPathFraction( fraction ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var l = path.getTotalLength();
+        var p = path.getPointAtLength( l * fraction );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }       
+
+    pointAlongPath( length ) {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var p = path.getPointAtLength( length );
+        console.log(p);      
+        return new GeoPoint( p.x, p.y );
+    }       
+
+
+    pathLength() {
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        return path.getTotalLength();
+    }             
+
+}
+
+
 class DrawingObject /*abstract*/ {
     
     constructor(data) {
@@ -709,6 +849,105 @@ class DrawingObject /*abstract*/ {
 //    require('../geometry');
 //});
 
+class ArcElliptical extends DrawingObject {
+
+    //center
+    //angle1
+    //angle2
+    //radius1
+    //radius2
+    //rotationAngle
+
+    constructor(data) {
+        super(data);
+
+        if ( typeof this.data.name === "undefined" )
+            this.data.name = data.derivedName;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.center === "undefined")
+            this.center = this.patternPiece.getObject(d.center);
+        if (typeof this.angle1 === "undefined")
+            this.angle1 = this.patternPiece.newFormula(d.angle1);
+        if (typeof this.angle2 === "undefined")
+            this.angle2 = this.patternPiece.newFormula(d.angle2);
+        if (typeof this.radius1 === "undefined")
+            this.radius1 = this.patternPiece.newFormula(d.radius1);
+        if (typeof this.radius2 === "undefined")
+            this.radius2 = this.patternPiece.newFormula(d.radius2);
+        if (typeof this.rotationAngle === "undefined")
+            this.rotationAngle = this.patternPiece.newFormula(d.rotationAngle);
+
+        this.arc = new GeoEllipticalArc( this.center.p, 
+                                         this.radius1.value(),
+                                         this.radius2.value(), 
+                                         this.angle1.value(), 
+                                         this.angle2.value(),
+                                         this.rotationAngle.value() );
+
+        this.p = this.arc.pointAlongPathFraction( 0.5 );
+        bounds.adjust( this.p );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.5 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.75 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
+    }
+
+
+    pointAlongPath( length )
+    {
+        return this.arc.pointAlongPath( length );
+    }
+    
+
+    asShapeInfo()
+    {
+        return this.arc.asShapeInfo();
+    }
+
+
+    draw(g) {
+        var d = this.data;
+        var p = g.append("path")
+              .attr("d", this.arc.svgPath() )
+              .attr("fill", "none")
+              .attr("stroke-width", 1 / scale)
+              .attr("stroke", this.getColor() );
+
+        this.drawLabel(g, this);
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: elliptical arc with center ' + this.data.center 
+                + " radius-x " + this.data.radius1.html() 
+                + " radius-y " + this.data.radius2.html() 
+                + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html()
+                + " rotation angle " + this.data.rotationAngle.html() ;
+    }
+
+    
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.center );
+        dependencies.add( this, this.angle1 );
+        dependencies.add( this, this.angle2 );
+        dependencies.add( this, this.rotationAngle );
+        dependencies.add( this, this.radius1 );
+        dependencies.add( this, this.radius2 );
+    }    
+}
+
+//define(function (require) {
+//    require('./DrawingObject');
+//    require('../geometry');
+//});
+
 class ArcSimple extends DrawingObject {
 
     //center
@@ -741,27 +980,10 @@ class ArcSimple extends DrawingObject {
         this.p = this.arc.pointAlongPathFraction( 0.5 );
         bounds.adjust( this.p );
         bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.5 ) );
+        bounds.adjust( this.arc.pointAlongPathFraction( 0.75 ) );
         bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
-        /*
-        var arcData = this.arc.centeredToSVG( this.center.p.x, this.center.p.y, 
-            this.radius.value(), this.radius.value(), 
-            -this.angle1.value(), -(this.angle1.value() + this.angle2.value()) /2, 0 ); 
-
-        this.p = new GeoPoint( arcData.x1, arcData.y1 );
-
-        //This bound setting is inaccurate. Really we should look at the bounds set
-        //by the start and end points, and by the intersection of the x and y axis with the curve
-        //(which may be multiple)
-        let east  = this.center.p.pointAtDistanceAndAngle( this.radius.value(), 0   *Math.PI / 180);
-        let north = this.center.p.pointAtDistanceAndAngle( this.radius.value(), 90  *Math.PI / 180);
-        let west  = this.center.p.pointAtDistanceAndAngle( this.radius.value(), 180 *Math.PI / 180);
-        let south = this.center.p.pointAtDistanceAndAngle( this.radius.value(), 270 *Math.PI / 180);
-
-        bounds.adjust( east );
-        bounds.adjust( north );
-        bounds.adjust( west );
-        bounds.adjust( south );
-        */
     }
 
 
@@ -795,8 +1017,6 @@ class ArcSimple extends DrawingObject {
               .attr("stroke-width", 1 / scale)
               .attr("stroke", this.getColor() );
 
-        //Where should we draw the label? half way along the arc?
-        //this.drawDot(g, this);
         this.drawLabel(g, this);
     }
 
@@ -3024,7 +3244,9 @@ class PatternPiece {
                     this.dependencies.push( { source: source, target: target } ); 
             }  
         };
-        for (var a = 0; a < this.drawingObjects.length; a++) {
+        
+        for (var a = 0; a < this.drawingObjects.length; a++) 
+        {
             var dObj = this.drawingObjects[a];
             dObj.setDependencies( this.dependencies );
         }
@@ -3070,6 +3292,8 @@ class PatternPiece {
             return new PointShoulder(dObj);            
         else if (dObj.objectType === "arcSimple")
             return new ArcSimple(dObj);
+        else if (dObj.objectType === "arcElliptical")
+            return new ArcElliptical(dObj);
         else if (dObj.objectType === "splineSimple")
             return new SplineSimple(dObj);
         else if (dObj.objectType === "splineUsingPoints")

@@ -3,12 +3,14 @@
 //    require('../geometry');
 //});
 
-class ArcSimple extends DrawingObject {
+class ArcElliptical extends DrawingObject {
 
     //center
     //angle1
     //angle2
-    //radius 
+    //radius1
+    //radius2
+    //rotationAngle
 
     constructor(data) {
         super(data);
@@ -27,10 +29,19 @@ class ArcSimple extends DrawingObject {
             this.angle1 = this.patternPiece.newFormula(d.angle1);
         if (typeof this.angle2 === "undefined")
             this.angle2 = this.patternPiece.newFormula(d.angle2);
-        if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+        if (typeof this.radius1 === "undefined")
+            this.radius1 = this.patternPiece.newFormula(d.radius1);
+        if (typeof this.radius2 === "undefined")
+            this.radius2 = this.patternPiece.newFormula(d.radius2);
+        if (typeof this.rotationAngle === "undefined")
+            this.rotationAngle = this.patternPiece.newFormula(d.rotationAngle);
 
-        this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
+        this.arc = new GeoEllipticalArc( this.center.p, 
+                                         this.radius1.value(),
+                                         this.radius2.value(), 
+                                         this.angle1.value(), 
+                                         this.angle2.value(),
+                                         this.rotationAngle.value() );
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
         bounds.adjust( this.p );
@@ -56,18 +67,8 @@ class ArcSimple extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var arcPath = d3.path();
-        var a2 = this.angle2.value();
-        if ( a2 < this.angle1.value() )
-            a2 += 360;
-        arcPath.arc( this.center.p.x, this.center.p.y, 
-                     this.radius.value(), 
-                     -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
-        
-        console.log( "ArcSimple d3 path ", arcPath );
-
-        g.append("path")
-              .attr("d", arcPath )
+        var p = g.append("path")
+              .attr("d", this.arc.svgPath() )
               .attr("fill", "none")
               .attr("stroke-width", 1 / scale)
               .attr("stroke", this.getColor() );
@@ -77,7 +78,11 @@ class ArcSimple extends DrawingObject {
 
 
     html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: arc with center ' + this.data.center + " radius " + this.data.radius.html() + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html();
+        return '<span class="ps-name">' + this.data.name + '</span>: elliptical arc with center ' + this.data.center 
+                + " radius-x " + this.data.radius1.html() 
+                + " radius-y " + this.data.radius2.html() 
+                + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html()
+                + " rotation angle " + this.data.rotationAngle.html() ;
     }
 
     
@@ -86,6 +91,8 @@ class ArcSimple extends DrawingObject {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );
-        dependencies.add( this, this.radius );
+        dependencies.add( this, this.rotationAngle );
+        dependencies.add( this, this.radius1 );
+        dependencies.add( this, this.radius2 );
     }    
 }

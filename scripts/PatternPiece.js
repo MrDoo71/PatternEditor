@@ -124,6 +124,8 @@ class PatternPiece {
             return new PointShoulder(dObj);            
         else if (dObj.objectType === "arcSimple")
             return new ArcSimple(dObj);
+        else if (dObj.objectType === "arcElliptical")
+            return new ArcElliptical(dObj);
         else if (dObj.objectType === "splineSimple")
             return new SplineSimple(dObj);
         else if (dObj.objectType === "splineUsingPoints")
