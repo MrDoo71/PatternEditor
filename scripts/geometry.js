@@ -370,6 +370,17 @@ class GeoEllipticalArc {
     }
 
 
+    clone() {
+        return new GeoEllipticalArc( this.center, 
+                                     this.radius1, 
+                                     this.radius2, 
+                                     this.angle1,  
+                                     this.angle2,
+                                     this.rotationAngle );
+    }
+
+    //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
+    //http://xahlee.info/js/svg_path_ellipse_arc.html
     //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
     getEllipsePointForAngle(cx, cy, rx, ry, phi, theta) 
     {

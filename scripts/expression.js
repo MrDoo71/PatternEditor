@@ -129,6 +129,7 @@ class Expression {
                 return this.drawingObject.arc.pathLength();
             else
             {
+                //this.drawingObject is a cut object
                 var arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
 
                 //where in the arc is this.drawingObject.curve?
@@ -136,17 +137,40 @@ class Expression {
                 var angleToIntersectRad = radiusToIntersectLine.angle;
                 if ( this.arcSelection === "beforeArcCut")
                 {
-                    var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
-                    var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
-                    var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
-                    return length;
+                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                    {
+                        //else elliptical arc: from the arc's start angle to this cut angle. 
+                        const cutArc = arcDrawingObject.arc.clone();
+                        cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
+                        if ( cutArc.angle2 < 0 )
+                            cutArc.angle2 += 360;
+                        return cutArc.pathLength();
+                    }
+                    else //if arc
+                    {
+                        var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
+                        var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
+                        var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+                        return length;
+                    }                    
                 }
-                else
+                else //afterArcCut
                 {
-                    var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
-                    var segmentRad = arcEndAngleRad - angleToIntersectRad;
-                    var length = radiusToIntersectLine.length * segmentRad;
-                    return length;
+                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                    {
+                        const cutArc = arcDrawingObject.arc.clone();
+                        cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
+                        if ( cutArc.angle1 < 0 )
+                            cutArc.angle1 += 360;
+                        return cutArc.pathLength();
+                    }
+                    else //if arc
+                    {
+                        var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
+                        var segmentRad = arcEndAngleRad - angleToIntersectRad;
+                        var length = radiusToIntersectLine.length * segmentRad;
+                        return length;
+                    }
                 }
             }
         }        

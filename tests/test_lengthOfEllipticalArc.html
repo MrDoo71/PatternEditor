@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>Test from JSON - eliptical arcs</title>
+  <title>Test from JSON - length of elliptical arc</title>
 
   <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
@@ -23,7 +23,7 @@
     <div class="container">
       <div class="row">
         <h1 class="col-sm-12 ">
-          Eliptical Arcs
+          Length of elliptical arc
         </h1>
       </div>
       <div id="REP1002132">
@@ -157,6 +157,80 @@
                               "my": -1.32561,
                               "angle":
                                 { "constant": 0 }
+                            },
+                            {
+                              "name": "ARCLENGTH",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "lime",
+                              "mx": -4.88363,
+                              "my": -1.39423,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "ElArc_A_2", "drawingObject2": "ElArc_A_2", "arcSelection": "wholeArc" }
+                              }
+                            },
+                            {
+                              "name": "T1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "lime",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "ELARC_A_9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "T1",
+                              "lineStyle": "hair",
+                              "color": "lime",
+                              "mx": -4.27145,
+                              "my": 0.244836,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A6", "drawingObject2": "ElArc_A_2", "arcSelection": "beforeArcCut" }
+                              }
+                            },
+                            {
+                              "name": "ELARC_A_10",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ELARC_A_9",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -2.33617,
+                              "my": 1.29146,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "A6", "drawingObject2": "ElArc_A_2", "arcSelection": "afterArcCut" }
+                              }
+                            },
+                            {
+                              "name": "T0",
+                              "objectType": "pointEndLine",
+                              "basePoint": "ELARC_A_10",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.329766,
+                              "my": -0.308101,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 1 }
                             }
                           ]
                       }
@@ -166,11 +240,14 @@
               , 'v343110_graph1', { interactionPrefix: 'RF346740' });
           </script>
         </div>
+        <div style="z-index:0; position:absolute; top:21px; left:306px; opacity: 0.5">
+          <img style="width:484px" src="expectedResults/ellipseLength.png" />
+        </div>
+
+
       </div>
     </div>
-    <div>
-      <img src="expectedResults/ellipse.png" />
-    </div>
+
 </body>
 
 </html>
