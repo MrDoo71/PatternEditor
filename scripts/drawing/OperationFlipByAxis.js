@@ -48,10 +48,10 @@ class OperationFlipByAxis extends DrawingObject {
         else
             result.y = this.center.p.y - ( source.p.y - this.center.p.y );
 
-        console.log("Axis:" + this.axis );
-        console.log( "Center y " + this.center.p.y );
-        console.log( "Source y " + source.p.y );
-        console.log( "Result y " + result.y );
+        //console.log("Axis:" + this.axis );
+        //console.log( "Center y " + this.center.p.y );
+        //console.log( "Source y " + source.p.y );
+        //console.log( "Result y " + result.y );
 
         return result;
     }

@@ -29,9 +29,17 @@ class PointIntersectCurves extends DrawingObject {
 
         var intersections = Intersection.intersect(curve1SI, curve2SI);
         
-        intersections.points.forEach(console.log);    
-        if ( intersections.points.length === 1 )
+        //intersections.points.forEach(console.log);    
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "No intersections found. PointIntersectCurves: " + d.name );
+        }        
+        else if ( intersections.points.length === 1 )
+        {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        }
         else if ( intersections.points.length > 1 )    
         {
             //Vertical correction has first dibs. verticalCrossPoint=="One" means highest point; horizontalCrossPoint=="One" means leftmost point

@@ -40,11 +40,13 @@ class PointIntersectCircles extends DrawingObject {
 
         var intersections = Intersection.intersect(arc1SI, arc2SI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
         
         if ( intersections.points.length === 0 )
         {
             this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectCircles: " + d.name );
         }
         else if ( intersections.points.length === 1 )
         {

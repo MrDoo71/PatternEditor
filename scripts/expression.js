@@ -179,6 +179,11 @@ class Expression {
             var p1 = this.params[0].value(currentLength);
             return Math.sqrt( p1 ); 
         }
+        else if  ( this.function === "-" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return -p1; 
+        }
         else throw ("Unknown function: " + this.function );
     }
     

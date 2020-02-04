@@ -31,10 +31,19 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        if ( this.arc.arc )
-            this.p = longLine.intersectArc( this.arc.arc );
-        else
-            this.p = longLine.intersectArc( this.arc.curve );
+        try {
+
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
+
+        } catch (e) {
+            console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            //TODO set status to failed and highlight as red
+        }
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 

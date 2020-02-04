@@ -64,7 +64,7 @@ class ArcSimple extends DrawingObject {
                      this.radius.value(), 
                      -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
         
-        console.log( "ArcSimple d3 path ", arcPath );
+        //console.log( "ArcSimple d3 path ", arcPath );
 
         g.append("path")
               .attr("d", arcPath )

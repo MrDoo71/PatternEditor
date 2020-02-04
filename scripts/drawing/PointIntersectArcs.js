@@ -32,7 +32,13 @@ class PointIntersectArcs extends DrawingObject {
         
         intersections.points.forEach(console.log);    
         
-        if ( intersections.points.length === 1 )
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectArcAndAxis: " + d.name );
+        }
+        else if ( intersections.points.length === 1 )
         {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }

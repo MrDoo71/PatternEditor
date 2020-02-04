@@ -187,6 +187,11 @@ class Expression {
             var p1 = this.params[0].value(currentLength);
             return Math.sqrt( p1 ); 
         }
+        else if  ( this.function === "-" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return -p1; 
+        }
         else throw ("Unknown function: " + this.function );
     }
     
@@ -442,7 +447,7 @@ class GeoLine {
         //which case a simple formula gives the intersect.
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {            
-            console.log("elliptical arc ");
+            //console.log("elliptical arc ");
             
             //create an equivalent arc that is not rotated.
             //create a new line, rotate the startpoint by -rotationAngle, the new lines angle should also be less by -rotationAngle
@@ -528,13 +533,38 @@ class GeoArc {
     }
 
 
+    /**
+     * Get the points on this arc where the tangents that go through
+     * the specified point touch this arc.
+     * 
+     * @param {*} pointOnTangent 
+     */
+    getPointsOfTangent( pointOnTangent )
+    {
+        //There is a right angle triangle where
+        //hypotenous is the line tangent-arc.center - known length
+        //lines tangent-p and p-center form a right angle.   p-center has length arc.radius
+        //cos(i) = arc.radius / tangent-arc.center
+        var radius  = this.radius;
+        var h       = new GeoLine( this.center, pointOnTangent );
+        var hLength = h.length;
+        var angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
+        var totalAngleR;
+
+        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngle( radius, h.angle - angle ),
+                                   this.center.pointAtDistanceAndAngle( radius, h.angle + angle ) ];        
+        
+        return tangentTouchPoints;
+    }
+
+
     svgPath()
     {
         var arcPath = d3.path();
         arcPath.arc( this.center.x, this.center.y, 
                      this.radius, 
                      -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
-        console.log( "Could have used d3:", arcPath.toString() );
+        //console.log( "Could have used d3:", arcPath.toString() );
         return arcPath.toString();
 
         //var a2 = this.angle2;
@@ -560,7 +590,7 @@ class GeoArc {
         if ( length > path.getTotalLength() )
             length = path.getTotalLength();
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }        
 
@@ -570,7 +600,7 @@ class GeoArc {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }         
     
@@ -639,7 +669,7 @@ class GeoSpline {
             }
         }
 
-        console.log( "GeoSpline: " + path );
+        //console.log( "GeoSpline: " + path );
 
         return path;
     }
@@ -654,7 +684,7 @@ class GeoSpline {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -662,7 +692,7 @@ class GeoSpline {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -763,7 +793,7 @@ class GeoEllipticalArc {
         path += " " + d2.largeArc + ",0";// + d2.sweep;
         path += " " + d2.x1 + "," + d2.y1 + " ";
 
-        console.log( "GeoEllipticalArc: " + path );
+        //console.log( "GeoEllipticalArc: " + path );
 
         return path;
     }
@@ -785,7 +815,7 @@ class GeoEllipticalArc {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -793,7 +823,7 @@ class GeoEllipticalArc {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -1044,7 +1074,7 @@ class ArcSimple extends DrawingObject {
                      this.radius.value(), 
                      -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
         
-        console.log( "ArcSimple d3 path ", arcPath );
+        //console.log( "ArcSimple d3 path ", arcPath );
 
         g.append("path")
               .attr("d", arcPath )
@@ -1263,10 +1293,10 @@ class OperationFlipByAxis extends DrawingObject {
         else
             result.y = this.center.p.y - ( source.p.y - this.center.p.y );
 
-        console.log("Axis:" + this.axis );
-        console.log( "Center y " + this.center.p.y );
-        console.log( "Source y " + source.p.y );
-        console.log( "Result y " + result.y );
+        //console.log("Axis:" + this.axis );
+        //console.log( "Center y " + this.center.p.y );
+        //console.log( "Source y " + source.p.y );
+        //console.log( "Result y " + result.y );
 
         return result;
     }
@@ -1868,6 +1898,132 @@ class PointEndLine extends DrawingObject {
 
 }
 
+//something
+class PointFromArcAndTangent extends DrawingObject {
+
+    //arc
+    //tangent
+    //crossPoint
+
+    constructor(data) {
+        super(data);
+    }
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.tangent === "undefined")
+            this.tangent = this.patternPiece.getObject(d.tangent);
+
+        if (typeof this.arc === "undefined")
+            this.arc = this.patternPiece.getObject(d.arc); 
+
+        this.crossPoint = d.crossPoint;
+
+        var tangentIntersections = this.arc.arc.getPointsOfTangent( this.tangent.p );
+        
+        //TODO what is the real logic for crossPoint One vs Two
+        if ( this.crossPoint === "One" ) 
+            this.p = tangentIntersections[1];
+        else 
+            this.p = tangentIntersections[0];
+            
+        this.line = new GeoLine( this.tangent.p, this.p );
+
+        bounds.adjust(this.p);
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        this.drawLine(g, this);
+        this.drawDot(g, this);
+        this.drawLabel(g, this);
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: point on arc ' + this.arc.data.derivedName + 
+                ' of tangent from point ' + this.tangent.data.name +
+                ' crosspoint:' + this.crossPoint;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.tangent );
+        dependencies.add( this, this.arc );
+    }    
+
+}
+
+//something
+class PointFromCircleAndTangent extends DrawingObject {
+
+    //center
+    //tangent
+    //crossPoint
+    //radius
+
+    constructor(data) {
+        super(data);
+    }
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.tangent === "undefined")
+            this.tangent = this.patternPiece.getObject(d.tangent);
+
+        if (typeof this.arc === "undefined")
+            this.center = this.patternPiece.getObject(d.center); 
+
+        if (typeof this.radius === "undefined")
+            this.radius = this.patternPiece.newFormula(d.radius);
+
+        this.crossPoint = d.crossPoint;
+
+        var circle = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
+
+        var tangentIntersections = circle.getPointsOfTangent( this.tangent.p );
+        
+        //TODO what is the real logic for crossPoint One vs Two
+        if ( this.crossPoint === "One" ) 
+            this.p = tangentIntersections[1];
+        else 
+            this.p = tangentIntersections[0];
+            
+        this.line = new GeoLine( this.tangent.p, this.p );
+
+        bounds.adjust(this.p);
+    }
+
+
+    draw(g) {
+        //g is the svg group
+        this.drawLine(g, this);
+        this.drawDot(g, this);
+        this.drawLabel(g, this);
+    }
+
+
+    html() {
+        return '<span class="ps-name">' + this.data.name + '</span>: point on circle with center ' + this.center.data.derivedName + 
+                ' radius ' + this.radius.html() +
+                ' of tangent from point ' + this.tangent.data.name +
+                ' crosspoint:' + this.crossPoint;
+    }
+
+
+    setDependencies( dependencies )
+    {
+        dependencies.add( this, this.tangent );
+        dependencies.add( this, this.center );
+        dependencies.add( this, this.radius );
+    }    
+
+}
+
 /*define(function (require) {
     require('./DrawingObject');
     require('../geometry');
@@ -1949,10 +2105,19 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        if ( this.arc.arc )
-            this.p = longLine.intersectArc( this.arc.arc );
-        else
-            this.p = longLine.intersectArc( this.arc.curve );
+        try {
+
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
+
+        } catch (e) {
+            console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            //TODO set status to failed and highlight as red
+        }
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
@@ -2083,7 +2248,13 @@ class PointIntersectArcs extends DrawingObject {
         
         intersections.points.forEach(console.log);    
         
-        if ( intersections.points.length === 1 )
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectArcAndAxis: " + d.name );
+        }
+        else if ( intersections.points.length === 1 )
         {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
@@ -2186,11 +2357,13 @@ class PointIntersectCircles extends DrawingObject {
 
         var intersections = Intersection.intersect(arc1SI, arc2SI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
         
         if ( intersections.points.length === 0 )
         {
             this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectCircles: " + d.name );
         }
         else if ( intersections.points.length === 1 )
         {
@@ -2288,8 +2461,18 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         var curveSI = this.curve.asShapeInfo();
 
         var intersections = Intersection.intersect(lineSI, curveSI);        
-        intersections.points.forEach(console.log);    
-        this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectCurveAndAxis: " + d.name );
+        }
+        else
+        {
+            //intersections.points.forEach(console.log);    
+            this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        }
         this.line = new GeoLine( this.basePoint.p, this.p );
         bounds.adjust(this.p);
     }
@@ -2348,9 +2531,17 @@ class PointIntersectCurves extends DrawingObject {
 
         var intersections = Intersection.intersect(curve1SI, curve2SI);
         
-        intersections.points.forEach(console.log);    
-        if ( intersections.points.length === 1 )
+        //intersections.points.forEach(console.log);    
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "No intersections found. PointIntersectCurves: " + d.name );
+        }        
+        else if ( intersections.points.length === 1 )
+        {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        }
         else if ( intersections.points.length > 1 )    
         {
             //Vertical correction has first dibs. verticalCrossPoint=="One" means highest point; horizontalCrossPoint=="One" means leftmost point
@@ -3361,6 +3552,10 @@ class PatternPiece {
             return new OperationFlipByAxis(dObj);                  
         else if (dObj.objectType === "operationResult")
             return new OperationResult(dObj);                  
+        else if (dObj.objectType === "pointFromArcAndTangent")
+            return new PointFromArcAndTangent(dObj);                  
+        else if (dObj.objectType === "pointFromCircleAndTangent")
+            return new PointFromCircleAndTangent(dObj);                  
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );

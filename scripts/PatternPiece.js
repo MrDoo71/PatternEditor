@@ -156,6 +156,10 @@ class PatternPiece {
             return new OperationFlipByAxis(dObj);                  
         else if (dObj.objectType === "operationResult")
             return new OperationResult(dObj);                  
+        else if (dObj.objectType === "pointFromArcAndTangent")
+            return new PointFromArcAndTangent(dObj);                  
+        else if (dObj.objectType === "pointFromCircleAndTangent")
+            return new PointFromCircleAndTangent(dObj);                  
             
 
         throw( "Unsupported drawing object type:" + dObj.objectType );

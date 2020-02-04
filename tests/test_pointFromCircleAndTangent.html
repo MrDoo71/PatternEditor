@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - point from circle and tangent</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Point Intersect Circle and Tangent
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "pattern":
+                {
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0, "y": 0, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 20 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 20 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 315 },
+                              "length":
+                                { "constant": 12 }
+                            },
+                            {
+                              "derivedName": "Arc_A3_5",
+                              "objectType": "arcSimple",
+                              "center": "A3",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "angle1":
+                                { "constant": 75 },
+                              "angle2":
+                                { "constant": 215 },
+                              "radius":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A",
+                              "secondPoint": "A3",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -0.183718,
+                              "my": -1.63148,
+                              "length":
+                                { "constant": 6 }
+                            },
+                            { "name": "T2", "objectType": "pointFromArcAndTangent", "arc": "Arc_A3_5", "tangent": "A6", "crossPoint": "Two", "mx": -1.00008, "my": -1.49981 },
+                            { "name": "T1", "objectType": "pointFromArcAndTangent", "arc": "Arc_A3_5", "tangent": "A6", "crossPoint": "One", "mx": -1.7111, "my": -0.578111 },
+                            { "derivedName": "Line_A6_T2", "objectType": "line", "firstPoint": "A6", "secondPoint": "T2", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_A6_T1", "objectType": "line", "firstPoint": "A6", "secondPoint": "T1", "lineStyle": "hair", "color": "deeppink" },
+                            {
+                              "name": "Q1",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A3",
+                              "tangent": "A6",
+                              "crossPoint": "One",
+                              "mx": 0.290297,
+                              "my": -0.525442,
+                              "radius":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "Q2",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A3",
+                              "tangent": "A6",
+                              "crossPoint": "Two",
+                              "mx": -0.499729,
+                              "my": 0.317251,
+                              "radius":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "Q2",
+                              "secondPoint": "A6",
+                              "lineStyle": "hair",
+                              "color": "darkRed",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": -5 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "Q1",
+                              "secondPoint": "A6",
+                              "lineStyle": "hair",
+                              "color": "darkRed",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": -5 }
+                            },
+                            {
+                              "name": "A9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 30 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "P",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "derivedName": "Arc_A9_23",
+                              "objectType": "arcSimple",
+                              "center": "A9",
+                              "lineStyle": "dotLine",
+                              "color": "orange",
+                              "angle1":
+                                { "constant": 0 },
+                              "angle2":
+                                { "constant": 360 },
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "P1",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A9",
+                              "tangent": "P",
+                              "crossPoint": "One",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "P2",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A9",
+                              "tangent": "P",
+                              "crossPoint": "Two",
+                              "mx": -1.47409,
+                              "my": -0.0250931,
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "W",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 20 }
+                            },
+                            { "derivedName": "Line_P_P2", "objectType": "line", "firstPoint": "P", "secondPoint": "P2", "lineStyle": "hair", "color": "mediumseagreen" },
+                            { "derivedName": "Line_P_P1", "objectType": "line", "firstPoint": "P", "secondPoint": "P1", "lineStyle": "hair", "color": "mediumseagreen" },
+                            {
+                              "name": "W2",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A9",
+                              "tangent": "W",
+                              "crossPoint": "Two",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "W1",
+                              "objectType": "pointFromCircleAndTangent",
+                              "center": "A9",
+                              "tangent": "W",
+                              "crossPoint": "One",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            { "derivedName": "Line_W_W2", "objectType": "line", "firstPoint": "W", "secondPoint": "W2", "lineStyle": "hair", "color": "deeppink" },
+                            { "derivedName": "Line_W_W1", "objectType": "line", "firstPoint": "W", "secondPoint": "W1", "lineStyle": "hair", "color": "deeppink" }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+          </script>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <img src="expectedResults/pointFromCircleAndTangent.png" />
+    </div>
+
+</body>
+
+</html>

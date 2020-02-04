@@ -123,7 +123,7 @@ class GeoLine {
         //which case a simple formula gives the intersect.
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {            
-            console.log("elliptical arc ");
+            //console.log("elliptical arc ");
             
             //create an equivalent arc that is not rotated.
             //create a new line, rotate the startpoint by -rotationAngle, the new lines angle should also be less by -rotationAngle
@@ -209,13 +209,38 @@ class GeoArc {
     }
 
 
+    /**
+     * Get the points on this arc where the tangents that go through
+     * the specified point touch this arc.
+     * 
+     * @param {*} pointOnTangent 
+     */
+    getPointsOfTangent( pointOnTangent )
+    {
+        //There is a right angle triangle where
+        //hypotenous is the line tangent-arc.center - known length
+        //lines tangent-p and p-center form a right angle.   p-center has length arc.radius
+        //cos(i) = arc.radius / tangent-arc.center
+        var radius  = this.radius;
+        var h       = new GeoLine( this.center, pointOnTangent );
+        var hLength = h.length;
+        var angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
+        var totalAngleR;
+
+        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngle( radius, h.angle - angle ),
+                                   this.center.pointAtDistanceAndAngle( radius, h.angle + angle ) ];        
+        
+        return tangentTouchPoints;
+    }
+
+
     svgPath()
     {
         var arcPath = d3.path();
         arcPath.arc( this.center.x, this.center.y, 
                      this.radius, 
                      -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
-        console.log( "Could have used d3:", arcPath.toString() );
+        //console.log( "Could have used d3:", arcPath.toString() );
         return arcPath.toString();
 
         //var a2 = this.angle2;
@@ -241,7 +266,7 @@ class GeoArc {
         if ( length > path.getTotalLength() )
             length = path.getTotalLength();
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }        
 
@@ -251,7 +276,7 @@ class GeoArc {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }         
     
@@ -320,7 +345,7 @@ class GeoSpline {
             }
         }
 
-        console.log( "GeoSpline: " + path );
+        //console.log( "GeoSpline: " + path );
 
         return path;
     }
@@ -335,7 +360,7 @@ class GeoSpline {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -343,7 +368,7 @@ class GeoSpline {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -444,7 +469,7 @@ class GeoEllipticalArc {
         path += " " + d2.largeArc + ",0";// + d2.sweep;
         path += " " + d2.x1 + "," + d2.y1 + " ";
 
-        console.log( "GeoEllipticalArc: " + path );
+        //console.log( "GeoEllipticalArc: " + path );
 
         return path;
     }
@@ -466,7 +491,7 @@ class GeoEllipticalArc {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -474,7 +499,7 @@ class GeoEllipticalArc {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );
-        console.log(p);      
+        //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
 

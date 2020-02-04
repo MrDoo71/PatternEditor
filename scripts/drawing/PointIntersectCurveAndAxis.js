@@ -34,8 +34,18 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         var curveSI = this.curve.asShapeInfo();
 
         var intersections = Intersection.intersect(lineSI, curveSI);        
-        intersections.points.forEach(console.log);    
-        this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+        if ( intersections.points.length === 0 )
+        {
+            this.p = new GeoPoint(0,0);
+            this.error = "No intersections found.";
+            console.log( "FAILED. No intersections found. PointIntersectCurveAndAxis: " + d.name );
+        }
+        else
+        {
+            //intersections.points.forEach(console.log);    
+            this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        }
         this.line = new GeoLine( this.basePoint.p, this.p );
         bounds.adjust(this.p);
     }
