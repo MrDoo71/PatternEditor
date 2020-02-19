@@ -12,7 +12,7 @@ g.j-point > circle {
 }
 
 g.j-point > text {
-    font-family: "sans-serif";
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     fill:#000;
 }
 
@@ -28,11 +28,12 @@ g.j-item div.desc {
 g.j-item.j-active div.desc {    
     padding: 3px 7px;
     border:2px solid #333;
+    background-color: #ffc;
 }
 
 path.link {
     fill:none;
-    stroke: #aaa;
+    stroke: #ddd;
     stroke-width: 1px;    
 }
 
@@ -61,6 +62,21 @@ g.j-item.target div.desc {
 }
 
 span.control-point { color: green }
+
+div.pattern-editor-controls {    
+    margin-bottom:15px;
+}
+
+svg.pattern-drawing { 
+    display: inline-block;
+    margin-right: 15px; 
+}
+
+div.pattern-table { 
+    display: inline-block;
+    margin-left: 15px; 
+    overflow-y: scroll;
+}
 
 /* dark mode 
 Note that lines can and often do specify stroke black

@@ -14,7 +14,7 @@ class DrawingObject /*abstract*/ {
             .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : d.mx))
             .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : d.my))
             .text(d.name)
-            .attr("font-size", (10 / scale) + "px");
+            .attr("font-size", Math.round(100 / scale)/10 + "px");
     }
 
     drawDot(g, o) {

@@ -853,7 +853,7 @@ class DrawingObject /*abstract*/ {
             .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : d.mx))
             .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : d.my))
             .text(d.name)
-            .attr("font-size", (10 / scale) + "px");
+            .attr("font-size", Math.round(100 / scale)/10 + "px");
     }
 
     drawDot(g, o) {
@@ -3638,6 +3638,7 @@ class PatternPiece {
 //var gInteractionPrefix; 
 var selectedObject;
 var linksGroup;
+//var layoutConfig;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
@@ -3695,22 +3696,80 @@ function drawPattern( dataAndConfig, ptarget, options )
     			 v ) ;
     }      
     
-    var targetdiv = d3.select( "#" + ptarget );
-    
-    doDrawing( targetdiv, pattern.patternPiece1, contextMenu );
-    
-    doTable( targetdiv, pattern.patternPiece1, contextMenu );
+    var targetdiv = d3.select( "#" + ptarget );    
+
+    dataAndConfig.options.layoutConfig = { drawingWidth: 400,
+                                           drawingHeight: 600,
+                                           drawingMargin: 0,//25,
+                                           tableWidth: 400,
+                                           tableHeight: 600,
+                                           tableMargin: 0 };//25 };
+
+    dataAndConfig.options.setButton = function( viewOption ) {
+        //alert("Click ! " + viewOption.label );
+
+        //TODO full screen version... https://bl.ocks.org/curran/3a68b0c81991e2e94b19
+        var totalWidth = viewOption.drawingWidth + viewOption.descriptionsWidth; //should be tableWidth
+        var availableWidth = targetdiv.style('width').slice(0, -2) -30;// 1000;
+        var availableHeight= window.innerHeight - document.getElementById( ptarget ).getBoundingClientRect().top -60 /*controlpanel*/;
+        this.layoutConfig.drawingWidth = availableWidth * viewOption.drawingWidth / totalWidth;
+        this.layoutConfig.tableWidth   = availableWidth * viewOption.descriptionsWidth / totalWidth;
+        this.layoutConfig.drawingHeight = availableHeight;
+        this.layoutConfig.tableHeight = availableHeight;
+    };    
+
+    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[1] );
+
+    var doDrawingAndTable = function() {
+                                    if ( dataAndConfig.options.layoutConfig.drawingWidth )
+                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options.layoutConfig, contextMenu );
+                                    else
+                                        targetdiv.select("svg.pattern-drawing").remove();
+
+                                    if ( dataAndConfig.options.layoutConfig.tableWidth )
+                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options.layoutConfig, contextMenu );
+                                    else
+                                        targetdiv.select("div.pattern-table").remove();
+                                };
+
+    doControls( targetdiv, dataAndConfig.options, doDrawingAndTable );
+    doDrawingAndTable();                            
+}
+
+
+function doControls( graphdiv, editorOptions, doDrawingAndTable )
+{
+    var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
+    var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
+
+    var a = sizeButtons.selectAll("button")
+                       .data( editorOptions.viewOption )
+                       .enter()
+                       .append("button")
+                       .attr( "class", "btn btn-default" )
+                       .text(function(d) { return d.label; })
+                       .on("click", function(d) {
+                           editorOptions.setButton( d );
+                           doDrawingAndTable();
+                       } );
+                       //.click( doDrawingAndTable )
+                       //.exit().remove();
+     //.each( function(d,i) {
+
 }
 
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, patternPiece1, contextMenu )
+function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
 {
-    var margin = 25; 
-    var width = 400;
-    var height = 600;
+    var margin = layoutConfig.drawingMargin;//25; 
+    var width =  layoutConfig.drawingWidth;//400;
+    var height = layoutConfig.drawingHeight;//600;
+
+    graphdiv.select("svg.pattern-drawing").remove();
 
     var svg = graphdiv.append("svg")
+                       .attr("class", "pattern-drawing" )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
@@ -3797,20 +3856,25 @@ function doDrawing( graphdiv, patternPiece1, contextMenu )
 }
 
 
-function doTable( graphdiv, patternPiece1, contextMenu )
+function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
 {
-    var margin = 25; 
-    var width = 400;
-    var height = 600;
+    var margin = layoutConfig.tableMargin;//25; 
+    var width =  layoutConfig.tableWidth;//400;
+    var height = layoutConfig.tableHeight;//600;
     var minItemHeight = 30; //should not be required
     var itemMargin = 8;
-    var itemWidth = 300;
+    var itemWidth = width *3/4;
     var ypos = 0;
     var seq = 1; //TODO get these in the XML as data?
 
-    var svg = graphdiv.append("svg")
-                       .attr("width", width + ( 2 * margin ) )
-                       .attr("height", height + ( 2 * margin ));    
+    graphdiv.select("div.pattern-table").remove();
+
+    var svg = graphdiv.append("div")
+                      .attr("class", "pattern-table")
+                      .style( "height", height +"px" )    
+                      .append("svg")
+                      .attr("width", width + ( 2 * margin ) )
+                      .attr("height", minItemHeight * patternPiece1.drawingObjects.length );    
 
     var a = svg.selectAll("g");
     a = a.data( patternPiece1.drawingObjects );
@@ -3869,14 +3933,18 @@ function doTable( graphdiv, patternPiece1, contextMenu )
         g.on("contextmenu", contextMenu);
     });                   
     
+    svg.attr("height", ypos );    
+
     linksGroup = svg.append("g")
                     .attr("class", "links");
 
-    drawLinks( patternPiece1 );
+    //Links area is width/4 by ypos.            
+    var linkScale = (width/4) / Math.log( Math.abs( ypos /30 ) );   
+    drawLinks( patternPiece1, linkScale );
 }
 
 
-function drawLinks( patternPiece )
+function drawLinks( patternPiece, linkScale )
 {
     var linkData = patternPiece.dependencies.dependencies;
 
@@ -3884,7 +3952,20 @@ function drawLinks( patternPiece )
                     .data(linkData)
                     .enter().append("path")
                     .attr("class", "link" )
-                    .attr("d", curve);
+                    .attr("d", function( link ) {
+                        var x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
+                            x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
+                    
+                        var dx = x0 - x1,
+                            dy = y0 - y1,
+                            l = Math.log( Math.abs(dy /30 ) ) * linkScale;
+                    
+                        var path = d3.path();
+                        path.moveTo( x0, y0 );
+                        path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
+                        return path;                      
+                    } );
+                    //.attr("d", curve);
 }
 
 
