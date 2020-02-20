@@ -78,6 +78,19 @@ div.pattern-table {
     overflow-y: scroll;
 }
 
+button.toggle-full-page {
+    margin-left: 8px;
+}
+
+div.pattern-editor.full-page {
+    position:absolute;
+    top:15px;
+    left:15px;
+    right:15px;
+    bottom: 15px;
+    background-color: white;
+}
+
 /* dark mode 
 Note that lines can and often do specify stroke black
 

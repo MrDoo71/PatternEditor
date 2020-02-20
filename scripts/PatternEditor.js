@@ -4,13 +4,8 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
-
-
-
-//var gInteractionPrefix; 
 var selectedObject;
 var linksGroup;
-//var layoutConfig;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
@@ -68,7 +63,9 @@ function drawPattern( dataAndConfig, ptarget, options )
     			 v ) ;
     }      
     
-    var targetdiv = d3.select( "#" + ptarget );    
+    var targetdiv = d3.select( "#" + ptarget )
+                       .append( "div" )
+                       .attr( "class", "pattern-editor" );
 
     dataAndConfig.options.layoutConfig = { drawingWidth: 400,
                                            drawingHeight: 600,
@@ -80,21 +77,24 @@ function drawPattern( dataAndConfig, ptarget, options )
     dataAndConfig.options.setButton = function( viewOption ) {
         //alert("Click ! " + viewOption.label );
 
-        //TODO full screen version... https://bl.ocks.org/curran/3a68b0c81991e2e94b19
+        if ( ! viewOption )
+           viewOption = this.layoutConfig.viewOption;
+
         var totalWidth = viewOption.drawingWidth + viewOption.descriptionsWidth; //should be tableWidth
         var availableWidth = targetdiv.style('width').slice(0, -2) -30;// 1000;
-        var availableHeight= window.innerHeight - document.getElementById( ptarget ).getBoundingClientRect().top -60 /*controlpanel*/;
+        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/;
         this.layoutConfig.drawingWidth = availableWidth * viewOption.drawingWidth / totalWidth;
         this.layoutConfig.tableWidth   = availableWidth * viewOption.descriptionsWidth / totalWidth;
         this.layoutConfig.drawingHeight = availableHeight;
         this.layoutConfig.tableHeight = availableHeight;
+        this.layoutConfig.viewOption = viewOption; //so we can call this without a parameter when toggling full size. 
     };    
 
     dataAndConfig.options.setButton( dataAndConfig.options.viewOption[1] );
 
     var doDrawingAndTable = function() {
                                     if ( dataAndConfig.options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options.layoutConfig, contextMenu );
+                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu );
                                     else
                                         targetdiv.select("svg.pattern-drawing").remove();
 
@@ -111,29 +111,53 @@ function drawPattern( dataAndConfig, ptarget, options )
 
 function doControls( graphdiv, editorOptions, doDrawingAndTable )
 {
-    var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
-    var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
+    if ( ! editorOptions )
+        return;
 
-    var a = sizeButtons.selectAll("button")
-                       .data( editorOptions.viewOption )
-                       .enter()
-                       .append("button")
-                       .attr( "class", "btn btn-default" )
-                       .text(function(d) { return d.label; })
-                       .on("click", function(d) {
-                           editorOptions.setButton( d );
-                           doDrawingAndTable();
-                       } );
-                       //.click( doDrawingAndTable )
-                       //.exit().remove();
-     //.each( function(d,i) {
+    var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
+
+    if (    ( editorOptions.viewOption )
+         && ( editorOptions.viewOption.length > 0 ) )
+    {
+        var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
+        sizeButtons.selectAll("button")
+                    .data( editorOptions.viewOption )
+                    .enter()
+                    .append("button")
+                    .attr( "class", "btn btn-default" )
+                    .text(function(d) { return d.label; })
+                    .on("click", function(d) {
+                        editorOptions.setButton( d );
+                        doDrawingAndTable();
+                    } );
+    }
+
+    if ( editorOptions.includeFullPageOption )
+    {
+        var toggleFullScreen = function() {
+
+            if ( graphdiv.classed("full-page") ) 
+                graphdiv.node().classList.remove("full-page");
+            else
+                graphdiv.node().classList.add("full-page");
+
+            editorOptions.setButton();
+            doDrawingAndTable();
+        };
+
+        var fullPageButton = controls.append("button")
+                                     .attr("class", "btn btn-default toggle-full-page")
+                                     .text( "full" )
+                                     .on("click", toggleFullScreen );
+    }
 
 }
 
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
+function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
 {
+    var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.drawingMargin;//25; 
     var width =  layoutConfig.drawingWidth;//400;
     var height = layoutConfig.drawingHeight;//600;
@@ -145,7 +169,7 @@ function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
-    var transformGroup = svg.append("g")
+    var transformGroup1 = svg.append("g")
                             .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
 
     var scaleX = width / ( patternPiece1.bounds.maxX - patternPiece1.bounds.minX );                   
@@ -158,10 +182,10 @@ function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
     else
         scale = 1;
 
-    var transformGroup = transformGroup.append("g")
+    var transformGroup2 = transformGroup1.append("g")
                                .attr("transform", "scale(" + scale + "," + scale + ")");
 
-    var transformGroup = transformGroup.append("g")
+    var transformGroup3 = transformGroup2.append("g")
                                .attr("transform", "translate(" + ( ( -1.0 * patternPiece1.bounds.minX ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");
 
     //TODO also need to be able to click on a line / curve/ arc
@@ -195,7 +219,7 @@ function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
             } );
     }
 
-    var a = transformGroup.selectAll("g");    
+    var a = transformGroup3.selectAll("g");    
     a = a.data( patternPiece1.drawingObjects );
     a.enter()
      .append("g")
@@ -211,6 +235,19 @@ function doDrawing( graphdiv, patternPiece1, layoutConfig, contextMenu )
         if ( typeof d.draw === "function" )
             d.draw( g );
     });
+
+    var zoomed = function() {
+        transformGroup1.attr("transform", d3.event.transform);
+    };           
+
+    if ( editorOptions.allowPanAndZoom )
+    {
+        svg.call(d3.zoom()
+            .extent([[0, 0], [width, height]])
+            .scaleExtent([1, 8])
+            .on("zoom", zoomed));
+    }
+
 
     //Enable Pan and Zoom
     //https://observablehq.com/@d3/zoom
