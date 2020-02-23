@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0" y="0"/>
+            <point angle="0" basePoint="1" id="2" length="20" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="dotLine"/>
+            <point angle="270" basePoint="1" id="3" length="20" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A2" type="endLine" typeLine="dotLine"/>
+            <point angle="315" basePoint="1" id="4" length="12" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A3" type="endLine" typeLine="dotLine"/>
+            <arc angle1="75" angle2="215" center="4" color="black" id="5" penStyle="dotLine" radius="5" type="simple"/>
+            <point firstPoint="1" id="10" length="6" lineColor="black" mx="-0.183718" my="-1.63148" name="A6" secondPoint="4" type="alongLine" typeLine="none"/>
+            <point arc="5" crossPoint="2" id="11" mx="-1.00008" my="-1.49981" name="T2" tangent="10" type="pointFromArcAndTangent"/>
+            <point arc="5" crossPoint="1" id="12" mx="-1.7111" my="-0.578111" name="T1" tangent="10" type="pointFromArcAndTangent"/>
+            <line firstPoint="10" id="13" lineColor="deeppink" secondPoint="11" typeLine="hair"/>
+            <line firstPoint="10" id="14" lineColor="deeppink" secondPoint="12" typeLine="hair"/>
+            <point cCenter="4" cRadius="5" crossPoint="1" id="17" mx="0.290297" my="-0.525442" name="Q1" tangent="10" type="pointFromCircleAndTangent"/>
+            <point cCenter="4" cRadius="5" crossPoint="2" id="18" mx="-0.499729" my="0.317251" name="Q2" tangent="10" type="pointFromCircleAndTangent"/>
+            <point firstPoint="18" id="19" length="-5" lineColor="darkRed" mx="0.132292" my="0.264583" name="A7" secondPoint="10" type="alongLine" typeLine="hair"/>
+            <point firstPoint="17" id="20" length="-5" lineColor="darkRed" mx="0.132292" my="0.264583" name="A8" secondPoint="10" type="alongLine" typeLine="hair"/>
+            <point angle="30" basePoint="3" id="21" length="10" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A9" type="endLine" typeLine="dotLine"/>
+            <point angle="0" basePoint="3" id="22" length="10" lineColor="black" mx="0.132292" my="0.264583" name="P" type="endLine" typeLine="hair"/>
+            <arc angle1="0" angle2="360" center="21" color="orange" id="23" penStyle="dotLine" radius="3" type="simple"/>
+            <point cCenter="21" cRadius="3" crossPoint="1" id="24" mx="0.132292" my="0.264583" name="P1" tangent="22" type="pointFromCircleAndTangent"/>
+            <point cCenter="21" cRadius="3" crossPoint="2" id="25" mx="-1.47409" my="-0.0250931" name="P2" tangent="22" type="pointFromCircleAndTangent"/>
+            <point angle="0" basePoint="3" id="26" length="20" lineColor="black" mx="0.132292" my="0.264583" name="W" type="endLine" typeLine="hair"/>
+            <line firstPoint="22" id="27" lineColor="mediumseagreen" secondPoint="25" typeLine="hair"/>
+            <line firstPoint="22" id="28" lineColor="mediumseagreen" secondPoint="24" typeLine="hair"/>
+            <point cCenter="21" cRadius="3" crossPoint="2" id="29" mx="0.132292" my="0.264583" name="W2" tangent="26" type="pointFromCircleAndTangent"/>
+            <point cCenter="21" cRadius="3" crossPoint="1" id="30" mx="0.132292" my="0.264583" name="W1" tangent="26" type="pointFromCircleAndTangent"/>
+            <line firstPoint="26" id="31" lineColor="deeppink" secondPoint="29" typeLine="hair"/>
+            <line firstPoint="26" id="32" lineColor="deeppink" secondPoint="30" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

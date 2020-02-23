@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="1" y="1"/>
+            <point angle="315" basePoint="1" id="2" length="5" lineColor="cornflowerblue" mx="-0.298567" my="0.192773" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="45" basePoint="2" id="3" length="2" lineColor="black" mx="0.186149" my="-0.956184" name="A2" type="endLine" typeLine="hair"/>
+            <point firstPoint="3" id="4" mx="-0.0292801" my="0.0671059" name="A3" secondPoint="2" type="pointOfIntersection"/>
+            <line firstPoint="3" id="5" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <line firstPoint="2" id="6" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <point angle="270" basePoint="1" id="7" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A4" type="endLine" typeLine="dotLine"/>
+            <operation axisType="1" center="1" id="8" suffix="B" type="flippingByAxis">
+                <source>
+                    <item idObject="2"/>
+                    <item idObject="4"/>
+                    <item idObject="3"/>
+                </source>
+                <destination>
+                    <item idObject="9" mx="-0.0651851" my="0.156868"/>
+                    <item idObject="10" mx="-1.21414" my="0.17482"/>
+                    <item idObject="11" mx="-0.370377" my="-1.15366"/>
+                </destination>
+            </operation>
+            <line firstPoint="11" id="12" lineColor="deeppink" secondPoint="9" typeLine="hair"/>
+            <line firstPoint="9" id="13" lineColor="deeppink" secondPoint="10" typeLine="hair"/>
+            <line firstPoint="11" id="14" lineColor="deeppink" secondPoint="10" typeLine="hair"/>
+            <line firstPoint="9" id="15" lineColor="cornflowerblue" secondPoint="2" typeLine="dashLine"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

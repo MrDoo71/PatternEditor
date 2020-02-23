@@ -69,20 +69,21 @@ class SplinePathUsingPoints extends DrawingObject {
     }   
 
 
-    html() {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: curved path: ';
+    html( asFormula ) {
+        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'curved path: ';
 
         var d = this.data;
 
         for( var i=0; i< d.pathNode.length; i+=3 )
         {
             if ( (i-1)>0 )
-                html += '<span class="control-point">' + this.data.pathNode[i-1].point.data.name + '</span> ';
+                html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
 
-            html += d.pathNode[i].point.data.name + " ";            
+            html += d.pathNode[i].point.ref() + " ";            
 
             if ( (i+1) < this.data.pathNode.length )
-                html += '<span class="control-point">' + this.data.pathNode[i+1].point.data.name + '</span> ';
+                html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
         }
 
         return html;

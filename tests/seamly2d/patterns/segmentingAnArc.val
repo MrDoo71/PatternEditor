@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.0520833" my="0.104167" name="A" type="single" x="1" y="1"/>
+            <arc angle1="270" angle2="0" center="1" color="black" id="2" penStyle="dashDotLine" radius="10" type="simple"/>
+            <point arc="2" id="3" length="0" mx="0.0520833" my="0.104167" name="A1" type="cutArc"/>
+            <point arc="2" id="6" length="5" mx="0.0520833" my="0.104167" name="A2" type="cutArc"/>
+            <point arc="2" id="9" length="10" mx="0.0520833" my="0.104167" name="A3" type="cutArc"/>
+            <point arc="2" id="12" length="15" mx="0.0520833" my="0.104167" name="A4" type="cutArc"/>
+            <point arc="2" id="15" length="20" mx="0.207129" my="-0.257606" name="A5" type="cutArc"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+</pattern>

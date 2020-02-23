@@ -22,7 +22,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     var pattern = new Pattern( dataAndConfig, options );
       
-    pattern.gInteractionPrefix = options.interactionPrefix;    
+    //pattern.gInteractionPrefix = options.interactionPrefix;    
     
     function newkvpSet(noRefresh)
     {
@@ -58,7 +58,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     	var v = newkvpSet(false) ;
     	v.add("x", d.x) ;   
     	v.add("y", d.y) ;    
-    	goGraph( gInteractionPrefix + ':' + d.data.contextMenu ,
+    	goGraph( options.interactionPrefix + ':' + d.data.contextMenu ,
     			 d3.event, 
     			 v ) ;
     }      
@@ -66,6 +66,18 @@ function drawPattern( dataAndConfig, ptarget, options )
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
+
+    if ( ! dataAndConfig.options )
+        dataAndConfig.options = {};
+
+    if ( dataAndConfig.options.allowPanAndZoom === undefined )
+        dataAndConfig.options.allowPanAndZoom = true;
+
+    if ( dataAndConfig.options.showFormulas === undefined )
+        dataAndConfig.options.showFormulas = false;
+
+    if ( ! dataAndConfig.options.viewOption )
+        dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
 
     dataAndConfig.options.layoutConfig = { drawingWidth: 400,
                                            drawingHeight: 600,
@@ -75,7 +87,6 @@ function drawPattern( dataAndConfig, ptarget, options )
                                            tableMargin: 0 };//25 };
 
     dataAndConfig.options.setButton = function( viewOption ) {
-        //alert("Click ! " + viewOption.label );
 
         if ( ! viewOption )
            viewOption = this.layoutConfig.viewOption;
@@ -90,22 +101,96 @@ function drawPattern( dataAndConfig, ptarget, options )
         this.layoutConfig.viewOption = viewOption; //so we can call this without a parameter when toggling full size. 
     };    
 
-    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[1] );
+    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
+
+    var focusDrawingObject = function( d, scrollTable )
+    {
+        selectedObject = d;
+
+        if (( d3.event) && ( d3.event.originalTarget.className === "ps-ref" ))
+        {
+            selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
+            scrollTable = true;
+        }
+
+        for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
+        {
+            var a = pattern.patternPiece1.drawingObjects[i];
+            var g = a.drawingSvg;
+            var strokeWidth = (selectedObject==a) ? 2 : 1;
+            g.selectAll( "line" )
+              .attr("stroke-width", strokeWidth / scale);
+             g.selectAll( "path" )
+              .attr("stroke-width", strokeWidth / scale);
+        }        
+
+        var graphdiv = targetdiv;
+        //Remove any existing highlighting in the table. 
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
+        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        //$(this).addClass("j-active"); //highlight the object in the drawing
+
+        //d, the drawing object we clicked on, has a direct reference to its representation in the table
+        selectedObject.tableSvg.node().classList.add("j-active");
+        selectedObject.drawingSvg.node().classList.add("j-active");
+
+        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
+        linksGroup.selectAll("path.link") //rename .link to .dependency
+            .attr("class", function( d ) {                         
+                if ( d.source == selectedObject ) 
+                {
+                    d.target.tableSvg.node().classList.add("source");
+                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
+                    return "source link";
+                }
+                if ( d.target == selectedObject ) 
+                {
+                    d.source.tableSvg.node().classList.add("target");
+                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
+                    return "target link";
+                }
+                return "link"; 
+            } )
+            .each( function( d ) { 
+                if (( selectedObject.source == selectedObject ) || ( selectedObject.target == selectedObject ))
+                    d3.select(this).raise();
+             } );
+
+        //Scroll the table to ensure that d.tableSvg is in view.    
+        if ( scrollTable )
+        {
+            var table = d3.select("div.pattern-table");
+            table.transition().duration(500)
+            .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+        }
+    };
 
     var doDrawingAndTable = function() {
                                     if ( dataAndConfig.options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu );
+                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("svg.pattern-drawing").remove();
 
                                     if ( dataAndConfig.options.layoutConfig.tableWidth )
-                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options.layoutConfig, contextMenu );
+                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("div.pattern-table").remove();
                                 };
 
     doControls( targetdiv, dataAndConfig.options, doDrawingAndTable );
-    doDrawingAndTable();                            
+    doDrawingAndTable();                   
+    
+    for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
+    {
+        var a = pattern.patternPiece1.drawingObjects[i];
+        if ( a.error )
+        {
+            focusDrawingObject(a, true);
+            break;
+        }
+    }
+
 }
 
 
@@ -117,7 +202,7 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
     var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
 
     if (    ( editorOptions.viewOption )
-         && ( editorOptions.viewOption.length > 0 ) )
+         && ( editorOptions.viewOption.length > 1 ) )
     {
         var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
         sizeButtons.selectAll("button")
@@ -127,14 +212,17 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
                     .attr( "class", "btn btn-default" )
                     .text(function(d) { return d.label; })
                     .on("click", function(d) {
+                        d3.event.preventDefault();
                         editorOptions.setButton( d );
                         doDrawingAndTable();
+                        //d3.event.stopPropagation();
                     } );
     }
 
     if ( editorOptions.includeFullPageOption )
     {
         var toggleFullScreen = function() {
+            d3.event.preventDefault();
 
             if ( graphdiv.classed("full-page") ) 
                 graphdiv.node().classList.remove("full-page");
@@ -151,11 +239,40 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
                                      .on("click", toggleFullScreen );
     }
 
+    //if ( editorOptions.includeFullPageOption )
+    {
+        var toggleShowFormulas = function() {
+            d3.event.preventDefault();
+            editorOptions.showFormulas = ! editorOptions.showFormulas;
+            d3.select(this).text( editorOptions.showFormulas ? "hide formulas" : "show formulas" );
+            doDrawingAndTable();
+        };
+
+        var toggleShowFormulas = controls.append("button")
+                                     .attr("class", "btn btn-default toggle-show_formulas")
+                                     .text( editorOptions.showFormulas ? "hide formulas" : "show formulas" )
+                                     .on("click", toggleShowFormulas );
+    }    
 }
 
 
+
+//http://bl.ocks.org/humbletim/5507619
+function scrollTopTween(scrollTop) 
+{
+    return function() {
+        var i = d3.interpolateNumber(this.scrollTop, scrollTop);
+        //console.log( "function1: ", this.scrollTop, " - ", scrollTop );
+        return function(t) { 
+            this.scrollTop = i(t); 
+            //console.log( "function2: ", this.scrollTop );
+        };
+    }
+}
+  
+
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
+function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.drawingMargin;//25; 
@@ -190,39 +307,56 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
 
     //TODO also need to be able to click on a line / curve/ arc
 
+    //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
-        d3.event.preventDefault() ;
-        console.log( "Click! " );
-        $( ".j-active" ).removeClass("j-active");
-        $( ".j-item.source" ).removeClass("source");
-        $( ".j-item.target" ).removeClass("target");
-        $(this).addClass("j-active");
-        d.tableSvg.each( function(d,i) {
-            $(this).addClass("j-active");
-        });
-        selectedObject = d;
-        //drawLinks( patternPiece1 );
+        d3.event.preventDefault();
+        focusDrawingObject(d,true);
+        /*
+        //Remove any existing highlighting in the table. 
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
+        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        $(this).addClass("j-active"); //highlight the object in the drawing
 
+        //d, the drawing object we clicked on, has a direct reference to its representation in the table
+        d.tableSvg.node().classList.add("j-active");
+
+        selectedObject = d;
+
+        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
             .attr("class", function( d ) {                         
                 if ( d.source == selectedObject ) 
                 {
-                    d.target.tableSvg.each( function() { $(this).addClass("source"); } );
+                    d.target.tableSvg.node().classList.add("source");
+                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
-                    d.source.tableSvg.each( function() { $(this).addClass("target"); } );
+                    d.source.tableSvg.node().classList.add("target");
+                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
                 return "link"; 
-            } );
-    }
+            } )
+            .each( function( d ) { 
+                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
+                    d3.select(this).raise();
+             } );
+
+        //Scroll the table to ensure that d.tableSvg is in view.    
+        var table = d3.select("div.pattern-table");
+        table.transition().duration(500)
+          .tween("uniquetweenname", scrollTopTween( d.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+             */
+    };
 
     var a = transformGroup3.selectAll("g");    
     a = a.data( patternPiece1.drawingObjects );
     a.enter()
      .append("g")
+     .attr("class", "j-point")
      .each( function(d,i) {
         var g = d3.select( this );
         //d.calculate();
@@ -265,8 +399,9 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
 }
 
 
-function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
+function doTable( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
+    var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.tableMargin;//25; 
     var width =  layoutConfig.tableWidth;//400;
     var height = layoutConfig.tableHeight;//600;
@@ -275,6 +410,12 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
     var itemWidth = width *3/4;
     var ypos = 0;
     var seq = 1; //TODO get these in the XML as data?
+    var asFormula = editorOptions.showFormulas; 
+
+    var onclick = function(d) {
+        d3.event.preventDefault();
+        focusDrawingObject(d,false);
+    }
 
     graphdiv.select("div.pattern-table").remove();
 
@@ -311,6 +452,9 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
 
         g.attr( "class", "j-item") ;
 
+        if ( d.error )
+            g.attr( "class", "j-item error") ;
+
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
         d.tableSvgY = ypos + ( 0.5 * minItemHeight );
@@ -326,7 +470,7 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
-           .html( d.html() );
+           .html( d.html( asFormula ) + (d.error ? '<div class="error">' + d.error + '</div>' : "" ) );
 
         fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
         fo.attr( "height", divHeight );
@@ -339,7 +483,8 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
                                     //console.log("y: " + ypos );
                                     return ypos } )
 
-        g.on("contextmenu", contextMenu);
+        g.on("contextmenu", contextMenu)
+         .on("click", onclick );
     });                   
     
     svg.attr("height", ypos );    

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.392506" my="-0.342582" name="A" type="single" x="5" y="5"/>
+            <elArc angle1="45" angle2="270" center="1" color="black" id="2" penStyle="hair" radius1="3" radius2="5" rotationAngle="30" type="simple"/>
+            <point angle="75" basePoint="1" id="3" length="6" lineColor="deeppink" mx="0.450331" my="-0.458232" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="30" basePoint="1" id="4" length="6" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A2" type="endLine" typeLine="none"/>
+            <point firstPoint="4" id="5" length="10" lineColor="cornflowerblue" mx="-0.301397" my="0.264583" name="A3" secondPoint="1" type="alongLine" typeLine="dotLine"/>
+            <point angle="0" firstPoint="1" id="6" length="8" lineColor="black" mx="0.363593" my="-1.23887" name="A4" secondPoint="4" type="normal" typeLine="none"/>
+            <point firstPoint="6" id="7" length="14" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A5" secondPoint="1" type="alongLine" typeLine="dotLine"/>
+            <point angle="146.474" basePoint="7" curve="2" id="8" lineColor="black" mx="-1.4579" my="0.0911073" name="A6" type="curveIntersectAxis" typeLine="hair"/>
+            <point firstPoint="7" id="12" length="10" lineColor="cornflowerblue" mx="-1.60246" my="-1.55691" name="A8" secondPoint="8" type="alongLine" typeLine="dotLine"/>
+            <point angle="0" basePoint="12" curve="2" id="13" lineColor="black" mx="0.21903" my="-1.32561" name="A7" type="curveIntersectAxis" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

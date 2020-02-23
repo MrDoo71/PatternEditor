@@ -42,10 +42,11 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: point on arc ' + this.arc.data.derivedName + 
-                ' of tangent from point ' + this.tangent.data.name +
-                ' crosspoint:' + this.crossPoint;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'point on arc ' + this.arc.ref() //derivedName?
+                + ' of tangent from point ' + this.tangent.ref()
+                + ' crosspoint:' + this.crossPoint;
     }
 
 

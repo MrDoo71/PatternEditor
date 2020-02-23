@@ -48,9 +48,13 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " along line bisecting " 
-             + this.secondPoint.data.name + "-" + this.firstPoint.data.name + " and " + this.secondPoint.data.name + "-" + this.thirdPoint.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along line bisecting " + this.secondPoint.ref() 
+                + "-" + this.firstPoint.ref()
+                + " and " + this.secondPoint.ref() 
+                + "-" + this.thirdPoint.ref();
     }
 
 

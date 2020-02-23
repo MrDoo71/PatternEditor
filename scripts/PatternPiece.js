@@ -169,8 +169,6 @@ class PatternPiece {
 
     newFormula(formula) {
 
-        //f.value()
-        //f.html()
 
         var f = formula;
         if (typeof formula.constant !== "undefined") {
@@ -186,8 +184,8 @@ class PatternPiece {
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
-            f.html = function() {
-                return f.expression.html();
+            f.html = function( asFormula ) {
+                return f.expression.html( asFormula );
             };
         }
         return f;

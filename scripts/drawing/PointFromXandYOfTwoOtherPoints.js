@@ -34,8 +34,8 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    html() {
-        return 'line ' + '<span class="ps-name">' + this.firstPoint.data.name + '</span>' + " - " + '<span class="ps-name">' + this.secondPoint.data.name + '</span>';
+    html( asFormula ) {
+        return 'line ' + this.firstPoint.ref() +  " - " + this.secondPoint.ref();
     }
 
 

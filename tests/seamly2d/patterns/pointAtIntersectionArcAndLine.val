@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
+            <point angle="30" basePoint="1" id="2" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="hair"/>
+            <point firstPoint="1" id="3" length="5" lineColor="black" mx="-0.201624" my="-1.0043" name="A2" secondPoint="2" type="alongLine" typeLine="none"/>
+            <point angle="0" firstPoint="3" id="4" length="-6" lineColor="black" mx="0.132292" my="0.264583" name="A3" secondPoint="1" type="normal" typeLine="hair"/>
+            <arc angle1="270" angle2="330" center="4" color="black" id="5" penStyle="hair" radius="6.5" type="simple"/>
+            <point center="4" firstPoint="1" id="6" mx="0.132292" my="0.264583" name="A4" radius="6.5" secondPoint="2" type="pointOfContact"/>
+            <point angle="210" basePoint="4" id="7" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A5" type="endLine" typeLine="hair"/>
+            <arc angle1="90" angle2="180" center="3" color="black" id="8" penStyle="hair" radius="6.5" type="simple"/>
+            <point firstPoint="7" id="9" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A6" secondPoint="4" type="alongLine" typeLine="none"/>
+            <line firstPoint="4" id="10" lineColor="black" secondPoint="9" typeLine="hair"/>
+            <point center="3" firstPoint="7" id="11" mx="0.132292" my="0.264583" name="A7" radius="6.5" secondPoint="9" type="pointOfContact"/>
+            <point center="3" firstPoint="9" id="12" mx="0.132292" my="0.264583" name="A8" radius="6.5" secondPoint="7" type="pointOfContact"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

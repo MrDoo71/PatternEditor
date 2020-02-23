@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="1" y="1"/>
+            <point angle="30" basePoint="1" id="2" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="0" firstPoint="1" id="3" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A2" secondPoint="2" type="normal" typeLine="hair"/>
+            <point angle="0" firstPoint="1" id="4" length="-10" lineColor="black" mx="0.132292" my="0.264583" name="A3" secondPoint="2" type="normal" typeLine="hair"/>
+            <point angle="45" firstPoint="1" id="5" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A4" secondPoint="2" type="normal" typeLine="hair"/>
+            <point angle="360" basePoint="1" id="6" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A5" type="endLine" typeLine="hair"/>
+            <point angle="0" firstPoint="6" id="7" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A6" secondPoint="1" type="normal" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+</pattern>

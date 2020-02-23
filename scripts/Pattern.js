@@ -30,7 +30,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     m.html = function() {
-                        return this.expression.html();
+                        return this.expression.html( asFormula );
                     };
                 }
                 this.measurement[ m.name ] = m;
@@ -59,7 +59,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     inc.html = function() {
-                        return this.expression.html();
+                        return this.expression.html( asFormula );
                     };
                 }
                 this.increment[ inc.name ] = inc;

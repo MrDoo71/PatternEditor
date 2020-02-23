@@ -42,8 +42,12 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect ' + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " with " + this.p1Line2.data.name + "-" + this.p2Line2.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect ' + this.p1Line1.ref()
+                + "-" + this.p2Line1.ref() 
+                + " with " + this.p1Line2.ref() 
+                + "-" + this.p2Line2.ref();
     }
 
 

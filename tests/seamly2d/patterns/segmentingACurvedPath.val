@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
+            <point angle="0" basePoint="1" id="2" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="60" basePoint="1" id="3" length="8" lineColor="black" mx="0.132292" my="0.264583" name="A2" type="endLine" typeLine="hair"/>
+            <point firstPoint="3" id="5" length="3" lineColor="black" mx="0.132292" my="0.264583" name="A3" secondPoint="1" type="alongLine" typeLine="none"/>
+            <point firstPoint="2" id="6" length="3" lineColor="black" mx="0.132292" my="0.264583" name="A4" secondPoint="1" type="alongLine" typeLine="none"/>
+            <spline color="black" id="7" penStyle="hair" type="pathInteractive">
+                <pathPoint angle1="269.963" angle2="89.963" length1="0" length2="1.92346" pSpline="1"/>
+                <pathPoint angle1="195.509" angle2="15.509" length1="1.79888" length2="1.79888" pSpline="5"/>
+                <pathPoint angle1="119.839" angle2="299.839" length1="1.39461" length2="1.39461" pSpline="6"/>
+                <pathPoint angle1="275.818" angle2="95.818" length1="1.87466" length2="1.87466" pSpline="2"/>
+                <pathPoint angle1="57.0937" angle2="237.094" length1="3.39875" length2="1.81535" pSpline="3"/>
+            </spline>
+            <point id="8" length="9" mx="0.0324368" my="-0.876619" name="A5" splinePath="7" type="cutSplinePath"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

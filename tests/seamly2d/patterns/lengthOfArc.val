@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.307213" my="-1.37968" name="A" type="single" x="5" y="5"/>
+            <arc angle1="0" angle2="180" center="1" color="black" id="2" penStyle="hair" radius="5" type="simple"/>
+            <point angle="270" basePoint="1" id="3" length="10" lineColor="black" mx="-5.36978" my="-0.848553" name="TEST_A12" type="endLine" typeLine="dotLine"/>
+            <point firstPoint="1" id="4" length="2" lineColor="black" mx="-1.6519" my="-0.679992" name="A2" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point angle="0" basePoint="4" id="5" length="Arc_A_2" lineColor="black" mx="0.44715" my="-0.679992" name="ARC_A_2" type="endLine" typeLine="hair"/>
+            <point firstPoint="1" id="6" length="4" lineColor="black" mx="-4.71143" my="-0.772224" name="TEST_A6" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point angle="90" basePoint="1" id="7" length="6" lineColor="black" mx="-0.567393" my="-1.72952" name="A5" type="endLine" typeLine="hair"/>
+            <point arc="2" id="8" length="1" mx="0.517119" my="-1.20476" name="A6" type="cutArc"/>
+            <point angle="0" basePoint="6" id="11" length="Arc_A_9" lineColor="black" mx="0.304033" my="-1.24929" name="ARC_A_9" type="endLine" typeLine="hair"/>
+            <point angle="130" basePoint="1" curve="2" id="12" lineColor="black" mx="-1.26708" my="-1.58958" name="A8" type="curveIntersectAxis" typeLine="hair"/>
+            <point firstPoint="1" id="15" length="6" lineColor="black" mx="-4.74324" my="-0.873995" name="TEST_A8" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point angle="0" basePoint="15" id="16" length="Arc_A_13" lineColor="black" mx="-5.25529" my="-1.2461" name="ARC_A_13" type="endLine" typeLine="hair"/>
+            <point angle="45" basePoint="1" curve="2" id="17" lineColor="black" mx="-0.497425" my="-2.11435" name="A11" type="curveIntersectAxis" typeLine="hair"/>
+            <point angle="66" basePoint="1" curve="2" id="20" lineColor="black" mx="-0.987204" my="-2.07936" name="A12" type="curveIntersectAxis" typeLine="hair"/>
+            <point firstPoint="1" id="23" length="8" lineColor="black" mx="-5.26801" my="-0.813569" name="TEST_A11" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point angle="0" basePoint="23" id="24" length="Arc_A_18" lineColor="black" mx="0.281771" my="-1.2461" name="ARC_A_18" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="11" id="25" length="Arc_A_10" lineColor="black" mx="0.482135" my="-0.854913" name="ARC_A_10" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="16" id="26" length="Arc_A_14" lineColor="black" mx="0.412166" my="-1.02984" name="ARC_A_14" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="24" id="27" length="Arc_A_19" lineColor="black" mx="0.354919" my="-0.91216" name="ARC_A_19" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="3" id="28" length="Arc_A_21" lineColor="black" mx="0.0686842" my="-1.32561" name="ARC_A_21" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="28" id="29" length="Arc_A_22" lineColor="black" mx="0.227704" my="-1.262" name="ARC_A_22" type="endLine" typeLine="hair"/>
+            <line firstPoint="5" id="30" lineColor="black" secondPoint="29" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+</pattern>

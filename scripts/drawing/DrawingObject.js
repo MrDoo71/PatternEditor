@@ -19,7 +19,7 @@ class DrawingObject /*abstract*/ {
 
     drawDot(g, o) {
         var d = o.data; //the original json data
-        g.attr("class", "j-point");
+        //g.attr("class", "j-point");
         g.append("circle")
             .attr("cx", o.p.x)
             .attr("cy", o.p.y)
@@ -33,8 +33,12 @@ class DrawingObject /*abstract*/ {
                 .attr("y1", this.line.p1.y)
                 .attr("x2", this.line.p2.x)
                 .attr("y2", this.line.p2.y)
-                .attr("stroke-width", 1 / scale)
-                .attr("stroke", this.getColor() );
+                .attr("stroke-width", ( o.error ? 2 : 1 ) / scale)
+                .attr("stroke", o.error ? "red" : this.getColor() );
+    }
+
+    ref() {
+        return '<span class="ps-ref">' + this.data.name + '</span>';
     }
 
     getColor() {

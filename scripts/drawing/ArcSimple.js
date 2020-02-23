@@ -76,8 +76,13 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: arc with center ' + this.data.center + " radius " + this.data.radius.html() + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html();
+    html( asFormula ) 
+    {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'arc with center ' + this.center.ref() 
+                + " radius " + this.radius.html( asFormula ) 
+                + " from angle " + this.angle1.html( asFormula ) 
+                + " to " + this.angle2.html( asFormula );
     }
 
     

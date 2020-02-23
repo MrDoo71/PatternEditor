@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
+            <point angle="135" basePoint="1" id="2" length="10" lineColor="black" mx="-1.15844" my="-0.511586" name="A1" type="endLine" typeLine="dotLine"/>
+            <point angle="45" basePoint="1" id="3" length="10" lineColor="black" mx="0.290019" my="-0.506528" name="A2" type="endLine" typeLine="dotLine"/>
+            <spline angle1="335.61" angle2="116.873" color="darkviolet" id="4" length1="6.29493" length2="4.65973" penStyle="hair" point1="2" point4="3" type="simpleInteractive"/>
+            <point angle="0" firstPoint="2" id="5" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A3" secondPoint="1" type="normal" typeLine="dotLine"/>
+            <point angle="0" firstPoint="3" id="6" length="3" lineColor="black" mx="0.132292" my="0.264583" name="A4" secondPoint="1" type="normal" typeLine="dotLine"/>
+            <spline color="green" id="7" penStyle="hair" point1="2" point2="5" point3="3" point4="6" type="cubicBezier"/>
+            <point angle="90" basePoint="1" id="8" length="5" lineColor="black" mx="0.0449177" my="-0.0141188" name="A5" type="endLine" typeLine="dotLine"/>
+            <point angle="0" firstPoint="8" id="9" length="3" lineColor="black" mx="0.342289" my="-0.593261" name="A6" secondPoint="1" type="normal" typeLine="dotLine"/>
+            <point firstPoint="9" id="10" length="6" lineColor="black" mx="0.14915" my="0.176481" name="A7" secondPoint="8" type="alongLine" typeLine="none"/>
+            <point firstPoint="2" id="12" length="7" lineColor="black" mx="0.132292" my="0.264583" name="A8" secondPoint="5" type="alongLine" typeLine="none"/>
+            <point angle="90" basePoint="3" id="14" length="4.04414" lineColor="black" mx="0.167342" my="-0.085922" name="A9" type="endLine" typeLine="dotLine"/>
+            <spline color="deeppink" id="15" penStyle="hair" type="cubicBezierPath">
+                <pathPoint pSpline="2"/>
+                <pathPoint pSpline="12"/>
+                <pathPoint pSpline="10"/>
+                <pathPoint pSpline="8"/>
+                <pathPoint pSpline="9"/>
+                <pathPoint pSpline="14"/>
+                <pathPoint pSpline="6"/>
+            </spline>
+            <point angle="11.2131" basePoint="10" curve="15" id="16" lineColor="black" mx="-0.410991" my="-1.06734" name="A10" type="curveIntersectAxis" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

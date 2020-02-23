@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="1" y="1"/>
+            <point angle="315" basePoint="1" id="2" length="5" lineColor="black" mx="0.0479271" my="0.0789802" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="45" basePoint="2" id="3" length="2" lineColor="black" mx="0.301022" my="-0.697177" name="A2" type="endLine" typeLine="hair"/>
+            <point firstPoint="3" id="4" mx="0.23353" my="-0.123496" name="A3" secondPoint="2" type="pointOfIntersection"/>
+            <line firstPoint="3" id="5" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <line firstPoint="2" id="6" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <point angle="270" basePoint="1" id="7" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A4" type="endLine" typeLine="dotLine"/>
+            <operation angle="270" id="8" length="5" suffix="B" type="moving">
+                <source>
+                    <item idObject="2"/>
+                    <item idObject="4"/>
+                    <item idObject="3"/>
+                </source>
+                <destination>
+                    <item idObject="9" mx="-0.205168" my="0.129599"/>
+                    <item idObject="10" mx="-0.0195648" my="0.0283613"/>
+                    <item idObject="11" mx="0.182911" my="-0.697177"/>
+                </destination>
+            </operation>
+            <line firstPoint="9" id="12" lineColor="deeppink" secondPoint="10" typeLine="hair"/>
+            <line firstPoint="10" id="13" lineColor="deeppink" secondPoint="11" typeLine="hair"/>
+            <line firstPoint="9" id="14" lineColor="deeppink" secondPoint="11" typeLine="hair"/>
+            <point angle="270" basePoint="2" id="15" length="5" lineColor="cornflowerblue" mx="-1.31878" my="-0.764669" name="A5" type="endLine" typeLine="dashDotLine"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

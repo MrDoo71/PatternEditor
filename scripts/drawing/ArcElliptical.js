@@ -77,12 +77,14 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: elliptical arc with center ' + this.data.center 
-                + " radius-x " + this.data.radius1.html() 
-                + " radius-y " + this.data.radius2.html() 
-                + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html()
-                + " rotation angle " + this.data.rotationAngle.html() ;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'elliptical arc with center ' + this.data.center.ref()
+                + " radius-x " + this.data.radius1.html( asFormula ) 
+                + " radius-y " + this.data.radius2.html( asFormula ) 
+                + " from angle " + this.data.angle1.html( asFormula ) 
+                + " to " + this.data.angle2.html( asFormula )
+                + " rotation angle " + this.data.rotationAngle.html( asFormula ) ;
     }
 
     

@@ -41,8 +41,11 @@ class PointEndLine extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " from " + this.basePoint.data.name + " angle:" + this.data.angle.value();
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " from " + this.basePoint.ref() 
+                + " angle " + this.data.angle.html( asFormula );
     }
 
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
+            <point angle="90" basePoint="1" id="2" length="3" lineColor="black" mx="0.515712" my="-1.71642" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="1" id="3" length="10" lineColor="black" mx="0.48376" my="-1.49276" name="A2" type="endLine" typeLine="hair"/>
+            <point id="4" length="13" lineColor="black" mx="0.67547" my="-1.78032" name="A3" p1Line="3" p2Line="2" pShoulder="1" type="shoulder" typeLine="hair"/>
+            <point firstPoint="1" id="5" length="3" lineColor="black" mx="0.132292" my="0.264583" name="A4" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point id="6" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A5" p1Line="3" p2Line="2" pShoulder="5" type="shoulder" typeLine="hair"/>
+            <arc angle1="135" angle2="180" center="5" color="black" id="7" penStyle="hair" radius="10" type="simple"/>
+            <arc angle1="135" angle2="180" center="1" color="black" id="8" penStyle="hair" radius="13" type="simple"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

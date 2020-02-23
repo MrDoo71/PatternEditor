@@ -26,7 +26,13 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * this.angle.value() / 180 );
+        var angleDeg = this.angle.value();
+        if ( angleDeg >= 360 )
+            angleDeg -= 360;
+        else if ( angleDeg < 0 )
+            angleDeg += 360;
+
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * angleDeg / 180 );
 
         var line = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -58,9 +64,12 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect curve ' + this.curve.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect curve ' + this.curve.ref() 
+                + " with line from " + this.basePoint.ref()
+                + " at angle " + this.angle.html( asFormula );
     }
 
 

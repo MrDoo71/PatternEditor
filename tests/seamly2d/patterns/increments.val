@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments>
+        <increment description="" formula="2 * 5" name="#a"/>
+        <increment description="" formula="#a * 4.5" name="#b"/>
+    </increments>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0" y="0"/>
+            <point angle="#b" basePoint="1" id="2" length="#a" lineColor="black" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+</pattern>

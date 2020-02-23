@@ -90,11 +90,14 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect circles ' + this.center1.data.name + " radius " + this.radius1.html() 
-                + " and " + this.center2.data.name + " radius " + this.radius2.html()
-           + ( this.data.crossPoint === "One" ? "" : " - second point");
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect circles ' + this.center1.ref() 
+                + " radius " + this.radius1.html( asFormula ) 
+                + " and " + this.center2.ref() 
+                + " radius " + this.radius2.html( asFormula )
+                + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
 

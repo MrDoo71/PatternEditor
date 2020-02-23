@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="17" y="3"/>
+            <point angle="225" basePoint="1" id="2" length="10" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="dotLine"/>
+            <point angle="315" basePoint="1" id="3" length="10" lineColor="cornflowerblue" mx="0.132292" my="0.264583" name="A2" type="endLine" typeLine="dotLine"/>
+            <point c1Center="2" c1Radius="9" c2Center="3" c2Radius="8" crossPoint="1" id="4" mx="0.132292" my="0.264583" name="A3" type="pointOfIntersectionCircles"/>
+            <arc angle1="0" angle2="360" center="2" color="darkviolet" id="5" penStyle="hair" radius="9" type="simple"/>
+            <arc angle1="0" angle2="360" center="3" color="black" id="6" penStyle="hair" radius="8" type="simple"/>
+            <point c1Center="2" c1Radius="9" c2Center="3" c2Radius="8" crossPoint="2" id="7" mx="0.132292" my="0.264583" name="A4" type="pointOfIntersectionCircles"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+</pattern>

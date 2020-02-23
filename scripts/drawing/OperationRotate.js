@@ -32,18 +32,19 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Move rotate: ' +
-                         " center: " + this.center.data.name +
-                         " angle:" + this.data.angle.value() +
-                         " suffix:" + this.data.suffix;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Move rotate: ' 
+                + " center: " + this.center.ref() 
+                + " angle:" + this.data.angle.html( asFormula ) 
+                + " suffix:" + this.data.suffix;
     }
 
 
     applyOperationToPoint( source )
     {
         return source.p.rotate( this.center.p, this.angle.value() );
-
+        /*
         //Convert degrees to radians
         
         var centerToSourceLine = new GeoLine( this.center.p, source.p );
@@ -53,6 +54,7 @@ class OperationRotate extends DrawingObject {
         var result = this.center.p.pointAtDistanceAndAngle( distance, angle );
         //var line = new GeoLine( source.p, result.p );
         return result;
+        */
     }
 
 

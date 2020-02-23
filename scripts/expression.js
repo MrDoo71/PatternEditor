@@ -58,19 +58,28 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
-            else if ( data.variableType === "lengthOfSplinePath" )
+            else if (    ( data.variableType === "lengthOfSplinePath" )
+                      || ( data.variableType === "lengthOfSpline" ) )
             {
-                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                if ( data.drawingObject1 && data.drawingObject2 )
+                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
+                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                else
+                    //this is the spline drawing object itself, the curve comes directly from it. 
+                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
-            else if ( data.variableType === "lengthOfSpline" )
-            {
-                //TODO TEST! if this works, combine with the one above as this is an exact copy
-                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }            
+            //else if ( data.variableType === "lengthOfSpline" )
+            //{
+            //    //TOFIX
+            //    //TODO TEST! if this works, combine with the one above as this is an exact copy
+            //    this.drawingObject = patternPiece.getObject(  data.drawingObject1 );
+            //    //this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+            //    this.function = data.variableType;
+            //    this.value = this.functionValue;
+            //}            
             else if ( data.variableType === "lengthOfArc" )
             {
                 this.drawingObject = patternPiece.getObject( data.drawingObject1 );
@@ -95,13 +104,16 @@ class Expression {
         else throw "Unsupported expression." ;
     }
 
+    
     incrementValue() {
         return this.variable.value();
     }    
 
+
     measurementValue() {
         return this.variable.value();
     }    
+
 
     functionValue(currentLength) {
         if ( this.function === "angleOfLine" )
@@ -109,7 +121,10 @@ class Expression {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
-            return line.angleDeg();
+            var deg = line.angleDeg();
+            if ( deg < 0 )
+                deg += 360; 
+            return deg;
         }
         else if ( this.function === "lengthOfLine" )
         {
@@ -187,9 +202,11 @@ class Expression {
         else throw ("Unknown function: " + this.function );
     }
     
+
     constantValue() {
         return this.constant;
     }
+
 
     operationValue(currentLength) {
 
@@ -254,37 +271,71 @@ class Expression {
         throw ("Unknown operation: " + this.operation);
     }
 
+
     keywordValue(currentLength) {
         if (this.variable === "CurrentLength")
             return currentLength;
         throw ("Unknown keyword: " + this.variable);
     }
 
-    html() {
+
+    html( asFormula ) {
+
+        if ( ! asFormula )
+            return Number.parseFloat( this.value() ).toPrecision(4); 
 
         if ( this.variable )
-            return this.variable;
+            return this.variable.name;
 
         if ( this.constant )
             return this.constant;
 
-        if ( this.operation )
+        if ( this.function )
         {
-            var t = this.operation + "(";
+            if ( this.function === "lengthOfLine" )
+                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            if ( this.function === "angleOfLine" )
+                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            else
+                return "UNKNOWN FUNCTION TYPE" + this.function;
+        }
+
+        if ( this.operation ) 
+        {
+            var useOperatorNotation = false;
+
+            if (this.operation === "add") 
+                useOperatorNotation = " + ";
+
+            if (this.operation === "subtract") 
+                useOperatorNotation = " - ";
+
+            if (this.operation === "divide") 
+                useOperatorNotation = " / ";
+
+            if (this.operation === "multiply") 
+                useOperatorNotation = " * ";
+                
+            var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";
             var first = true;
             for ( var p in this.params )
             {
                 if ( ! first )
-                    t += ",";
-                t += this.params[p].html();
+                {
+                    if ( useOperatorNotation )
+                        t += useOperatorNotation;
+                    else
+                        t += ",";
+                }
+                t += this.params[p].html( asFormula );
                 first = false;
             }
             t += ")";
             return t;
         }
 
-        return "EXPRESSION";
-    }
+        return "UNKNOWN EXPRESSION TYPE";
+    };
 
 
     //The dependencies of this expression need adding to the source drawingObject that uses this expression

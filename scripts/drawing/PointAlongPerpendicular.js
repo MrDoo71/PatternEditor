@@ -44,8 +44,17 @@ class PointAlongPerpendicular extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " from " + this.firstPoint.data.name + " perpendicular to the line to " + this.secondPoint.data.name + " additional angle:" + this.data.angle.value();
+    html( asFormula ) {
+        var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " from " + this.firstPoint.ref() 
+                + " perpendicular to the line to " + this.secondPoint.ref();
+
+        if (    ( this.data.angle.constant )
+             && ( this.data.angle.constant != 0 ) )
+            h += " additional angle " + this.data.angle.html( asFormula );
+
+        return h;
     }
 
 

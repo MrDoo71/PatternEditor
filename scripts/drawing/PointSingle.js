@@ -26,8 +26,9 @@ class PointSingle extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>:' + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin";
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>:' 
+            + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin";
     }
 
 

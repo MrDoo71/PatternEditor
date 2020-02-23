@@ -150,7 +150,7 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "no intersection with arc";

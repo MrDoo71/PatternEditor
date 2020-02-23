@@ -48,11 +48,12 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: point on circle with center ' + this.center.data.derivedName + 
-                ' radius ' + this.radius.html() +
-                ' of tangent from point ' + this.tangent.data.name +
-                ' crosspoint:' + this.crossPoint;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'point on circle with center ' + this.center.ref() 
+                + ' radius ' + this.radius.html( asFormula ) 
+                + ' of tangent from point ' + this.tangent.ref()
+                + ' crosspoint:' + this.crossPoint;
     }
 
 

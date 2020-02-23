@@ -35,8 +35,11 @@ class OperationResult extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Operation result: ';
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Operation ' + this.fromOperation.ref() 
+                + ' on ' + this.basePoint.ref(); 
+
          //+ this.data.length.value() + 
            //             " from " + this.basePoint.data.name +
              //            " angle:" + this.data.angle.value() +

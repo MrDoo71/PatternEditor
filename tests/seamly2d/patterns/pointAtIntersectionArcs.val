@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="-0.637626" my="-0.252579" name="A" type="single" x="11" y="1"/>
+            <arc angle1="180" angle2="0" center="1" color="blue" id="2" penStyle="dashDotLine" radius="10" type="simple"/>
+            <point angle="295.323" basePoint="1" id="3" length="15" lineColor="black" mx="0.0520833" my="0.104167" name="A1" type="endLine" typeLine="hair"/>
+            <arc angle1="10" angle2="170" center="3" color="deeppink" id="4" penStyle="hair" radius="10" type="simple"/>
+            <point crossPoint="1" firstArc="2" id="5" mx="0.0520833" my="0.104167" name="A2" secondArc="4" type="pointOfIntersectionArcs"/>
+            <point crossPoint="1" firstArc="4" id="6" mx="-1.16085" my="-0.0147484" name="A3" secondArc="2" type="pointOfIntersectionArcs"/>
+            <point crossPoint="2" firstArc="2" id="7" mx="0.599094" my="-0.466627" name="A4" secondArc="4" type="pointOfIntersectionArcs"/>
+            <arc angle1="160" angle2="180" center="3" color="darkRed" id="8" penStyle="hair" radius="15" type="simple"/>
+            <point crossPoint="1" firstArc="2" id="9" mx="0.0520833" my="0.104167" name="A5" secondArc="8" type="pointOfIntersectionArcs"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

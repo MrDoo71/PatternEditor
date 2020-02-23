@@ -26,8 +26,14 @@ class PointIntersectArcAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
+        var angleDeg = this.angle.value();
+        if ( angleDeg >= 360 )
+            angleDeg -= 360;
+        else if ( angleDeg < 0 )
+            angleDeg += 360;
+
             //TODO replace 1000 with a calculation of the longest line that may be needed
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * this.angle.value() / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * angleDeg / 180 );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -58,9 +64,12 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc ' + this.arc.data.derivedName + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect arc ' + this.arc.ref()
+                + " with line from " + this.basePoint.ref() 
+                + " at angle " + this.angle.html( asFormula );
     }
 
 

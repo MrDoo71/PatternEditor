@@ -84,10 +84,12 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arcs ' + this.firstArc.data.name + " and " + this.secondArc.data.name
-           + ( this.data.crossPoint === "One" ? "" : " - second point");
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect arcs ' + this.firstArc.ref()
+                + " and " + this.secondArc.ref()
+                + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
 

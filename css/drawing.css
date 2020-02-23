@@ -3,7 +3,8 @@
     Author     : jase
 */
 
-span.ps-name {
+span.ps-name,
+span.ps-ref {
     font-weight: bold;
 }
 
@@ -20,6 +21,12 @@ g.j-point.j-active > circle {
     fill:#000;
 }
 
+/*
+g.j-point.j-active > line,
+g.j-point.j-active > path {
+    outline: 1px solid red;
+}*/
+
 g.j-item div.desc {
     padding: 4px 8px;
     border:1px solid #ccc;
@@ -29,6 +36,21 @@ g.j-item.j-active div.desc {
     padding: 3px 7px;
     border:2px solid #333;
     background-color: #ffc;
+}
+
+g.j-item.error div.desc {    
+    padding: 3px 7px;
+    border:2px solid #ff0000;
+    background-color: #fcc;
+}
+
+g.j-item.error.j-active div.desc {    
+    background-color: #fcc;
+}
+
+g.j-item.error div.error {
+    color: red;
+    font-weight: bold;
 }
 
 path.link {
@@ -78,7 +100,8 @@ div.pattern-table {
     overflow-y: scroll;
 }
 
-button.toggle-full-page {
+button.toggle-full-page,
+button.toggle-show_formulas {
     margin-left: 8px;
 }
 

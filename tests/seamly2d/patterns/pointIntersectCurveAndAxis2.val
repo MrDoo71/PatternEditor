@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.0520833" my="0.104167" name="A" type="single" x="11" y="1"/>
+            <arc angle1="180" angle2="0" center="1" color="black" id="2" penStyle="dashDotLine" radius="10" type="simple"/>
+            <point angle="295.323" basePoint="1" id="3" length="4.99245" lineColor="black" mx="0.0520833" my="0.104167" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="220" basePoint="3" curve="2" id="4" lineColor="black" mx="0.0520833" my="0.104167" name="A2" type="curveIntersectAxis" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

@@ -66,19 +66,28 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
-            else if ( data.variableType === "lengthOfSplinePath" )
+            else if (    ( data.variableType === "lengthOfSplinePath" )
+                      || ( data.variableType === "lengthOfSpline" ) )
             {
-                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                if ( data.drawingObject1 && data.drawingObject2 )
+                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
+                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                else
+                    //this is the spline drawing object itself, the curve comes directly from it. 
+                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
-            else if ( data.variableType === "lengthOfSpline" )
-            {
-                //TODO TEST! if this works, combine with the one above as this is an exact copy
-                this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }            
+            //else if ( data.variableType === "lengthOfSpline" )
+            //{
+            //    //TOFIX
+            //    //TODO TEST! if this works, combine with the one above as this is an exact copy
+            //    this.drawingObject = patternPiece.getObject(  data.drawingObject1 );
+            //    //this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+            //    this.function = data.variableType;
+            //    this.value = this.functionValue;
+            //}            
             else if ( data.variableType === "lengthOfArc" )
             {
                 this.drawingObject = patternPiece.getObject( data.drawingObject1 );
@@ -103,13 +112,16 @@ class Expression {
         else throw "Unsupported expression." ;
     }
 
+    
     incrementValue() {
         return this.variable.value();
     }    
 
+
     measurementValue() {
         return this.variable.value();
     }    
+
 
     functionValue(currentLength) {
         if ( this.function === "angleOfLine" )
@@ -117,7 +129,10 @@ class Expression {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
-            return line.angleDeg();
+            var deg = line.angleDeg();
+            if ( deg < 0 )
+                deg += 360; 
+            return deg;
         }
         else if ( this.function === "lengthOfLine" )
         {
@@ -195,9 +210,11 @@ class Expression {
         else throw ("Unknown function: " + this.function );
     }
     
+
     constantValue() {
         return this.constant;
     }
+
 
     operationValue(currentLength) {
 
@@ -262,37 +279,71 @@ class Expression {
         throw ("Unknown operation: " + this.operation);
     }
 
+
     keywordValue(currentLength) {
         if (this.variable === "CurrentLength")
             return currentLength;
         throw ("Unknown keyword: " + this.variable);
     }
 
-    html() {
+
+    html( asFormula ) {
+
+        if ( ! asFormula )
+            return Number.parseFloat( this.value() ).toPrecision(4); 
 
         if ( this.variable )
-            return this.variable;
+            return this.variable.name;
 
         if ( this.constant )
             return this.constant;
 
-        if ( this.operation )
+        if ( this.function )
         {
-            var t = this.operation + "(";
+            if ( this.function === "lengthOfLine" )
+                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            if ( this.function === "angleOfLine" )
+                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            else
+                return "UNKNOWN FUNCTION TYPE" + this.function;
+        }
+
+        if ( this.operation ) 
+        {
+            var useOperatorNotation = false;
+
+            if (this.operation === "add") 
+                useOperatorNotation = " + ";
+
+            if (this.operation === "subtract") 
+                useOperatorNotation = " - ";
+
+            if (this.operation === "divide") 
+                useOperatorNotation = " / ";
+
+            if (this.operation === "multiply") 
+                useOperatorNotation = " * ";
+                
+            var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";
             var first = true;
             for ( var p in this.params )
             {
                 if ( ! first )
-                    t += ",";
-                t += this.params[p].html();
+                {
+                    if ( useOperatorNotation )
+                        t += useOperatorNotation;
+                    else
+                        t += ",";
+                }
+                t += this.params[p].html( asFormula );
                 first = false;
             }
             t += ")";
             return t;
         }
 
-        return "EXPRESSION";
-    }
+        return "UNKNOWN EXPRESSION TYPE";
+    };
 
 
     //The dependencies of this expression need adding to the source drawingObject that uses this expression
@@ -474,7 +525,7 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "no intersection with arc";
@@ -858,7 +909,7 @@ class DrawingObject /*abstract*/ {
 
     drawDot(g, o) {
         var d = o.data; //the original json data
-        g.attr("class", "j-point");
+        //g.attr("class", "j-point");
         g.append("circle")
             .attr("cx", o.p.x)
             .attr("cy", o.p.y)
@@ -872,8 +923,12 @@ class DrawingObject /*abstract*/ {
                 .attr("y1", this.line.p1.y)
                 .attr("x2", this.line.p2.x)
                 .attr("y2", this.line.p2.y)
-                .attr("stroke-width", 1 / scale)
-                .attr("stroke", this.getColor() );
+                .attr("stroke-width", ( o.error ? 2 : 1 ) / scale)
+                .attr("stroke", o.error ? "red" : this.getColor() );
+    }
+
+    ref() {
+        return '<span class="ps-ref">' + this.data.name + '</span>';
     }
 
     getColor() {
@@ -988,12 +1043,14 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: elliptical arc with center ' + this.data.center 
-                + " radius-x " + this.data.radius1.html() 
-                + " radius-y " + this.data.radius2.html() 
-                + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html()
-                + " rotation angle " + this.data.rotationAngle.html() ;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'elliptical arc with center ' + this.data.center.ref()
+                + " radius-x " + this.data.radius1.html( asFormula ) 
+                + " radius-y " + this.data.radius2.html( asFormula ) 
+                + " from angle " + this.data.angle1.html( asFormula ) 
+                + " to " + this.data.angle2.html( asFormula )
+                + " rotation angle " + this.data.rotationAngle.html( asFormula ) ;
     }
 
     
@@ -1086,8 +1143,13 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: arc with center ' + this.data.center + " radius " + this.data.radius.html() + " from angle " + this.data.angle1.html() + " to " + this.data.angle2.html();
+    html( asFormula ) 
+    {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'arc with center ' + this.center.ref() 
+                + " radius " + this.radius.html( asFormula ) 
+                + " from angle " + this.angle1.html( asFormula ) 
+                + " to " + this.angle2.html( asFormula );
     }
 
     
@@ -1135,8 +1197,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along curve " + this.curve.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along curve " + this.curve.ref();
     }
 
 
@@ -1231,8 +1295,8 @@ class Line extends DrawingObject {
     }
 
 
-    html() {
-        return 'line ' + '<span class="ps-name">' + this.firstPoint.data.name + '</span>' + " - " + '<span class="ps-name">' + this.secondPoint.data.name + '</span>';
+    html( asFormula ) {
+        return 'line ' + this.firstPoint.ref() + " - " + this.secondPoint.ref();
     }
 
 
@@ -1275,11 +1339,12 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Flip operation: axis:' + this.axis + 
-                        " around " + this.center.data.name +
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'Flip operation: axis:' + this.axis 
+                + " around " + this.center.ref() 
                          //" angle:" + this.data.angle.value() +
-                         " suffix:" + this.data.suffix;
+                + " suffix:" + this.data.suffix;
     }
 
 
@@ -1351,11 +1416,12 @@ class OperationMove extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Move operation: ' + this.data.length.value() + 
-                        //" from " + this.basePoint.data.name +
-                         " angle:" + this.data.angle.value() +
-                         " suffix:" + this.data.suffix;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                    + 'Move operation: ' + this.data.length.html( asFormula ) 
+                    //" from " + this.basePoint.data.name +
+                    + " angle:" + this.data.angle.html( asFormula ) 
+                    + " suffix:" + this.data.suffix;
     }
 
 
@@ -1414,8 +1480,11 @@ class OperationResult extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Operation result: ';
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Operation ' + this.fromOperation.ref() 
+                + ' on ' + this.basePoint.ref(); 
+
          //+ this.data.length.value() + 
            //             " from " + this.basePoint.data.name +
              //            " angle:" + this.data.angle.value() +
@@ -1474,18 +1543,19 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: Move rotate: ' +
-                         " center: " + this.center.data.name +
-                         " angle:" + this.data.angle.value() +
-                         " suffix:" + this.data.suffix;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Move rotate: ' 
+                + " center: " + this.center.ref() 
+                + " angle:" + this.data.angle.html( asFormula ) 
+                + " suffix:" + this.data.suffix;
     }
 
 
     applyOperationToPoint( source )
     {
         return source.p.rotate( this.center.p, this.angle.value() );
-
+        /*
         //Convert degrees to radians
         
         var centerToSourceLine = new GeoLine( this.center.p, source.p );
@@ -1495,6 +1565,7 @@ class OperationRotate extends DrawingObject {
         var result = this.center.p.pointAtDistanceAndAngle( distance, angle );
         //var line = new GeoLine( source.p, result.p );
         return result;
+        */
     }
 
 
@@ -1551,7 +1622,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ';// + this.data.length.value() + " from " + this.firstPoint.data.name + " perpendicular to the line to " + this.secondPoint.data.name + " additional angle:" + this.data.angle.value();
     }
 
@@ -1615,9 +1686,13 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " along line bisecting " 
-             + this.secondPoint.data.name + "-" + this.firstPoint.data.name + " and " + this.secondPoint.data.name + "-" + this.thirdPoint.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along line bisecting " + this.secondPoint.ref() 
+                + "-" + this.firstPoint.ref()
+                + " and " + this.secondPoint.ref() 
+                + "-" + this.thirdPoint.ref();
     }
 
 
@@ -1672,8 +1747,11 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along line from " + this.firstPoint.data.name + " to " + this.secondPoint.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along line from " + this.firstPoint.ref()
+                + " to " + this.secondPoint.ref();
     }
 
 
@@ -1732,8 +1810,17 @@ class PointAlongPerpendicular extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " from " + this.firstPoint.data.name + " perpendicular to the line to " + this.secondPoint.data.name + " additional angle:" + this.data.angle.value();
+    html( asFormula ) {
+        var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " from " + this.firstPoint.ref() 
+                + " perpendicular to the line to " + this.secondPoint.ref();
+
+        if (    ( this.data.angle.constant )
+             && ( this.data.angle.constant != 0 ) )
+            h += " additional angle " + this.data.angle.html( asFormula );
+
+        return h;
     }
 
 
@@ -1781,8 +1868,10 @@ class PointCutArc extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along arc " + this.arc.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along arc " + this.arc.ref();
     }
 
 
@@ -1828,8 +1917,10 @@ class PointCutSplinePath extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.html() + " along path " + this.splinePath.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " along path " + this.splinePath.ref();
     }
 
 
@@ -1884,8 +1975,11 @@ class PointEndLine extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + this.data.length.value() + " from " + this.basePoint.data.name + " angle:" + this.data.angle.value();
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + this.data.length.html( asFormula ) 
+                + " from " + this.basePoint.ref() 
+                + " angle " + this.data.angle.html( asFormula );
     }
 
 
@@ -1942,10 +2036,11 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: point on arc ' + this.arc.data.derivedName + 
-                ' of tangent from point ' + this.tangent.data.name +
-                ' crosspoint:' + this.crossPoint;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'point on arc ' + this.arc.ref() //derivedName?
+                + ' of tangent from point ' + this.tangent.ref()
+                + ' crosspoint:' + this.crossPoint;
     }
 
 
@@ -2007,11 +2102,12 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: point on circle with center ' + this.center.data.derivedName + 
-                ' radius ' + this.radius.html() +
-                ' of tangent from point ' + this.tangent.data.name +
-                ' crosspoint:' + this.crossPoint;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'point on circle with center ' + this.center.ref() 
+                + ' radius ' + this.radius.html( asFormula ) 
+                + ' of tangent from point ' + this.tangent.ref()
+                + ' crosspoint:' + this.crossPoint;
     }
 
 
@@ -2060,8 +2156,8 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    html() {
-        return 'line ' + '<span class="ps-name">' + this.firstPoint.data.name + '</span>' + " - " + '<span class="ps-name">' + this.secondPoint.data.name + '</span>';
+    html( asFormula ) {
+        return 'line ' + this.firstPoint.ref() +  " - " + this.secondPoint.ref();
     }
 
 
@@ -2100,8 +2196,14 @@ class PointIntersectArcAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
+        var angleDeg = this.angle.value();
+        if ( angleDeg >= 360 )
+            angleDeg -= 360;
+        else if ( angleDeg < 0 )
+            angleDeg += 360;
+
             //TODO replace 1000 with a calculation of the longest line that may be needed
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * this.angle.value() / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * angleDeg / 180 );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -2132,9 +2234,12 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc ' + this.arc.data.derivedName + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect arc ' + this.arc.ref()
+                + " with line from " + this.basePoint.ref() 
+                + " at angle " + this.angle.html( asFormula );
     }
 
 
@@ -2198,9 +2303,14 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arc with center ' + this.center.data.name + ", radius " + this.radius.value() +  " with line " + this.firstPoint.data.name + "-" + this.secondPoint.data.name;
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'intersect arc with center ' 
+                + this.center.ref() 
+                + ", radius " + this.radius.html( asFormula ) 
+                +  " with line " + this.firstPoint.ref() 
+                + "-" + this.secondPoint.ref();
     }
 
 
@@ -2300,10 +2410,12 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect arcs ' + this.firstArc.data.name + " and " + this.secondArc.data.name
-           + ( this.data.crossPoint === "One" ? "" : " - second point");
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect arcs ' + this.firstArc.ref()
+                + " and " + this.secondArc.ref()
+                + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
 
@@ -2407,11 +2519,14 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect circles ' + this.center1.data.name + " radius " + this.radius1.html() 
-                + " and " + this.center2.data.name + " radius " + this.radius2.html()
-           + ( this.data.crossPoint === "One" ? "" : " - second point");
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect circles ' + this.center1.ref() 
+                + " radius " + this.radius1.html( asFormula ) 
+                + " and " + this.center2.ref() 
+                + " radius " + this.radius2.html( asFormula )
+                + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
 
@@ -2453,7 +2568,13 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * this.angle.value() / 180 );
+        var angleDeg = this.angle.value();
+        if ( angleDeg >= 360 )
+            angleDeg -= 360;
+        else if ( angleDeg < 0 )
+            angleDeg += 360;
+
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * angleDeg / 180 );
 
         var line = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -2485,9 +2606,12 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect curve ' + this.curve.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect curve ' + this.curve.ref() 
+                + " with line from " + this.basePoint.ref()
+                + " at angle " + this.angle.html( asFormula );
     }
 
 
@@ -2588,9 +2712,11 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    html() {
+    html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect curve ' + this.curve1.data.name + " with " + this.curve2.data.name;
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect curve ' + this.curve1.ref() 
+                + " with " + this.curve2.ref();
     }
 
 
@@ -2655,8 +2781,12 @@ class PointIntersectLineAndAxis extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: intersection of ' + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " with line from " + this.basePoint.data.name + " at angle " + this.angle.html();
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + ' intersection of ' + this.p1Line1.ref() 
+                + "-" + this.p2Line1.ref() 
+                + " with line from " + this.basePoint.ref() 
+                + " at angle " + this.angle.html( asFormula );
     }
 
 
@@ -2715,8 +2845,12 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: intersect ' + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " with " + this.p1Line2.data.name + "-" + this.p2Line2.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'intersect ' + this.p1Line1.ref()
+                + "-" + this.p2Line1.ref() 
+                + " with " + this.p1Line2.ref() 
+                + "-" + this.p2Line2.ref();
     }
 
 
@@ -2788,8 +2922,12 @@ class PointOfTriangle extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + " Point along " + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " that forms a right angle triangle with line  " + this.firstPoint.data.name + "-" + this.secondPoint.data.name ;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + " Point along " + this.p1Line1.ref()
+                + "-" + this.p2Line1.ref()
+                + " that forms a right angle triangle with line  " + this.firstPoint.ref()
+                + "-" + this.secondPoint.ref();
     }
 
 
@@ -2856,8 +2994,12 @@ class PointShoulder extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' + " Point along " + this.p1Line1.data.name + "-" + this.p2Line1.data.name + " being " + this.length.html() + " from " + this.shoulderPoint.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+            + " Point along " + this.p1Line1.ref() 
+            + "-" + this.p2Line1.ref()
+            + " being " + this.length.html( asFormula ) 
+            + " from " + this.shoulderPoint.ref();
     }
 
 
@@ -2898,8 +3040,9 @@ class PointSingle extends DrawingObject {
     }
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>:' + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin";
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>:' 
+            + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin";
     }
 
 
@@ -2982,9 +3125,9 @@ class SplinePathInteractive extends DrawingObject {
     }   
 
 
-    html() {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: curved path:';// from ' + this.startPoint.data.name + " angle " + this.angle1.value() + " length " + this.length1.value()
-            //+ " to " + this.endPoint.data.name + " angle " + this.angle2.value() + " length " + this.length2.html();
+    html( asFormula ) {
+        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+                    +'curved path:';
 
         var d = this.data;
         for( var i=0; i< d.pathNode.length; i++ )
@@ -2993,11 +3136,11 @@ class SplinePathInteractive extends DrawingObject {
                 html+= "; ";
          
             html += "<br />";    
-            html += d.pathNode[i].point.data.name + " " + 
-                    d.pathNode[i].angle1.html() + " " + 
-                    d.pathNode[i].length1.html() + " " + 
-                    d.pathNode[i].angle2.html() + " " + 
-                    d.pathNode[i].length2.html();
+            html += d.pathNode[i].point.ref() + " " + 
+                    d.pathNode[i].angle1.html( asFormula ) + " " + 
+                    d.pathNode[i].length1.html( asFormula ) + " " + 
+                    d.pathNode[i].angle2.html( asFormula ) + " " + 
+                    d.pathNode[i].length2.html( asFormula );
         }
 
         return html;
@@ -3089,20 +3232,21 @@ class SplinePathUsingPoints extends DrawingObject {
     }   
 
 
-    html() {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: curved path: ';
+    html( asFormula ) {
+        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'curved path: ';
 
         var d = this.data;
 
         for( var i=0; i< d.pathNode.length; i+=3 )
         {
             if ( (i-1)>0 )
-                html += '<span class="control-point">' + this.data.pathNode[i-1].point.data.name + '</span> ';
+                html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
 
-            html += d.pathNode[i].point.data.name + " ";            
+            html += d.pathNode[i].point.ref() + " ";            
 
             if ( (i+1) < this.data.pathNode.length )
-                html += '<span class="control-point">' + this.data.pathNode[i+1].point.data.name + '</span> ';
+                html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
         }
 
         return html;
@@ -3199,9 +3343,14 @@ class SplineSimple extends DrawingObject {
     }   
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: spline from ' + this.startPoint.data.name + " angle " + this.angle1.value() + " length " + this.length1.value()
-            + " to " + this.endPoint.data.name + " angle " + this.angle2.value() + " length " + this.length2.html();
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'spline from ' + this.startPoint.ref() 
+                + " angle " + this.angle1.html( asFormula ) 
+                + " length " + this.length1.html( asFormula )
+            + " to " + this.endPoint.ref() 
+            + " angle " + this.angle2.html( asFormula ) 
+            + " length " + this.length2.html( asFormula );
     }
 
     
@@ -3288,9 +3437,12 @@ class SplineUsingControlPoints extends DrawingObject {
     }   
 
 
-    html() {
-        return '<span class="ps-name">' + this.data.name + '</span>: spline from ' + this.startPoint.data.name + " using control point " + this.startControlPoint.data.name
-            + " to " + this.endPoint.data.name + " using control point " + this.endControlPoint.data.name;
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+            + 'spline from ' + this.startPoint.ref()
+            + " using control point " + this.startControlPoint.ref()
+            + " to " + this.endPoint.ref()
+            + " using control point " + this.endControlPoint.ref();
     }
 
     
@@ -3335,7 +3487,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     m.html = function() {
-                        return this.expression.html();
+                        return this.expression.html( asFormula );
                     };
                 }
                 this.measurement[ m.name ] = m;
@@ -3364,7 +3516,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     inc.html = function() {
-                        return this.expression.html();
+                        return this.expression.html( asFormula );
                     };
                 }
                 this.increment[ inc.name ] = inc;
@@ -3565,8 +3717,6 @@ class PatternPiece {
 
     newFormula(formula) {
 
-        //f.value()
-        //f.html()
 
         var f = formula;
         if (typeof formula.constant !== "undefined") {
@@ -3582,8 +3732,8 @@ class PatternPiece {
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
-            f.html = function() {
-                return f.expression.html();
+            f.html = function( asFormula ) {
+                return f.expression.html( asFormula );
             };
         }
         return f;
@@ -3650,7 +3800,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     var pattern = new Pattern( dataAndConfig, options );
       
-    pattern.gInteractionPrefix = options.interactionPrefix;    
+    //pattern.gInteractionPrefix = options.interactionPrefix;    
     
     function newkvpSet(noRefresh)
     {
@@ -3686,7 +3836,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     	var v = newkvpSet(false) ;
     	v.add("x", d.x) ;   
     	v.add("y", d.y) ;    
-    	goGraph( gInteractionPrefix + ':' + d.data.contextMenu ,
+    	goGraph( options.interactionPrefix + ':' + d.data.contextMenu ,
     			 d3.event, 
     			 v ) ;
     }      
@@ -3694,6 +3844,18 @@ function drawPattern( dataAndConfig, ptarget, options )
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
+
+    if ( ! dataAndConfig.options )
+        dataAndConfig.options = {};
+
+    if ( dataAndConfig.options.allowPanAndZoom === undefined )
+        dataAndConfig.options.allowPanAndZoom = true;
+
+    if ( dataAndConfig.options.showFormulas === undefined )
+        dataAndConfig.options.showFormulas = false;
+
+    if ( ! dataAndConfig.options.viewOption )
+        dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
 
     dataAndConfig.options.layoutConfig = { drawingWidth: 400,
                                            drawingHeight: 600,
@@ -3703,7 +3865,6 @@ function drawPattern( dataAndConfig, ptarget, options )
                                            tableMargin: 0 };//25 };
 
     dataAndConfig.options.setButton = function( viewOption ) {
-        //alert("Click ! " + viewOption.label );
 
         if ( ! viewOption )
            viewOption = this.layoutConfig.viewOption;
@@ -3718,22 +3879,96 @@ function drawPattern( dataAndConfig, ptarget, options )
         this.layoutConfig.viewOption = viewOption; //so we can call this without a parameter when toggling full size. 
     };    
 
-    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[1] );
+    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
+
+    var focusDrawingObject = function( d, scrollTable )
+    {
+        selectedObject = d;
+
+        if (( d3.event) && ( d3.event.originalTarget.className === "ps-ref" ))
+        {
+            selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
+            scrollTable = true;
+        }
+
+        for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
+        {
+            var a = pattern.patternPiece1.drawingObjects[i];
+            var g = a.drawingSvg;
+            var strokeWidth = (selectedObject==a) ? 2 : 1;
+            g.selectAll( "line" )
+              .attr("stroke-width", strokeWidth / scale);
+             g.selectAll( "path" )
+              .attr("stroke-width", strokeWidth / scale);
+        }        
+
+        var graphdiv = targetdiv;
+        //Remove any existing highlighting in the table. 
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
+        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        //$(this).addClass("j-active"); //highlight the object in the drawing
+
+        //d, the drawing object we clicked on, has a direct reference to its representation in the table
+        selectedObject.tableSvg.node().classList.add("j-active");
+        selectedObject.drawingSvg.node().classList.add("j-active");
+
+        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
+        linksGroup.selectAll("path.link") //rename .link to .dependency
+            .attr("class", function( d ) {                         
+                if ( d.source == selectedObject ) 
+                {
+                    d.target.tableSvg.node().classList.add("source");
+                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
+                    return "source link";
+                }
+                if ( d.target == selectedObject ) 
+                {
+                    d.source.tableSvg.node().classList.add("target");
+                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
+                    return "target link";
+                }
+                return "link"; 
+            } )
+            .each( function( d ) { 
+                if (( selectedObject.source == selectedObject ) || ( selectedObject.target == selectedObject ))
+                    d3.select(this).raise();
+             } );
+
+        //Scroll the table to ensure that d.tableSvg is in view.    
+        if ( scrollTable )
+        {
+            var table = d3.select("div.pattern-table");
+            table.transition().duration(500)
+            .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+        }
+    };
 
     var doDrawingAndTable = function() {
                                     if ( dataAndConfig.options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu );
+                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("svg.pattern-drawing").remove();
 
                                     if ( dataAndConfig.options.layoutConfig.tableWidth )
-                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options.layoutConfig, contextMenu );
+                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("div.pattern-table").remove();
                                 };
 
     doControls( targetdiv, dataAndConfig.options, doDrawingAndTable );
-    doDrawingAndTable();                            
+    doDrawingAndTable();                   
+    
+    for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
+    {
+        var a = pattern.patternPiece1.drawingObjects[i];
+        if ( a.error )
+        {
+            focusDrawingObject(a, true);
+            break;
+        }
+    }
+
 }
 
 
@@ -3745,7 +3980,7 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
     var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
 
     if (    ( editorOptions.viewOption )
-         && ( editorOptions.viewOption.length > 0 ) )
+         && ( editorOptions.viewOption.length > 1 ) )
     {
         var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
         sizeButtons.selectAll("button")
@@ -3755,14 +3990,17 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
                     .attr( "class", "btn btn-default" )
                     .text(function(d) { return d.label; })
                     .on("click", function(d) {
+                        d3.event.preventDefault();
                         editorOptions.setButton( d );
                         doDrawingAndTable();
+                        //d3.event.stopPropagation();
                     } );
     }
 
     if ( editorOptions.includeFullPageOption )
     {
         var toggleFullScreen = function() {
+            d3.event.preventDefault();
 
             if ( graphdiv.classed("full-page") ) 
                 graphdiv.node().classList.remove("full-page");
@@ -3779,11 +4017,40 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
                                      .on("click", toggleFullScreen );
     }
 
+    //if ( editorOptions.includeFullPageOption )
+    {
+        var toggleShowFormulas = function() {
+            d3.event.preventDefault();
+            editorOptions.showFormulas = ! editorOptions.showFormulas;
+            d3.select(this).text( editorOptions.showFormulas ? "hide formulas" : "show formulas" );
+            doDrawingAndTable();
+        };
+
+        var toggleShowFormulas = controls.append("button")
+                                     .attr("class", "btn btn-default toggle-show_formulas")
+                                     .text( editorOptions.showFormulas ? "hide formulas" : "show formulas" )
+                                     .on("click", toggleShowFormulas );
+    }    
 }
 
 
+
+//http://bl.ocks.org/humbletim/5507619
+function scrollTopTween(scrollTop) 
+{
+    return function() {
+        var i = d3.interpolateNumber(this.scrollTop, scrollTop);
+        //console.log( "function1: ", this.scrollTop, " - ", scrollTop );
+        return function(t) { 
+            this.scrollTop = i(t); 
+            //console.log( "function2: ", this.scrollTop );
+        };
+    }
+}
+  
+
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
+function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.drawingMargin;//25; 
@@ -3818,39 +4085,56 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
 
     //TODO also need to be able to click on a line / curve/ arc
 
+    //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
-        d3.event.preventDefault() ;
-        console.log( "Click! " );
-        $( ".j-active" ).removeClass("j-active");
-        $( ".j-item.source" ).removeClass("source");
-        $( ".j-item.target" ).removeClass("target");
-        $(this).addClass("j-active");
-        d.tableSvg.each( function(d,i) {
-            $(this).addClass("j-active");
-        });
-        selectedObject = d;
-        //drawLinks( patternPiece1 );
+        d3.event.preventDefault();
+        focusDrawingObject(d,true);
+        /*
+        //Remove any existing highlighting in the table. 
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
+        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        $(this).addClass("j-active"); //highlight the object in the drawing
 
+        //d, the drawing object we clicked on, has a direct reference to its representation in the table
+        d.tableSvg.node().classList.add("j-active");
+
+        selectedObject = d;
+
+        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
             .attr("class", function( d ) {                         
                 if ( d.source == selectedObject ) 
                 {
-                    d.target.tableSvg.each( function() { $(this).addClass("source"); } );
+                    d.target.tableSvg.node().classList.add("source");
+                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
-                    d.source.tableSvg.each( function() { $(this).addClass("target"); } );
+                    d.source.tableSvg.node().classList.add("target");
+                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
                 return "link"; 
-            } );
-    }
+            } )
+            .each( function( d ) { 
+                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
+                    d3.select(this).raise();
+             } );
+
+        //Scroll the table to ensure that d.tableSvg is in view.    
+        var table = d3.select("div.pattern-table");
+        table.transition().duration(500)
+          .tween("uniquetweenname", scrollTopTween( d.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+             */
+    };
 
     var a = transformGroup3.selectAll("g");    
     a = a.data( patternPiece1.drawingObjects );
     a.enter()
      .append("g")
+     .attr("class", "j-point")
      .each( function(d,i) {
         var g = d3.select( this );
         //d.calculate();
@@ -3893,8 +4177,9 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu )
 }
 
 
-function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
+function doTable( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
+    var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.tableMargin;//25; 
     var width =  layoutConfig.tableWidth;//400;
     var height = layoutConfig.tableHeight;//600;
@@ -3903,6 +4188,12 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
     var itemWidth = width *3/4;
     var ypos = 0;
     var seq = 1; //TODO get these in the XML as data?
+    var asFormula = editorOptions.showFormulas; 
+
+    var onclick = function(d) {
+        d3.event.preventDefault();
+        focusDrawingObject(d,false);
+    }
 
     graphdiv.select("div.pattern-table").remove();
 
@@ -3939,6 +4230,9 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
 
         g.attr( "class", "j-item") ;
 
+        if ( d.error )
+            g.attr( "class", "j-item error") ;
+
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
         d.tableSvgY = ypos + ( 0.5 * minItemHeight );
@@ -3954,7 +4248,7 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
-           .html( d.html() );
+           .html( d.html( asFormula ) + (d.error ? '<div class="error">' + d.error + '</div>' : "" ) );
 
         fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
         fo.attr( "height", divHeight );
@@ -3967,7 +4261,8 @@ function doTable( graphdiv, patternPiece1, layoutConfig, contextMenu )
                                     //console.log("y: " + ypos );
                                     return ypos } )
 
-        g.on("contextmenu", contextMenu);
+        g.on("contextmenu", contextMenu)
+         .on("click", onclick );
     });                   
     
     svg.attr("height", ypos );    
