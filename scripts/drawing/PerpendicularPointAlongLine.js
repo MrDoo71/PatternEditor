@@ -26,7 +26,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
         var line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
         
-        var baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngle( 1, (line.angleDeg() + 90 )/360*Math.PI*2 ) );
+        var baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngleDeg( 1, line.angleDeg() + 90 ) );
 
         this.p = line.intersect(baseLine);
         this.line = new GeoLine( this.basePoint.p, this.p );

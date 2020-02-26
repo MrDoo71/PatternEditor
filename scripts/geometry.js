@@ -27,10 +27,16 @@ class GeoPoint {
         return new GeoLine( this.x, this.y, point2.x, point2.y );
     }
 
-    pointAtDistanceAndAngle( length, angle /*radians anti-clockwise from east*/ ) {        
+
+    pointAtDistanceAndAngleRad( length, angle /*radians anti-clockwise from east*/ ) {        
         var x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
         var y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
+    }
+
+
+    pointAtDistanceAndAngleDeg( length, angle /*deg anti-clockwise from east*/ ) {        
+        return this.pointAtDistanceAndAngleRad( length, angle * Math.PI / 180 );
     }
 
 
@@ -40,9 +46,9 @@ class GeoPoint {
         
         var centerToSourceLine = new GeoLine( center, this );
         var distance = centerToSourceLine.getLength();
-        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + rotateAngleDeg ) / 360 );
+        var angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
 
-        var result = center.pointAtDistanceAndAngle( distance, angle );
+        var result = center.pointAtDistanceAndAngleDeg( distance, angle );
         return result;
     }
 
@@ -135,7 +141,7 @@ class GeoLine {
                                               arc.angle2,
                                               0 );
             var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
-            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngle( 1000, (this.angleDeg() - arc.rotationAngle) /180 * Math.PI  ) );
+            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000, (this.angleDeg() - arc.rotationAngle) ) );
 
             arcSI = nrArc.asShapeInfo();
             lineSI = lineRotated.asShapeInfo();    
@@ -165,13 +171,20 @@ class GeoLine {
         return intersect;
     }
 
+    applyOperation( pointTransformer ) 
+    {
+        var p1Transformed = pointTransformer( this.p1 );
+        var p2Transformed =  pointTransformer( this.p2 );
+        return new GeoLine( p1Transformed, p2Transformed );
+    }    
+
     asShapeInfo()
     {
         return ShapeInfo.line( this.p1.x, this.p1.y, this.p2.x, this.p2.y );
     }
 
-
-    angleDeg() {
+    angleDeg() 
+    {
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
@@ -181,8 +194,8 @@ class GeoLine {
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
     }
 
-
-    getLength() {
+    getLength() 
+    {
         return this.length;
     }
 }
@@ -227,8 +240,8 @@ class GeoArc {
         var angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
         var totalAngleR;
 
-        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngle( radius, h.angle - angle ),
-                                   this.center.pointAtDistanceAndAngle( radius, h.angle + angle ) ];        
+        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngleRad( radius, h.angle - angle ),
+                                   this.center.pointAtDistanceAndAngleRad( radius, h.angle + angle ) ];        
         
         return tangentTouchPoints;
     }
@@ -322,6 +335,32 @@ class GeoSpline {
         this.nodeData = nodeData;
     }
 
+    applyOperation( pointTransformer ) {
+        var nodeData = [];
+        for ( var i=0; i<this.nodeData.length; i++ )
+        {
+            var node = this.nodeData[i];
+
+            //Need a control point, not a length and angle. 
+            var inPoint = node.inControlPoint;
+            var outPoint = node.outControlPoint;
+            
+            if ( ( ! inPoint ) && ( node.inLength !== undefined ) )            
+                inPoint = node.point.pointAtDistanceAndAngleDeg( node.inLength, node.inAngle );
+
+            if ( ( ! outPoint ) && ( node.outLength !== undefined ) )
+                outPoint = node.point.pointAtDistanceAndAngleDeg( node.outLength, node.outAngle );
+    
+            var inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
+            var outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
+
+            nodeData.push( {inControlPoint:   inPointTransformed,
+                            point:            pointTransformer( node.point ),
+                            outControlPoint:  outPointTransformed } ) ;
+        }
+        return new GeoSpline( nodeData );
+    }
+
     svgPath()
     {
         var nodeData = this.nodeData;
@@ -335,10 +374,10 @@ class GeoSpline {
             else
             {
                 var controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
-                                                                                             : nodeData[i-1].point.pointAtDistanceAndAngle( nodeData[i-1].outLength, nodeData[i-1].outAngle / 360 * 2 * Math.PI );
+                                                                                             : nodeData[i-1].point.pointAtDistanceAndAngleDeg( nodeData[i-1].outLength, nodeData[i-1].outAngle );
 
                 var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
-                                                                                          : nodeData[i].point.pointAtDistanceAndAngle( nodeData[i].inLength, nodeData[i].inAngle / 360 * 2 * Math.PI );
+                                                                                          : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
                 path += "C" + controlPoint1.x + " " + controlPoint1.y +
                         " " + controlPoint2.x + " " + controlPoint2.y +
                         " " + nodeData[i].point.x + " " + nodeData[i].point.y;

@@ -33,7 +33,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
             angleDeg += 360;
 
             //TODO replace 1000 with a calculation of the longest line that may be needed
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * angleDeg / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, angleDeg );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 

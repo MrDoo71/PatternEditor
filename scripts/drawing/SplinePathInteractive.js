@@ -55,12 +55,9 @@ class SplinePathInteractive extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var p = g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
 
+        this.drawCurve(g,this);
+        
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);
     }

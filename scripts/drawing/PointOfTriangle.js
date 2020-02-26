@@ -38,9 +38,9 @@ class PointOfTriangle extends DrawingObject {
         //The trick here is to observe that all these points, for any axisLine will form an arc
         //centered on the midpoint of otherLine with radiu of half length of otherLine
         var intersectionPoint = axisLine.intersect( otherLine );
-        var midpoint = this.firstPoint.p.pointAtDistanceAndAngle( otherLine.length/2, otherLine.angle );
+        var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
         var arc = new GeoArc( midpoint, otherLine.length/2, 0, 2*Math.PI  );    
-        var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngle( otherLine.length*2, axisLine.angle ) );
+        var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
 
         bounds.adjust(this.p);

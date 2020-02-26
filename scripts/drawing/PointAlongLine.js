@@ -26,7 +26,7 @@ class PointAlongLine extends DrawingObject {
             this.length = this.patternPiece.newFormula(d.length);
 
         this.baseLine = new GeoLine(this.firstPoint.p, this.secondPoint.p);
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle(this.length.value(this.baseLine.length), this.baseLine.angle);
+        this.p = this.firstPoint.p.pointAtDistanceAndAngleRad(this.length.value(this.baseLine.length), this.baseLine.angle);
         this.line = new GeoLine(this.firstPoint.p, this.p);
         
         bounds.adjustForLine(this.line);

@@ -6,6 +6,8 @@
 
 var selectedObject;
 var linksGroup;
+var fontsSizedForScale;
+var fontResizeTimer;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
@@ -74,7 +76,7 @@ function drawPattern( dataAndConfig, ptarget, options )
         dataAndConfig.options.allowPanAndZoom = true;
 
     if ( dataAndConfig.options.showFormulas === undefined )
-        dataAndConfig.options.showFormulas = false;
+        dataAndConfig.options.showFormulas = true;
 
     if ( ! dataAndConfig.options.viewOption )
         dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
@@ -93,7 +95,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
         var totalWidth = viewOption.drawingWidth + viewOption.descriptionsWidth; //should be tableWidth
         var availableWidth = targetdiv.style('width').slice(0, -2) -30;// 1000;
-        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/;
+        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/;
         this.layoutConfig.drawingWidth = availableWidth * viewOption.drawingWidth / totalWidth;
         this.layoutConfig.tableWidth   = availableWidth * viewOption.descriptionsWidth / totalWidth;
         this.layoutConfig.drawingHeight = availableHeight;
@@ -117,11 +119,11 @@ function drawPattern( dataAndConfig, ptarget, options )
         {
             var a = pattern.patternPiece1.drawingObjects[i];
             var g = a.drawingSvg;
-            var strokeWidth = (selectedObject==a) ? 2 : 1;
+            var strokeWidth = (selectedObject==a) ? 3 : 1;
             g.selectAll( "line" )
-              .attr("stroke-width", strokeWidth / scale);
+              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
              g.selectAll( "path" )
-              .attr("stroke-width", strokeWidth / scale);
+              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
         }        
 
         var graphdiv = targetdiv;
@@ -275,7 +277,7 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = layoutConfig.drawingMargin;//25; 
+    var margin = layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
     var width =  layoutConfig.drawingWidth;//400;
     var height = layoutConfig.drawingHeight;//600;
 
@@ -302,54 +304,18 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
     var transformGroup2 = transformGroup1.append("g")
                                .attr("transform", "scale(" + scale + "," + scale + ")");
 
-    var transformGroup3 = transformGroup2.append("g")
-                               .attr("transform", "translate(" + ( ( -1.0 * patternPiece1.bounds.minX ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");
+    //centralise horizontally                            
+    var boundsWidth = patternPiece1.bounds.maxX - patternPiece1.bounds.minX;
+    var availableWidth = width / scale;
+    var offSetX = ( availableWidth - boundsWidth ) /2;
 
-    //TODO also need to be able to click on a line / curve/ arc
+    var transformGroup3 = transformGroup2.append("g")
+                               .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");    
 
     //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,true);
-        /*
-        //Remove any existing highlighting in the table. 
-        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
-        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
-        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
-        $(this).addClass("j-active"); //highlight the object in the drawing
-
-        //d, the drawing object we clicked on, has a direct reference to its representation in the table
-        d.tableSvg.node().classList.add("j-active");
-
-        selectedObject = d;
-
-        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
-        linksGroup.selectAll("path.link") //rename .link to .dependency
-            .attr("class", function( d ) {                         
-                if ( d.source == selectedObject ) 
-                {
-                    d.target.tableSvg.node().classList.add("source");
-                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
-                    return "source link";
-                }
-                if ( d.target == selectedObject ) 
-                {
-                    d.source.tableSvg.node().classList.add("target");
-                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
-                    return "target link";
-                }
-                return "link"; 
-            } )
-            .each( function( d ) { 
-                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
-                    d3.select(this).raise();
-             } );
-
-        //Scroll the table to ensure that d.tableSvg is in view.    
-        var table = d3.select("div.pattern-table");
-        table.transition().duration(500)
-          .tween("uniquetweenname", scrollTopTween( d.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
-             */
     };
 
     var a = transformGroup3.selectAll("g");    
@@ -372,6 +338,39 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
 
     var zoomed = function() {
         transformGroup1.attr("transform", d3.event.transform);
+
+        var currentScale = d3.zoomTransform( transformGroup1.node() ).k; //do we want to scale 1-10 to 1-5 for fonts and linewidths and dots?
+        if (   ( currentScale > (1.1*fontsSizedForScale) )
+            || ( currentScale < (0.9*fontsSizedForScale) )
+            || ( currentScale == 1 ) || ( currentScale == 8 ) )
+        {
+            if ( ! fontResizeTimer )
+            {
+                fontResizeTimer = setTimeout(function () {      
+                    fontResizeTimer = null;          
+                    fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
+                    //console.log( "Resize for " + fontsSizedForScale);
+
+                    for( var i=0; i< patternPiece1.drawingObjects.length; i++ )
+                    {
+                        var a = patternPiece1.drawingObjects[i];
+                        var g = a.drawingSvg;
+                        
+                        g.selectAll( "text" )
+                            .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
+                        g.selectAll( "circle" )
+                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+
+                        var strokeWidth = (selectedObject==a) ? 3 : 1;
+                        g.selectAll( "line" )
+                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);
+                        g.selectAll( "path" )
+                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);              
+                    }        
+
+                }, 50);         
+            }   
+        }
     };           
 
     if ( editorOptions.allowPanAndZoom )
@@ -382,20 +381,7 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
             .on("zoom", zoomed));
     }
 
-
-    //Enable Pan and Zoom
-    //https://observablehq.com/@d3/zoom
-    //TODO if a point is selected then zoom with it as the focus
-    //SEE https://bl.ocks.org/mbostock/a980aba1197350ff2d5a5d0f5244d8d1
-    /*
-    function zoomed() {
-        transformGroup.attr("transform", d3.event.transform);
-    }; this doesn't quite work well enough
-    svg.call(d3.zoom()
-        .extent([[0, 0], [width, height]])
-        .scaleExtent([1, 8])
-        .on("zoom", zoomed));
-    */
+    fontsSizedForScale = 1; //the starting scale of transformGroup1.
 }
 
 

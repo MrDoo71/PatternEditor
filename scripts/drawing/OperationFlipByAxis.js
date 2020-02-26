@@ -39,25 +39,26 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
-        var result = new GeoPoint( source.p.x, source.p.y );
+        return this.flipPoint( p, this.center.p );
+    }
+
+
+    flipPoint( p, center )
+    {
+        var result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
              || ( this.axis === "vertical" )) //just in case.
-            result.x = this.center.p.y - ( source.p.x - this.center.p.x );
+            result.x = center.x - ( p.x - center.x );
         else
-            result.y = this.center.p.y - ( source.p.y - this.center.p.y );
-
-        //console.log("Axis:" + this.axis );
-        //console.log( "Center y " + this.center.p.y );
-        //console.log( "Source y " + source.p.y );
-        //console.log( "Result y " + result.y );
+            result.y = center.y - ( p.y - center.y );
 
         return result;
     }
 
-
+    
     setDependencies( dependencies )
     {
         dependencies.add( this, this.center );

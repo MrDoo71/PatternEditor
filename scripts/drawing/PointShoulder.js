@@ -36,7 +36,7 @@ class PointShoulder extends DrawingObject {
         var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 2*Math.PI  );      
         var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
         var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngle( 100, axisLine.angle ) );
+        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
         bounds.adjust(this.p);

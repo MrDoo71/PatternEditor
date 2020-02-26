@@ -26,7 +26,7 @@ class OperationMove extends DrawingObject {
             this.angle = this.patternPiece.newFormula(d.angle);
             
         //Convert degrees to radians
-        //this.p = this.basePoint.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        //this.p = this.basePoint.p.pointAtDistanceAndAngleRad(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
         //this.line = new GeoLine(this.basePoint.p, this.p);
         //bounds.adjustForLine(this.line);
     }
@@ -49,10 +49,10 @@ class OperationMove extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
         //Convert degrees to radians
-        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
         return result;
     }

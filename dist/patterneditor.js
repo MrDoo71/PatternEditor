@@ -79,15 +79,6 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
-            //else if ( data.variableType === "lengthOfSpline" )
-            //{
-            //    //TOFIX
-            //    //TODO TEST! if this works, combine with the one above as this is an exact copy
-            //    this.drawingObject = patternPiece.getObject(  data.drawingObject1 );
-            //    //this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
-            //    this.function = data.variableType;
-            //    this.value = this.functionValue;
-            //}            
             else if ( data.variableType === "lengthOfArc" )
             {
                 this.drawingObject = patternPiece.getObject( data.drawingObject1 );
@@ -304,6 +295,8 @@ class Expression {
                 return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
             if ( this.function === "angleOfLine" )
                 return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            if ( this.function === "lengthOfSpline" )
+                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
             else
                 return "UNKNOWN FUNCTION TYPE" + this.function;
         }
@@ -402,10 +395,16 @@ class GeoPoint {
         return new GeoLine( this.x, this.y, point2.x, point2.y );
     }
 
-    pointAtDistanceAndAngle( length, angle /*radians anti-clockwise from east*/ ) {        
+
+    pointAtDistanceAndAngleRad( length, angle /*radians anti-clockwise from east*/ ) {        
         var x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
         var y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
+    }
+
+
+    pointAtDistanceAndAngleDeg( length, angle /*deg anti-clockwise from east*/ ) {        
+        return this.pointAtDistanceAndAngleRad( length, angle * Math.PI / 180 );
     }
 
 
@@ -415,9 +414,9 @@ class GeoPoint {
         
         var centerToSourceLine = new GeoLine( center, this );
         var distance = centerToSourceLine.getLength();
-        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + rotateAngleDeg ) / 360 );
+        var angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
 
-        var result = center.pointAtDistanceAndAngle( distance, angle );
+        var result = center.pointAtDistanceAndAngleDeg( distance, angle );
         return result;
     }
 
@@ -510,7 +509,7 @@ class GeoLine {
                                               arc.angle2,
                                               0 );
             var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
-            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngle( 1000, (this.angleDeg() - arc.rotationAngle) /180 * Math.PI  ) );
+            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000, (this.angleDeg() - arc.rotationAngle) ) );
 
             arcSI = nrArc.asShapeInfo();
             lineSI = lineRotated.asShapeInfo();    
@@ -540,13 +539,20 @@ class GeoLine {
         return intersect;
     }
 
+    applyOperation( pointTransformer ) 
+    {
+        var p1Transformed = pointTransformer( this.p1 );
+        var p2Transformed =  pointTransformer( this.p2 );
+        return new GeoLine( p1Transformed, p2Transformed );
+    }    
+
     asShapeInfo()
     {
         return ShapeInfo.line( this.p1.x, this.p1.y, this.p2.x, this.p2.y );
     }
 
-
-    angleDeg() {
+    angleDeg() 
+    {
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
@@ -556,8 +562,8 @@ class GeoLine {
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
     }
 
-
-    getLength() {
+    getLength() 
+    {
         return this.length;
     }
 }
@@ -602,8 +608,8 @@ class GeoArc {
         var angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
         var totalAngleR;
 
-        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngle( radius, h.angle - angle ),
-                                   this.center.pointAtDistanceAndAngle( radius, h.angle + angle ) ];        
+        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngleRad( radius, h.angle - angle ),
+                                   this.center.pointAtDistanceAndAngleRad( radius, h.angle + angle ) ];        
         
         return tangentTouchPoints;
     }
@@ -697,6 +703,32 @@ class GeoSpline {
         this.nodeData = nodeData;
     }
 
+    applyOperation( pointTransformer ) {
+        var nodeData = [];
+        for ( var i=0; i<this.nodeData.length; i++ )
+        {
+            var node = this.nodeData[i];
+
+            //Need a control point, not a length and angle. 
+            var inPoint = node.inControlPoint;
+            var outPoint = node.outControlPoint;
+            
+            if ( ( ! inPoint ) && ( node.inLength !== undefined ) )            
+                inPoint = node.point.pointAtDistanceAndAngleDeg( node.inLength, node.inAngle );
+
+            if ( ( ! outPoint ) && ( node.outLength !== undefined ) )
+                outPoint = node.point.pointAtDistanceAndAngleDeg( node.outLength, node.outAngle );
+    
+            var inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
+            var outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
+
+            nodeData.push( {inControlPoint:   inPointTransformed,
+                            point:            pointTransformer( node.point ),
+                            outControlPoint:  outPointTransformed } ) ;
+        }
+        return new GeoSpline( nodeData );
+    }
+
     svgPath()
     {
         var nodeData = this.nodeData;
@@ -710,10 +742,10 @@ class GeoSpline {
             else
             {
                 var controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
-                                                                                             : nodeData[i-1].point.pointAtDistanceAndAngle( nodeData[i-1].outLength, nodeData[i-1].outAngle / 360 * 2 * Math.PI );
+                                                                                             : nodeData[i-1].point.pointAtDistanceAndAngleDeg( nodeData[i-1].outLength, nodeData[i-1].outAngle );
 
                 var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
-                                                                                          : nodeData[i].point.pointAtDistanceAndAngle( nodeData[i].inLength, nodeData[i].inAngle / 360 * 2 * Math.PI );
+                                                                                          : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
                 path += "C" + controlPoint1.x + " " + controlPoint1.y +
                         " " + controlPoint2.x + " " + controlPoint2.y +
                         " " + nodeData[i].point.x + " " + nodeData[i].point.y;
@@ -901,8 +933,8 @@ class DrawingObject /*abstract*/ {
         if (typeof o.p.x !== "number")
             return;
         g.append("text")
-            .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : d.mx))
-            .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : d.my))
+            .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
+            .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
             .attr("font-size", Math.round(100 / scale)/10 + "px");
     }
@@ -913,7 +945,7 @@ class DrawingObject /*abstract*/ {
         g.append("circle")
             .attr("cx", o.p.x)
             .attr("cy", o.p.y)
-            .attr("r", 4 / scale);
+            .attr("r", Math.round( 40 / scale ) /10 );
     }
 
     drawLine(g, o) {
@@ -924,7 +956,33 @@ class DrawingObject /*abstract*/ {
                 .attr("x2", this.line.p2.x)
                 .attr("y2", this.line.p2.y)
                 .attr("stroke-width", ( o.error ? 2 : 1 ) / scale)
-                .attr("stroke", o.error ? "red" : this.getColor() );
+                .attr("stroke", o.error ? "red" : this.getColor() )
+                .attr("class", this.getLineStyle() );
+    }
+
+    drawPath( g,path ) 
+    {
+        if ( this.lineVisible() )
+            g.append("path")
+              .attr("d", path )
+              .attr("fill", "none")
+              .attr("stroke-width", 1 / scale)
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );
+    }    
+
+    drawCurve(g,o) 
+    {
+        if ( this.lineVisible() )
+            this.drawPath( g, o.curve.svgPath() );
+        /*
+            g.append("path")
+              .attr("d", o.curve.svgPath() )
+              .attr("fill", "none")
+              .attr("stroke-width", 1 / scale)
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );
+              */
     }
 
     ref() {
@@ -933,6 +991,11 @@ class DrawingObject /*abstract*/ {
 
     getColor() {
         return this.data.color;
+    }
+
+    getLineStyle()
+    {
+        return this.data.lineStyle;
     }
 
     lineVisible() {
@@ -1133,11 +1196,15 @@ class ArcSimple extends DrawingObject {
         
         //console.log( "ArcSimple d3 path ", arcPath );
 
-        g.append("path")
-              .attr("d", arcPath )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
+        if ( this.lineVisible() )
+            this.drawPath( g, arcPath );
+            /*
+            g.append("path")
+                .attr("d", arcPath )
+                .attr("fill", "none")
+                .attr("stroke-width", 1 / scale)
+                .attr("stroke", this.getColor() )
+                .attr("class", this.getLineStyle() ); */
 
         this.drawLabel(g, this);
     }
@@ -1348,25 +1415,26 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
-        var result = new GeoPoint( source.p.x, source.p.y );
+        return this.flipPoint( p, this.center.p );
+    }
+
+
+    flipPoint( p, center )
+    {
+        var result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
              || ( this.axis === "vertical" )) //just in case.
-            result.x = this.center.p.y - ( source.p.x - this.center.p.x );
+            result.x = center.x - ( p.x - center.x );
         else
-            result.y = this.center.p.y - ( source.p.y - this.center.p.y );
-
-        //console.log("Axis:" + this.axis );
-        //console.log( "Center y " + this.center.p.y );
-        //console.log( "Source y " + source.p.y );
-        //console.log( "Result y " + result.y );
+            result.y = center.y - ( p.y - center.y );
 
         return result;
     }
 
-
+    
     setDependencies( dependencies )
     {
         dependencies.add( this, this.center );
@@ -1402,7 +1470,7 @@ class OperationMove extends DrawingObject {
             this.angle = this.patternPiece.newFormula(d.angle);
             
         //Convert degrees to radians
-        //this.p = this.basePoint.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        //this.p = this.basePoint.p.pointAtDistanceAndAngleRad(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
         //this.line = new GeoLine(this.basePoint.p, this.p);
         //bounds.adjustForLine(this.line);
     }
@@ -1425,10 +1493,10 @@ class OperationMove extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
         //Convert degrees to radians
-        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
         return result;
     }
@@ -1465,17 +1533,62 @@ class OperationResult extends DrawingObject {
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.patternPiece.getObject(d.fromOperation);
 
-        //Convert degrees to radians
-        this.p = this.fromOperation.applyOperationToPoint( this.basePoint );
-        this.line = new GeoLine(this.basePoint.p, this.p);
+        if ( this.data.derivedName === "Spl_S4B2_S5Bt" )
+        console.log("debug");
+
+        //if this.basePoint is a point... (if a curve, this is the midpoint)
+        if ( this.basePoint.p )
+            this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
+
+        var operation = this.fromOperation;
+        var applyOperationToPointFunc = function( p ) {
+            return operation.applyOperationToPoint( p );
+        };
+
+        //else if this.basePoint.curve is a GeoSpline...
+        if ( this.basePoint.curve instanceof GeoSpline )
+        {
+            //so we get this captured and can just pass the function around
+            this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
+        }
+        else if ( this.basePoint.line instanceof GeoLine ) //untested?
+        {
+            this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
+        }
+        //TODO we might also have operated on an arc, circle, ellipse? Some might required a different approach that needs to be aligned with original behaviour
+
+        //This line would be useful if the operation, or operation result is selected. 
+        //this.operationLine = new GeoLine(this.basePoint.p, this.p);
         bounds.adjust( this.p );
+    }
+
+
+    getColor() {
+        return this.basePoint.getColor();
+    }
+
+    
+    getLineStyle() {
+        return this.basePoint.getLineStyle();
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this ); //TODO put an arrow head on this!
-        this.drawDot( g, this );
+
+        //We might have operated on a point, spline (or presumably line)
+
+        if ( this.p )
+            this.drawDot( g, this );
+
+        if ( this.curve )
+            this.drawCurve( g, this ); 
+
+        //TODO we might also have operated on an arc, circle, ellipse?
+
+        if ( this.line )
+            this.drawLine( g, this ); 
+
         this.drawLabel( g, this );
     }
 
@@ -1484,20 +1597,6 @@ class OperationResult extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'Operation ' + this.fromOperation.ref() 
                 + ' on ' + this.basePoint.ref(); 
-
-         //+ this.data.length.value() + 
-           //             " from " + this.basePoint.data.name +
-             //            " angle:" + this.data.angle.value() +
-               //          " suffix:" + this.data.suffix;
-    }
-
-
-    applyOperationToPoint( source )
-    {
-        //Convert degrees to radians
-        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
-        //var line = new GeoLine( source.p, result.p );
-        return result;
     }
 
 
@@ -1552,20 +1651,9 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
-        return source.p.rotate( this.center.p, this.angle.value() );
-        /*
-        //Convert degrees to radians
-        
-        var centerToSourceLine = new GeoLine( this.center.p, source.p );
-        var distance = centerToSourceLine.getLength();
-        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + this.angle.value() ) / 360 );
-
-        var result = this.center.p.pointAtDistanceAndAngle( distance, angle );
-        //var line = new GeoLine( source.p, result.p );
-        return result;
-        */
+        return p.rotate( this.center.p, this.angle.value() );
     }
 
 
@@ -1605,7 +1693,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
         var line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
         
-        var baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngle( 1, (line.angleDeg() + 90 )/360*Math.PI*2 ) );
+        var baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngleDeg( 1, line.angleDeg() + 90 ) );
 
         this.p = line.intersect(baseLine);
         this.line = new GeoLine( this.basePoint.p, this.p );
@@ -1672,7 +1760,7 @@ class PointAlongBisector extends DrawingObject {
         var bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
 
         //Convert degrees to radians
-        this.p = this.secondPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * bisectingAngle / 360 );
+        this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
         this.line = new GeoLine(this.secondPoint.p, this.p);
         bounds.adjustForLine(this.line);
     }
@@ -1734,7 +1822,7 @@ class PointAlongLine extends DrawingObject {
             this.length = this.patternPiece.newFormula(d.length);
 
         this.baseLine = new GeoLine(this.firstPoint.p, this.secondPoint.p);
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle(this.length.value(this.baseLine.length), this.baseLine.angle);
+        this.p = this.firstPoint.p.pointAtDistanceAndAngleRad(this.length.value(this.baseLine.length), this.baseLine.angle);
         this.line = new GeoLine(this.firstPoint.p, this.p);
         
         bounds.adjustForLine(this.line);
@@ -1796,7 +1884,7 @@ class PointAlongPerpendicular extends DrawingObject {
         var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
         var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
         //Convert degrees to radians
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * totalAngle / 360 );
+        this.p = this.firstPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), totalAngle );
         this.line = new GeoLine(this.firstPoint.p, this.p);
         bounds.adjustForLine(this.line);
     }
@@ -1961,7 +2049,7 @@ class PointEndLine extends DrawingObject {
             this.angle = this.patternPiece.newFormula(d.angle);
             
         //Convert degrees to radians
-        this.p = this.basePoint.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
+        this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
         bounds.adjustForLine(this.line);
     }
@@ -2203,7 +2291,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
             angleDeg += 360;
 
             //TODO replace 1000 with a calculation of the longest line that may be needed
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite*/, Math.PI * angleDeg / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, angleDeg );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -2574,7 +2662,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * angleDeg / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite TODO*/, angleDeg );
 
         var line = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -2763,7 +2851,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
         var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
-        var otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1, Math.PI * 2 * this.angle.value() / 360 );
+        var otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
 
         var line2 = new GeoLine(this.basePoint.p, otherPoint );
 
@@ -2905,9 +2993,9 @@ class PointOfTriangle extends DrawingObject {
         //The trick here is to observe that all these points, for any axisLine will form an arc
         //centered on the midpoint of otherLine with radiu of half length of otherLine
         var intersectionPoint = axisLine.intersect( otherLine );
-        var midpoint = this.firstPoint.p.pointAtDistanceAndAngle( otherLine.length/2, otherLine.angle );
+        var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
         var arc = new GeoArc( midpoint, otherLine.length/2, 0, 2*Math.PI  );    
-        var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngle( otherLine.length*2, axisLine.angle ) );
+        var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
 
         bounds.adjust(this.p);
@@ -2979,7 +3067,7 @@ class PointShoulder extends DrawingObject {
         var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 2*Math.PI  );      
         var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
         var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngle( 100, axisLine.angle ) );
+        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
         bounds.adjust(this.p);
@@ -3109,12 +3197,9 @@ class SplinePathInteractive extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var p = g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
 
+        this.drawCurve(g,this);
+        
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);
     }
@@ -3216,11 +3301,16 @@ class SplinePathUsingPoints extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var p = g.append("path")
+
+        if ( this.lineVisible() )
+            this.drawPath( g, this.curve.svgPath() );
+            /*
+            g.append("path")
               .attr("d", this.curve.svgPath() )
               .attr("fill", "none")
               .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );*/
 
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);
@@ -3326,11 +3416,16 @@ class SplineSimple extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var p = g.append("path")
+
+        if ( this.lineVisible() )
+            this.drawPath( g, this.curve.svgPath() );
+            /*
+            g.append("path")
               .attr("d", this.curve.svgPath() )
               .attr("fill", "none")
               .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );*/
 
         //Where should we draw the label? half way along the curve?
         //this.drawDot(g, this);
@@ -3420,11 +3515,16 @@ class SplineUsingControlPoints extends DrawingObject {
 
     draw(g) {
         var d = this.data;
-        var p = g.append("path")
+
+        if ( this.lineVisible() )
+            this.drawPath( g, this.curve.svgPath() );
+            /*
+            g.append("path")
               .attr("d", this.curve.svgPath() )
               .attr("fill", "none")
               .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() ); */
 
         //Where should we draw the label? half way along the curve?
         //this.drawDot(g, this);
@@ -3784,6 +3884,8 @@ class PatternPiece {
 
 var selectedObject;
 var linksGroup;
+var fontsSizedForScale;
+var fontResizeTimer;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
@@ -3852,7 +3954,7 @@ function drawPattern( dataAndConfig, ptarget, options )
         dataAndConfig.options.allowPanAndZoom = true;
 
     if ( dataAndConfig.options.showFormulas === undefined )
-        dataAndConfig.options.showFormulas = false;
+        dataAndConfig.options.showFormulas = true;
 
     if ( ! dataAndConfig.options.viewOption )
         dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
@@ -3871,7 +3973,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
         var totalWidth = viewOption.drawingWidth + viewOption.descriptionsWidth; //should be tableWidth
         var availableWidth = targetdiv.style('width').slice(0, -2) -30;// 1000;
-        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/;
+        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/;
         this.layoutConfig.drawingWidth = availableWidth * viewOption.drawingWidth / totalWidth;
         this.layoutConfig.tableWidth   = availableWidth * viewOption.descriptionsWidth / totalWidth;
         this.layoutConfig.drawingHeight = availableHeight;
@@ -3895,11 +3997,11 @@ function drawPattern( dataAndConfig, ptarget, options )
         {
             var a = pattern.patternPiece1.drawingObjects[i];
             var g = a.drawingSvg;
-            var strokeWidth = (selectedObject==a) ? 2 : 1;
+            var strokeWidth = (selectedObject==a) ? 3 : 1;
             g.selectAll( "line" )
-              .attr("stroke-width", strokeWidth / scale);
+              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
              g.selectAll( "path" )
-              .attr("stroke-width", strokeWidth / scale);
+              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
         }        
 
         var graphdiv = targetdiv;
@@ -4053,7 +4155,7 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = layoutConfig.drawingMargin;//25; 
+    var margin = layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
     var width =  layoutConfig.drawingWidth;//400;
     var height = layoutConfig.drawingHeight;//600;
 
@@ -4080,54 +4182,18 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
     var transformGroup2 = transformGroup1.append("g")
                                .attr("transform", "scale(" + scale + "," + scale + ")");
 
-    var transformGroup3 = transformGroup2.append("g")
-                               .attr("transform", "translate(" + ( ( -1.0 * patternPiece1.bounds.minX ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");
+    //centralise horizontally                            
+    var boundsWidth = patternPiece1.bounds.maxX - patternPiece1.bounds.minX;
+    var availableWidth = width / scale;
+    var offSetX = ( availableWidth - boundsWidth ) /2;
 
-    //TODO also need to be able to click on a line / curve/ arc
+    var transformGroup3 = transformGroup2.append("g")
+                               .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");    
 
     //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,true);
-        /*
-        //Remove any existing highlighting in the table. 
-        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
-        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
-        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
-        $(this).addClass("j-active"); //highlight the object in the drawing
-
-        //d, the drawing object we clicked on, has a direct reference to its representation in the table
-        d.tableSvg.node().classList.add("j-active");
-
-        selectedObject = d;
-
-        //Set the css class of all links to "link" "source link" or "target link" as appropriate.
-        linksGroup.selectAll("path.link") //rename .link to .dependency
-            .attr("class", function( d ) {                         
-                if ( d.source == selectedObject ) 
-                {
-                    d.target.tableSvg.node().classList.add("source");
-                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
-                    return "source link";
-                }
-                if ( d.target == selectedObject ) 
-                {
-                    d.source.tableSvg.node().classList.add("target");
-                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
-                    return "target link";
-                }
-                return "link"; 
-            } )
-            .each( function( d ) { 
-                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
-                    d3.select(this).raise();
-             } );
-
-        //Scroll the table to ensure that d.tableSvg is in view.    
-        var table = d3.select("div.pattern-table");
-        table.transition().duration(500)
-          .tween("uniquetweenname", scrollTopTween( d.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
-             */
     };
 
     var a = transformGroup3.selectAll("g");    
@@ -4150,6 +4216,39 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
 
     var zoomed = function() {
         transformGroup1.attr("transform", d3.event.transform);
+
+        var currentScale = d3.zoomTransform( transformGroup1.node() ).k; //do we want to scale 1-10 to 1-5 for fonts and linewidths and dots?
+        if (   ( currentScale > (1.1*fontsSizedForScale) )
+            || ( currentScale < (0.9*fontsSizedForScale) )
+            || ( currentScale == 1 ) || ( currentScale == 8 ) )
+        {
+            if ( ! fontResizeTimer )
+            {
+                fontResizeTimer = setTimeout(function () {      
+                    fontResizeTimer = null;          
+                    fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
+                    //console.log( "Resize for " + fontsSizedForScale);
+
+                    for( var i=0; i< patternPiece1.drawingObjects.length; i++ )
+                    {
+                        var a = patternPiece1.drawingObjects[i];
+                        var g = a.drawingSvg;
+                        
+                        g.selectAll( "text" )
+                            .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
+                        g.selectAll( "circle" )
+                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+
+                        var strokeWidth = (selectedObject==a) ? 3 : 1;
+                        g.selectAll( "line" )
+                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);
+                        g.selectAll( "path" )
+                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);              
+                    }        
+
+                }, 50);         
+            }   
+        }
     };           
 
     if ( editorOptions.allowPanAndZoom )
@@ -4160,20 +4259,7 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
             .on("zoom", zoomed));
     }
 
-
-    //Enable Pan and Zoom
-    //https://observablehq.com/@d3/zoom
-    //TODO if a point is selected then zoom with it as the focus
-    //SEE https://bl.ocks.org/mbostock/a980aba1197350ff2d5a5d0f5244d8d1
-    /*
-    function zoomed() {
-        transformGroup.attr("transform", d3.event.transform);
-    }; this doesn't quite work well enough
-    svg.call(d3.zoom()
-        .extent([[0, 0], [width, height]])
-        .scaleExtent([1, 8])
-        .on("zoom", zoomed));
-    */
+    fontsSizedForScale = 1; //the starting scale of transformGroup1.
 }
 
 

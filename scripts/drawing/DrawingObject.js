@@ -11,8 +11,8 @@ class DrawingObject /*abstract*/ {
         if (typeof o.p.x !== "number")
             return;
         g.append("text")
-            .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : d.mx))
-            .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : d.my))
+            .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
+            .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
             .attr("font-size", Math.round(100 / scale)/10 + "px");
     }
@@ -23,7 +23,7 @@ class DrawingObject /*abstract*/ {
         g.append("circle")
             .attr("cx", o.p.x)
             .attr("cy", o.p.y)
-            .attr("r", 4 / scale);
+            .attr("r", Math.round( 40 / scale ) /10 );
     }
 
     drawLine(g, o) {
@@ -34,7 +34,33 @@ class DrawingObject /*abstract*/ {
                 .attr("x2", this.line.p2.x)
                 .attr("y2", this.line.p2.y)
                 .attr("stroke-width", ( o.error ? 2 : 1 ) / scale)
-                .attr("stroke", o.error ? "red" : this.getColor() );
+                .attr("stroke", o.error ? "red" : this.getColor() )
+                .attr("class", this.getLineStyle() );
+    }
+
+    drawPath( g,path ) 
+    {
+        if ( this.lineVisible() )
+            g.append("path")
+              .attr("d", path )
+              .attr("fill", "none")
+              .attr("stroke-width", 1 / scale)
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );
+    }    
+
+    drawCurve(g,o) 
+    {
+        if ( this.lineVisible() )
+            this.drawPath( g, o.curve.svgPath() );
+        /*
+            g.append("path")
+              .attr("d", o.curve.svgPath() )
+              .attr("fill", "none")
+              .attr("stroke-width", 1 / scale)
+              .attr("stroke", this.getColor() )
+              .attr("class", this.getLineStyle() );
+              */
     }
 
     ref() {
@@ -43,6 +69,11 @@ class DrawingObject /*abstract*/ {
 
     getColor() {
         return this.data.color;
+    }
+
+    getLineStyle()
+    {
+        return this.data.lineStyle;
     }
 
     lineVisible() {

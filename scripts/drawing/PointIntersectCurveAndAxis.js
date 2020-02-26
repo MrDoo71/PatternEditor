@@ -32,7 +32,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1000/*infinite TODO*/, Math.PI * angleDeg / 180 );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite TODO*/, angleDeg );
 
         var line = new GeoLine( this.basePoint.p, otherPoint );
 

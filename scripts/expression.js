@@ -71,15 +71,6 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
-            //else if ( data.variableType === "lengthOfSpline" )
-            //{
-            //    //TOFIX
-            //    //TODO TEST! if this works, combine with the one above as this is an exact copy
-            //    this.drawingObject = patternPiece.getObject(  data.drawingObject1 );
-            //    //this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
-            //    this.function = data.variableType;
-            //    this.value = this.functionValue;
-            //}            
             else if ( data.variableType === "lengthOfArc" )
             {
                 this.drawingObject = patternPiece.getObject( data.drawingObject1 );
@@ -296,6 +287,8 @@ class Expression {
                 return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
             if ( this.function === "angleOfLine" )
                 return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+            if ( this.function === "lengthOfSpline" )
+                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
             else
                 return "UNKNOWN FUNCTION TYPE" + this.function;
         }

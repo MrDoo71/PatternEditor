@@ -30,7 +30,7 @@ class PointAlongPerpendicular extends DrawingObject {
         var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
         var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
         //Convert degrees to radians
-        this.p = this.firstPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * totalAngle / 360 );
+        this.p = this.firstPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), totalAngle );
         this.line = new GeoLine(this.firstPoint.p, this.p);
         bounds.adjustForLine(this.line);
     }

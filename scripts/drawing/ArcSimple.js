@@ -66,11 +66,15 @@ class ArcSimple extends DrawingObject {
         
         //console.log( "ArcSimple d3 path ", arcPath );
 
-        g.append("path")
-              .attr("d", arcPath )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
+        if ( this.lineVisible() )
+            this.drawPath( g, arcPath );
+            /*
+            g.append("path")
+                .attr("d", arcPath )
+                .attr("fill", "none")
+                .attr("stroke-width", 1 / scale)
+                .attr("stroke", this.getColor() )
+                .attr("class", this.getLineStyle() ); */
 
         this.drawLabel(g, this);
     }

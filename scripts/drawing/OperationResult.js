@@ -20,17 +20,62 @@ class OperationResult extends DrawingObject {
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.patternPiece.getObject(d.fromOperation);
 
-        //Convert degrees to radians
-        this.p = this.fromOperation.applyOperationToPoint( this.basePoint );
-        this.line = new GeoLine(this.basePoint.p, this.p);
+        if ( this.data.derivedName === "Spl_S4B2_S5Bt" )
+        console.log("debug");
+
+        //if this.basePoint is a point... (if a curve, this is the midpoint)
+        if ( this.basePoint.p )
+            this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
+
+        var operation = this.fromOperation;
+        var applyOperationToPointFunc = function( p ) {
+            return operation.applyOperationToPoint( p );
+        };
+
+        //else if this.basePoint.curve is a GeoSpline...
+        if ( this.basePoint.curve instanceof GeoSpline )
+        {
+            //so we get this captured and can just pass the function around
+            this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
+        }
+        else if ( this.basePoint.line instanceof GeoLine ) //untested?
+        {
+            this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
+        }
+        //TODO we might also have operated on an arc, circle, ellipse? Some might required a different approach that needs to be aligned with original behaviour
+
+        //This line would be useful if the operation, or operation result is selected. 
+        //this.operationLine = new GeoLine(this.basePoint.p, this.p);
         bounds.adjust( this.p );
+    }
+
+
+    getColor() {
+        return this.basePoint.getColor();
+    }
+
+    
+    getLineStyle() {
+        return this.basePoint.getLineStyle();
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this ); //TODO put an arrow head on this!
-        this.drawDot( g, this );
+
+        //We might have operated on a point, spline (or presumably line)
+
+        if ( this.p )
+            this.drawDot( g, this );
+
+        if ( this.curve )
+            this.drawCurve( g, this ); 
+
+        //TODO we might also have operated on an arc, circle, ellipse?
+
+        if ( this.line )
+            this.drawLine( g, this ); 
+
         this.drawLabel( g, this );
     }
 
@@ -39,20 +84,6 @@ class OperationResult extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'Operation ' + this.fromOperation.ref() 
                 + ' on ' + this.basePoint.ref(); 
-
-         //+ this.data.length.value() + 
-           //             " from " + this.basePoint.data.name +
-             //            " angle:" + this.data.angle.value() +
-               //          " suffix:" + this.data.suffix;
-    }
-
-
-    applyOperationToPoint( source )
-    {
-        //Convert degrees to radians
-        var result = source.p.pointAtDistanceAndAngle(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
-        //var line = new GeoLine( source.p, result.p );
-        return result;
     }
 
 

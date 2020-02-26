@@ -41,20 +41,9 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    applyOperationToPoint( source )
+    applyOperationToPoint( p )
     {
-        return source.p.rotate( this.center.p, this.angle.value() );
-        /*
-        //Convert degrees to radians
-        
-        var centerToSourceLine = new GeoLine( this.center.p, source.p );
-        var distance = centerToSourceLine.getLength();
-        var angle =  ( Math.PI * 2 * ( centerToSourceLine.angleDeg() + this.angle.value() ) / 360 );
-
-        var result = this.center.p.pointAtDistanceAndAngle( distance, angle );
-        //var line = new GeoLine( source.p, result.p );
-        return result;
-        */
+        return p.rotate( this.center.p, this.angle.value() );
     }
 
 

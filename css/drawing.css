@@ -8,6 +8,31 @@ span.ps-ref {
     font-weight: bold;
 }
 
+g.j-point > line.dotLine,
+g.j-point > path.dotLine {
+    stroke-dasharray: 0.25, 0.25; 
+}
+
+g.j-point > line.dashLine,
+g.j-point > path.dashLine {
+    stroke-dasharray: 1, 0.25; 
+}
+
+g.j-point > line.dashDotLine,
+g.j-point > path.dashDotLine {
+    stroke-dasharray: 1, 0.25, 0.25, 0.25; 
+}
+
+g.j-point > line.dashDotLine,
+g.j-point > path.dashDotLine {
+    stroke-dasharray: 1, 0.25, 0.25, 0.25, 0.25, 0.25; 
+}
+
+g.j-point > line.hair,
+g.j-point > path.hair {
+    stroke:solid;
+}
+
 g.j-point > circle {
     fill:#999;
 }
@@ -106,6 +131,14 @@ button.toggle-show_formulas {
 }
 
 div.pattern-editor.full-page {
+    /* better, but is then on top of any callouts! also adjust availeble width/height by 30 
+    position:fixed; z-index: 2000;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom: 0px;
+    padding: 15px;
+    */
     position:absolute;
     top:15px;
     left:15px;

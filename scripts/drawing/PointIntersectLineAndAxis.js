@@ -33,7 +33,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
         var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
-        var otherPoint = this.basePoint.p.pointAtDistanceAndAngle( 1, Math.PI * 2 * this.angle.value() / 360 );
+        var otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
 
         var line2 = new GeoLine(this.basePoint.p, otherPoint );
 

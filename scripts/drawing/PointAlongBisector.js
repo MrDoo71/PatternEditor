@@ -34,7 +34,7 @@ class PointAlongBisector extends DrawingObject {
         var bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
 
         //Convert degrees to radians
-        this.p = this.secondPoint.p.pointAtDistanceAndAngle( this.length.value(), Math.PI * 2 * bisectingAngle / 360 );
+        this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
         this.line = new GeoLine(this.secondPoint.p, this.p);
         bounds.adjustForLine(this.line);
     }
