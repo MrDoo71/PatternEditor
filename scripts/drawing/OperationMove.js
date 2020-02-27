@@ -1,5 +1,3 @@
-
-
 class OperationMove extends DrawingObject {
 
     //operationName
@@ -34,9 +32,9 @@ class OperationMove extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -49,8 +47,7 @@ class OperationMove extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         //Convert degrees to radians
         var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
@@ -58,8 +55,7 @@ class OperationMove extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         //dependencies.add( this, this.basePoint );
         dependencies.add( this, this.length );
         dependencies.add( this, this.angle );

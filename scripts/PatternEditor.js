@@ -131,11 +131,22 @@ function drawPattern( dataAndConfig, ptarget, options )
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
         $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
         $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        $(graphdiv.node()).find( ".j-outline" ).remove();
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
         selectedObject.tableSvg.node().classList.add("j-active");
         selectedObject.drawingSvg.node().classList.add("j-active");
+
+        //Make the drawing object more pronounced...        
+        if (( typeof d.draw === "function" ) && ( ! d.error ))
+        {            
+            //this will draw it with a bigger stroke.
+            var outlineg = selectedObject.drawingSvg.append( "g" )
+                                                    .attr( "class", "j-outline" );
+            d.draw( outlineg );
+            outlineg.lower();
+        }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
@@ -328,11 +339,11 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
         //d.calculate();
 
         d.drawingSvg = g;
-
+        
         g.on("contextmenu", contextMenu);
         g.on("click", onclick);
 
-        if ( typeof d.draw === "function" )
+        if (( typeof d.draw === "function" ) && ( ! d.error ))
             d.draw( g );
     });
 
@@ -452,11 +463,20 @@ function doTable( graphdiv, patternPiece1, editorOptions, contextMenu, focusDraw
          } )
          .attr( "width", itemWidth  );
 
+         var html;
+         try {
+            html = d.html( asFormula );
+            if (d.error)
+                html += '<div class="error">' + d.error + '</div>';
+         } catch ( e ) {
+             html = "Failed to generate description.";
+         }
+
          var div = fo.append( "xhtml:div" )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
-           .html( d.html( asFormula ) + (d.error ? '<div class="error">' + d.error + '</div>' : "" ) );
+           .html( html );
 
         fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
         fo.attr( "height", divHeight );

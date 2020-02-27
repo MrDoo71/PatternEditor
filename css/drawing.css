@@ -108,6 +108,10 @@ g.j-item.target div.desc {
     padding: 3px 7px;
 }
 
+g.j-outline > circle {
+    fill: #dda;
+}
+
 span.control-point { color: green }
 
 div.pattern-editor-controls {    

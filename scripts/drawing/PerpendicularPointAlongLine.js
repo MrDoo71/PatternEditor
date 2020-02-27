@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PerpendicularPointAlongLine extends DrawingObject {
 
     //basePoint
@@ -37,9 +32,9 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -48,8 +43,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.basePoint );

@@ -1,4 +1,3 @@
-//something
 class PointFromArcAndTangent extends DrawingObject {
 
     //arc
@@ -50,8 +49,7 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.tangent );
         dependencies.add( this, this.arc );
     }    

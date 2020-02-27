@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointLineIntersect extends DrawingObject {
 
     //p1Line1
@@ -30,6 +25,7 @@ class PointLineIntersect extends DrawingObject {
         this.line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
         this.line2 = new GeoLine(this.p1Line2.p, this.p2Line2.p);
         this.p = this.line1.intersect(this.line2);
+
         bounds.adjust(this.p);
     }
 
@@ -51,8 +47,7 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.p1Line1 );
         dependencies.add( this, this.p1Line2 );
         dependencies.add( this, this.p2Line1 );

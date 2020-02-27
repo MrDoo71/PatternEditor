@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
     //firstPoint
@@ -23,14 +18,15 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
         //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
+
         bounds.adjust(this.p);
     }
 
 
     draw(g) {
         //TODO check that there is no option to draw a line as part of this tool. 
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -39,8 +35,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
     }    

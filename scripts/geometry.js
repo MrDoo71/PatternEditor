@@ -67,6 +67,13 @@ class GeoLine {
     //p2;
 
     constructor( p1, p2 ) {
+
+        if ( ! p1 )
+            throw "GeoLine p1 not defined.";
+
+        if ( ! p2 )
+            throw "GeoLine p1 not defined.";
+
         this.p1 = p1;//new GeoPoint( x1, y1 );
         this.p2 = p2;//new GeoPoint( x2, y2 );
     
@@ -159,9 +166,11 @@ class GeoLine {
         //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
-            throw "no intersection with arc";
+            throw "No intersection with arc. ";
 
-        var intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        var whichPoint = intersections.points.length -1; //TODO do this properly
+
+        var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {

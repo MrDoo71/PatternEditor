@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointIntersectLineAndAxis extends DrawingObject {
 
     //basePoint
@@ -45,9 +40,9 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 

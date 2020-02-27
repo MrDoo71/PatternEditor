@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointAlongBisector extends DrawingObject {
 
     //firstPoint
@@ -36,15 +31,16 @@ class PointAlongBisector extends DrawingObject {
         //Convert degrees to radians
         this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
         this.line = new GeoLine(this.secondPoint.p, this.p);
+
         bounds.adjustForLine(this.line);
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -58,8 +54,7 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.thirdPoint );

@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointAlongLine extends DrawingObject {
 
     //firstPoint
@@ -32,10 +27,11 @@ class PointAlongLine extends DrawingObject {
         bounds.adjustForLine(this.line);
     }
 
+
     draw(g) {
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -47,8 +43,7 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.length );

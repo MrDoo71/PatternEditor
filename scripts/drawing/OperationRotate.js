@@ -1,5 +1,3 @@
-
-
 class OperationRotate extends DrawingObject {
 
     //operationName
@@ -26,9 +24,9 @@ class OperationRotate extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -41,14 +39,12 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         return p.rotate( this.center.p, this.angle.value() );
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle );
     }    

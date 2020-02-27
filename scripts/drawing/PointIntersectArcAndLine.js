@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointIntersectArcAndLine extends DrawingObject {
 
     //firstPoint
@@ -38,6 +32,7 @@ class PointIntersectArcAndLine extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
 
         //TODO draw the line between basePoint and p
@@ -60,8 +55,7 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.center );

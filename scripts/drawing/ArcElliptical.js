@@ -1,8 +1,3 @@
-//define(function (require) {
-//    require('./DrawingObject');
-//    require('../geometry');
-//});
-
 class ArcElliptical extends DrawingObject {
 
     //center
@@ -44,6 +39,7 @@ class ArcElliptical extends DrawingObject {
                                          this.rotationAngle.value() );
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
+
         bounds.adjust( this.p );
         bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
         bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
@@ -65,15 +61,9 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-        var p = g.append("path")
-              .attr("d", this.arc.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
-
-        this.drawLabel(g, this);
+    draw( g, isOutline ) {
+        this.drawPath( g, this.arc.svgPath(), isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -88,8 +78,7 @@ class ArcElliptical extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );

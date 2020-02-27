@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class CutSpline extends DrawingObject { //TODO for consistency should be PointCutSpline ???
 
     //curve
@@ -11,6 +6,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     constructor(data) {
         super(data);
     }
+
 
     calculate(bounds) {
         var d = this.data;
@@ -26,10 +22,11 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
-        //this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        //this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -40,8 +37,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.curve );
         dependencies.add( this, this.length );
     }    

@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointOfTriangle extends DrawingObject {
 
     //firstPoint
@@ -49,9 +44,9 @@ class PointOfTriangle extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        //this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 

@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointIntersectCurves extends DrawingObject {
 
     //curve1
@@ -75,6 +69,7 @@ class PointIntersectCurves extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
 
         //TODO draw the line between basePoint and p
@@ -94,8 +89,7 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.curve1 );
         dependencies.add( this, this.curve2 );
     }    

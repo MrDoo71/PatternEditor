@@ -52,17 +52,8 @@ class SplinePathUsingPoints extends DrawingObject {
 
 
     draw(g) {
-        var d = this.data;
-
         if ( this.lineVisible() )
             this.drawPath( g, this.curve.svgPath() );
-            /*
-            g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );*/
 
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);

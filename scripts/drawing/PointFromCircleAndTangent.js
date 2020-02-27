@@ -1,4 +1,3 @@
-//something
 class PointFromCircleAndTangent extends DrawingObject {
 
     //center
@@ -57,8 +56,7 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.tangent );
         dependencies.add( this, this.center );
         dependencies.add( this, this.radius );

@@ -1,5 +1,3 @@
-
-
 class OperationFlipByAxis extends DrawingObject {
 
     //operationName
@@ -24,9 +22,9 @@ class OperationFlipByAxis extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -39,14 +37,12 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         return this.flipPoint( p, this.center.p );
     }
 
 
-    flipPoint( p, center )
-    {
+    flipPoint( p, center ) {
         var result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
@@ -59,8 +55,7 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
     }    
 

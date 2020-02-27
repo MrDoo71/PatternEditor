@@ -28,6 +28,9 @@ class PatternPiece {
             minY: undefined,
             maxY: undefined,
             adjust: function (p) {
+                if (!p)
+                    return; //e.g. an error
+
                 var x = p.x;
                 var y = p.y;
                 if (x !== undefined) {
@@ -44,6 +47,9 @@ class PatternPiece {
                 }
             },
             adjustForLine: function (line) {
+                if (!line)
+                    return;
+
                 this.adjust(line.p1);
                 this.adjust(line.p2);
             }
@@ -70,7 +76,7 @@ class PatternPiece {
         this.dependencies = { 
             dependencies: [], 
             add: function ( source, target ) { 
-                if ( typeof target.expression === "object" )
+                if ( target && typeof target.expression === "object" )
                     target.expression.addDependencies( source, this );
                 else if ( target instanceof DrawingObject )
                     this.dependencies.push( { source: source, target: target } ); 
@@ -161,8 +167,13 @@ class PatternPiece {
         else if (dObj.objectType === "pointFromCircleAndTangent")
             return new PointFromCircleAndTangent(dObj);                  
             
-
-        throw( "Unsupported drawing object type:" + dObj.objectType );
+        else 
+        {
+            var fail = new PointSingle( {x:0, y:0 } );
+            fail.error =  "Unsupported drawing object type:" + dObj.objectType;
+            return fail;
+        }
+        //throw( "Unsupported drawing object type:" + dObj.objectType );
 
         return null;
     }
@@ -195,8 +206,14 @@ class PatternPiece {
         this.drawing[dObj.data.name] = dObj;
         dObj.patternPiece = this;
         if (typeof dObj.calculate !== "undefined") {
-            //var getObject = this.getObject();
-            dObj.calculate(this.bounds);
+            
+            try {
+                dObj.calculate(this.bounds);
+
+            } catch (e) {
+                dObj.error = "Calculation failed. " + e;
+            }
+
         }
     }
 

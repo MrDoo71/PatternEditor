@@ -435,6 +435,13 @@ class GeoLine {
     //p2;
 
     constructor( p1, p2 ) {
+
+        if ( ! p1 )
+            throw "GeoLine p1 not defined.";
+
+        if ( ! p2 )
+            throw "GeoLine p1 not defined.";
+
         this.p1 = p1;//new GeoPoint( x1, y1 );
         this.p2 = p2;//new GeoPoint( x2, y2 );
     
@@ -527,9 +534,11 @@ class GeoLine {
         //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
-            throw "no intersection with arc";
+            throw "No intersection with arc. ";
 
-        var intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        var whichPoint = intersections.points.length -1; //TODO do this properly
+
+        var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {
@@ -926,81 +935,92 @@ class DrawingObject /*abstract*/ {
         this.data = data;
     }
 
-    drawLabel(g, o) {
+    drawLabel( g ) {
         //g - the svg group we want to add the text to
         //o - the drawing object
-        var d = o.data; //the original json data
-        if (typeof o.p.x !== "number")
+        var d = this.data; //the original json data
+        if (typeof this.p.x !== "number")
             return;
+
         g.append("text")
-            .attr("x", o.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
-            .attr("y", o.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
+            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
+            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
             .attr("font-size", Math.round(100 / scale)/10 + "px");
     }
 
-    drawDot(g, o) {
-        var d = o.data; //the original json data
-        //g.attr("class", "j-point");
+
+    drawDot( g ) {
+        //var d = o.data; //the original json data
         g.append("circle")
-            .attr("cx", o.p.x)
-            .attr("cy", o.p.y)
+            .attr("cx", this.p.x)
+            .attr("cy", this.p.y)
             .attr("r", Math.round( 40 / scale ) /10 );
     }
 
-    drawLine(g, o) {
-        if ( this.lineVisible() )
+
+    drawLine( g ) {
+        if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
             g.append("line")
                 .attr("x1", this.line.p1.x)
                 .attr("y1", this.line.p1.y)
                 .attr("x2", this.line.p2.x)
                 .attr("y2", this.line.p2.y)
-                .attr("stroke-width", ( o.error ? 2 : 1 ) / scale)
-                .attr("stroke", o.error ? "red" : this.getColor() )
+                .attr("stroke-width", this.getStrokeWidth() )
+                .attr("stroke", this.getColor() )
                 .attr("class", this.getLineStyle() );
     }
 
-    drawPath( g,path ) 
-    {
+
+    drawPath( g, path ) {
         if ( this.lineVisible() )
             g.append("path")
               .attr("d", path )
               .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
+              .attr("stroke-width", this.getStrokeWidth() )
               .attr("stroke", this.getColor() )
               .attr("class", this.getLineStyle() );
     }    
 
-    drawCurve(g,o) 
-    {
-        if ( this.lineVisible() )
-            this.drawPath( g, o.curve.svgPath() );
-        /*
-            g.append("path")
-              .attr("d", o.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );
-              */
+
+    drawCurve( g ) {
+        if ( this.lineVisible() && this.curve )
+            this.drawPath( g, this.curve.svgPath() );
     }
+
 
     ref() {
         return '<span class="ps-ref">' + this.data.name + '</span>';
     }
 
+
+    getStrokeWidth()
+    {
+        if ( this == selectedObject )
+            return 4 /fontsSizedForScale;
+
+        return 1 / scale;
+    }
+
+
     getColor() {
+        if ( this == selectedObject )
+            return "yellow";
+
         return this.data.color;
     }
 
+    
     getLineStyle()
     {
         return this.data.lineStyle;
     }
 
+
     lineVisible() {
         return this.data.lineStyle !== "none";
     }
+
 
     pointEndLine(data) {
         data.objectType = "pointEndLine";
@@ -1008,11 +1028,13 @@ class DrawingObject /*abstract*/ {
         return this.patternPiece.add(data);
     }
 
+
     pointAlongLine(data) {
         data.objectType = "pointAlongLine";
         data.firstPoint = this;
         return this.patternPiece.add(data);
     }
+
 
     lineTo(data) {
         data.objectType = "line";
@@ -1020,17 +1042,13 @@ class DrawingObject /*abstract*/ {
         return this.patternPiece.add(data);
     }
 
+
     pointLineIntersect(data) {
         data.objectType = "pointLineIntersect";
         data.p1Line1 = this;
         return this.patternPiece.add(data);
     }
 }
-
-//define(function (require) {
-//    require('./DrawingObject');
-//    require('../geometry');
-//});
 
 class ArcElliptical extends DrawingObject {
 
@@ -1073,6 +1091,7 @@ class ArcElliptical extends DrawingObject {
                                          this.rotationAngle.value() );
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
+
         bounds.adjust( this.p );
         bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
         bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
@@ -1094,15 +1113,9 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-        var p = g.append("path")
-              .attr("d", this.arc.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() );
-
-        this.drawLabel(g, this);
+    draw( g, isOutline ) {
+        this.drawPath( g, this.arc.svgPath(), isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1117,8 +1130,7 @@ class ArcElliptical extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );
@@ -1127,11 +1139,6 @@ class ArcElliptical extends DrawingObject {
         dependencies.add( this, this.radius2 );
     }    
 }
-
-//define(function (require) {
-//    require('./DrawingObject');
-//    require('../geometry');
-//});
 
 class ArcSimple extends DrawingObject {
 
@@ -1163,6 +1170,7 @@ class ArcSimple extends DrawingObject {
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
+
         bounds.adjust( this.p );
         bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
         bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
@@ -1172,14 +1180,12 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    pointAlongPath( length )
-    {
+    pointAlongPath( length ) {
         return this.arc.pointAlongPath( length );
     }
     
 
-    asShapeInfo()
-    {
+    asShapeInfo() {
         return this.arc.asShapeInfo();
     }
 
@@ -1210,8 +1216,7 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    html( asFormula ) 
-    {
+    html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'arc with center ' + this.center.ref() 
                 + " radius " + this.radius.html( asFormula ) 
@@ -1220,19 +1225,13 @@ class ArcSimple extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );
         dependencies.add( this, this.radius );
     }    
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class CutSpline extends DrawingObject { //TODO for consistency should be PointCutSpline ???
 
@@ -1242,6 +1241,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     constructor(data) {
         super(data);
     }
+
 
     calculate(bounds) {
         var d = this.data;
@@ -1257,10 +1257,11 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
-        //this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        //this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1271,8 +1272,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.curve );
         dependencies.add( this, this.length );
     }    
@@ -1285,48 +1285,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
-//var Point2D = require('kld-affine/Point2D');
-/*
-define(function (require) {
-    require('../expression');
-    require('./DrawingObject');
-    require('./ArcSimple');
-    require('./Line');
-    require('./PointAlongLine');
-    require('./PointAlongPerpendicular');
-    require('./PointAlongBisector');
-    require('./PointIntersectLineAndAxis');    
-    require('./PointIntersectArcAndAxis');
-    require('./PointIntersectArcAndLine');
-    require('./PointEndLine');
-    require('./PointLineIntersect');
-    require('./PointSingle');
-    require('./PointFromXandYOfTwoOtherPoints');   
-    require('./PerpendicularPointAlongLine');        
-    require('./PointOfTriangle'); 
-    require('./PointShoulder'); 
-    require('./SplineSimple');    
-    require('./SplineUsingControlPoints');    
-    require('./SplinePathInteractive');        
-    require('./SplinePathUsingPoints');            
-    require('./CutSpline');    
-    require('./PointCutSplinePath');    
-    require('./PointCutArc');        
-    require('./PointIntersectCurves');        
-    require('./PointIntersectCurveAndAxis');        
-    require('./PointIntersectArcs');            
-    require('./PointIntersectCircles');            
-});*/
-
 
 var scale;
 
 
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class Line extends DrawingObject {
 
@@ -1367,14 +1329,11 @@ class Line extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
     }    
 }
-
-
 
 class OperationFlipByAxis extends DrawingObject {
 
@@ -1400,9 +1359,9 @@ class OperationFlipByAxis extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -1415,14 +1374,12 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         return this.flipPoint( p, this.center.p );
     }
 
 
-    flipPoint( p, center )
-    {
+    flipPoint( p, center ) {
         var result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
@@ -1435,14 +1392,11 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
     }    
 
 }
-
-
 
 class OperationMove extends DrawingObject {
 
@@ -1478,9 +1432,9 @@ class OperationMove extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -1493,8 +1447,7 @@ class OperationMove extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         //Convert degrees to radians
         var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
@@ -1502,16 +1455,13 @@ class OperationMove extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         //dependencies.add( this, this.basePoint );
         dependencies.add( this, this.length );
         dependencies.add( this, this.angle );
     }    
 
 }
-
-
 
 class OperationResult extends DrawingObject {
 
@@ -1532,9 +1482,6 @@ class OperationResult extends DrawingObject {
 
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.patternPiece.getObject(d.fromOperation);
-
-        if ( this.data.derivedName === "Spl_S4B2_S5Bt" )
-        console.log("debug");
 
         //if this.basePoint is a point... (if a curve, this is the midpoint)
         if ( this.basePoint.p )
@@ -1559,6 +1506,7 @@ class OperationResult extends DrawingObject {
 
         //This line would be useful if the operation, or operation result is selected. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
+
         bounds.adjust( this.p );
     }
 
@@ -1579,17 +1527,18 @@ class OperationResult extends DrawingObject {
         //We might have operated on a point, spline (or presumably line)
 
         if ( this.p )
-            this.drawDot( g, this );
+            this.drawDot( g );
 
         if ( this.curve )
-            this.drawCurve( g, this ); 
+            this.drawCurve( g ); 
 
         //TODO we might also have operated on an arc, circle, ellipse?
 
         if ( this.line )
-            this.drawLine( g, this ); 
-
-        this.drawLabel( g, this );
+            this.drawLine( g ); 
+            
+        if ( this.p )
+            this.drawLabel( g );
     }
 
 
@@ -1600,15 +1549,12 @@ class OperationResult extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.basePoint );
         dependencies.add( this, this.fromOperation );
     }    
 
 }
-
-
 
 class OperationRotate extends DrawingObject {
 
@@ -1636,9 +1582,9 @@ class OperationRotate extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this ); //TODO put an arrow head on this!
-        //this.drawDot( g, this );
-        //this.drawLabel( g, this );
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
     }
 
 
@@ -1651,24 +1597,17 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    applyOperationToPoint( p )
-    {
+    applyOperationToPoint( p ) {
         return p.rotate( this.center.p, this.angle.value() );
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PerpendicularPointAlongLine extends DrawingObject {
 
@@ -1704,9 +1643,9 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1715,19 +1654,13 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.basePoint );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointAlongBisector extends DrawingObject {
 
@@ -1762,15 +1695,16 @@ class PointAlongBisector extends DrawingObject {
         //Convert degrees to radians
         this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
         this.line = new GeoLine(this.secondPoint.p, this.p);
+
         bounds.adjustForLine(this.line);
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1784,8 +1718,7 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.thirdPoint );
@@ -1793,11 +1726,6 @@ class PointAlongBisector extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointAlongLine extends DrawingObject {
 
@@ -1828,10 +1756,11 @@ class PointAlongLine extends DrawingObject {
         bounds.adjustForLine(this.line);
     }
 
+
     draw(g) {
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1843,19 +1772,13 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.length );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointAlongPerpendicular extends DrawingObject {
 
@@ -1892,9 +1815,9 @@ class PointAlongPerpendicular extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1912,8 +1835,7 @@ class PointAlongPerpendicular extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.length );
@@ -1921,11 +1843,6 @@ class PointAlongPerpendicular extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointCutArc extends DrawingObject {
 
@@ -1950,9 +1867,10 @@ class PointCutArc extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+    
     draw(g) {
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -1963,18 +1881,12 @@ class PointCutArc extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.arc );
         dependencies.add( this, this.length );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointCutSplinePath extends DrawingObject {
 
@@ -1999,9 +1911,10 @@ class PointCutSplinePath extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -2012,18 +1925,12 @@ class PointCutSplinePath extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.splinePath );
         dependencies.add( this, this.length );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointEndLine extends DrawingObject {
 
@@ -2051,15 +1958,16 @@ class PointEndLine extends DrawingObject {
         //Convert degrees to radians
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
+        
         bounds.adjustForLine(this.line);
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -2071,8 +1979,7 @@ class PointEndLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.basePoint );
         dependencies.add( this, this.length );
         dependencies.add( this, this.angle );
@@ -2080,7 +1987,6 @@ class PointEndLine extends DrawingObject {
 
 }
 
-//something
 class PointFromArcAndTangent extends DrawingObject {
 
     //arc
@@ -2132,15 +2038,13 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.tangent );
         dependencies.add( this, this.arc );
     }    
 
 }
 
-//something
 class PointFromCircleAndTangent extends DrawingObject {
 
     //center
@@ -2199,19 +2103,13 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.tangent );
         dependencies.add( this, this.center );
         dependencies.add( this, this.radius );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
@@ -2233,14 +2131,15 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
         //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
+
         bounds.adjust(this.p);
     }
 
 
     draw(g) {
         //TODO check that there is no option to draw a line as part of this tool. 
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -2249,18 +2148,11 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
     }    
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectArcAndAxis extends DrawingObject {
 
@@ -2295,24 +2187,24 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        try {
+        //try {
 
-            if ( this.arc.arc )
-                this.p = longLine.intersectArc( this.arc.arc );
-            else
-                this.p = longLine.intersectArc( this.arc.curve );
+        if ( this.arc.arc )
+            this.p = longLine.intersectArc( this.arc.arc );
+        else
+            this.p = longLine.intersectArc( this.arc.curve );
 
-        } catch (e) {
-            console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            //TODO set status to failed and highlight as red
-        }
+        //} catch (e) {
+        //    console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
+            //this.p = new GeoPoint(0,0);
+        //    this.error = "No intersections found. " + e.message ;
+        //}
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
         bounds.adjust(this.p);
     }
+
 
     draw(g) {
         //g is the svg group
@@ -2331,20 +2223,13 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.basePoint );
         dependencies.add( this, this.arc );
         dependencies.add( this, this.angle );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectArcAndLine extends DrawingObject {
 
@@ -2380,6 +2265,7 @@ class PointIntersectArcAndLine extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
 
         //TODO draw the line between basePoint and p
@@ -2402,8 +2288,7 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
         dependencies.add( this, this.center );
@@ -2411,12 +2296,6 @@ class PointIntersectArcAndLine extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectArcs extends DrawingObject {
 
@@ -2444,13 +2323,11 @@ class PointIntersectArcs extends DrawingObject {
 
         var intersections = Intersection.intersect(arc1SI, arc2SI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
         
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectArcAndAxis: " + d.name );
+            throw "No intersections found. ";
         }
         else if ( intersections.points.length === 1 )
         {
@@ -2490,6 +2367,7 @@ class PointIntersectArcs extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
         //g is the svg group
         var d = this.data; //the original json data
@@ -2507,19 +2385,12 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstArc );
         dependencies.add( this, this.secondArc );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectCircles extends DrawingObject {
 
@@ -2561,9 +2432,7 @@ class PointIntersectCircles extends DrawingObject {
         
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectCircles: " + d.name );
+            throw "No intersections found. ";
         }
         else if ( intersections.points.length === 1 )
         {
@@ -2599,6 +2468,7 @@ class PointIntersectCircles extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
         //g is the svg group
         var d = this.data; //the original json data
@@ -2618,8 +2488,7 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center1 );
         dependencies.add( this, this.center2 );
         dependencies.add( this, this.radius1 );
@@ -2627,12 +2496,6 @@ class PointIntersectCircles extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectCurveAndAxis extends DrawingObject {
 
@@ -2673,9 +2536,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
 
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectCurveAndAxis: " + d.name );
+            throw "No intersections found. ";
         }
         else
         {
@@ -2683,9 +2544,11 @@ class PointIntersectCurveAndAxis extends DrawingObject {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         this.line = new GeoLine( this.basePoint.p, this.p );
+
         bounds.adjust(this.p);
     }
 
+    
     draw(g) {
         //g is the svg group
         this.drawLine(g, this); 
@@ -2711,12 +2574,6 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointIntersectCurves extends DrawingObject {
 
@@ -2789,6 +2646,7 @@ class PointIntersectCurves extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
 
         //TODO draw the line between basePoint and p
@@ -2808,18 +2666,12 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.curve1 );
         dependencies.add( this, this.curve2 );
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointIntersectLineAndAxis extends DrawingObject {
 
@@ -2863,9 +2715,9 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -2888,11 +2740,6 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointLineIntersect extends DrawingObject {
 
@@ -2921,6 +2768,7 @@ class PointLineIntersect extends DrawingObject {
         this.line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
         this.line2 = new GeoLine(this.p1Line2.p, this.p2Line2.p);
         this.p = this.line1.intersect(this.line2);
+
         bounds.adjust(this.p);
     }
 
@@ -2942,8 +2790,7 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.p1Line1 );
         dependencies.add( this, this.p1Line2 );
         dependencies.add( this, this.p2Line1 );
@@ -2952,11 +2799,6 @@ class PointLineIntersect extends DrawingObject {
 
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointOfTriangle extends DrawingObject {
 
@@ -3004,9 +2846,9 @@ class PointOfTriangle extends DrawingObject {
 
     draw(g) {
         //g is the svg group
-        //this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        //this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -3028,11 +2870,6 @@ class PointOfTriangle extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class PointShoulder extends DrawingObject {
 
@@ -3070,15 +2907,16 @@ class PointShoulder extends DrawingObject {
         var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
+
         bounds.adjust(this.p);
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -3099,12 +2937,6 @@ class PointShoulder extends DrawingObject {
     }    
 
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 
 class PointSingle extends DrawingObject {
 
@@ -3134,8 +2966,7 @@ class PointSingle extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
     }    
 
 }
@@ -3172,10 +3003,10 @@ class SplinePathInteractive extends DrawingObject {
                 pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
 
                 this.nodes.push( { inAngle:   pathNode.angle1.value(),
-                                   inLength:  pathNode.length1.value(),
-                                   point:     pathNode.point.p,
-                                   outAngle:  pathNode.angle2.value(),
-                                   outLength: pathNode.length2.value() } );
+                                    inLength:  pathNode.length1.value(),
+                                    point:     pathNode.point.p,
+                                    outAngle:  pathNode.angle2.value(),
+                                    outLength: pathNode.length2.value() } );
             }
         }
 
@@ -3184,7 +3015,7 @@ class SplinePathInteractive extends DrawingObject {
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
         bounds.adjust( this.p );
-
+    
         //Bounds will already have been adjusted for each node
     }
 
@@ -3199,7 +3030,7 @@ class SplinePathInteractive extends DrawingObject {
         var d = this.data;
 
         this.drawCurve(g,this);
-        
+
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);
     }
@@ -3419,13 +3250,6 @@ class SplineSimple extends DrawingObject {
 
         if ( this.lineVisible() )
             this.drawPath( g, this.curve.svgPath() );
-            /*
-            g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );*/
 
         //Where should we draw the label? half way along the curve?
         //this.drawDot(g, this);
@@ -3459,11 +3283,6 @@ class SplineSimple extends DrawingObject {
         dependencies.add( this, this.length2 );
     }    
 }
-
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class SplineUsingControlPoints extends DrawingObject {
 
@@ -3507,8 +3326,7 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
     
-    asShapeInfo()
-    {
+    asShapeInfo() {
         return this.curve.asShapeInfo();
     }
 
@@ -3676,6 +3494,9 @@ class PatternPiece {
             minY: undefined,
             maxY: undefined,
             adjust: function (p) {
+                if (!p)
+                    return; //e.g. an error
+
                 var x = p.x;
                 var y = p.y;
                 if (x !== undefined) {
@@ -3692,6 +3513,9 @@ class PatternPiece {
                 }
             },
             adjustForLine: function (line) {
+                if (!line)
+                    return;
+
                 this.adjust(line.p1);
                 this.adjust(line.p2);
             }
@@ -3718,7 +3542,7 @@ class PatternPiece {
         this.dependencies = { 
             dependencies: [], 
             add: function ( source, target ) { 
-                if ( typeof target.expression === "object" )
+                if ( target && typeof target.expression === "object" )
                     target.expression.addDependencies( source, this );
                 else if ( target instanceof DrawingObject )
                     this.dependencies.push( { source: source, target: target } ); 
@@ -3809,8 +3633,13 @@ class PatternPiece {
         else if (dObj.objectType === "pointFromCircleAndTangent")
             return new PointFromCircleAndTangent(dObj);                  
             
-
-        throw( "Unsupported drawing object type:" + dObj.objectType );
+        else 
+        {
+            var fail = new PointSingle( {x:0, y:0 } );
+            fail.error =  "Unsupported drawing object type:" + dObj.objectType;
+            return fail;
+        }
+        //throw( "Unsupported drawing object type:" + dObj.objectType );
 
         return null;
     }
@@ -3843,8 +3672,14 @@ class PatternPiece {
         this.drawing[dObj.data.name] = dObj;
         dObj.patternPiece = this;
         if (typeof dObj.calculate !== "undefined") {
-            //var getObject = this.getObject();
-            dObj.calculate(this.bounds);
+            
+            try {
+                dObj.calculate(this.bounds);
+
+            } catch (e) {
+                dObj.error = "Calculation failed. " + e;
+            }
+
         }
     }
 
@@ -4009,11 +3844,22 @@ function drawPattern( dataAndConfig, ptarget, options )
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
         $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
         $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
+        $(graphdiv.node()).find( ".j-outline" ).remove();
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
         selectedObject.tableSvg.node().classList.add("j-active");
         selectedObject.drawingSvg.node().classList.add("j-active");
+
+        //Make the drawing object more pronounced...        
+        if (( typeof d.draw === "function" ) && ( ! d.error ))
+        {            
+            //this will draw it with a bigger stroke.
+            var outlineg = selectedObject.drawingSvg.append( "g" )
+                                                    .attr( "class", "j-outline" );
+            d.draw( outlineg );
+            outlineg.lower();
+        }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
@@ -4206,11 +4052,11 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
         //d.calculate();
 
         d.drawingSvg = g;
-
+        
         g.on("contextmenu", contextMenu);
         g.on("click", onclick);
 
-        if ( typeof d.draw === "function" )
+        if (( typeof d.draw === "function" ) && ( ! d.error ))
             d.draw( g );
     });
 
@@ -4330,11 +4176,20 @@ function doTable( graphdiv, patternPiece1, editorOptions, contextMenu, focusDraw
          } )
          .attr( "width", itemWidth  );
 
+         var html;
+         try {
+            html = d.html( asFormula );
+            if (d.error)
+                html += '<div class="error">' + d.error + '</div>';
+         } catch ( e ) {
+             html = "Failed to generate description.";
+         }
+
          var div = fo.append( "xhtml:div" )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
-           .html( d.html( asFormula ) + (d.error ? '<div class="error">' + d.error + '</div>' : "" ) );
+           .html( html );
 
         fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
         fo.attr( "height", divHeight );

@@ -1,8 +1,3 @@
-//define(function (require) {
-//    require('./DrawingObject');
-//    require('../geometry');
-//});
-
 class ArcSimple extends DrawingObject {
 
     //center
@@ -33,6 +28,7 @@ class ArcSimple extends DrawingObject {
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
+
         bounds.adjust( this.p );
         bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
         bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
@@ -42,14 +38,12 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    pointAlongPath( length )
-    {
+    pointAlongPath( length ) {
         return this.arc.pointAlongPath( length );
     }
     
 
-    asShapeInfo()
-    {
+    asShapeInfo() {
         return this.arc.asShapeInfo();
     }
 
@@ -80,8 +74,7 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    html( asFormula ) 
-    {
+    html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'arc with center ' + this.center.ref() 
                 + " radius " + this.radius.html( asFormula ) 
@@ -90,8 +83,7 @@ class ArcSimple extends DrawingObject {
     }
 
     
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center );
         dependencies.add( this, this.angle1 );
         dependencies.add( this, this.angle2 );

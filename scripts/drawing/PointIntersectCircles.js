@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointIntersectCircles extends DrawingObject {
 
     //center1     ??? Confirm
@@ -44,9 +38,7 @@ class PointIntersectCircles extends DrawingObject {
         
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectCircles: " + d.name );
+            throw "No intersections found. ";
         }
         else if ( intersections.points.length === 1 )
         {
@@ -82,6 +74,7 @@ class PointIntersectCircles extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
         //g is the svg group
         var d = this.data; //the original json data
@@ -101,8 +94,7 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.center1 );
         dependencies.add( this, this.center2 );
         dependencies.add( this, this.radius1 );

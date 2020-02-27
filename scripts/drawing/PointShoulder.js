@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointShoulder extends DrawingObject {
 
     //pShoulder
@@ -39,15 +34,16 @@ class PointShoulder extends DrawingObject {
         var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
+
         bounds.adjust(this.p);
     }
 
 
     draw(g) {
         //g is the svg group
-        this.drawLine( g, this );
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawLine( g );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 

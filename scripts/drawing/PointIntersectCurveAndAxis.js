@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointIntersectCurveAndAxis extends DrawingObject {
 
     //basePoint
@@ -43,9 +37,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
 
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectCurveAndAxis: " + d.name );
+            throw "No intersections found. ";
         }
         else
         {
@@ -53,9 +45,11 @@ class PointIntersectCurveAndAxis extends DrawingObject {
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         this.line = new GeoLine( this.basePoint.p, this.p );
+
         bounds.adjust(this.p);
     }
 
+    
     draw(g) {
         //g is the svg group
         this.drawLine(g, this); 

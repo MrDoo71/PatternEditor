@@ -4,39 +4,6 @@
 //not based on, the seamly2D/Valentina pattern making systen in order to support community
 //pattern sharing website. 
 
-//var Point2D = require('kld-affine/Point2D');
-/*
-define(function (require) {
-    require('../expression');
-    require('./DrawingObject');
-    require('./ArcSimple');
-    require('./Line');
-    require('./PointAlongLine');
-    require('./PointAlongPerpendicular');
-    require('./PointAlongBisector');
-    require('./PointIntersectLineAndAxis');    
-    require('./PointIntersectArcAndAxis');
-    require('./PointIntersectArcAndLine');
-    require('./PointEndLine');
-    require('./PointLineIntersect');
-    require('./PointSingle');
-    require('./PointFromXandYOfTwoOtherPoints');   
-    require('./PerpendicularPointAlongLine');        
-    require('./PointOfTriangle'); 
-    require('./PointShoulder'); 
-    require('./SplineSimple');    
-    require('./SplineUsingControlPoints');    
-    require('./SplinePathInteractive');        
-    require('./SplinePathUsingPoints');            
-    require('./CutSpline');    
-    require('./PointCutSplinePath');    
-    require('./PointCutArc');        
-    require('./PointIntersectCurves');        
-    require('./PointIntersectCurveAndAxis');        
-    require('./PointIntersectArcs');            
-    require('./PointIntersectCircles');            
-});*/
-
 
 var scale;
 

@@ -1,5 +1,3 @@
-
-
 class OperationResult extends DrawingObject {
 
     //basePoint
@@ -19,9 +17,6 @@ class OperationResult extends DrawingObject {
 
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.patternPiece.getObject(d.fromOperation);
-
-        if ( this.data.derivedName === "Spl_S4B2_S5Bt" )
-        console.log("debug");
 
         //if this.basePoint is a point... (if a curve, this is the midpoint)
         if ( this.basePoint.p )
@@ -46,6 +41,7 @@ class OperationResult extends DrawingObject {
 
         //This line would be useful if the operation, or operation result is selected. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
+
         bounds.adjust( this.p );
     }
 
@@ -66,17 +62,18 @@ class OperationResult extends DrawingObject {
         //We might have operated on a point, spline (or presumably line)
 
         if ( this.p )
-            this.drawDot( g, this );
+            this.drawDot( g );
 
         if ( this.curve )
-            this.drawCurve( g, this ); 
+            this.drawCurve( g ); 
 
         //TODO we might also have operated on an arc, circle, ellipse?
 
         if ( this.line )
-            this.drawLine( g, this ); 
-
-        this.drawLabel( g, this );
+            this.drawLine( g ); 
+            
+        if ( this.p )
+            this.drawLabel( g );
     }
 
 
@@ -87,8 +84,7 @@ class OperationResult extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.basePoint );
         dependencies.add( this, this.fromOperation );
     }    

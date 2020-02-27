@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointCutArc extends DrawingObject {
 
     //arc
@@ -26,9 +21,10 @@ class PointCutArc extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+    
     draw(g) {
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -39,8 +35,7 @@ class PointCutArc extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.arc );
         dependencies.add( this, this.length );
     }    

@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointIntersectArcs extends DrawingObject {
 
     //firstArc
@@ -30,13 +24,11 @@ class PointIntersectArcs extends DrawingObject {
 
         var intersections = Intersection.intersect(arc1SI, arc2SI);
         
-        intersections.points.forEach(console.log);    
+        //intersections.points.forEach(console.log);    
         
         if ( intersections.points.length === 0 )
         {
-            this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "FAILED. No intersections found. PointIntersectArcAndAxis: " + d.name );
+            throw "No intersections found. ";
         }
         else if ( intersections.points.length === 1 )
         {
@@ -76,6 +68,7 @@ class PointIntersectArcs extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
         //g is the svg group
         var d = this.data; //the original json data
@@ -93,8 +86,7 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.firstArc );
         dependencies.add( this, this.secondArc );
     }    

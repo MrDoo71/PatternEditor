@@ -1,9 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
-
 class PointSingle extends DrawingObject {
 
     constructor(data) {
@@ -32,8 +26,7 @@ class PointSingle extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
     }    
 
 }

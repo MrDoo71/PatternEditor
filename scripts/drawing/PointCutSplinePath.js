@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class PointCutSplinePath extends DrawingObject {
 
     //splinePath
@@ -26,9 +21,10 @@ class PointCutSplinePath extends DrawingObject {
         bounds.adjust(this.p);
     }
 
+
     draw(g) {
-        this.drawDot( g, this );
-        this.drawLabel( g, this );
+        this.drawDot( g );
+        this.drawLabel( g );
     }
 
 
@@ -39,8 +35,7 @@ class PointCutSplinePath extends DrawingObject {
     }
 
 
-    setDependencies( dependencies )
-    {
+    setDependencies( dependencies ) {
         dependencies.add( this, this.splinePath );
         dependencies.add( this, this.length );
     }    

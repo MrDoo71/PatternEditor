@@ -30,10 +30,10 @@ class SplinePathInteractive extends DrawingObject {
                 pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
 
                 this.nodes.push( { inAngle:   pathNode.angle1.value(),
-                                   inLength:  pathNode.length1.value(),
-                                   point:     pathNode.point.p,
-                                   outAngle:  pathNode.angle2.value(),
-                                   outLength: pathNode.length2.value() } );
+                                    inLength:  pathNode.length1.value(),
+                                    point:     pathNode.point.p,
+                                    outAngle:  pathNode.angle2.value(),
+                                    outLength: pathNode.length2.value() } );
             }
         }
 
@@ -42,7 +42,7 @@ class SplinePathInteractive extends DrawingObject {
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
         bounds.adjust( this.p );
-
+    
         //Bounds will already have been adjusted for each node
     }
 
@@ -57,7 +57,7 @@ class SplinePathInteractive extends DrawingObject {
         var d = this.data;
 
         this.drawCurve(g,this);
-        
+
         //Where should we draw the label? half way along the curve? 
         this.drawLabel(g, this);
     }

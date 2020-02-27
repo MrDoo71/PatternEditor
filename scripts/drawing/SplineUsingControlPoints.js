@@ -1,8 +1,3 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
-
 class SplineUsingControlPoints extends DrawingObject {
 
     //startPoint - the spline start
@@ -45,8 +40,7 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
     
-    asShapeInfo()
-    {
+    asShapeInfo() {
         return this.curve.asShapeInfo();
     }
 
