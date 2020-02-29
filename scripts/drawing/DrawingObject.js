@@ -4,7 +4,11 @@ class DrawingObject /*abstract*/ {
         this.data = data;
     }
 
-    drawLabel( g ) {
+    drawLabel( g, isOutline ) {
+
+        if ( isOutline )
+            return; //it would be confusing to be able to click on text that you can't see to select something. 
+
         //g - the svg group we want to add the text to
         //o - the drawing object
         var d = this.data; //the original json data
@@ -15,46 +19,57 @@ class DrawingObject /*abstract*/ {
             .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
             .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
-            .attr("font-size", Math.round(100 / scale)/10 + "px");
+            .attr("font-size", Math.round( ( isOutline ? 200 : 100 ) / scale)/10 + "px");
     }
 
 
-    drawDot( g ) {
+    drawDot( g, isOutline ) {
         //var d = o.data; //the original json data
+
+        //console.log( "Circle " + isOutline + " " + ((( isOutline ? 800 : 400 ) / scale ) /100 ) );
+
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
-            .attr("r", Math.round( 40 / scale ) /10 );
+            .attr("r", Math.round( ( isOutline ? 1200 : 400 ) / scale ) /100 );
     }
 
 
-    drawLine( g ) {
+    drawLine( g, isOutline ) {
         if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
-            g.append("line")
-                .attr("x1", this.line.p1.x)
-                .attr("y1", this.line.p1.y)
-                .attr("x2", this.line.p2.x)
-                .attr("y2", this.line.p2.y)
-                .attr("stroke-width", this.getStrokeWidth() )
-                .attr("stroke", this.getColor() )
-                .attr("class", this.getLineStyle() );
+        {
+            var l = g.append("line")
+                     .attr("x1", this.line.p1.x)
+                     .attr("y1", this.line.p1.y)
+                     .attr("x2", this.line.p2.x)
+                     .attr("y2", this.line.p2.y)
+                     .attr("stroke-width", this.getStrokeWidth( isOutline ) );
+
+            if ( ! isOutline )
+                l.attr("stroke", this.getColor() )
+                 .attr("class", this.getLineStyle() );
+        }
     }
 
 
-    drawPath( g, path ) {
+    drawPath( g, path, isOutline ) {
         if ( this.lineVisible() )
-            g.append("path")
-              .attr("d", path )
-              .attr("fill", "none")
-              .attr("stroke-width", this.getStrokeWidth() )
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );
+        {
+            var p = g.append("path")
+                    .attr("d", path )
+                    .attr("fill", "none")
+                    .attr("stroke-width", this.getStrokeWidth( isOutline) );
+
+            if ( ! isOutline )        
+                p.attr("stroke", this.getColor() )
+                 .attr("class", this.getLineStyle() );
+        }
     }    
 
 
-    drawCurve( g ) {
+    drawCurve( g, isOutline ) {
         if ( this.lineVisible() && this.curve )
-            this.drawPath( g, this.curve.svgPath() );
+            this.drawPath( g, this.curve.svgPath(), isOutline );
     }
 
 
@@ -63,19 +78,13 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    getStrokeWidth()
+    getStrokeWidth( isOutline, isSelected )
     {
-        if ( this == selectedObject )
-            return 4 /fontsSizedForScale;
-
-        return 1 / scale;
+        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
 
 
     getColor() {
-        if ( this == selectedObject )
-            return "yellow";
-
         return this.data.color;
     }
 

@@ -53,13 +53,12 @@ class SplinePathInteractive extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
+    draw( g, isOutline ) {
 
-        this.drawCurve(g,this);
+        this.drawCurve(g, isOutline);
 
         //Where should we draw the label? half way along the curve? 
-        this.drawLabel(g, this);
+        this.drawLabel(g, isOutline);
     }
 
 

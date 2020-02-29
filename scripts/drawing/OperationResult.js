@@ -56,24 +56,24 @@ class OperationResult extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
 
         //We might have operated on a point, spline (or presumably line)
 
         if ( this.p )
-            this.drawDot( g );
+            this.drawDot( g, isOutline );
 
         if ( this.curve )
-            this.drawCurve( g ); 
+            this.drawCurve( g, isOutline ); 
 
         //TODO we might also have operated on an arc, circle, ellipse?
 
         if ( this.line )
-            this.drawLine( g ); 
+            this.drawLine( g, isOutline ); 
             
         if ( this.p )
-            this.drawLabel( g );
+            this.drawLabel( g, isOutline );
     }
 
 

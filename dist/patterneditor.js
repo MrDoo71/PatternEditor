@@ -935,7 +935,11 @@ class DrawingObject /*abstract*/ {
         this.data = data;
     }
 
-    drawLabel( g ) {
+    drawLabel( g, isOutline ) {
+
+        if ( isOutline )
+            return; //it would be confusing to be able to click on text that you can't see to select something. 
+
         //g - the svg group we want to add the text to
         //o - the drawing object
         var d = this.data; //the original json data
@@ -946,46 +950,57 @@ class DrawingObject /*abstract*/ {
             .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
             .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
-            .attr("font-size", Math.round(100 / scale)/10 + "px");
+            .attr("font-size", Math.round( ( isOutline ? 200 : 100 ) / scale)/10 + "px");
     }
 
 
-    drawDot( g ) {
+    drawDot( g, isOutline ) {
         //var d = o.data; //the original json data
+
+        //console.log( "Circle " + isOutline + " " + ((( isOutline ? 800 : 400 ) / scale ) /100 ) );
+
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
-            .attr("r", Math.round( 40 / scale ) /10 );
+            .attr("r", Math.round( ( isOutline ? 1200 : 400 ) / scale ) /100 );
     }
 
 
-    drawLine( g ) {
+    drawLine( g, isOutline ) {
         if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
-            g.append("line")
-                .attr("x1", this.line.p1.x)
-                .attr("y1", this.line.p1.y)
-                .attr("x2", this.line.p2.x)
-                .attr("y2", this.line.p2.y)
-                .attr("stroke-width", this.getStrokeWidth() )
-                .attr("stroke", this.getColor() )
-                .attr("class", this.getLineStyle() );
+        {
+            var l = g.append("line")
+                     .attr("x1", this.line.p1.x)
+                     .attr("y1", this.line.p1.y)
+                     .attr("x2", this.line.p2.x)
+                     .attr("y2", this.line.p2.y)
+                     .attr("stroke-width", this.getStrokeWidth( isOutline ) );
+
+            if ( ! isOutline )
+                l.attr("stroke", this.getColor() )
+                 .attr("class", this.getLineStyle() );
+        }
     }
 
 
-    drawPath( g, path ) {
+    drawPath( g, path, isOutline ) {
         if ( this.lineVisible() )
-            g.append("path")
-              .attr("d", path )
-              .attr("fill", "none")
-              .attr("stroke-width", this.getStrokeWidth() )
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );
+        {
+            var p = g.append("path")
+                    .attr("d", path )
+                    .attr("fill", "none")
+                    .attr("stroke-width", this.getStrokeWidth( isOutline) );
+
+            if ( ! isOutline )        
+                p.attr("stroke", this.getColor() )
+                 .attr("class", this.getLineStyle() );
+        }
     }    
 
 
-    drawCurve( g ) {
+    drawCurve( g, isOutline ) {
         if ( this.lineVisible() && this.curve )
-            this.drawPath( g, this.curve.svgPath() );
+            this.drawPath( g, this.curve.svgPath(), isOutline );
     }
 
 
@@ -994,19 +1009,13 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    getStrokeWidth()
+    getStrokeWidth( isOutline, isSelected )
     {
-        if ( this == selectedObject )
-            return 4 /fontsSizedForScale;
-
-        return 1 / scale;
+        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
 
 
     getColor() {
-        if ( this == selectedObject )
-            return "yellow";
-
         return this.data.color;
     }
 
@@ -1190,7 +1199,7 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         var d = this.data;
         var arcPath = d3.path();
         var a2 = this.angle2.value();
@@ -1203,16 +1212,9 @@ class ArcSimple extends DrawingObject {
         //console.log( "ArcSimple d3 path ", arcPath );
 
         if ( this.lineVisible() )
-            this.drawPath( g, arcPath );
-            /*
-            g.append("path")
-                .attr("d", arcPath )
-                .attr("fill", "none")
-                .attr("stroke-width", 1 / scale)
-                .attr("stroke", this.getColor() )
-                .attr("class", this.getLineStyle() ); */
+            this.drawPath( g, arcPath, isOutline );
 
-        this.drawLabel(g, this);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -1258,10 +1260,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1314,9 +1316,9 @@ class Line extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-        this.drawLine( g, this );
+    draw( g, isOutline ) {
+        
+        this.drawLine( g, isOutline );
         
         //TODO we could display the derived name Line_A1_A2 at the mid-point along the line?       
 
@@ -1357,7 +1359,7 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -1430,7 +1432,7 @@ class OperationMove extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -1521,24 +1523,24 @@ class OperationResult extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
 
         //We might have operated on a point, spline (or presumably line)
 
         if ( this.p )
-            this.drawDot( g );
+            this.drawDot( g, isOutline );
 
         if ( this.curve )
-            this.drawCurve( g ); 
+            this.drawCurve( g, isOutline ); 
 
         //TODO we might also have operated on an arc, circle, ellipse?
 
         if ( this.line )
-            this.drawLine( g ); 
+            this.drawLine( g, isOutline ); 
             
         if ( this.p )
-            this.drawLabel( g );
+            this.drawLabel( g, isOutline );
     }
 
 
@@ -1580,7 +1582,7 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -1641,11 +1643,11 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1700,11 +1702,11 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1757,10 +1759,10 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    draw(g) {
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1813,11 +1815,11 @@ class PointAlongPerpendicular extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g , isOutline ) {
         //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1868,9 +1870,9 @@ class PointCutArc extends DrawingObject {
     }
 
     
-    draw(g) {
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1912,9 +1914,9 @@ class PointCutSplinePath extends DrawingObject {
     }
 
 
-    draw(g) {
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -1963,11 +1965,10 @@ class PointEndLine extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2022,11 +2023,10 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine(g, this);
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline ) {
+        this.drawLine(g, isOutline);
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2086,11 +2086,10 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine(g, this);
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawLine(g, isOutline);
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2136,10 +2135,10 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //TODO check that there is no option to draw a line as part of this tool. 
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2206,11 +2205,11 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw(g, isOutline) {
         //g is the svg group
-        this.drawLine(g, this);
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawLine(g, isOutline);
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2266,14 +2265,11 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
 
         //TODO draw the line between basePoint and p
-
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2368,11 +2364,9 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2469,11 +2463,9 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2549,11 +2541,11 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
     
-    draw(g) {
+    draw(g, isOutline) {
         //g is the svg group
-        this.drawLine(g, this); 
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawLine(g, isOutline); 
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2647,14 +2639,9 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    draw(g) {
-
-        //TODO draw the line between basePoint and p
-
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2713,11 +2700,10 @@ class PointIntersectLineAndAxis extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw(g, isOutline) {
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2773,11 +2759,9 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -2844,11 +2828,9 @@ class PointOfTriangle extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        //this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2912,11 +2894,10 @@ class PointShoulder extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -2952,11 +2933,9 @@ class PointSingle extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw( g, isOutline ) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -3026,13 +3005,12 @@ class SplinePathInteractive extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
+    draw( g, isOutline ) {
 
-        this.drawCurve(g,this);
+        this.drawCurve(g, isOutline);
 
         //Where should we draw the label? half way along the curve? 
-        this.drawLabel(g, this);
+        this.drawLabel(g, isOutline);
     }
 
 
@@ -3130,21 +3108,12 @@ class SplinePathUsingPoints extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-
+    draw( g, isOutline ) {
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath() );
-            /*
-            g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() );*/
+            this.drawPath( g, this.curve.svgPath(), isOutline );
 
         //Where should we draw the label? half way along the curve? 
-        this.drawLabel(g, this);
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -3245,15 +3214,12 @@ class SplineSimple extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-
+    draw( g, isOutline ) {
+        
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath() );
+            this.drawPath( g, this.curve.svgPath(), isOutline );
 
-        //Where should we draw the label? half way along the curve?
-        //this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -3331,22 +3297,14 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
+    draw( g, isOutline ) {
 
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath() );
-            /*
-            g.append("path")
-              .attr("d", this.curve.svgPath() )
-              .attr("fill", "none")
-              .attr("stroke-width", 1 / scale)
-              .attr("stroke", this.getColor() )
-              .attr("class", this.getLineStyle() ); */
+            this.drawPath( g, this.curve.svgPath(), isOutline );
 
         //Where should we draw the label? half way along the curve?
-        //this.drawDot(g, this);
-        this.drawLabel(g, this);
+        //this.drawDot(g, isOutline);
+        this.drawLabel( g, isOutline );
     }
 
 
@@ -3719,7 +3677,7 @@ class PatternPiece {
 
 var selectedObject;
 var linksGroup;
-var fontsSizedForScale;
+var fontsSizedForScale = 1;
 var fontResizeTimer;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
@@ -3832,34 +3790,29 @@ function drawPattern( dataAndConfig, ptarget, options )
         {
             var a = pattern.patternPiece1.drawingObjects[i];
             var g = a.drawingSvg;
-            var strokeWidth = (selectedObject==a) ? 3 : 1;
+            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
             g.selectAll( "line" )
-              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
-             g.selectAll( "path" )
-              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
+              .attr("stroke-width", strokeWidth );
+            g.selectAll( "path" )
+              .attr("stroke-width", strokeWidth );
         }        
 
         var graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
-        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
-        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
-        $(graphdiv.node()).find( ".j-outline" ).remove();
+        $(graphdiv.node()).find( ".source" ).removeClass("source");
+        $(graphdiv.node()).find( ".target" ).removeClass("target");
+        //$(graphdiv.node()).find( ".j-outline.j-outline-active" ).removeClass("j-outline-active");
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
         selectedObject.tableSvg.node().classList.add("j-active");
-        selectedObject.drawingSvg.node().classList.add("j-active");
 
-        //Make the drawing object more pronounced...        
-        if (( typeof d.draw === "function" ) && ( ! d.error ))
-        {            
-            //this will draw it with a bigger stroke.
-            var outlineg = selectedObject.drawingSvg.append( "g" )
-                                                    .attr( "class", "j-outline" );
-            d.draw( outlineg );
-            outlineg.lower();
-        }
+        if ( selectedObject.drawingSvg )
+            selectedObject.drawingSvg.node().classList.add("j-active");
+
+        if ( selectedObject.outlineSvg )
+            selectedObject.outlineSvg.node().classList.add("j-active");
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
@@ -3867,12 +3820,14 @@ function drawPattern( dataAndConfig, ptarget, options )
                 if ( d.source == selectedObject ) 
                 {
                     d.target.tableSvg.node().classList.add("source");
+                    d.target.outlineSvg.node().classList.add("source");
                     //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
                     d.source.tableSvg.node().classList.add("target");
+                    d.source.outlineSvg.node().classList.add("target");
                     //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
@@ -4042,22 +3997,39 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
         focusDrawingObject(d,true);
     };
 
-    var a = transformGroup3.selectAll("g");    
+    var outlineGroup = transformGroup3.append("g");
+    var drawingGroup = transformGroup3.append("g");
+
+    var a = drawingGroup.selectAll("g");    
     a = a.data( patternPiece1.drawingObjects );
     a.enter()
      .append("g")
-     .attr("class", "j-point")
+     //.attr("class", "j-point")
      .each( function(d,i) {
         var g = d3.select( this );
-        //d.calculate();
 
         d.drawingSvg = g;
         
-        g.on("contextmenu", contextMenu);
-        g.on("click", onclick);
-
+        g.on("contextmenu", contextMenu)
+         .on("click", onclick)
+         .attr("class", "j-point");
+        
         if (( typeof d.draw === "function" ) && ( ! d.error ))
+        {
             d.draw( g );
+            
+            var g2 = outlineGroup.append("g")
+                                  .attr("class", "j-outline")
+                                  //.on("contextmenu", contextMenu);
+                                  .on("click", function( m ) { 
+                                    d3.event.preventDefault();
+                                    focusDrawingObject(d,true);                            
+                                  });
+
+            d.draw( g2, true );
+            d.outlineSvg = g2;
+            
+        }
     });
 
     var zoomed = function() {
@@ -4081,15 +4053,35 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
                         var g = a.drawingSvg;
                         
                         g.selectAll( "text" )
-                            .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
-                        g.selectAll( "circle" )
-                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+                         .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
 
-                        var strokeWidth = (selectedObject==a) ? 3 : 1;
-                        g.selectAll( "line" )
-                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);
-                        g.selectAll( "path" )
-                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);              
+                        g.selectAll( "circle" )
+                         .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+
+                        {
+                            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
+                            g.selectAll( "line" )
+                                .attr( "stroke-width", strokeWidth );
+
+                            g.selectAll( "path" )
+                                .attr( "stroke-width", strokeWidth );       
+                        }
+
+                        g = a.outlineSvg;
+                        if ( g )
+                        {
+                            var strokeWidth = a.getStrokeWidth( true );
+
+                            g.selectAll( "line" )
+                             .attr( "stroke-width", strokeWidth );
+
+                            g.selectAll( "path" )
+                             .attr( "stroke-width", strokeWidth );       
+
+                            g.selectAll( "circle" )
+                                .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
+                        }
                     }        
 
                 }, 50);         

@@ -35,6 +35,7 @@ g.j-point > path.hair {
 
 g.j-point > circle {
     fill:#999;
+    stroke-width: 0px;
 }
 
 g.j-point > text {
@@ -42,15 +43,9 @@ g.j-point > text {
     fill:#000;
 }
 
-g.j-point.j-active > circle {
+g.j-active.j-point > circle {
     fill:#000;
 }
-
-/*
-g.j-point.j-active > line,
-g.j-point.j-active > path {
-    outline: 1px solid red;
-}*/
 
 g.j-item div.desc {
     padding: 4px 8px;
@@ -109,7 +104,79 @@ g.j-item.target div.desc {
 }
 
 g.j-outline > circle {
-    fill: #dda;
+    fill: #fff;
+    opacity: 0.01; /* like none, but clickable*/
+    stroke-width: 0px;
+}
+
+g.j-outline > path,
+g.j-outline > line {
+    stroke: #fff;
+    opacity: 0.01; /*like none, but clickable*/
+}
+
+/*
+g.j-outline.target > circle {
+    fill: #4ddc44;
+    opacity: 1;
+}*/
+
+g.j-outline.source > circle {
+    fill: #449fdc80;
+    opacity: 1;
+}
+
+@keyframes k-throb-stroke {
+    0% {
+      stroke:#fff;
+      opacity: 0.01;
+    }
+    5% {
+      stroke: #ff8;
+      opacity: 1;
+    }
+    100% {
+        stroke:#fff;
+        opacity: 0.01;
+    }
+}
+/*
+@keyframes k-throb-fill {
+    0% {
+      fill:#fff;
+      opacity: 0.01;
+    }
+    5% {
+      fill: #ff8;
+      opacity: 1;
+    }
+    100% {
+        fill:#fff;
+        opacity: 0.01;
+    }
+}*/
+
+g.j-outline.j-active > circle {
+    fill: #ff8;
+    opacity: 1;
+    /*
+    animation-name: k-throb-fill;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+    animation-timing-function: ease-out;
+    */
+}
+    
+
+g.j-outline.j-active > path,
+g.j-outline.j-active > line {
+    /*stroke: #ff8;*/
+    animation-name: k-throb-stroke;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+    animation-timing-function: ease-out;
 }
 
 span.control-point { color: green }
@@ -150,37 +217,3 @@ div.pattern-editor.full-page {
     bottom: 15px;
     background-color: white;
 }
-
-/* dark mode 
-Note that lines can and often do specify stroke black
-
-body {
-    background-color:#111;
-}
-
-g.j-point > circle {
-    fill:#777;
-}
-
-g.j-point > text {
-    fill: white;
-}
-
-g.j-point.j-active > circle {
-    fill: white;
-}
-
-g.j-item div {
-    border-color:#888;
-    color: #eee;
-}
-
-g.j-item.j-active div {
-    border-color:#ccc;
-    color: #fff;
-}
-
-path.link {
-    stroke: #777;
-}
-*/

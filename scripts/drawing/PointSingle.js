@@ -12,11 +12,9 @@ class PointSingle extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw( g, isOutline ) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 

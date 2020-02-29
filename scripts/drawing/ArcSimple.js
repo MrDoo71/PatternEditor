@@ -48,7 +48,7 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         var d = this.data;
         var arcPath = d3.path();
         var a2 = this.angle2.value();
@@ -61,16 +61,9 @@ class ArcSimple extends DrawingObject {
         //console.log( "ArcSimple d3 path ", arcPath );
 
         if ( this.lineVisible() )
-            this.drawPath( g, arcPath );
-            /*
-            g.append("path")
-                .attr("d", arcPath )
-                .attr("fill", "none")
-                .attr("stroke-width", 1 / scale)
-                .attr("stroke", this.getColor() )
-                .attr("class", this.getLineStyle() ); */
+            this.drawPath( g, arcPath, isOutline );
 
-        this.drawLabel(g, this);
+        this.drawLabel(g, isOutline);
     }
 
 

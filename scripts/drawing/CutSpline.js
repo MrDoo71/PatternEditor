@@ -23,10 +23,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 

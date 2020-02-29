@@ -60,15 +60,12 @@ class SplineSimple extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-
+    draw( g, isOutline ) {
+        
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath() );
+            this.drawPath( g, this.curve.svgPath(), isOutline );
 
-        //Where should we draw the label? half way along the curve?
-        //this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawLabel( g, isOutline );
     }
 
 

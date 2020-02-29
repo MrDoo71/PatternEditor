@@ -70,14 +70,9 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    draw(g) {
-
-        //TODO draw the line between basePoint and p
-
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 

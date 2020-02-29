@@ -28,10 +28,10 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    draw(g) {
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+    draw( g, isOutline ) {
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 

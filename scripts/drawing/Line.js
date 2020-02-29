@@ -22,9 +22,9 @@ class Line extends DrawingObject {
     }
 
 
-    draw(g) {
-        var d = this.data;
-        this.drawLine( g );
+    draw( g, isOutline ) {
+        
+        this.drawLine( g, isOutline );
         
         //TODO we could display the derived name Line_A1_A2 at the mid-point along the line?       
 

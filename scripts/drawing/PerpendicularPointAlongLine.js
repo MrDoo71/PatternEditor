@@ -30,11 +30,11 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
         //g is the svg group
-        this.drawLine( g );
-        this.drawDot( g );
-        this.drawLabel( g );
+        this.drawLine( g, isOutline );
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 

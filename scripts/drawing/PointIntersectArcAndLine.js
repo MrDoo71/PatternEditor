@@ -33,14 +33,11 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    draw(g) {
+    draw( g, isOutline ) {
 
         //TODO draw the line between basePoint and p
-
-        //g is the svg group
-        var d = this.data; //the original json data
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+        this.drawDot( g, isOutline );
+        this.drawLabel( g, isOutline );
     }
 
 

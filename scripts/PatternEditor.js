@@ -6,7 +6,7 @@
 
 var selectedObject;
 var linksGroup;
-var fontsSizedForScale;
+var fontsSizedForScale = 1;
 var fontResizeTimer;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
@@ -119,34 +119,29 @@ function drawPattern( dataAndConfig, ptarget, options )
         {
             var a = pattern.patternPiece1.drawingObjects[i];
             var g = a.drawingSvg;
-            var strokeWidth = (selectedObject==a) ? 3 : 1;
+            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
             g.selectAll( "line" )
-              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
-             g.selectAll( "path" )
-              .attr("stroke-width", strokeWidth / scale / fontsSizedForScale );
+              .attr("stroke-width", strokeWidth );
+            g.selectAll( "path" )
+              .attr("stroke-width", strokeWidth );
         }        
 
         var graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
-        $(graphdiv.node()).find( ".j-item.source" ).removeClass("source");
-        $(graphdiv.node()).find( ".j-item.target" ).removeClass("target");
-        $(graphdiv.node()).find( ".j-outline" ).remove();
+        $(graphdiv.node()).find( ".source" ).removeClass("source");
+        $(graphdiv.node()).find( ".target" ).removeClass("target");
+        //$(graphdiv.node()).find( ".j-outline.j-outline-active" ).removeClass("j-outline-active");
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
         selectedObject.tableSvg.node().classList.add("j-active");
-        selectedObject.drawingSvg.node().classList.add("j-active");
 
-        //Make the drawing object more pronounced...        
-        if (( typeof d.draw === "function" ) && ( ! d.error ))
-        {            
-            //this will draw it with a bigger stroke.
-            var outlineg = selectedObject.drawingSvg.append( "g" )
-                                                    .attr( "class", "j-outline" );
-            d.draw( outlineg );
-            outlineg.lower();
-        }
+        if ( selectedObject.drawingSvg )
+            selectedObject.drawingSvg.node().classList.add("j-active");
+
+        if ( selectedObject.outlineSvg )
+            selectedObject.outlineSvg.node().classList.add("j-active");
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         linksGroup.selectAll("path.link") //rename .link to .dependency
@@ -154,12 +149,14 @@ function drawPattern( dataAndConfig, ptarget, options )
                 if ( d.source == selectedObject ) 
                 {
                     d.target.tableSvg.node().classList.add("source");
+                    d.target.outlineSvg.node().classList.add("source");
                     //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
                     d.source.tableSvg.node().classList.add("target");
+                    d.source.outlineSvg.node().classList.add("target");
                     //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
@@ -329,22 +326,39 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
         focusDrawingObject(d,true);
     };
 
-    var a = transformGroup3.selectAll("g");    
+    var outlineGroup = transformGroup3.append("g");
+    var drawingGroup = transformGroup3.append("g");
+
+    var a = drawingGroup.selectAll("g");    
     a = a.data( patternPiece1.drawingObjects );
     a.enter()
      .append("g")
-     .attr("class", "j-point")
+     //.attr("class", "j-point")
      .each( function(d,i) {
         var g = d3.select( this );
-        //d.calculate();
 
         d.drawingSvg = g;
         
-        g.on("contextmenu", contextMenu);
-        g.on("click", onclick);
-
+        g.on("contextmenu", contextMenu)
+         .on("click", onclick)
+         .attr("class", "j-point");
+        
         if (( typeof d.draw === "function" ) && ( ! d.error ))
+        {
             d.draw( g );
+            
+            var g2 = outlineGroup.append("g")
+                                  .attr("class", "j-outline")
+                                  //.on("contextmenu", contextMenu);
+                                  .on("click", function( m ) { 
+                                    d3.event.preventDefault();
+                                    focusDrawingObject(d,true);                            
+                                  });
+
+            d.draw( g2, true );
+            d.outlineSvg = g2;
+            
+        }
     });
 
     var zoomed = function() {
@@ -368,15 +382,35 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
                         var g = a.drawingSvg;
                         
                         g.selectAll( "text" )
-                            .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
-                        g.selectAll( "circle" )
-                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+                         .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
 
-                        var strokeWidth = (selectedObject==a) ? 3 : 1;
-                        g.selectAll( "line" )
-                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);
-                        g.selectAll( "path" )
-                            .attr("stroke-width", Math.round(100 * strokeWidth / scale / fontsSizedForScale )/100);              
+                        g.selectAll( "circle" )
+                         .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+
+                        {
+                            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
+                            g.selectAll( "line" )
+                                .attr( "stroke-width", strokeWidth );
+
+                            g.selectAll( "path" )
+                                .attr( "stroke-width", strokeWidth );       
+                        }
+
+                        g = a.outlineSvg;
+                        if ( g )
+                        {
+                            var strokeWidth = a.getStrokeWidth( true );
+
+                            g.selectAll( "line" )
+                             .attr( "stroke-width", strokeWidth );
+
+                            g.selectAll( "path" )
+                             .attr( "stroke-width", strokeWidth );       
+
+                            g.selectAll( "circle" )
+                                .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
+                        }
                     }        
 
                 }, 50);         

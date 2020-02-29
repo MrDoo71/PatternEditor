@@ -39,11 +39,10 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    draw(g) {
-        //g is the svg group
-        this.drawLine(g, this);
-        this.drawDot(g, this);
-        this.drawLabel(g, this);
+    draw(g, isOutline) {
+        this.drawLine(g, isOutline);
+        this.drawDot(g, isOutline);
+        this.drawLabel(g, isOutline);
     }
 
 
