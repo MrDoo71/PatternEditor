@@ -1,23 +1,25 @@
-class OperationResult extends DrawingObject {
+class TrueDartResult extends DrawingObject {
 
-    //basePoint
     //fromOperation
 
     constructor(data) {
         super(data);
-        this.data.name = data.derivedName;
+        this.name = this.data.name;
     }
 
 
     calculate(bounds) {
         var d = this.data;
 
-        if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
-
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.patternPiece.getObject(d.fromOperation);
 
+        if ( this.name === this.fromOperation.data.trueDartResult1 )
+            this.p = this.fromOperation.td1;
+        else
+            this.p = this.fromOperation.td3;
+
+            /*
         //if this.basePoint is a point... (if a curve, this is the midpoint)
         if ( this.basePoint.p )
             this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
@@ -41,6 +43,7 @@ class OperationResult extends DrawingObject {
 
         //This line would be useful if the operation, or operation result is selected. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
+        */
 
         bounds.adjust( this.p );
     }
@@ -57,20 +60,12 @@ class OperationResult extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        //g is the svg group
-
-        //We might have operated on a point, spline (or presumably line)
 
         if ( this.p )
             this.drawDot( g, isOutline );
 
-        if ( this.curve )
-            this.drawCurve( g, isOutline ); 
-
-        //TODO we might also have operated on an arc, circle, ellipse?
-
-        if ( this.line )
-            this.drawLine( g, isOutline ); 
+        //if ( this.line )
+        //    this.drawLine( g, isOutline ); 
             
         if ( this.p )
             this.drawLabel( g, isOutline );
@@ -79,13 +74,14 @@ class OperationResult extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Operation ' + this.refOf( this.fromOperation )
-                + ' on ' + this.basePoint.ref(); 
+                + 'Dart point from ' + this.refOf( this.fromOperation );
     }
 
 
     setDependencies( dependencies ) {
-        dependencies.add( this, this.basePoint );
+        //dependencies.add( this, this.basePoint );
+
+        //TODO add a dependency on D1/D3 depeending on
         dependencies.add( this, this.fromOperation );
     }    
 

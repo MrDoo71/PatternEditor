@@ -166,10 +166,13 @@ class PatternPiece {
             return new PointFromArcAndTangent(dObj);                  
         else if (dObj.objectType === "pointFromCircleAndTangent")
             return new PointFromCircleAndTangent(dObj);                  
-            
+        else if (dObj.objectType === "trueDart")
+            return new TrueDart(dObj);                              
+        else if (dObj.objectType === "trueDartResult")
+            return new TrueDartResult(dObj);                              
         else 
         {
-            var fail = new PointSingle( {x:0, y:0 } );
+            var fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
             fail.error =  "Unsupported drawing object type:" + dObj.objectType;
             return fail;
         }

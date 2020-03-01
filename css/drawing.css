@@ -7,6 +7,16 @@ span.ps-name,
 span.ps-ref {
     font-weight: bold;
 }
+/*
+span.ps-ref:hover {
+    text-decoration: underline;
+}*/
+
+g.j-item.j-active span.ps-ref {
+    /*text-decoration: underline; try dotted */
+    color: #3378a7;
+}
+
 
 g.j-point > line.dotLine,
 g.j-point > path.dotLine {

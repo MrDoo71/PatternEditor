@@ -107,12 +107,18 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     var focusDrawingObject = function( d, scrollTable )
     {
-        selectedObject = d;
-
-        if (( d3.event) && ( d3.event.originalTarget.className === "ps-ref" ))
+        if (    ( d3.event) 
+             && ( d3.event.originalTarget )
+             && ( d3.event.originalTarget.className === "ps-ref" )
+             && ( selectedObject == d )
+             )
         {
             selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
+        }
+        else
+        {
+            selectedObject = d;
         }
 
         for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
@@ -149,14 +155,20 @@ function drawPattern( dataAndConfig, ptarget, options )
                 if ( d.source == selectedObject ) 
                 {
                     d.target.tableSvg.node().classList.add("source");
-                    d.target.outlineSvg.node().classList.add("source");
+
+                    if ( d.target.outlineSvg ) //if it errored this will be undefined
+                        d.target.outlineSvg.node().classList.add("source");
+
                     //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
                     d.source.tableSvg.node().classList.add("target");
-                    d.source.outlineSvg.node().classList.add("target");
+
+                    if ( d.source.outlineSvg ) //if it errored this will be undefined
+                        d.source.outlineSvg.node().classList.add("target");
+
                     //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
@@ -382,7 +394,7 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
                         var g = a.drawingSvg;
                         
                         g.selectAll( "text" )
-                         .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
+                         .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
 
                         g.selectAll( "circle" )
                          .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );

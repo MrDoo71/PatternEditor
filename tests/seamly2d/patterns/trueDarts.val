@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.0520833" my="0.104167" name="A" type="single" x="0.3125" y="0.416667"/>
+            <point angle="340" basePoint="1" id="2" length="6" lineColor="black" mx="0.0520833" my="0.104167" name="A1" type="endLine" typeLine="hair"/>
+            <point firstPoint="1" id="3" length="3" lineColor="black" mx="-0.344399" my="0.130599" name="D0" secondPoint="2" type="alongLine" typeLine="none"/>
+            <point angle="0" firstPoint="3" id="4" length="4" lineColor="black" mx="0.0520833" my="0.104167" name="D2" secondPoint="1" type="normal" typeLine="dashDotLine"/>
+            <point firstPoint="3" id="5" length="0.5" lineColor="black" mx="-0.000780855" my="0.14822" name="D3" secondPoint="2" type="alongLine" typeLine="dotLine"/>
+            <point firstPoint="3" id="6" length="0.5" lineColor="black" mx="-0.547045" my="-0.089669" name="D1" secondPoint="1" type="alongLine" typeLine="none"/>
+            <line firstPoint="4" id="7" lineColor="black" secondPoint="5" typeLine="dotLine"/>
+            <line firstPoint="4" id="8" lineColor="black" secondPoint="6" typeLine="dotLine"/>
+            <point baseLineP1="1" baseLineP2="2" dartP1="6" dartP2="4" dartP3="5" id="9" mx1="-0.23867" mx2="0.175433" my1="-0.583069" my2="-0.318747" name1="TD1" name2="TD2" point1="10" point2="11" type="trueDarts"/>
+            <line firstPoint="1" id="12" lineColor="black" secondPoint="10" typeLine="hair"/>
+            <line firstPoint="11" id="13" lineColor="black" secondPoint="2" typeLine="hair"/>
+            <line firstPoint="10" id="14" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <line firstPoint="11" id="15" lineColor="black" secondPoint="4" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

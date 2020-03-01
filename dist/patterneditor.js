@@ -110,7 +110,27 @@ class Expression {
 
 
     measurementValue() {
-        return this.variable.value();
+        //console.log("Measurement units " + this.variable.units );
+        //console.log("Pattern units " + this.pattern.units );
+        var measurementUnits = this.variable.units;
+        var patternUnits = this.pattern.units;
+        if ( measurementUnits === patternUnits )
+            return this.variable.value();
+
+        var mm = 1;
+        if ( measurementUnits === "cm" )
+            mm = 10;
+        else if ( measurementUnits === "inch" )
+            mm = 25.4;
+
+        var pp = mm;
+
+        if ( patternUnits === "cm" )
+            pp = mm / 10;
+        else if ( patternUnits === "inch" )
+            pp = mm / 25.4;
+
+        return pp * this.variable.value();
     }    
 
 
@@ -210,12 +230,12 @@ class Expression {
     operationValue(currentLength) {
 
         if (typeof this.params[0].value !== "function")
-            alert("param1 not known");
+            throw "expression p1 not valid";
 
         if ( this.operation !== "parenthesis" )    
         {
             if (typeof this.params[1].value !== "function")
-                alert("param2 not known");
+                throw "expression p2 not valid";
         }
 
         if (this.operation === "add")
@@ -281,7 +301,13 @@ class Expression {
     html( asFormula ) {
 
         if ( ! asFormula )
-            return Number.parseFloat( this.value() ).toPrecision(4); 
+        {
+            try { 
+                return Number.parseFloat( this.value() ).toPrecision(4); 
+            } catch ( e ) {
+                return "???"
+            }
+        }
 
         if ( this.variable )
             return this.variable.name;
@@ -297,6 +323,8 @@ class Expression {
                 return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
             if ( this.function === "lengthOfSpline" )
                 return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+            if ( this.function === "lengthOfSplinePath" )
+                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
             else
                 return "UNKNOWN FUNCTION TYPE" + this.function;
         }
@@ -562,6 +590,7 @@ class GeoLine {
 
     angleDeg() 
     {
+        /*
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
@@ -569,7 +598,15 @@ class GeoLine {
         //    return deltaY > 0 ? 90 : 270;
 
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
+        */
+       return this.angle * 180 / Math.PI;
     }
+
+    angleRad() 
+    {
+        return this.angle;
+    }
+
 
     getLength() 
     {
@@ -950,15 +987,11 @@ class DrawingObject /*abstract*/ {
             .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
             .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
-            .attr("font-size", Math.round( ( isOutline ? 200 : 100 ) / scale)/10 + "px");
+            .attr("font-size", Math.round( ( 1200 / scale ))/100 + "px");
     }
 
 
     drawDot( g, isOutline ) {
-        //var d = o.data; //the original json data
-
-        //console.log( "Circle " + isOutline + " " + ((( isOutline ? 800 : 400 ) / scale ) /100 ) );
-
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
@@ -1006,6 +1039,14 @@ class DrawingObject /*abstract*/ {
 
     ref() {
         return '<span class="ps-ref">' + this.data.name + '</span>';
+    }
+
+
+    refOf( anotherDrawingObject ) {
+        if ( ! anotherDrawingObject )
+            return "???";
+            
+        return anotherDrawingObject.ref();
     }
 
 
@@ -1546,7 +1587,7 @@ class OperationResult extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Operation ' + this.fromOperation.ref() 
+                + 'Operation ' + this.refOf( this.fromOperation )
                 + ' on ' + this.basePoint.ref(); 
     }
 
@@ -2186,14 +2227,25 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        //try {
+        try {
 
-        if ( this.arc.arc )
-            this.p = longLine.intersectArc( this.arc.arc );
-        else
-            this.p = longLine.intersectArc( this.arc.curve );
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
 
-        //} catch (e) {
+        } catch (e) {
+
+            //try the line extending in the other direction!
+            let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, 180+angleDeg );
+            var longLine = new GeoLine( this.basePoint.p, otherPoint );
+            
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
+    
+        }
         //    console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
             //this.p = new GeoPoint(0,0);
         //    this.error = "No intersections found. " + e.message ;
@@ -3331,6 +3383,172 @@ class SplineUsingControlPoints extends DrawingObject {
     }    
 }
 
+class TrueDart extends DrawingObject {
+
+    //p1Line1  2 points making up the line on which the dart sits. 
+    //p2Line1
+    //point1 3 points that make up a V shape of the original dart, point1 and point3 lie on the baseline
+    //point2
+    //point3
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.operationName;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.point1 === "undefined")
+            this.point1 = this.patternPiece.getObject(d.point1);
+        if (typeof this.point2 === "undefined")
+            this.point2 = this.patternPiece.getObject(d.point2);
+        if (typeof this.point3 === "undefined")
+            this.point3 = this.patternPiece.getObject(d.point3);
+
+        if (typeof this.p1Line1 === "undefined")
+            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+        if (typeof this.p2Line1 === "undefined")
+            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+
+        var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
+        var lineD2D1 = new GeoLine( this.point2.p, this.point1.p );    
+        var angleA1D2D1 = lineD2A1.angleRad() - lineD2D1.angleRad();
+        var lengthD2TD1 = Math.cos( angleA1D2D1 ) * lineD2A1.length;
+        this.td1 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD1, lineD2D1.angleRad() );
+    
+        var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );
+        var lineD2D3 = new GeoLine( this.point2.p, this.point3.p );    
+        var angleA1D2D3 = lineD2D3.angleRad() - lineD2A2.angleRad();
+        var lengthD2TD3 = Math.cos( angleA1D2D3 ) * lineD2A2.length;
+        this.td3 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD3, lineD2D3.angleRad() );
+
+        //Nb. this.data.trueDartResult1 and trueDartResult2 give the names of the dart points generated.
+
+        bounds.adjust(this.td1);
+        bounds.adjust(this.td3);
+    }
+
+
+    draw( g, isOutline ) {
+        //no!
+        //this.drawDotForSpecificPoint( g, isOutline, this.td3 );
+        //this.drawLabel( g, isOutline );
+    }
+
+
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + " True darts baseline " + this.p1Line1.ref()
+                + "-" + this.p2Line1.ref()
+                + " original dart " + this.point1.ref()
+                + "-" + this.point2.ref()
+                + "-" + this.point3.ref();
+    }
+
+
+    setDependencies( dependencies )
+    {
+        //TODO these could get captured automaticallly if, in calculate, we did getObjectAndSetDependency( blah, this )
+        dependencies.add( this, this.point1 );
+        dependencies.add( this, this.point2 );
+        dependencies.add( this, this.point3 );
+        dependencies.add( this, this.p1Line1 );
+        dependencies.add( this, this.p2Line1 );
+    }    
+
+}
+
+class TrueDartResult extends DrawingObject {
+
+    //fromOperation
+
+    constructor(data) {
+        super(data);
+        this.name = this.data.name;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.fromOperation === "undefined")
+            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+
+        if ( this.name === this.fromOperation.data.trueDartResult1 )
+            this.p = this.fromOperation.td1;
+        else
+            this.p = this.fromOperation.td3;
+
+            /*
+        //if this.basePoint is a point... (if a curve, this is the midpoint)
+        if ( this.basePoint.p )
+            this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
+
+        var operation = this.fromOperation;
+        var applyOperationToPointFunc = function( p ) {
+            return operation.applyOperationToPoint( p );
+        };
+
+        //else if this.basePoint.curve is a GeoSpline...
+        if ( this.basePoint.curve instanceof GeoSpline )
+        {
+            //so we get this captured and can just pass the function around
+            this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
+        }
+        else if ( this.basePoint.line instanceof GeoLine ) //untested?
+        {
+            this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
+        }
+        //TODO we might also have operated on an arc, circle, ellipse? Some might required a different approach that needs to be aligned with original behaviour
+
+        //This line would be useful if the operation, or operation result is selected. 
+        //this.operationLine = new GeoLine(this.basePoint.p, this.p);
+        */
+
+        bounds.adjust( this.p );
+    }
+
+
+    getColor() {
+        return this.basePoint.getColor();
+    }
+
+    
+    getLineStyle() {
+        return this.basePoint.getLineStyle();
+    }
+
+
+    draw( g, isOutline ) {
+
+        if ( this.p )
+            this.drawDot( g, isOutline );
+
+        //if ( this.line )
+        //    this.drawLine( g, isOutline ); 
+            
+        if ( this.p )
+            this.drawLabel( g, isOutline );
+    }
+
+
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Dart point from ' + this.refOf( this.fromOperation );
+    }
+
+
+    setDependencies( dependencies ) {
+        //dependencies.add( this, this.basePoint );
+
+        //TODO add a dependency on D1/D3 depeending on
+        dependencies.add( this, this.fromOperation );
+    }    
+
+}
+
 class Pattern {
 
     constructor (data, options ) {
@@ -3339,6 +3557,7 @@ class Pattern {
         this.patternData = data.pattern;
         this.increment = {};
         this.measurement = {};
+        this.units = this.patternData.units ? this.patternData.units : "cm";
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
@@ -3590,10 +3809,13 @@ class PatternPiece {
             return new PointFromArcAndTangent(dObj);                  
         else if (dObj.objectType === "pointFromCircleAndTangent")
             return new PointFromCircleAndTangent(dObj);                  
-            
+        else if (dObj.objectType === "trueDart")
+            return new TrueDart(dObj);                              
+        else if (dObj.objectType === "trueDartResult")
+            return new TrueDartResult(dObj);                              
         else 
         {
-            var fail = new PointSingle( {x:0, y:0 } );
+            var fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
             fail.error =  "Unsupported drawing object type:" + dObj.objectType;
             return fail;
         }
@@ -3778,12 +4000,17 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     var focusDrawingObject = function( d, scrollTable )
     {
-        selectedObject = d;
-
-        if (( d3.event) && ( d3.event.originalTarget.className === "ps-ref" ))
+        if (    ( d3.event) 
+             && ( d3.event.originalTarget.className === "ps-ref" )
+             && ( selectedObject == d )
+             )
         {
             selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
+        }
+        else
+        {
+            selectedObject = d;
         }
 
         for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
@@ -3820,14 +4047,20 @@ function drawPattern( dataAndConfig, ptarget, options )
                 if ( d.source == selectedObject ) 
                 {
                     d.target.tableSvg.node().classList.add("source");
-                    d.target.outlineSvg.node().classList.add("source");
+
+                    if ( d.target.outlineSvg ) //if it errored this will be undefined
+                        d.target.outlineSvg.node().classList.add("source");
+
                     //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
                 if ( d.target == selectedObject ) 
                 {
                     d.source.tableSvg.node().classList.add("target");
-                    d.source.outlineSvg.node().classList.add("target");
+
+                    if ( d.source.outlineSvg ) //if it errored this will be undefined
+                        d.source.outlineSvg.node().classList.add("target");
+
                     //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
@@ -4053,7 +4286,7 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
                         var g = a.drawingSvg;
                         
                         g.selectAll( "text" )
-                         .attr("font-size", Math.round(1000 / scale / fontsSizedForScale)/100 + "px");
+                         .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
 
                         g.selectAll( "circle" )
                          .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );

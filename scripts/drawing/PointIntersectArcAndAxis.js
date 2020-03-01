@@ -31,14 +31,25 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        //try {
+        try {
 
-        if ( this.arc.arc )
-            this.p = longLine.intersectArc( this.arc.arc );
-        else
-            this.p = longLine.intersectArc( this.arc.curve );
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
 
-        //} catch (e) {
+        } catch (e) {
+
+            //try the line extending in the other direction!
+            let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, 180+angleDeg );
+            var longLine = new GeoLine( this.basePoint.p, otherPoint );
+            
+            if ( this.arc.arc )
+                this.p = longLine.intersectArc( this.arc.arc );
+            else
+                this.p = longLine.intersectArc( this.arc.curve );
+    
+        }
         //    console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
             //this.p = new GeoPoint(0,0);
         //    this.error = "No intersections found. " + e.message ;

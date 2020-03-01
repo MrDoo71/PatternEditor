@@ -102,7 +102,27 @@ class Expression {
 
 
     measurementValue() {
-        return this.variable.value();
+        //console.log("Measurement units " + this.variable.units );
+        //console.log("Pattern units " + this.pattern.units );
+        var measurementUnits = this.variable.units;
+        var patternUnits = this.pattern.units;
+        if ( measurementUnits === patternUnits )
+            return this.variable.value();
+
+        var mm = 1;
+        if ( measurementUnits === "cm" )
+            mm = 10;
+        else if ( measurementUnits === "inch" )
+            mm = 25.4;
+
+        var pp = mm;
+
+        if ( patternUnits === "cm" )
+            pp = mm / 10;
+        else if ( patternUnits === "inch" )
+            pp = mm / 25.4;
+
+        return pp * this.variable.value();
     }    
 
 
@@ -202,12 +222,12 @@ class Expression {
     operationValue(currentLength) {
 
         if (typeof this.params[0].value !== "function")
-            alert("param1 not known");
+            throw "expression p1 not valid";
 
         if ( this.operation !== "parenthesis" )    
         {
             if (typeof this.params[1].value !== "function")
-                alert("param2 not known");
+                throw "expression p2 not valid";
         }
 
         if (this.operation === "add")
@@ -273,7 +293,13 @@ class Expression {
     html( asFormula ) {
 
         if ( ! asFormula )
-            return Number.parseFloat( this.value() ).toPrecision(4); 
+        {
+            try { 
+                return Number.parseFloat( this.value() ).toPrecision(4); 
+            } catch ( e ) {
+                return "???"
+            }
+        }
 
         if ( this.variable )
             return this.variable.name;
@@ -289,6 +315,8 @@ class Expression {
                 return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
             if ( this.function === "lengthOfSpline" )
                 return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+            if ( this.function === "lengthOfSplinePath" )
+                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
             else
                 return "UNKNOWN FUNCTION TYPE" + this.function;
         }

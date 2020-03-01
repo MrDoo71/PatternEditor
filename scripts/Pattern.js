@@ -6,6 +6,7 @@ class Pattern {
         this.patternData = data.pattern;
         this.increment = {};
         this.measurement = {};
+        this.units = this.patternData.units ? this.patternData.units : "cm";
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {

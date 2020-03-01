@@ -194,6 +194,7 @@ class GeoLine {
 
     angleDeg() 
     {
+        /*
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
@@ -201,7 +202,15 @@ class GeoLine {
         //    return deltaY > 0 ? 90 : 270;
 
         return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
+        */
+       return this.angle * 180 / Math.PI;
     }
+
+    angleRad() 
+    {
+        return this.angle;
+    }
+
 
     getLength() 
     {

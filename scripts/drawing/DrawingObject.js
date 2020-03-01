@@ -19,15 +19,11 @@ class DrawingObject /*abstract*/ {
             .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
             .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
             .text(d.name)
-            .attr("font-size", Math.round( ( isOutline ? 200 : 100 ) / scale)/10 + "px");
+            .attr("font-size", Math.round( ( 1200 / scale ))/100 + "px");
     }
 
 
     drawDot( g, isOutline ) {
-        //var d = o.data; //the original json data
-
-        //console.log( "Circle " + isOutline + " " + ((( isOutline ? 800 : 400 ) / scale ) /100 ) );
-
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
@@ -75,6 +71,14 @@ class DrawingObject /*abstract*/ {
 
     ref() {
         return '<span class="ps-ref">' + this.data.name + '</span>';
+    }
+
+
+    refOf( anotherDrawingObject ) {
+        if ( ! anotherDrawingObject )
+            return "???";
+            
+        return anotherDrawingObject.ref();
     }
 
 
