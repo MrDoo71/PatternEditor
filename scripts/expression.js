@@ -290,19 +290,24 @@ class Expression {
     }
 
 
-    html( asFormula ) {
+    html( asFormula, currentLength ) {
 
         if ( ! asFormula )
         {
             try { 
-                return Number.parseFloat( this.value() ).toPrecision(4); 
+                return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
             } catch ( e ) {
                 return "???"
             }
         }
 
         if ( this.variable )
+        {
+            if (this.variable === "CurrentLength")
+                return "CurrentLength";
+
             return this.variable.name;
+        }
 
         if ( this.constant )
             return this.constant;
@@ -311,14 +316,46 @@ class Expression {
         {
             if ( this.function === "lengthOfLine" )
                 return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+
             if ( this.function === "angleOfLine" )
                 return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+
             if ( this.function === "lengthOfSpline" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfSpline( ??? )";
+                
                 return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+            };
+
             if ( this.function === "lengthOfSplinePath" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfSplinePath( ??? )";
+
                 return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
-            else
-                return "UNKNOWN FUNCTION TYPE" + this.function;
+            };
+
+            if ( this.function === "lengthOfArc" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfArc( ??? )";
+                
+                return "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")";
+            };
+
+            if ( this.function === "sqrt" )
+            {
+                return ( "sqrt(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            }
+
+            if ( this.function === "-" )
+            {
+                return ( "-(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            }            
+
+            //else
+            return "UNKNOWN FUNCTION TYPE" + this.function;
         }
 
         if ( this.operation ) 
@@ -348,7 +385,7 @@ class Expression {
                     else
                         t += ",";
                 }
-                t += this.params[p].html( asFormula );
+                t += this.params[p].html( asFormula, currentLength );
                 first = false;
             }
             t += ")";

@@ -48,8 +48,8 @@ class PointShoulder extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-            + " Point along " + this.p1Line1.ref() 
-            + "-" + this.p2Line1.ref()
+            + " Point along " + this.refOf( this.p1Line1 ) 
+            + "-" + this.refOf( this.p2Line1 )
             + " being " + this.length.html( asFormula ) 
             + " from " + this.shoulderPoint.ref();
     }

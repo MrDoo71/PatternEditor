@@ -39,7 +39,7 @@ class PointEndLine extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " from " + this.basePoint.ref() 
+                + " from " + this.refOf( this.basePoint ) 
                 + " angle " + this.data.angle.html( asFormula );
     }
 

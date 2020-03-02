@@ -198,8 +198,8 @@ class PatternPiece {
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
-            f.html = function( asFormula ) {
-                return f.expression.html( asFormula );
+            f.html = function( asFormula, currentLength ) {
+                return f.expression.html( asFormula, currentLength );
             };
         }
         return f;

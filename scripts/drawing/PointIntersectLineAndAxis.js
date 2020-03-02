@@ -47,9 +47,9 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + ' intersection of ' + this.p1Line1.ref() 
-                + "-" + this.p2Line1.ref() 
-                + " with line from " + this.basePoint.ref() 
+                + ' intersection of ' + this.refOf( this.p1Line1 ) 
+                + "-" + this.refOf( this.p2Line1 ) 
+                + " with line from " + this.refOf( this.basePoint ) 
                 + " at angle " + this.angle.html( asFormula );
     }
 

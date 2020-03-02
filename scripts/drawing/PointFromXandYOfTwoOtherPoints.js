@@ -31,7 +31,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.firstPoint.ref() +  " - " + this.secondPoint.ref();
+        return 'line ' + this.refOf( this.firstPoint ) +  " - " + this.secondPoint.ref();
     }
 
 

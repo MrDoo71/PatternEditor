@@ -31,7 +31,7 @@ class OperationFlipByAxis extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'Flip operation: axis:' + this.axis 
-                + " around " + this.center.ref() 
+                + " around " + this.refOf( this.center ) 
                          //" angle:" + this.data.angle.value() +
                 + " suffix:" + this.data.suffix;
     }

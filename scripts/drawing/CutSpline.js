@@ -33,7 +33,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " along curve " + this.curve.ref();
+                + " along curve " + this.refOf( this.curve );
     }
 
 

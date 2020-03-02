@@ -50,9 +50,9 @@ class PointOfTriangle extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + " Point along " + this.p1Line1.ref()
-                + "-" + this.p2Line1.ref()
-                + " that forms a right angle triangle with line  " + this.firstPoint.ref()
+                + " Point along " + this.refOf( this.p1Line1 )
+                + "-" + this.refOf( this.p2Line1 )
+                + " that forms a right angle triangle with line  " + this.refOf( this.firstPoint )
                 + "-" + this.secondPoint.ref();
     }
 

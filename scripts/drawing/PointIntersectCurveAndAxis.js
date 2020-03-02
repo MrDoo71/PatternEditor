@@ -62,7 +62,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect curve ' + this.curve.ref() 
-                + " with line from " + this.basePoint.ref()
+                + " with line from " + this.refOf( this.basePoint )
                 + " at angle " + this.angle.html( asFormula );
     }
 
