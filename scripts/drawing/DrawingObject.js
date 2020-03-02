@@ -77,7 +77,10 @@ class DrawingObject /*abstract*/ {
     refOf( anotherDrawingObject ) {
         if ( ! anotherDrawingObject )
             return "???";
-            
+
+        if ( ! anotherDrawingObject.ref )
+            return "????";
+
         return anotherDrawingObject.ref();
     }
 

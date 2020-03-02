@@ -38,26 +38,29 @@
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
-                "pattern":
-                {
-                  "description":
-                    "Lingerie Design a Complete Course\u000apg. 39 Basic brief sloper\u000a",
-                  "notes":
-                    "Crotch length for standard size 12 is just a guess based on the illustrations in the book. ",
-                  "measurement": [{ "name": "crotch_length_b", "value": 43 }, 
-                      { "name": "crotch_length_f", "value": 32.5 }, 
-                      { "name": "rise_length_side_sitting", "value": 28 }, 
-                      { "name": "waist_circ", "value": 78 }, 
-                      { "name": "highhip_circ", "value": 92 }, 
-                      { "name": "hip_circ", "value": 107 }],
-                  "increment": [{ "name": "#CrotchWidth", "constant": 6.6 }],
-                  "patternPiece":
-                    [
-                      {
-                        "name": "Basic brief sloper",
-                        "drawingObject":
+                  "options": 
+                    {
+                      "includeFullPageOption": true,
+                      "allowPanAndZoom": true,
+                      "defaultViewOption": 2,
+                      "viewOption": [{ "label": "4:0", "drawingWidth": 12, "descriptionsWidth": 0 }, { "label": "3:1", "drawingWidth": 9, "descriptionsWidth": 3 }, { "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }, { "label": "1:3", "drawingWidth": 3, "descriptionsWidth": 9 }, { "label": "0:4", "drawingWidth": 0, "descriptionsWidth": 12 } ]
+                    },
+                  "pattern": 
+                    {
+                      "units": "cm",
+                      "description": 
+                        "Lingerie Design a Complete Course\u000apg. 39 Basic brief sloper\u000a",
+                      "notes": 
+                        "Crotch length for standard size 12 is just a guess based on the illustrations in the book. ",
+                      "measurement": [{ "name": "crotch_length_b", "value": 43, "units": "cm" }, { "name": "crotch_length_f", "value": 32.5, "units": "cm" }, { "name": "rise_length_side_sitting", "value": 28, "units": "cm" }, { "name": "waist_circ", "value": 78, "units": "cm" }, { "name": "highhip_circ", "value": 92, "units": "cm" }, { "name": "hip_circ", "value": 107, "units": "cm" } ],
+                      "increment": [{ "name": "#CrotchWidth", "constant": 6.6 } ],
+                      "patternPiece":
+                      [
+                        {
+                          "name": "Basic brief sloper",
+                          "drawingObject":
                           [
-                            { "name": "WAIST", "objectType": "pointSingle", "x": 0, "y": 0, "mx": 0.132292, "my": 0.264583 },
+                            { "name": "WAIST", "objectType": "pointSingle", "x": 0, "y": 0, "mx": 0.132292, "my": 0.264583 }, 
                             {
                               "name": "A0",
                               "objectType": "pointEndLine",
@@ -66,14 +69,14 @@
                               "color": "black",
                               "mx": 0.0782578,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "rise_length_side_sitting" }
-                              }
-                            },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "rise_length_side_sitting" }
+                                }
+                            }, 
                             {
                               "name": "SIDESEAM",
                               "objectType": "pointEndLine",
@@ -82,11 +85,11 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
+                              "length": 
                                 { "constant": 20 }
-                            },
+                            }, 
                             {
                               "name": "A1",
                               "objectType": "pointEndLine",
@@ -95,11 +98,11 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 90 },
-                              "length":
+                              "length": 
                                 { "constant": 5 }
-                            },
+                            }, 
                             {
                               "name": "CB4",
                               "objectType": "pointEndLine",
@@ -108,17 +111,17 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 180 },
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "CF4",
                               "objectType": "pointEndLine",
@@ -127,17 +130,17 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 0 },
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "CF",
                               "objectType": "pointEndLine",
@@ -146,14 +149,14 @@
                               "color": "black",
                               "mx": 0.0782575,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
-                              }
-                            },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
+                                }
+                            }, 
                             {
                               "name": "CB",
                               "objectType": "pointEndLine",
@@ -162,16 +165,16 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
-                              }
-                            },
-                            { "derivedName": "Line_A0_CF", "objectType": "line", "firstPoint": "A0", "secondPoint": "CF", "lineStyle": "dotLine", "color": "cornflowerblue" },
-                            { "derivedName": "Line_A0_CB", "objectType": "line", "firstPoint": "A0", "secondPoint": "CB", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
+                                }
+                            }, 
+                            { "derivedName": "Line_A0_CF", "objectType": "line", "firstPoint": "A0", "secondPoint": "CF", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
+                            { "derivedName": "Line_A0_CB", "objectType": "line", "firstPoint": "A0", "secondPoint": "CB", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
                             {
                               "name": "LOWWAIST",
                               "objectType": "pointAlongLine",
@@ -181,9 +184,9 @@
                               "color": "cornflowerblue",
                               "mx": 0.19537,
                               "my": -1.1862,
-                              "length":
+                              "length": 
                                 { "constant": 5 }
-                            },
+                            }, 
                             {
                               "name": "HIGHHIP",
                               "objectType": "pointAlongLine",
@@ -193,15 +196,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "LOWHIP",
                               "objectType": "pointAlongLine",
@@ -211,28 +214,28 @@
                               "color": "black",
                               "mx": 0.175375,
                               "my": -1.15715,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter":
-                                    [
-                                      {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
-                                      },
-                                      { "operationType": "Integer value", "integerValue": 2 }
-                                    ]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter":
+                                      [
+                                        {
+                                          "operationType": "divide",
+                                          "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 } ]
+                                        }, 
+                                        { "operationType": "Integer value", "integerValue": 2 }
+                                      ]
+                                    }
                                 }
-                              }
-                            },
-                            { "name": "CF1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "CF2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "CF3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CF", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "CB1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.0692145, "my": 0.264583 },
-                            { "name": "CB2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "CB3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CB", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 },
+                            }, 
+                            { "name": "CF1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 }, 
+                            { "name": "CF2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CF4", "p2Line1": "CF", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 }, 
+                            { "name": "CF3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CF", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 }, 
+                            { "name": "CB1", "objectType": "perpendicularPointAlongLine", "basePoint": "LOWHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.0692145, "my": 0.264583 }, 
+                            { "name": "CB2", "objectType": "perpendicularPointAlongLine", "basePoint": "HIGHHIP", "p1Line1": "CB4", "p2Line1": "CB", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 }, 
+                            { "name": "CB3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "CB", "secondPoint": "LOWWAIST", "mx": 0.132292, "my": 0.264583 }, 
                             {
                               "name": "A12",
                               "objectType": "pointAlongLine",
@@ -242,15 +245,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A11",
                               "objectType": "pointAlongLine",
@@ -260,15 +263,15 @@
                               "color": "black",
                               "mx": -1.21856,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A",
                               "objectType": "pointEndLine",
@@ -277,11 +280,11 @@
                               "color": "black",
                               "mx": -0.0838447,
                               "my": -1.30241,
-                              "angle":
+                              "angle": 
                                 { "constant": 90 },
-                              "length":
+                              "length": 
                                 { "constant": 1.3 }
-                            },
+                            }, 
                             {
                               "name": "B",
                               "objectType": "pointEndLine",
@@ -290,11 +293,11 @@
                               "color": "black",
                               "mx": -0.137879,
                               "my": -1.19434,
-                              "angle":
+                              "angle": 
                                 { "constant": 90 },
-                              "length":
+                              "length": 
                                 { "constant": 1.3 }
-                            },
+                            }, 
                             {
                               "name": "C",
                               "objectType": "pointAlongLine",
@@ -304,15 +307,15 @@
                               "color": "black",
                               "mx": -0.299981,
                               "my": -1.30241,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "D",
                               "objectType": "pointAlongLine",
@@ -322,15 +325,15 @@
                               "color": "black",
                               "mx": -0.0298106,
                               "my": -1.35644,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "E",
                               "objectType": "pointAlongLine",
@@ -340,17 +343,17 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
-                            { "derivedName": "Line_B_HIGHHIP", "objectType": "line", "firstPoint": "B", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" },
-                            { "derivedName": "Line_A_HIGHHIP", "objectType": "line", "firstPoint": "A", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            }, 
+                            { "derivedName": "Line_B_HIGHHIP", "objectType": "line", "firstPoint": "B", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
+                            { "derivedName": "Line_A_HIGHHIP", "objectType": "line", "firstPoint": "A", "secondPoint": "HIGHHIP", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
                             {
                               "name": "A2",
                               "objectType": "pointAlongLine",
@@ -360,15 +363,15 @@
                               "color": "black",
                               "mx": 0.450925,
                               "my": -0.530441,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A18",
                               "objectType": "pointAlongLine",
@@ -378,15 +381,15 @@
                               "color": "black",
                               "mx": -1.74099,
                               "my": -0.5499,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A6",
                               "objectType": "pointAlongPerpendicular",
@@ -396,11 +399,11 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 0 },
-                              "length":
+                              "length": 
                                 { "constant": 2 }
-                            },
+                            }, 
                             {
                               "name": "A13",
                               "objectType": "pointAlongPerpendicular",
@@ -410,11 +413,11 @@
                               "color": "black",
                               "mx": -1.65084,
                               "my": 0.534754,
-                              "angle":
+                              "angle": 
                                 { "constant": 180 },
-                              "length":
+                              "length": 
                                 { "constant": 2 }
-                            },
+                            }, 
                             {
                               "name": "A14",
                               "objectType": "pointAlongLine",
@@ -424,15 +427,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A15",
                               "objectType": "pointAlongLine",
@@ -442,17 +445,17 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 } ]
+                                    }
                                 }
-                              }
-                            },
-                            { "derivedName": "Spl_CB4_A", "objectType": "splineUsingPoints", "point1": "CB4", "point2": "A14", "point3": "A13", "point4": "A", "color": "black" },
-                            { "derivedName": "Spl_B_CF4", "objectType": "splineUsingPoints", "point1": "B", "point2": "A6", "point3": "A15", "point4": "CF4", "color": "black" },
+                            }, 
+                            { "derivedName": "Spl_CB4_A", "objectType": "splineUsingPoints", "point1": "CB4", "point2": "A14", "point3": "A13", "point4": "A", "color": "black" }, 
+                            { "derivedName": "Spl_B_CF4", "objectType": "splineUsingPoints", "point1": "B", "point2": "A6", "point3": "A15", "point4": "CF4", "color": "black" }, 
                             {
                               "name": "F",
                               "objectType": "pointEndLine",
@@ -461,14 +464,14 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_f" }
-                              }
-                            },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_f" }
+                                }
+                            }, 
                             {
                               "name": "G",
                               "objectType": "pointEndLine",
@@ -477,17 +480,17 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 180 },
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "M",
                               "objectType": "pointAlongLine",
@@ -497,15 +500,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "N",
                               "objectType": "pointAlongLine",
@@ -515,24 +518,24 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter":
-                                    [
-                                      {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
-                                      },
-                                      { "operationType": "Integer value", "integerValue": 2 }
-                                    ]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter":
+                                      [
+                                        {
+                                          "operationType": "divide",
+                                          "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 } ]
+                                        }, 
+                                        { "operationType": "Integer value", "integerValue": 2 }
+                                      ]
+                                    }
                                 }
-                              }
-                            },
-                            { "name": "A20", "objectType": "perpendicularPointAlongLine", "basePoint": "G", "p1Line1": "CF1", "p2Line1": "LOWHIP", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 },
-                            { "name": "A21", "objectType": "pointLineIntersect", "p1Line1": "G", "p2Line1": "A20", "p1Line2": "CF", "p2Line2": "A0", "mx": 0.584479, "my": -2.12935 },
+                            }, 
+                            { "name": "A20", "objectType": "perpendicularPointAlongLine", "basePoint": "G", "p1Line1": "CF1", "p2Line1": "LOWHIP", "lineStyle": "dotLine", "color": "cornflowerblue", "mx": 0.132292, "my": 0.264583 }, 
+                            { "name": "A21", "objectType": "pointLineIntersect", "p1Line1": "G", "p2Line1": "A20", "p1Line2": "CF", "p2Line2": "A0", "mx": 0.584479, "my": -2.12935 }, 
                             {
                               "name": "H",
                               "objectType": "pointAlongLine",
@@ -542,9 +545,9 @@
                               "color": "black",
                               "mx": -1.09127,
                               "my": 0.237984,
-                              "length":
+                              "length": 
                                 { "constant": 0.3 }
-                            },
+                            }, 
                             {
                               "name": "I",
                               "objectType": "pointEndLine",
@@ -553,14 +556,14 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 270 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_b" }
-                              }
-                            },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_b" }
+                                }
+                            }, 
                             {
                               "name": "J",
                               "objectType": "pointAlongLine",
@@ -570,15 +573,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "K",
                               "objectType": "pointEndLine",
@@ -587,14 +590,14 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 0 },
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }
-                              }
-                            },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }
+                                }
+                            }, 
                             {
                               "name": "L",
                               "objectType": "pointEndLine",
@@ -603,19 +606,19 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 0 },
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
-                            { "derivedName": "Line_K_E", "objectType": "line", "firstPoint": "K", "secondPoint": "E", "lineStyle": "dotLine", "color": "cornflowerblue" },
-                            { "derivedName": "Line_E_H", "objectType": "line", "firstPoint": "E", "secondPoint": "H", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            }, 
+                            { "derivedName": "Line_K_E", "objectType": "line", "firstPoint": "K", "secondPoint": "E", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
+                            { "derivedName": "Line_E_H", "objectType": "line", "firstPoint": "E", "secondPoint": "H", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
                             {
                               "name": "P",
                               "objectType": "pointAlongLine",
@@ -625,15 +628,15 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "divide",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A23",
                               "objectType": "pointIntersectLineAndAxis",
@@ -644,9 +647,9 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 90 }
-                            },
+                            }, 
                             {
                               "name": "A24",
                               "objectType": "pointIntersectLineAndAxis",
@@ -657,10 +660,10 @@
                               "color": "cornflowerblue",
                               "mx": -2.36804,
                               "my": -0.400398,
-                              "angle":
+                              "angle": 
                                 { "constant": 90 }
-                            },
-                            { "derivedName": "Line_H_G", "objectType": "line", "firstPoint": "H", "secondPoint": "G", "lineStyle": "hair", "color": "black" },
+                            }, 
+                            { "derivedName": "Line_H_G", "objectType": "line", "firstPoint": "H", "secondPoint": "G", "lineStyle": "hair", "color": "black" }, 
                             {
                               "name": "A25",
                               "objectType": "pointAlongPerpendicular",
@@ -670,11 +673,11 @@
                               "color": "cornflowerblue",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "angle":
+                              "angle": 
                                 { "constant": 0 },
-                              "length":
+                              "length": 
                                 { "constant": 2 }
-                            },
+                            }, 
                             {
                               "name": "A26",
                               "objectType": "pointAlongLine",
@@ -684,15 +687,15 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "add",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "add",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "name": "A27",
                               "objectType": "pointAlongLine",
@@ -702,119 +705,119 @@
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "add",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "add",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "derivedName": "Spl_H_E",
                               "objectType": "splinePathInteractive",
                               "color": "black",
                               "pathNode":
-                                [
-                                  {
-                                    "point": "H",
-                                    "angle1":
-                                      { "constant": 282.875 },
-                                    "length1":
-                                      { "constant": 0 },
-                                    "angle2":
-                                      { "constant": 102.875 },
-                                    "length2":
-                                      { "constant": 1.60328 }
-                                  },
-                                  {
-                                    "point": "A27",
-                                    "angle1":
-                                      { "constant": 342.836 },
-                                    "length1":
-                                      { "constant": 1.85882 },
-                                    "angle2":
-                                      { "constant": 162.836 },
-                                    "length2":
-                                      { "constant": 1.6358 }
-                                  },
-                                  {
-                                    "point": "A26",
-                                    "angle1":
-                                      { "constant": 352.893 },
-                                    "length1":
-                                      { "constant": 2.82988 },
-                                    "angle2":
-                                      { "constant": 172.893 },
-                                    "length2":
-                                      { "constant": 2.80839 }
-                                  },
-                                  {
-                                    "point": "E",
-                                    "angle1":
-                                      { "constant": 30.4526 },
-                                    "length1":
-                                      { "constant": 1.91074 },
-                                    "angle2":
-                                      { "constant": 210.453 },
-                                    "length2":
-                                      { "constant": 0.501398 }
-                                  }
-                                ]
-                            },
+                              [
+                                {
+                                  "point": "H",
+                                  "angle1": 
+                                    { "constant": 282.875 },
+                                  "length1": 
+                                    { "constant": 0 },
+                                  "angle2": 
+                                    { "constant": 102.875 },
+                                  "length2": 
+                                    { "constant": 1.60328 }
+                                }, 
+                                {
+                                  "point": "A27",
+                                  "angle1": 
+                                    { "constant": 342.836 },
+                                  "length1": 
+                                    { "constant": 1.85882 },
+                                  "angle2": 
+                                    { "constant": 162.836 },
+                                  "length2": 
+                                    { "constant": 1.6358 }
+                                }, 
+                                {
+                                  "point": "A26",
+                                  "angle1": 
+                                    { "constant": 352.893 },
+                                  "length1": 
+                                    { "constant": 2.82988 },
+                                  "angle2": 
+                                    { "constant": 172.893 },
+                                  "length2": 
+                                    { "constant": 2.80839 }
+                                }, 
+                                {
+                                  "point": "E",
+                                  "angle1": 
+                                    { "constant": 30.4526 },
+                                  "length1": 
+                                    { "constant": 1.91074 },
+                                  "angle2": 
+                                    { "constant": 210.453 },
+                                  "length2": 
+                                    { "constant": 0.501398 }
+                                }
+                              ]
+                            }, 
                             {
                               "derivedName": "Spl_E_L",
                               "objectType": "splinePathInteractive",
                               "color": "black",
                               "pathNode":
-                                [
-                                  {
-                                    "point": "E",
-                                    "angle1":
-                                      { "constant": 30.4471 },
-                                    "length1":
-                                      { "constant": 0 },
-                                    "angle2":
-                                      { "constant": 210.447 },
-                                    "length2":
-                                      { "constant": 2.00851 }
-                                  },
-                                  {
-                                    "point": "A25",
-                                    "angle1":
-                                      { "constant": 32.4078 },
-                                    "length1":
-                                      { "constant": 3.34387 },
-                                    "angle2":
-                                      { "constant": 212.408 },
-                                    "length2":
-                                      { "constant": 3.34387 }
-                                  },
-                                  {
-                                    "point": "K",
-                                    "angle1":
-                                      { "constant": 39.2154 },
-                                    "length1":
-                                      { "constant": 2.38212 },
-                                    "angle2":
-                                      { "constant": 219.215 },
-                                    "length2":
-                                      { "constant": 2.2051 }
-                                  },
-                                  {
-                                    "point": "L",
-                                    "angle1":
-                                      { "constant": 87.1899 },
-                                    "length1":
-                                      { "constant": 1.3038 },
-                                    "angle2":
-                                      { "constant": 267.19 },
-                                    "length2":
-                                      { "constant": 1.3038 }
-                                  }
-                                ]
-                            },
+                              [
+                                {
+                                  "point": "E",
+                                  "angle1": 
+                                    { "constant": 30.4471 },
+                                  "length1": 
+                                    { "constant": 0 },
+                                  "angle2": 
+                                    { "constant": 210.447 },
+                                  "length2": 
+                                    { "constant": 2.00851 }
+                                }, 
+                                {
+                                  "point": "A25",
+                                  "angle1": 
+                                    { "constant": 32.4078 },
+                                  "length1": 
+                                    { "constant": 3.34387 },
+                                  "angle2": 
+                                    { "constant": 212.408 },
+                                  "length2": 
+                                    { "constant": 3.34387 }
+                                }, 
+                                {
+                                  "point": "K",
+                                  "angle1": 
+                                    { "constant": 39.2154 },
+                                  "length1": 
+                                    { "constant": 2.38212 },
+                                  "angle2": 
+                                    { "constant": 219.215 },
+                                  "length2": 
+                                    { "constant": 2.2051 }
+                                }, 
+                                {
+                                  "point": "L",
+                                  "angle1": 
+                                    { "constant": 87.1899 },
+                                  "length1": 
+                                    { "constant": 1.3038 },
+                                  "angle2": 
+                                    { "constant": 267.19 },
+                                  "length2": 
+                                    { "constant": 1.3038 }
+                                }
+                              ]
+                            }, 
                             {
                               "name": "A32",
                               "objectType": "pointAlongLine",
@@ -824,15 +827,15 @@
                               "color": "black",
                               "mx": 0.844706,
                               "my": 0.162951,
-                              "length":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }
-                              }
-                            },
-                            { "derivedName": "Line_CF3_LOWWAIST", "objectType": "line", "firstPoint": "CF3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" },
-                            { "derivedName": "Line_CB3_LOWWAIST", "objectType": "line", "firstPoint": "CB3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" },
-                            { "derivedName": "Line_A2_A32", "objectType": "line", "firstPoint": "A2", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                              "length": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }
+                                }
+                            }, 
+                            { "derivedName": "Line_CF3_LOWWAIST", "objectType": "line", "firstPoint": "CF3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
+                            { "derivedName": "Line_CB3_LOWWAIST", "objectType": "line", "firstPoint": "CB3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
+                            { "derivedName": "Line_A2_A32", "objectType": "line", "firstPoint": "A2", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
                             {
                               "name": "A16",
                               "objectType": "pointEndLine",
@@ -841,14 +844,14 @@
                               "color": "cornflowerblue",
                               "mx": -1.83745,
                               "my": -0.410825,
-                              "angle":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A2", "drawingObject2": "A32" }
-                              },
-                              "length":
+                              "angle": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A2", "drawingObject2": "A32" }
+                                },
+                              "length": 
                                 { "constant": 3 }
-                            },
+                            }, 
                             {
                               "name": "A19",
                               "objectType": "pointAlongLine",
@@ -858,16 +861,16 @@
                               "color": "cornflowerblue",
                               "mx": -1.82464,
                               "my": -0.516674,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
-                            { "derivedName": "Line_A18_A32", "objectType": "line", "firstPoint": "A18", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" },
+                            }, 
+                            { "derivedName": "Line_A18_A32", "objectType": "line", "firstPoint": "A18", "secondPoint": "A32", "lineStyle": "dotLine", "color": "cornflowerblue" }, 
                             {
                               "name": "A31",
                               "objectType": "pointEndLine",
@@ -876,14 +879,14 @@
                               "color": "cornflowerblue",
                               "mx": 0.365122,
                               "my": -0.406339,
-                              "angle":
-                              {
-                                "expression":
-                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A18", "drawingObject2": "A32" }
-                              },
-                              "length":
+                              "angle": 
+                                {
+                                  "expression": 
+                                    { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A18", "drawingObject2": "A32" }
+                                },
+                              "length": 
                                 { "constant": 3 }
-                            },
+                            }, 
                             {
                               "name": "A33",
                               "objectType": "pointAlongLine",
@@ -893,34 +896,34 @@
                               "color": "cornflowerblue",
                               "mx": 0.365305,
                               "my": -0.467166,
-                              "length":
-                              {
-                                "expression":
+                              "length": 
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "expression": 
+                                    {
+                                      "operationType": "multiply",
+                                      "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 } ]
+                                    }
                                 }
-                              }
-                            },
+                            }, 
                             {
                               "derivedName": "Spl_A_E",
                               "objectType": "splinePathUsingPoints",
                               "lineStyle": "hair",
                               "color": "black",
-                              "pathNode": [{ "point": "A" }, { "point": "A2" }, { "point": "A19" }, { "point": "C" }, { "point": "A16" }, { "point": "A32" }, { "point": "E" }]
-                            },
+                              "pathNode": [{ "point": "A" }, { "point": "A2" }, { "point": "A19" }, { "point": "C" }, { "point": "A16" }, { "point": "A32" }, { "point": "E" } ]
+                            }, 
                             {
                               "derivedName": "Spl_B_E",
                               "objectType": "splinePathUsingPoints",
                               "lineStyle": "hair",
                               "color": "black",
-                              "pathNode": [{ "point": "B" }, { "point": "A18" }, { "point": "A33" }, { "point": "D" }, { "point": "A31" }, { "point": "A32" }, { "point": "E" }]
+                              "pathNode": [{ "point": "B" }, { "point": "A18" }, { "point": "A33" }, { "point": "D" }, { "point": "A31" }, { "point": "A32" }, { "point": "E" } ]
                             }
                           ]
-                      }
-                    ]
+                        }
+                      ]
+                    }
                 }
-              }
               , 'v343110_graph1', { interactionPrefix: 'RF346740' });
           </script>
         </div>

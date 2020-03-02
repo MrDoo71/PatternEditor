@@ -72,7 +72,7 @@ class GeoLine {
             throw "GeoLine p1 not defined.";
 
         if ( ! p2 )
-            throw "GeoLine p1 not defined.";
+            throw "GeoLine p2 not defined.";
 
         this.p1 = p1;//new GeoPoint( x1, y1 );
         this.p2 = p2;//new GeoPoint( x2, y2 );
@@ -151,12 +151,16 @@ class GeoLine {
             var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000, (this.angleDeg() - arc.rotationAngle) ) );
 
             arcSI = nrArc.asShapeInfo();
+            
+            var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
             lineSI = lineRotated.asShapeInfo();    
         }
         else
         {
             arcSI = arc.asShapeInfo();
-            lineSI = this.asShapeInfo();    
+
+            var extendedLine = new GeoLine( this.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, this.angle ), this.p2 );
+            lineSI = extendedLine.asShapeInfo();    
         }
 
         //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
@@ -168,7 +172,22 @@ class GeoLine {
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
 
-        var whichPoint = intersections.points.length -1; //TODO do this properly
+        var whichPoint = 0;
+        if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
+        {
+            //choose the point with the smallest angle. 
+            var smallestAngle = 361;
+            for (var i = 0; i < intersections.points.length; i++) 
+            {
+                var pi = intersections.points[i];
+                var p1pi = new GeoLine( this.p1, pi );
+                if ( p1pi.angleDeg() < smallestAngle )
+                {
+                    smallestAngle = p1pi.angleDeg();
+                    whichPoint = i;
+                }
+            }
+        }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
@@ -219,6 +238,7 @@ class GeoLine {
 }
 
 
+//An arc of a circle
 class GeoArc {
 
     //center
@@ -231,8 +251,6 @@ class GeoArc {
         this.radius = radius;
         this.angle1 = angle1;
         this.angle2 = angle2;
-        //radius2
-        //rotationAngle
 
         //Correct 180-0 to 180-360
         if ( this.angle2 < this.angle1 )
@@ -320,20 +338,22 @@ class GeoArc {
 
 
     asShapeInfo()
-    {        
-        var angle1, angle2;
-        if ( this.angle1 > this.angle2 )
+    {  
+        if (( this.angle1 == 0 ) && ( this.angle2 == 360 ))
+            return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
+
+        //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
+        var angle1 = 360 - this.angle1;
+        var angle2 = 360 - this.angle2;
+
+        if ( angle2 < angle1 )
         {
-            angle1 = this.angle1;
-            angle2 = this.angle2;
+            var t = angle2;
+            angle2 = angle1;
+            angle1 = t;
         }
-        else
-        {
-            angle1 = this.angle2;
-            angle2 = this.angle1;
-        }
-        //create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
-        return ShapeInfo.arc( this.center.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
+                
+        return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
 }
 

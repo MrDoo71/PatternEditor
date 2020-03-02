@@ -6,394 +6,6 @@ console.log("Loading patterneditor.js" );
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 
 
-class Expression {
-
-    constructor(data, pattern, patternPiece) {
-        this.dataDebug = data;
-        this.operation = data.operationType;
-        this.pattern = pattern;
-        this.patternPiece = patternPiece;
-
-        //divide, multiply etc. and functions too
-        if (typeof data.parameter !== "undefined") 
-        {
-            this.params = data.parameter;
-            for (var a = 0; a < this.params.length; a++) {
-                var p = this.params[a];
-                this.params[a] = new Expression(p, pattern, patternPiece);
-            }            
-        }
-
-        //integer constant
-        if (typeof data.integerValue !== "undefined") 
-        {
-            this.constant = data.integerValue;
-            this.value = this.constantValue; //eh?
-        }
-        else if (typeof data.decimalValue !== "undefined") 
-        {
-            this.constant = data.decimalValue;
-            this.value = this.constantValue; //eh?
-        }
-        else if (data.operationType === "Variable") 
-        {
-            if (data.variableType === "Keyword")
-            {
-                this.variable = data.keyword;
-                this.value = this.keywordValue;
-            }
-            else if (data.variableType === "Increment")
-            {
-                this.variable = pattern.getIncrement( data.incrementVar );
-                this.value = this.incrementValue;
-            }
-            else if ( data.measurement )
-            {
-                this.variable = pattern.getMeasurement( data.measurement );
-                this.value = this.measurementValue;
-            }
-            else if ( data.variableType === "angleOfLine" )
-            {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }
-            else if ( data.variableType === "lengthOfLine" )
-            {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }
-            else if (    ( data.variableType === "lengthOfSplinePath" )
-                      || ( data.variableType === "lengthOfSpline" ) )
-            {
-                if ( data.drawingObject1 && data.drawingObject2 )
-                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
-                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
-                else
-                    //this is the spline drawing object itself, the curve comes directly from it. 
-                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
-
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }            
-            else if ( data.variableType === "lengthOfArc" )
-            {
-                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
-                this.arcSelection = data.arcSelection;
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }            
-            else 
-                throw "Unsupported variableType:" + data.variableType;
-        }
-        else if ( typeof data.functionName !== "undefined" )
-        {
-            this.function = data.functionName;
-            this.value = this.functionValue;
-            //having done the parameters earlier. 
-        }
-        else if ( this.operationType !== "undefined" )
-        {
-            //add, multiply etc.
-            this.value = this.operationValue;
-        }
-        else throw "Unsupported expression." ;
-    }
-
-    
-    incrementValue() {
-        return this.variable.value();
-    }    
-
-
-    measurementValue() {
-        //console.log("Measurement units " + this.variable.units );
-        //console.log("Pattern units " + this.pattern.units );
-        var measurementUnits = this.variable.units;
-        var patternUnits = this.pattern.units;
-        if ( measurementUnits === patternUnits )
-            return this.variable.value();
-
-        var mm = 1;
-        if ( measurementUnits === "cm" )
-            mm = 10;
-        else if ( measurementUnits === "inch" )
-            mm = 25.4;
-
-        var pp = mm;
-
-        if ( patternUnits === "cm" )
-            pp = mm / 10;
-        else if ( patternUnits === "inch" )
-            pp = mm / 25.4;
-
-        return pp * this.variable.value();
-    }    
-
-
-    functionValue(currentLength) {
-        if ( this.function === "angleOfLine" )
-        {
-            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
-            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
-            var line = new GeoLine( point1, point2 );
-            var deg = line.angleDeg();
-            if ( deg < 0 )
-                deg += 360; 
-            return deg;
-        }
-        else if ( this.function === "lengthOfLine" )
-        {
-            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
-            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
-            var line = new GeoLine( point1, point2 );
-            return line.getLength();
-        }
-        else if (    ( this.function === "lengthOfSplinePath" )
-                  || ( this.function === "lengthOfSpline" ) )
-        {
-            return this.drawingObject.curve.pathLength();
-        }        
-        else if ( this.function === "lengthOfArc" )
-        {
-            if ( this.arcSelection === "wholeArc")
-                return this.drawingObject.arc.pathLength();
-            else
-            {
-                //this.drawingObject is a cut object
-                var arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
-
-                //where in the arc is this.drawingObject.curve?
-                var radiusToIntersectLine = new GeoLine( arcDrawingObject.center.p, this.drawingObject.p );
-                var angleToIntersectRad = radiusToIntersectLine.angle;
-                if ( this.arcSelection === "beforeArcCut")
-                {
-                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
-                    {
-                        //else elliptical arc: from the arc's start angle to this cut angle. 
-                        const cutArc = arcDrawingObject.arc.clone();
-                        cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
-                        if ( cutArc.angle2 < 0 )
-                            cutArc.angle2 += 360;
-                        return cutArc.pathLength();
-                    }
-                    else //if arc
-                    {
-                        var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
-                        var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
-                        var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
-                        return length;
-                    }                    
-                }
-                else //afterArcCut
-                {
-                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
-                    {
-                        const cutArc = arcDrawingObject.arc.clone();
-                        cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
-                        if ( cutArc.angle1 < 0 )
-                            cutArc.angle1 += 360;
-                        return cutArc.pathLength();
-                    }
-                    else //if arc
-                    {
-                        var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
-                        var segmentRad = arcEndAngleRad - angleToIntersectRad;
-                        var length = radiusToIntersectLine.length * segmentRad;
-                        return length;
-                    }
-                }
-            }
-        }        
-        else if  ( this.function === "sqrt" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            return Math.sqrt( p1 ); 
-        }
-        else if  ( this.function === "-" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            return -p1; 
-        }
-        else throw ("Unknown function: " + this.function );
-    }
-    
-
-    constantValue() {
-        return this.constant;
-    }
-
-
-    operationValue(currentLength) {
-
-        if (typeof this.params[0].value !== "function")
-            throw "expression p1 not valid";
-
-        if ( this.operation !== "parenthesis" )    
-        {
-            if (typeof this.params[1].value !== "function")
-                throw "expression p2 not valid";
-        }
-
-        if (this.operation === "add")
-            return this.params[0].value(currentLength) + this.params[1].value(currentLength);
-
-        else if (this.operation === "subtract")
-            return this.params[0].value(currentLength) - this.params[1].value(currentLength);
-
-        else if (this.operation === "multiply")
-            return this.params[0].value(currentLength) * this.params[1].value(currentLength);
-
-        else if (this.operation === "divide")
-            return this.params[0].value(currentLength) / this.params[1].value(currentLength);
-            
-        else if (this.operation === "equalTo")
-            return this.params[0].value(currentLength) == this.params[1].value(currentLength);
-
-        else if (this.operation === "notEqualTo")
-            return this.params[0].value(currentLength) != this.params[1].value(currentLength);
-
-        else if (this.operation === "lessThan")
-            return this.params[0].value(currentLength) < this.params[1].value(currentLength);
-
-        else if (this.operation === "lessThanOrEqualTo")
-            return this.params[0].value(currentLength) <= this.params[1].value(currentLength);
-            
-        else if (this.operation === "greaterThan")
-            return this.params[0].value(currentLength) > this.params[1].value(currentLength);
-
-        else if (this.operation === "greaterThanOrEqualTo")
-            return this.params[0].value(currentLength) >= this.params[1].value(currentLength);
-
-        else if (this.operation === "parenthesis")
-            return this.params[0].value(currentLength);
-
-        else if  ( this.operation === "power" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            var p2 = this.params[1].value(currentLength);
-            return Math.pow( p1, p2 );
-        }    
-        else if (this.operation === "ternary")
-        {
-            var conditionTestResult = this.params[0].value(currentLength);
-            if ( conditionTestResult )
-                return this.params[1].value(currentLength);
-            else
-                return this.params[2].value(currentLength);
-        }
-
-
-        throw ("Unknown operation: " + this.operation);
-    }
-
-
-    keywordValue(currentLength) {
-        if (this.variable === "CurrentLength")
-            return currentLength;
-        throw ("Unknown keyword: " + this.variable);
-    }
-
-
-    html( asFormula ) {
-
-        if ( ! asFormula )
-        {
-            try { 
-                return Number.parseFloat( this.value() ).toPrecision(4); 
-            } catch ( e ) {
-                return "???"
-            }
-        }
-
-        if ( this.variable )
-            return this.variable.name;
-
-        if ( this.constant )
-            return this.constant;
-
-        if ( this.function )
-        {
-            if ( this.function === "lengthOfLine" )
-                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
-            if ( this.function === "angleOfLine" )
-                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
-            if ( this.function === "lengthOfSpline" )
-                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
-            if ( this.function === "lengthOfSplinePath" )
-                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
-            else
-                return "UNKNOWN FUNCTION TYPE" + this.function;
-        }
-
-        if ( this.operation ) 
-        {
-            var useOperatorNotation = false;
-
-            if (this.operation === "add") 
-                useOperatorNotation = " + ";
-
-            if (this.operation === "subtract") 
-                useOperatorNotation = " - ";
-
-            if (this.operation === "divide") 
-                useOperatorNotation = " / ";
-
-            if (this.operation === "multiply") 
-                useOperatorNotation = " * ";
-                
-            var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";
-            var first = true;
-            for ( var p in this.params )
-            {
-                if ( ! first )
-                {
-                    if ( useOperatorNotation )
-                        t += useOperatorNotation;
-                    else
-                        t += ",";
-                }
-                t += this.params[p].html( asFormula );
-                first = false;
-            }
-            t += ")";
-            return t;
-        }
-
-        return "UNKNOWN EXPRESSION TYPE";
-    };
-
-
-    //The dependencies of this expression need adding to the source drawingObject that uses this expression
-    addDependencies( source, dependencies ) 
-    {
-        if ( typeof this.drawingObject1 !== "undefined" )
-            dependencies.add( source, this.drawingObject1 );
-
-        if ( typeof this.drawingObject2 !== "undefined" )
-            dependencies.add( source, this.drawingObject2 );
-
-        if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
-            dependencies.add( source, this.drawingObject );
-
-        //recurse into the expression parameters.
-        if ( this.params )
-        {       
-            for (var a = 0; a < this.params.length; a++) {
-                var p = this.params[a];
-                p.addDependencies( source, dependencies );
-            }
-        }
-
-        //TODO also add dependencies on measurements and increments and (optionally) show these in the list too. 
-    }
-}
-
-
-
 //(c) Copyright 2019 Jason Dore
 //Inspired by the excellent seamly2D/Valentina (XXX ref) developed by Roman/Susan etc.
 //this is a ground up implementation in Javascript intended to be compatible with, but
@@ -468,7 +80,7 @@ class GeoLine {
             throw "GeoLine p1 not defined.";
 
         if ( ! p2 )
-            throw "GeoLine p1 not defined.";
+            throw "GeoLine p2 not defined.";
 
         this.p1 = p1;//new GeoPoint( x1, y1 );
         this.p2 = p2;//new GeoPoint( x2, y2 );
@@ -547,12 +159,16 @@ class GeoLine {
             var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000, (this.angleDeg() - arc.rotationAngle) ) );
 
             arcSI = nrArc.asShapeInfo();
+            
+            var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
             lineSI = lineRotated.asShapeInfo();    
         }
         else
         {
             arcSI = arc.asShapeInfo();
-            lineSI = this.asShapeInfo();    
+
+            var extendedLine = new GeoLine( this.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, this.angle ), this.p2 );
+            lineSI = extendedLine.asShapeInfo();    
         }
 
         //var path = ShapeInfo.path("M40,70 Q50,150 90,90 T135,130 L160,70 C180,180 280,55 280,140 S400,110 290,100");
@@ -564,7 +180,22 @@ class GeoLine {
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
 
-        var whichPoint = intersections.points.length -1; //TODO do this properly
+        var whichPoint = 0;
+        if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
+        {
+            //choose the point with the smallest angle. 
+            var smallestAngle = 361;
+            for (var i = 0; i < intersections.points.length; i++) 
+            {
+                var pi = intersections.points[i];
+                var p1pi = new GeoLine( this.p1, pi );
+                if ( p1pi.angleDeg() < smallestAngle )
+                {
+                    smallestAngle = p1pi.angleDeg();
+                    whichPoint = i;
+                }
+            }
+        }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
@@ -615,6 +246,7 @@ class GeoLine {
 }
 
 
+//An arc of a circle
 class GeoArc {
 
     //center
@@ -627,8 +259,6 @@ class GeoArc {
         this.radius = radius;
         this.angle1 = angle1;
         this.angle2 = angle2;
-        //radius2
-        //rotationAngle
 
         //Correct 180-0 to 180-360
         if ( this.angle2 < this.angle1 )
@@ -716,20 +346,22 @@ class GeoArc {
 
 
     asShapeInfo()
-    {        
-        var angle1, angle2;
-        if ( this.angle1 > this.angle2 )
+    {  
+        if (( this.angle1 == 0 ) && ( this.angle2 == 360 ))
+            return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
+
+        //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
+        var angle1 = 360 - this.angle1;
+        var angle2 = 360 - this.angle2;
+
+        if ( angle2 < angle1 )
         {
-            angle1 = this.angle1;
-            angle2 = this.angle2;
+            var t = angle2;
+            angle2 = angle1;
+            angle1 = t;
         }
-        else
-        {
-            angle1 = this.angle2;
-            angle2 = this.angle1;
-        }
-        //create(ShapeInfo.ARC, args, ["center", "radiusX", "radiusY", "startRadians", "endRadians"]);
-        return ShapeInfo.arc( this.center.asPoint2D(), this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
+                
+        return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
 }
 
@@ -1045,7 +677,10 @@ class DrawingObject /*abstract*/ {
     refOf( anotherDrawingObject ) {
         if ( ! anotherDrawingObject )
             return "???";
-            
+
+        if ( ! anotherDrawingObject.ref )
+            return "????";
+
         return anotherDrawingObject.ref();
     }
 
@@ -1171,7 +806,7 @@ class ArcElliptical extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'elliptical arc with center ' + this.data.center.ref()
+                + 'elliptical arc with center ' + this.refOf( this.data.center )
                 + " radius-x " + this.data.radius1.html( asFormula ) 
                 + " radius-y " + this.data.radius2.html( asFormula ) 
                 + " from angle " + this.data.angle1.html( asFormula ) 
@@ -1261,7 +896,7 @@ class ArcSimple extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'arc with center ' + this.center.ref() 
+                + 'arc with center ' + this.refOf( this.center )
                 + " radius " + this.radius.html( asFormula ) 
                 + " from angle " + this.angle1.html( asFormula ) 
                 + " to " + this.angle2.html( asFormula );
@@ -1311,7 +946,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " along curve " + this.curve.ref();
+                + " along curve " + this.refOf( this.curve );
     }
 
 
@@ -1368,7 +1003,7 @@ class Line extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.firstPoint.ref() + " - " + this.secondPoint.ref();
+        return 'line ' + this.refOf( this.firstPoint ) + " - " + this.refOf( this.secondPoint.ref );
     }
 
 
@@ -1411,7 +1046,7 @@ class OperationFlipByAxis extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'Flip operation: axis:' + this.axis 
-                + " around " + this.center.ref() 
+                + " around " + this.refOf( this.center ) 
                          //" angle:" + this.data.angle.value() +
                 + " suffix:" + this.data.suffix;
     }
@@ -1588,7 +1223,7 @@ class OperationResult extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'Operation ' + this.refOf( this.fromOperation )
-                + ' on ' + this.basePoint.ref(); 
+                + ' on ' + this.refOf( this.basePoint ); 
     }
 
 
@@ -1634,7 +1269,7 @@ class OperationRotate extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'Move rotate: ' 
-                + " center: " + this.center.ref() 
+                + " center: " + this.refOf( this.center ) 
                 + " angle:" + this.data.angle.html( asFormula ) 
                 + " suffix:" + this.data.suffix;
     }
@@ -1693,7 +1328,9 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: ';// + this.data.length.value() + " from " + this.firstPoint.data.name + " perpendicular to the line to " + this.secondPoint.data.name + " additional angle:" + this.data.angle.value();
+        return '<span class="ps-name">' + this.data.name + '</span>: '
+                + 'Point along line ' + this.refOf( this.firstPoint ) + ' - ' + this.refOf( this.secondPoint )
+                + ' where it is perpendicular to ' + this.refOf( this.basePoint );
     }
 
 
@@ -1754,10 +1391,10 @@ class PointAlongBisector extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " along line bisecting " + this.secondPoint.ref() 
-                + "-" + this.firstPoint.ref()
-                + " and " + this.secondPoint.ref() 
-                + "-" + this.thirdPoint.ref();
+                + " along line bisecting " + this.refOf( this.secondPoint ) 
+                + "-" + this.refOf( firstPoint )
+                + " and " + this.refOf( this.secondPoint ) 
+                + "-" + this.refOf( this.thirdPoint );
     }
 
 
@@ -1808,9 +1445,10 @@ class PointAlongLine extends DrawingObject {
 
 
     html( asFormula ) {
+        
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
-                + " along line from " + this.firstPoint.ref()
+                + this.data.length.html( asFormula, this.baseLine? this.baseLine.length : 0 ) 
+                + " along line from " + this.refOf( this.firstPoint )
                 + " to " + this.secondPoint.ref();
     }
 
@@ -1867,7 +1505,7 @@ class PointAlongPerpendicular extends DrawingObject {
     html( asFormula ) {
         var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " from " + this.firstPoint.ref() 
+                + " from " + this.refOf( this.firstPoint ) 
                 + " perpendicular to the line to " + this.secondPoint.ref();
 
         if (    ( this.data.angle.constant )
@@ -2016,7 +1654,7 @@ class PointEndLine extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.html( asFormula ) 
-                + " from " + this.basePoint.ref() 
+                + " from " + this.refOf( this.basePoint ) 
                 + " angle " + this.data.angle.html( asFormula );
     }
 
@@ -2074,7 +1712,7 @@ class PointFromArcAndTangent extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'point on arc ' + this.arc.ref() //derivedName?
-                + ' of tangent from point ' + this.tangent.ref()
+                + ' of tangent from point ' + this.refOf( this.tangent )
                 + ' crosspoint:' + this.crossPoint;
     }
 
@@ -2136,9 +1774,9 @@ class PointFromCircleAndTangent extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + 'point on circle with center ' + this.center.ref() 
+                + 'point on circle with center ' + this.refOf( this.center ) 
                 + ' radius ' + this.radius.html( asFormula ) 
-                + ' of tangent from point ' + this.tangent.ref()
+                + ' of tangent from point ' + this.refOf( this.tangent )
                 + ' crosspoint:' + this.crossPoint;
     }
 
@@ -2184,7 +1822,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.firstPoint.ref() +  " - " + this.secondPoint.ref();
+        return 'line ' + this.refOf( this.firstPoint ) +  " - " + this.secondPoint.ref();
     }
 
 
@@ -2227,29 +1865,12 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        try {
 
-            if ( this.arc.arc )
-                this.p = longLine.intersectArc( this.arc.arc );
-            else
-                this.p = longLine.intersectArc( this.arc.curve );
+        if ( this.arc.arc )
+            this.p = longLine.intersectArc( this.arc.arc );
+        else
+            this.p = longLine.intersectArc( this.arc.curve );
 
-        } catch (e) {
-
-            //try the line extending in the other direction!
-            let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, 180+angleDeg );
-            var longLine = new GeoLine( this.basePoint.p, otherPoint );
-            
-            if ( this.arc.arc )
-                this.p = longLine.intersectArc( this.arc.arc );
-            else
-                this.p = longLine.intersectArc( this.arc.curve );
-    
-        }
-        //    console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
-            //this.p = new GeoPoint(0,0);
-        //    this.error = "No intersections found. " + e.message ;
-        //}
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
@@ -2269,7 +1890,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect arc ' + this.arc.ref()
-                + " with line from " + this.basePoint.ref() 
+                + " with line from " + this.refOf( this.basePoint ) 
                 + " at angle " + this.angle.html( asFormula );
     }
 
@@ -2326,13 +1947,13 @@ class PointIntersectArcAndLine extends DrawingObject {
 
 
     html( asFormula ) {
-        //TODO use a better name for this.arc, e.g. Arc_A_nn
+        
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'intersect arc with center ' 
-                + this.center.ref() 
+                + this.refOf( this.center ) 
                 + ", radius " + this.radius.html( asFormula ) 
-                +  " with line " + this.firstPoint.ref() 
-                + "-" + this.secondPoint.ref();
+                +  " with line " + this.refOf( this.firstPoint ) 
+                + "-" + this.refOf( this.secondPoint );
     }
 
 
@@ -2605,7 +2226,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect curve ' + this.curve.ref() 
-                + " with line from " + this.basePoint.ref()
+                + " with line from " + this.refOf( this.basePoint )
                 + " at angle " + this.angle.html( asFormula );
     }
 
@@ -2761,9 +2382,9 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + ' intersection of ' + this.p1Line1.ref() 
-                + "-" + this.p2Line1.ref() 
-                + " with line from " + this.basePoint.ref() 
+                + ' intersection of ' + this.refOf( this.p1Line1 ) 
+                + "-" + this.refOf( this.p2Line1 ) 
+                + " with line from " + this.refOf( this.basePoint ) 
                 + " at angle " + this.angle.html( asFormula );
     }
 
@@ -2819,8 +2440,8 @@ class PointLineIntersect extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect ' + this.p1Line1.ref()
-                + "-" + this.p2Line1.ref() 
+                + 'intersect ' + this.refOf( this.p1Line1 )
+                + "-" + this.refOf( this.p2Line1 ) 
                 + " with " + this.p1Line2.ref() 
                 + "-" + this.p2Line2.ref();
     }
@@ -2888,9 +2509,9 @@ class PointOfTriangle extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + " Point along " + this.p1Line1.ref()
-                + "-" + this.p2Line1.ref()
-                + " that forms a right angle triangle with line  " + this.firstPoint.ref()
+                + " Point along " + this.refOf( this.p1Line1 )
+                + "-" + this.refOf( this.p2Line1 )
+                + " that forms a right angle triangle with line  " + this.refOf( this.firstPoint )
                 + "-" + this.secondPoint.ref();
     }
 
@@ -2955,8 +2576,8 @@ class PointShoulder extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-            + " Point along " + this.p1Line1.ref() 
-            + "-" + this.p2Line1.ref()
+            + " Point along " + this.refOf( this.p1Line1 ) 
+            + "-" + this.refOf( this.p2Line1 )
             + " being " + this.length.html( asFormula ) 
             + " from " + this.shoulderPoint.ref();
     }
@@ -3440,11 +3061,11 @@ class TrueDart extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + " True darts baseline " + this.p1Line1.ref()
-                + "-" + this.p2Line1.ref()
-                + " original dart " + this.point1.ref()
-                + "-" + this.point2.ref()
-                + "-" + this.point3.ref();
+                + " True darts baseline " + this.refOf( this.p1Line1 )
+                + "-" + this.refOf( this.p2Line1 )
+                + " original dart " + this.refOf( this.point1 )
+                + "-" + this.refOf( this.point2 )
+                + "-" + this.refOf( this.point3 );
     }
 
 
@@ -3841,8 +3462,8 @@ class PatternPiece {
             f.value = function (currentLength) {
                 return f.expression.value(currentLength);
             };
-            f.html = function( asFormula ) {
-                return f.expression.html( asFormula );
+            f.html = function( asFormula, currentLength ) {
+                return f.expression.html( asFormula, currentLength );
             };
         }
         return f;
@@ -4001,6 +3622,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     var focusDrawingObject = function( d, scrollTable )
     {
         if (    ( d3.event) 
+             && ( d3.event.originalTarget )
              && ( d3.event.originalTarget.className === "ps-ref" )
              && ( selectedObject == d )
              )
@@ -4486,4 +4108,429 @@ function curve(link) {
 
 
 export{ PatternPiece, doDrawing, doTable, drawPattern  };
+class Expression {
+
+    constructor(data, pattern, patternPiece) {
+        this.dataDebug = data;
+        this.operation = data.operationType;
+        this.pattern = pattern;
+        this.patternPiece = patternPiece;
+
+        //divide, multiply etc. and functions too
+        if (typeof data.parameter !== "undefined") 
+        {
+            this.params = data.parameter;
+            for (var a = 0; a < this.params.length; a++) {
+                var p = this.params[a];
+                this.params[a] = new Expression(p, pattern, patternPiece);
+            }            
+        }
+
+        //integer constant
+        if (typeof data.integerValue !== "undefined") 
+        {
+            this.constant = data.integerValue;
+            this.value = this.constantValue; //eh?
+        }
+        else if (typeof data.decimalValue !== "undefined") 
+        {
+            this.constant = data.decimalValue;
+            this.value = this.constantValue; //eh?
+        }
+        else if (data.operationType === "Variable") 
+        {
+            if (data.variableType === "Keyword")
+            {
+                this.variable = data.keyword;
+                this.value = this.keywordValue;
+            }
+            else if (data.variableType === "Increment")
+            {
+                this.variable = pattern.getIncrement( data.incrementVar );
+                this.value = this.incrementValue;
+            }
+            else if ( data.measurement )
+            {
+                this.variable = pattern.getMeasurement( data.measurement );
+                this.value = this.measurementValue;
+            }
+            else if ( data.variableType === "angleOfLine" )
+            {
+                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }
+            else if ( data.variableType === "lengthOfLine" )
+            {
+                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }
+            else if (    ( data.variableType === "lengthOfSplinePath" )
+                      || ( data.variableType === "lengthOfSpline" ) )
+            {
+                if ( data.drawingObject1 && data.drawingObject2 )
+                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
+                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                else
+                    //this is the spline drawing object itself, the curve comes directly from it. 
+                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
+            else if ( data.variableType === "lengthOfArc" )
+            {
+                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.arcSelection = data.arcSelection;
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
+            else 
+                throw "Unsupported variableType:" + data.variableType;
+        }
+        else if ( typeof data.functionName !== "undefined" )
+        {
+            this.function = data.functionName;
+            this.value = this.functionValue;
+            //having done the parameters earlier. 
+        }
+        else if ( this.operationType !== "undefined" )
+        {
+            //add, multiply etc.
+            this.value = this.operationValue;
+        }
+        else throw "Unsupported expression." ;
+    }
+
+    
+    incrementValue() {
+        return this.variable.value();
+    }    
+
+
+    measurementValue() {
+        //console.log("Measurement units " + this.variable.units );
+        //console.log("Pattern units " + this.pattern.units );
+        var measurementUnits = this.variable.units;
+        var patternUnits = this.pattern.units;
+        if ( measurementUnits === patternUnits )
+            return this.variable.value();
+
+        var mm = 1;
+        if ( measurementUnits === "cm" )
+            mm = 10;
+        else if ( measurementUnits === "inch" )
+            mm = 25.4;
+
+        var pp = mm;
+
+        if ( patternUnits === "cm" )
+            pp = mm / 10;
+        else if ( patternUnits === "inch" )
+            pp = mm / 25.4;
+
+        return pp * this.variable.value();
+    }    
+
+
+    functionValue(currentLength) {
+        if ( this.function === "angleOfLine" )
+        {
+            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+            var line = new GeoLine( point1, point2 );
+            var deg = line.angleDeg();
+            if ( deg < 0 )
+                deg += 360; 
+            return deg;
+        }
+        else if ( this.function === "lengthOfLine" )
+        {
+            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+            var line = new GeoLine( point1, point2 );
+            return line.getLength();
+        }
+        else if (    ( this.function === "lengthOfSplinePath" )
+                  || ( this.function === "lengthOfSpline" ) )
+        {
+            return this.drawingObject.curve.pathLength();
+        }        
+        else if ( this.function === "lengthOfArc" )
+        {
+            if ( this.arcSelection === "wholeArc")
+                return this.drawingObject.arc.pathLength();
+            else
+            {
+                //this.drawingObject is a cut object
+                var arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
+
+                //where in the arc is this.drawingObject.curve?
+                var radiusToIntersectLine = new GeoLine( arcDrawingObject.center.p, this.drawingObject.p );
+                var angleToIntersectRad = radiusToIntersectLine.angle;
+                if ( this.arcSelection === "beforeArcCut")
+                {
+                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                    {
+                        //else elliptical arc: from the arc's start angle to this cut angle. 
+                        const cutArc = arcDrawingObject.arc.clone();
+                        cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
+                        if ( cutArc.angle2 < 0 )
+                            cutArc.angle2 += 360;
+                        return cutArc.pathLength();
+                    }
+                    else //if arc
+                    {
+                        var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
+                        var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
+                        var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+                        return length;
+                    }                    
+                }
+                else //afterArcCut
+                {
+                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                    {
+                        const cutArc = arcDrawingObject.arc.clone();
+                        cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
+                        if ( cutArc.angle1 < 0 )
+                            cutArc.angle1 += 360;
+                        return cutArc.pathLength();
+                    }
+                    else //if arc
+                    {
+                        var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
+                        var segmentRad = arcEndAngleRad - angleToIntersectRad;
+                        var length = radiusToIntersectLine.length * segmentRad;
+                        return length;
+                    }
+                }
+            }
+        }        
+        else if  ( this.function === "sqrt" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.sqrt( p1 ); 
+        }
+        else if  ( this.function === "-" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return -p1; 
+        }
+        else throw ("Unknown function: " + this.function );
+    }
+    
+
+    constantValue() {
+        return this.constant;
+    }
+
+
+    operationValue(currentLength) {
+
+        if (typeof this.params[0].value !== "function")
+            throw "expression p1 not valid";
+
+        if ( this.operation !== "parenthesis" )    
+        {
+            if (typeof this.params[1].value !== "function")
+                throw "expression p2 not valid";
+        }
+
+        if (this.operation === "add")
+            return this.params[0].value(currentLength) + this.params[1].value(currentLength);
+
+        else if (this.operation === "subtract")
+            return this.params[0].value(currentLength) - this.params[1].value(currentLength);
+
+        else if (this.operation === "multiply")
+            return this.params[0].value(currentLength) * this.params[1].value(currentLength);
+
+        else if (this.operation === "divide")
+            return this.params[0].value(currentLength) / this.params[1].value(currentLength);
+            
+        else if (this.operation === "equalTo")
+            return this.params[0].value(currentLength) == this.params[1].value(currentLength);
+
+        else if (this.operation === "notEqualTo")
+            return this.params[0].value(currentLength) != this.params[1].value(currentLength);
+
+        else if (this.operation === "lessThan")
+            return this.params[0].value(currentLength) < this.params[1].value(currentLength);
+
+        else if (this.operation === "lessThanOrEqualTo")
+            return this.params[0].value(currentLength) <= this.params[1].value(currentLength);
+            
+        else if (this.operation === "greaterThan")
+            return this.params[0].value(currentLength) > this.params[1].value(currentLength);
+
+        else if (this.operation === "greaterThanOrEqualTo")
+            return this.params[0].value(currentLength) >= this.params[1].value(currentLength);
+
+        else if (this.operation === "parenthesis")
+            return this.params[0].value(currentLength);
+
+        else if  ( this.operation === "power" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            var p2 = this.params[1].value(currentLength);
+            return Math.pow( p1, p2 );
+        }    
+        else if (this.operation === "ternary")
+        {
+            var conditionTestResult = this.params[0].value(currentLength);
+            if ( conditionTestResult )
+                return this.params[1].value(currentLength);
+            else
+                return this.params[2].value(currentLength);
+        }
+
+
+        throw ("Unknown operation: " + this.operation);
+    }
+
+
+    keywordValue(currentLength) {
+        if (this.variable === "CurrentLength")
+            return currentLength;
+        throw ("Unknown keyword: " + this.variable);
+    }
+
+
+    html( asFormula, currentLength ) {
+
+        if ( ! asFormula )
+        {
+            try { 
+                return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
+            } catch ( e ) {
+                return "???"
+            }
+        }
+
+        if ( this.variable )
+        {
+            if (this.variable === "CurrentLength")
+                return "CurrentLength";
+
+            return this.variable.name;
+        }
+
+        if ( this.constant )
+            return this.constant;
+
+        if ( this.function )
+        {
+            if ( this.function === "lengthOfLine" )
+                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+
+            if ( this.function === "angleOfLine" )
+                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+
+            if ( this.function === "lengthOfSpline" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfSpline( ??? )";
+                
+                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+            };
+
+            if ( this.function === "lengthOfSplinePath" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfSplinePath( ??? )";
+
+                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
+            };
+
+            if ( this.function === "lengthOfArc" )
+            {
+                if ( ! this.drawingObject )
+                    return "lengthOfArc( ??? )";
+                
+                return "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")";
+            };
+
+            if ( this.function === "sqrt" )
+            {
+                return ( "sqrt(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            }
+
+            if ( this.function === "-" )
+            {
+                return ( "-(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            }            
+
+            //else
+            return "UNKNOWN FUNCTION TYPE" + this.function;
+        }
+
+        if ( this.operation ) 
+        {
+            var useOperatorNotation = false;
+
+            if (this.operation === "add") 
+                useOperatorNotation = " + ";
+
+            if (this.operation === "subtract") 
+                useOperatorNotation = " - ";
+
+            if (this.operation === "divide") 
+                useOperatorNotation = " / ";
+
+            if (this.operation === "multiply") 
+                useOperatorNotation = " * ";
+                
+            var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";
+            var first = true;
+            for ( var p in this.params )
+            {
+                if ( ! first )
+                {
+                    if ( useOperatorNotation )
+                        t += useOperatorNotation;
+                    else
+                        t += ",";
+                }
+                t += this.params[p].html( asFormula, currentLength );
+                first = false;
+            }
+            t += ")";
+            return t;
+        }
+
+        return "UNKNOWN EXPRESSION TYPE";
+    };
+
+
+    //The dependencies of this expression need adding to the source drawingObject that uses this expression
+    addDependencies( source, dependencies ) 
+    {
+        if ( typeof this.drawingObject1 !== "undefined" )
+            dependencies.add( source, this.drawingObject1 );
+
+        if ( typeof this.drawingObject2 !== "undefined" )
+            dependencies.add( source, this.drawingObject2 );
+
+        if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
+            dependencies.add( source, this.drawingObject );
+
+        //recurse into the expression parameters.
+        if ( this.params )
+        {       
+            for (var a = 0; a < this.params.length; a++) {
+                var p = this.params[a];
+                p.addDependencies( source, dependencies );
+            }
+        }
+
+        //TODO also add dependencies on measurements and increments and (optionally) show these in the list too. 
+    }
+}
+
+
+
 //# sourceMappingURL=patterneditor.js.map

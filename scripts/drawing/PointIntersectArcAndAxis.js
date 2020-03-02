@@ -31,29 +31,12 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        try {
 
-            if ( this.arc.arc )
-                this.p = longLine.intersectArc( this.arc.arc );
-            else
-                this.p = longLine.intersectArc( this.arc.curve );
+        if ( this.arc.arc )
+            this.p = longLine.intersectArc( this.arc.arc );
+        else
+            this.p = longLine.intersectArc( this.arc.curve );
 
-        } catch (e) {
-
-            //try the line extending in the other direction!
-            let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, 180+angleDeg );
-            var longLine = new GeoLine( this.basePoint.p, otherPoint );
-            
-            if ( this.arc.arc )
-                this.p = longLine.intersectArc( this.arc.arc );
-            else
-                this.p = longLine.intersectArc( this.arc.curve );
-    
-        }
-        //    console.log( "FAILED - PointIntersectArcAndAxis: " + d.name + " - " + e.message );
-            //this.p = new GeoPoint(0,0);
-        //    this.error = "No intersections found. " + e.message ;
-        //}
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
@@ -73,7 +56,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect arc ' + this.arc.ref()
-                + " with line from " + this.basePoint.ref() 
+                + " with line from " + this.refOf( this.basePoint ) 
                 + " at angle " + this.angle.html( asFormula );
     }
 
