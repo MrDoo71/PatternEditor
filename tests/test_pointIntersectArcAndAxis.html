@@ -115,7 +115,38 @@
               "my": 0.264583,
               "angle": 
               { "constant": 337.4 }
-            }                   
+            },
+            {
+                              "derivedName": "Arc_A_138",
+                              "objectType": "arcSimple",
+                              "center": "A",
+                              "lineStyle": "dashLine",
+                              "color": "cornflowerblue",
+                              "angle1":
+                                { "constant": -60 },
+                              "angle2":
+                                { "constant": 45 },
+                              "radius":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 27.2 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                }
+                              }
+                            },     
+                            {
+                              "name": "A53",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A",
+                              "curve": "Arc_A_138",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 }
+                            }                                   
                             ]
                         }
                       ]

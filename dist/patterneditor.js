@@ -138,6 +138,23 @@ class GeoLine {
 
     intersectArc( arc )
     {
+        //work around a bug where the arc spans 0 deg
+        if (    ( arc.angle1 < 0 ) 
+             && ( arc.angle2 > 0 ) 
+             && ( arc instanceof GeoArc ) )
+        {
+            if ( arc instanceof GeoArc )
+            {
+                try { 
+                    var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
+                    return this.intersectArc( arc1 );
+                } catch ( e ) {
+                    var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
+                    return this.intersectArc( arc2 );
+                }
+            }
+        }
+
         var arcSI,lineSI;
 
         //nb there is a special case for GeoEllipticalArc where this.p1 == arc.center in 
@@ -351,15 +368,27 @@ class GeoArc {
             return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
 
         //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
-        var angle1 = 360 - this.angle1;
-        var angle2 = 360 - this.angle2;
+        var angle1 = 360 - this.angle2;
+        var angle2 = 360 - this.angle1;
 
-        if ( angle2 < angle1 )
+        if ( angle2 > 360 ) //the original angle1 was negative. 
         {
-            var t = angle2;
-            angle2 = angle1;
-            angle1 = t;
+            angle1 -= 360;
+            angle2 -= 360;
         }
+
+        //if ( angle1 < 0 )
+        //angle1 = 0;
+
+        //if ( angle2 < 0 )
+        //angle2 = 0;
+
+       // if ( angle2 < angle1 )
+       // {
+       //     var t = angle2;
+       //     angle2 = angle1;
+       //     angle1 = t;
+       // }
                 
         return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
@@ -4252,6 +4281,7 @@ class Expression {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
+            console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
             return line.getLength();
         }
         else if (    ( this.function === "lengthOfSplinePath" )
@@ -4287,6 +4317,8 @@ class Expression {
                         var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
                         var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
                         var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+
+                        console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
                         return length;
                     }                    
                 }

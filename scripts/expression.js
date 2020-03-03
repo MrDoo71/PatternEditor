@@ -142,6 +142,7 @@ class Expression {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
+            //console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
             return line.getLength();
         }
         else if (    ( this.function === "lengthOfSplinePath" )
@@ -177,6 +178,8 @@ class Expression {
                         var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
                         var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
                         var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+
+                        console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
                         return length;
                     }                    
                 }

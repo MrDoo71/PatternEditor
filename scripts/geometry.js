@@ -130,6 +130,23 @@ class GeoLine {
 
     intersectArc( arc )
     {
+        //work around a bug where the arc spans 0 deg
+        if (    ( arc.angle1 < 0 ) 
+             && ( arc.angle2 > 0 ) 
+             && ( arc instanceof GeoArc ) )
+        {
+            if ( arc instanceof GeoArc )
+            {
+                try { 
+                    var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
+                    return this.intersectArc( arc1 );
+                } catch ( e ) {
+                    var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
+                    return this.intersectArc( arc2 );
+                }
+            }
+        }
+
         var arcSI,lineSI;
 
         //nb there is a special case for GeoEllipticalArc where this.p1 == arc.center in 
@@ -343,15 +360,27 @@ class GeoArc {
             return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
 
         //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
-        var angle1 = 360 - this.angle1;
-        var angle2 = 360 - this.angle2;
+        var angle1 = 360 - this.angle2;
+        var angle2 = 360 - this.angle1;
 
-        if ( angle2 < angle1 )
+        if ( angle2 > 360 ) //the original angle1 was negative. 
         {
-            var t = angle2;
-            angle2 = angle1;
-            angle1 = t;
+            angle1 -= 360;
+            angle2 -= 360;
         }
+
+        //if ( angle1 < 0 )
+        //angle1 = 0;
+
+        //if ( angle2 < 0 )
+        //angle2 = 0;
+
+       // if ( angle2 < angle1 )
+       // {
+       //     var t = angle2;
+       //     angle2 = angle1;
+       //     angle1 = t;
+       // }
                 
         return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
