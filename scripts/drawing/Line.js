@@ -33,7 +33,7 @@ class Line extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.refOf( this.firstPoint ) + " - " + this.refOf( this.secondPoint.ref );
+        return 'line ' + this.refOf( this.firstPoint ) + " - " + this.refOf( this.secondPoint );
     }
 
 

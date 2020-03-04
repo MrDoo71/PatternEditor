@@ -15,11 +15,13 @@ class DrawingObject /*abstract*/ {
         if (typeof this.p.x !== "number")
             return;
 
+        var fontSize = Math.round( ( 1200 / scale ))/100;
+
         g.append("text")
-            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
-            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
+            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx ) ) )
+            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my + fontSize ) ) )
             .text(d.name)
-            .attr("font-size", Math.round( ( 1200 / scale ))/100 + "px");
+            .attr("font-size", fontSize + "px");
     }
 
 

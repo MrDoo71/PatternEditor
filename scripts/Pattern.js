@@ -7,6 +7,7 @@ class Pattern {
         this.increment = {};
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
+        this.wallpapers = data.wallpaper;
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
@@ -68,7 +69,12 @@ class Pattern {
         }        
 
         //TODO support multiple pattern pieces
-        this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
+        //this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );     
+        this.patternPieces = [];
+        for( var i=0; i<this.patternData.patternPiece.length; i++ )
+        {
+            this.patternPieces.push( new PatternPiece( this.patternData.patternPiece[i], this ) );
+        }   
     }
 
     getIncrement(name) {

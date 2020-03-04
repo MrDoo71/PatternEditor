@@ -644,11 +644,13 @@ class DrawingObject /*abstract*/ {
         if (typeof this.p.x !== "number")
             return;
 
+        var fontSize = Math.round( ( 1200 / scale ))/100;
+
         g.append("text")
-            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx/ scale) ) )
-            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my/ scale ) ) )
+            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx ) ) )
+            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my + fontSize ) ) )
             .text(d.name)
-            .attr("font-size", Math.round( ( 1200 / scale ))/100 + "px");
+            .attr("font-size", fontSize + "px");
     }
 
 
@@ -1032,7 +1034,7 @@ class Line extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.refOf( this.firstPoint ) + " - " + this.refOf( this.secondPoint.ref );
+        return 'line ' + this.refOf( this.firstPoint ) + " - " + this.refOf( this.secondPoint );
     }
 
 
@@ -3208,6 +3210,7 @@ class Pattern {
         this.increment = {};
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
+        this.wallpapers = data.wallpaper;
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
@@ -3269,7 +3272,12 @@ class Pattern {
         }        
 
         //TODO support multiple pattern pieces
-        this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );        
+        //this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );     
+        this.patternPieces = [];
+        for( var i=0; i<this.patternData.patternPiece.length; i++ )
+        {
+            this.patternPieces.push( new PatternPiece( this.patternData.patternPiece[i], this ) );
+        }   
     }
 
     getIncrement(name) {
@@ -3565,9 +3573,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     //This is a graph initialisation
 
-    var pattern = new Pattern( dataAndConfig, options );
-      
-    //pattern.gInteractionPrefix = options.interactionPrefix;    
+    var pattern = new Pattern( dataAndConfig, options );        
     
     function newkvpSet(noRefresh)
     {
@@ -3664,16 +3670,17 @@ function drawPattern( dataAndConfig, ptarget, options )
             selectedObject = d;
         }
 
-        for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
-        {
-            var a = pattern.patternPiece1.drawingObjects[i];
-            var g = a.drawingSvg;
-            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
-            g.selectAll( "line" )
-              .attr("stroke-width", strokeWidth );
-            g.selectAll( "path" )
-              .attr("stroke-width", strokeWidth );
-        }        
+        for( var j=0; j< pattern.patternPieces.length; j++ )
+            for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
+            {
+                var a = pattern.patternPieces[j].drawingObjects[i];
+                var g = a.drawingSvg;
+                var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                g.selectAll( "line" )
+                .attr("stroke-width", strokeWidth );
+                g.selectAll( "path" )
+                .attr("stroke-width", strokeWidth );
+            }        
 
         var graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
@@ -3733,12 +3740,12 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     var doDrawingAndTable = function() {
                                     if ( dataAndConfig.options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
+                                        doDrawing( targetdiv, pattern, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("svg.pattern-drawing").remove();
 
                                     if ( dataAndConfig.options.layoutConfig.tableWidth )
-                                        doTable( targetdiv, pattern.patternPiece1, dataAndConfig.options, contextMenu, focusDrawingObject );
+                                        doTable( targetdiv, pattern, dataAndConfig.options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("div.pattern-table").remove();
                                 };
@@ -3746,14 +3753,21 @@ function drawPattern( dataAndConfig, ptarget, options )
     doControls( targetdiv, dataAndConfig.options, doDrawingAndTable );
     doDrawingAndTable();                   
     
-    for( var i=0; i< pattern.patternPiece1.drawingObjects.length; i++ )
+    var errorFound = false;
+    for( var j=0; j< pattern.patternPieces.length; j++ )
     {
-        var a = pattern.patternPiece1.drawingObjects[i];
-        if ( a.error )
+        for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
         {
-            focusDrawingObject(a, true);
-            break;
+            var a = pattern.patternPieces[j].drawingObjects[i];
+            if ( a.error )
+            {
+                focusDrawingObject(a, true);
+                errorFound = true;
+                break;
+            }
         }
+        if ( errorFound )
+            break;
     }
 
 }
@@ -3837,12 +3851,13 @@ function scrollTopTween(scrollTop)
   
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
+function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
-    var width =  layoutConfig.drawingWidth;//400;
-    var height = layoutConfig.drawingHeight;//600;
+    var width =  layoutConfig.drawingWidth;
+    var height = layoutConfig.drawingHeight;
+    var patternPiece1 = pattern.patternPieces[0];
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -3854,8 +3869,11 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
     var transformGroup1 = svg.append("g")
                             .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
 
-    var scaleX = width / ( patternPiece1.bounds.maxX - patternPiece1.bounds.minX );                   
-    var scaleY = height / ( patternPiece1.bounds.maxY - patternPiece1.bounds.minY );           
+    var patternWidth = ( patternPiece1.bounds.maxX - patternPiece1.bounds.minX );
+    var patternHeight =( patternPiece1.bounds.maxY - patternPiece1.bounds.minY );
+
+    var scaleX = width / patternWidth;                   
+    var scaleY = height / patternHeight;           
     
     if ( ( isFinite( scaleX ) ) && ( isFinite( scaleY ) ) )
         scale = scaleX > scaleY ? scaleY : scaleX;
@@ -3865,7 +3883,7 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
         scale = 1;
 
     var transformGroup2 = transformGroup1.append("g")
-                               .attr("transform", "scale(" + scale + "," + scale + ")");
+        .attr("transform", "scale(" + scale + "," + scale + ")");
 
     //centralise horizontally                            
     var boundsWidth = patternPiece1.bounds.maxX - patternPiece1.bounds.minX;
@@ -3874,6 +3892,23 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
 
     var transformGroup3 = transformGroup2.append("g")
                                .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");    
+
+    for ( var w = 0; w < pattern.wallpapers.length; w++ )
+    {
+        var wallpaper = pattern.wallpapers[w];
+
+        var wallpaperGroup = transformGroup3.append("g")
+                                        .attr("transform",   "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
+                                                            + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")");
+
+        wallpaperGroup.append( "image" )
+                        //.attr( "width", patternWidth * scale )
+                        //.attr( "height", patternHeight * scale )
+                        .attr( "href", wallpaper.imageurl )
+                        .attr( "opacity", wallpaper.opacity );                              
+    }
+
+                           
 
     //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
@@ -3985,8 +4020,9 @@ function doDrawing( graphdiv, patternPiece1, editorOptions, contextMenu, focusDr
 }
 
 
-function doTable( graphdiv, patternPiece1, editorOptions, contextMenu, focusDrawingObject )
+function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
+    var patternPiece1 = pattern.patternPieces[0];
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.tableMargin;//25; 
     var width =  layoutConfig.tableWidth;//400;
@@ -4281,7 +4317,7 @@ class Expression {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
-            console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
+            //console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
             return line.getLength();
         }
         else if (    ( this.function === "lengthOfSplinePath" )
