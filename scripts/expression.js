@@ -179,7 +179,7 @@ class Expression {
                         var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
                         var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
 
-                        console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
+                        //console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
                         return length;
                     }                    
                 }

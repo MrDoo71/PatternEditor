@@ -199,7 +199,7 @@ function drawPattern( dataAndConfig, ptarget, options )
                                         targetdiv.select("div.pattern-table").remove();
                                 };
 
-    doControls( targetdiv, dataAndConfig.options, doDrawingAndTable );
+    doControls( targetdiv, dataAndConfig.options, pattern, doDrawingAndTable );
     doDrawingAndTable();                   
     
     var errorFound = false;
@@ -222,7 +222,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 }
 
 
-function doControls( graphdiv, editorOptions, doDrawingAndTable )
+function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
 {
     if ( ! editorOptions )
         return;
@@ -281,6 +281,35 @@ function doControls( graphdiv, editorOptions, doDrawingAndTable )
                                      .text( editorOptions.showFormulas ? "hide formulas" : "show formulas" )
                                      .on("click", toggleShowFormulas );
     }    
+
+    if ( pattern.wallpapers )
+    {
+        var wallpaperControlsGroups = controls.append("table").attr("class","wallpapers");
+        wallpaperControlsGroups.selectAll("tr")
+            .data( pattern.wallpapers )
+            .enter()
+            .append("tr")
+            .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
+            .each( function(wallpaper,i){
+                console.log("here");
+                var wallpaperDiv = d3.select(this);
+                wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
+                                           .on("click", function(w) { w.hide = ! w.hide; 
+                                                                      d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
+                                                                      d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
+                                                                      var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                      doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                     } );
+                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' } )
+                                           .on("click", function(w) { w.editable = ! w.editable; 
+                                                                      d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
+                                                                      var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                      doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                     } );
+                wallpaperDiv.append( "td" ).text( wallpaper.imageurl );
+                                                                     //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
+            });
+    }
 }
 
 
@@ -331,6 +360,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     else
         scale = 1;
 
+    //console.log( "scale:" + scale + " patternWidth:" + patternWidth + " width:" + width );
+
+    //transformGroup2 scales from calculated positions in pattern-space (e.g. 10 representing 10cm) to
+    //pixels available. So 10cm in a 500px drawing has a scale of 50. 
     var transformGroup2 = transformGroup1.append("g")
         .attr("transform", "scale(" + scale + "," + scale + ")");
 
@@ -339,26 +372,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     var availableWidth = width / scale;
     var offSetX = ( availableWidth - boundsWidth ) /2;
 
+    //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")
+                               .attr("class","pattern")
                                .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");    
 
-    for ( var w = 0; w < pattern.wallpapers.length; w++ )
+    if ( pattern.wallpapers )
     {
-        var wallpaper = pattern.wallpapers[w];
-
-        var wallpaperGroup = transformGroup3.append("g")
-                                        .attr("transform",   "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
-                                                            + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")");
-
-        wallpaperGroup.append( "image" )
-                        //.attr( "width", patternWidth * scale )
-                        //.attr( "height", patternHeight * scale )
-                        .attr( "href", wallpaper.imageurl )
-                        .attr( "opacity", wallpaper.opacity );                              
+        var wallpaperGroups = transformGroup2.append("g")
+                                             .attr("class","wallpapers")
+                                             .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")")   
+                                             .lower();
+        doWallpapers( wallpaperGroups, pattern );
     }
-
-                           
-
+     
     //Clicking on an object in the drawing should highlight it in the table.
     var onclick = function(d) {
         d3.event.preventDefault();
@@ -461,11 +488,155 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     {
         svg.call(d3.zoom()
             .extent([[0, 0], [width, height]])
-            .scaleExtent([1, 8])
+            .scaleExtent([0.5, 8])
             .on("zoom", zoomed));
     }
 
     fontsSizedForScale = 1; //the starting scale of transformGroup1.
+}
+
+
+function doWallpapers( wallpaperGroups, pattern )
+{
+    var visibleWallpapers = [];
+    for( var i=0; i<pattern.wallpapers.length; i++ )
+    {
+        var w = pattern.wallpapers[i];
+        if ( ! w.scaleAdjusted )
+        {
+            //A 720px image is naturally 10in (at 72dpi)
+            //If our pattern as 10in across then our image should be 10 units.
+            //If our pattern was 10cm across then our image should be 25.4 units and we would expect to need to specify a scale of 1/2.54
+            if ( pattern.units === "cm" )
+            {
+                w.scaleX = w.scaleX * 2.54;
+                w.scaleY = w.scaleY * 2.54;
+            }
+            else if ( pattern.units === "mm" )
+            {
+                w.scaleX = w.scaleX * 25.4;
+                w.scaleY = w.scaleY * 25.4;
+            }
+            w.scaleX = w.scaleX / 72 /*dpi*/; //And adjust by pattern.units
+            w.scaleY = w.scaleY / 72 /*dpi*/;
+            w.scaleAdjusted = true;
+        }
+
+        if ( w.hide )
+            continue;
+
+        visibleWallpapers.push( w );
+    }
+
+    var drag = d3.drag()
+        .on("start", function(wallpaper) {
+            //var wallpaperG = d3.select(this);
+            //if ( ! wallpaper.editable )
+            //    return;
+            wallpaper.offsetXdragStart = wallpaper.offsetX - d3.event.x;
+            wallpaper.offsetYdragStart = wallpaper.offsetY - d3.event.y;
+        })
+        .on("drag", function(wallpaper) {
+            //if ( ! wallpaper.editable )
+            //    return;
+            var wallpaperG = d3.select(this);        
+            wallpaper.offsetX = wallpaper.offsetXdragStart + d3.event.x;
+            wallpaper.offsetY = wallpaper.offsetYdragStart + d3.event.y;
+            wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
+        });
+
+    wallpaperGroups.selectAll("g")
+                    .data( visibleWallpapers )
+                    //.filter(function(w){return !w.hide;})
+                    .enter()
+                    .append("g")
+                    .attr( "class", function(w){ return w.editable ? "wallpaper editable" : "wallpaper" } )
+                    .attr("transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
+                                                                    + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
+                    .append( "image" )
+                    .attr( "width", function(w) { return w.width } )   //does this do anything?
+                    .attr( "height", function(w) { return w.height } )
+                    .attr( "href", function(w) { return w.imageurl } )
+                    .attr( "opacity", function(w) { return w.opacity } );
+
+    wallpaperGroups.selectAll("g")
+                    .data( visibleWallpapers )
+                    .exit().remove();
+
+    wallpaperGroups.selectAll("g")
+                    .data( visibleWallpapers )
+                    //.filter(function(w){return !w.hide;})
+                    .each( function(w,i) {
+                        var g = d3.select(this);
+                        if ( w.editable )
+                        {                            
+                            g.append("rect")
+                            .attr("x",0)
+                            .attr("y",0)
+                            .attr("stroke", "red")
+                            .attr("fill", "none")
+                            .attr("width", w.width)
+                            .attr("height", w.height);
+    
+                            g.append( "circle") 
+                            .attr("cx", function(w) { return w.width } )
+                            .attr("cy", function(w) { return w.height } )
+                            .attr("r", 25 )
+                            .attr("fill", "red");
+                            
+                            g.call(drag);
+                        }
+                        else
+                        {
+                            g.select("rect").remove();
+                            g.select("circle").remove();
+                            g.on(".drag", null );
+                        }
+                     } );
+        
+    var resize = d3.drag()
+        .on("start", function(wallpaper) {
+            wallpaper.offsetXdragStart = d3.event.x - wallpaper.width;
+            wallpaper.offsetYdragStart = d3.event.y - wallpaper.height;
+            //console.log("start offsetXdragStart:" + wallpaper.offsetXdragStart );
+        })
+        .on("end", function(wallpaper) {
+            var wallpaperG = d3.select(this.parentNode);
+            var circle = d3.select(this);
+            var rect = wallpaperG.select("rect");
+            var ratio = circle.attr("cx") / wallpaper.width;     
+            var scaleXbefore = wallpaper.scaleX;                   
+            wallpaper.scaleX = wallpaper.scaleX * ratio; //fixed aspect?
+            wallpaper.scaleY = wallpaper.scaleY * ratio;
+            //console.log( "cx:" + circle.attr("cx") + " image:" + wallpaper.width + "  ratio:" + ratio + "  scaleXbefore:" + scaleXbefore + "  scaleXNow:" + wallpaper.scaleX );
+            wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
+            circle.attr("cx", wallpaper.width )
+                    .attr("cy", wallpaper.height );
+            rect.attr("width", wallpaper.width )
+                .attr("height", wallpaper.height );
+        } )
+        .on("drag", function(wallpaper) {
+            var wallpaperG = d3.select(this.parentNode);
+            var circle = d3.select(this);
+            var rect = wallpaperG.select("rect");
+            var newX = d3.event.x - wallpaper.offsetXdragStart;
+            var newY = d3.event.y - wallpaper.offsetYdragStart;
+            //console.log("drag d3.event.x:" + d3.event.x + "  newX:" + newX );
+            if ( true ) //fixed aspect
+            {
+                var ratioX = newX / wallpaper.width;
+                var ratioY = newY / wallpaper.height;
+                var ratio = (ratioX+ratioY)/2.0;
+                newX = ratio * wallpaper.width;
+                newY = ratio * wallpaper.height;
+            }
+            circle.attr("cx", newX )
+                    .attr("cy", newY );
+            rect.attr("width", newX )
+                .attr("height", newY );
+        });
+
+    resize(wallpaperGroups.selectAll("g > circle"));            
 }
 
 

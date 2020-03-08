@@ -1,0 +1,13 @@
+These are font-awesome version 3.2.1.  (Has IE7 support.)
+font-awesome.min.css has had the file names modified for the font files so that they are servable from the .war file or from the database.
+They contain the IDs of the WebThemeResource records that hold them.
+If using 2.19+ of the metadata then this version of font-awesome.min.css will not be being read.  Instead it will be being served
+up from the database.
+
+
+font-awesome.pdf.min.css is tweaked so that the font-family part is usable by FlyingSaucer/iText.
+
+font-awesome.pdf.min.css 
+or
+font-awesome.min.css 
+are served up according to the media type. 

@@ -195,6 +195,9 @@ div.pattern-editor-controls {
     margin-bottom:15px;
 }
 
+table.wallpapers td { padding-left:6px; }
+table.wallpapers tr.wallpaper-hidden td { color:#ccc; }
+
 svg.pattern-drawing { 
     display: inline-block;
     margin-right: 15px; 
