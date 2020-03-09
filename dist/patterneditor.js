@@ -268,8 +268,8 @@ class GeoArc {
 
     //center
     //radius
-    //amgle1
-    //angle2
+    //angle1 - degrees!
+    //angle2 - degrees!
 
     constructor( center, radius, angle1, angle2 ) {
         this.center = center;
@@ -1961,7 +1961,7 @@ class PointIntersectArcAndLine extends DrawingObject {
             this.radius = this.patternPiece.newFormula(d.radius);
 
         var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
-        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 2*Math.PI );
+        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
         this.p = line.intersectArc( arc );
 
@@ -2118,8 +2118,8 @@ class PointIntersectCircles extends DrawingObject {
             this.radius2 = this.patternPiece.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
-        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 2*Math.PI );
-        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 2*Math.PI );
+        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
+        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
 
         var arc1SI = circle1.asShapeInfo();
         var arc2SI = circle2.asShapeInfo();
@@ -2524,7 +2524,7 @@ class PointOfTriangle extends DrawingObject {
         //centered on the midpoint of otherLine with radiu of half length of otherLine
         var intersectionPoint = axisLine.intersect( otherLine );
         var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
-        var arc = new GeoArc( midpoint, otherLine.length/2, 0, 2*Math.PI  );    
+        var arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
         var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
 
@@ -2587,10 +2587,10 @@ class PointShoulder extends DrawingObject {
         //the line p1Line1-p2line1.
             
         var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
-        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 2*Math.PI  );      
+        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
         var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
         var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
+        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 1000, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
 
@@ -2610,7 +2610,7 @@ class PointShoulder extends DrawingObject {
             + " Point along " + this.refOf( this.p1Line1 ) 
             + "-" + this.refOf( this.p2Line1 )
             + " being " + this.length.html( asFormula ) 
-            + " from " + this.shoulderPoint.ref();
+            + " from " + this.refOf( this.shoulderPoint );
     }
 
 
@@ -3814,7 +3814,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
 
         var fullPageButton = controls.append("button")
                                      .attr("class", "btn btn-default toggle-full-page")
-                                     .text( "full" )
+                                     .html( '<i class="icon-fullscreen" />' )
                                      .on("click", toggleFullScreen );
     }
 
@@ -3857,7 +3857,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "td" ).text( wallpaper.imageurl );
+                wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
             });
     }
@@ -4119,8 +4119,12 @@ function doWallpapers( wallpaperGroups, pattern )
                     //.filter(function(w){return !w.hide;})
                     .each( function(w,i) {
                         var g = d3.select(this);
+                        var box = g.node().getBBox();
+                        w.width = box.width;
+                        w.height = box.height;
+
                         if ( w.editable )
-                        {                            
+                        {
                             g.append("rect")
                             .attr("x",0)
                             .attr("y",0)
@@ -4132,7 +4136,7 @@ function doWallpapers( wallpaperGroups, pattern )
                             g.append( "circle") 
                             .attr("cx", function(w) { return w.width } )
                             .attr("cy", function(w) { return w.height } )
-                            .attr("r", 25 )
+                            .attr("r", 10 / scale / w.scaleX / fontsSizedForScale )
                             .attr("fill", "red");
                             
                             g.call(drag);

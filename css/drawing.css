@@ -207,6 +207,7 @@ div.pattern-table {
     display: inline-block;
     margin-left: 15px; 
     overflow-y: scroll;
+    vertical-align: top;
 }
 
 button.toggle-full-page,

@@ -26,8 +26,8 @@ class PointIntersectCircles extends DrawingObject {
             this.radius2 = this.patternPiece.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
-        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 2*Math.PI );
-        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 2*Math.PI );
+        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
+        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
 
         var arc1SI = circle1.asShapeInfo();
         var arc2SI = circle2.asShapeInfo();

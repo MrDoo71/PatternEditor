@@ -32,8 +32,18 @@
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "wallpaper": [ 
+                    { "imageurl": "expectedResults/pointFromCircleAndTangent.png",  
+                      "offsetX": -1.4791,
+                      "offsetY": -5.7640,
+                      "scaleX": 0.9499, //,)  scale(0.03351277226707499,0.03351277226707499 )"  *72/2.54  
+                      "scaleY": 0.9499,
+                      "opacity": 0.3
+                      }  
+                  ],                
                 "pattern":
                 {
+                  "units": "cm",
                   "patternPiece":
                     [
                       {
@@ -265,10 +275,7 @@
         </div>
       </div>
     </div>
-
-    <div>
-      <img src="expectedResults/pointFromCircleAndTangent.png" />
-    </div>
+    
 
 </body>
 

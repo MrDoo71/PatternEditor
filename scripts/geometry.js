@@ -260,8 +260,8 @@ class GeoArc {
 
     //center
     //radius
-    //amgle1
-    //angle2
+    //angle1 - degrees!
+    //angle2 - degrees!
 
     constructor( center, radius, angle1, angle2 ) {
         this.center = center;

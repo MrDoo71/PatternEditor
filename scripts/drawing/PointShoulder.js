@@ -28,10 +28,10 @@ class PointShoulder extends DrawingObject {
         //the line p1Line1-p2line1.
             
         var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
-        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 2*Math.PI  );      
+        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
         var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
         var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 100, axisLine.angle ) );
+        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 1000, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.p1Line1.p, this.p );
 
@@ -51,7 +51,7 @@ class PointShoulder extends DrawingObject {
             + " Point along " + this.refOf( this.p1Line1 ) 
             + "-" + this.refOf( this.p2Line1 )
             + " being " + this.length.html( asFormula ) 
-            + " from " + this.shoulderPoint.ref();
+            + " from " + this.refOf( this.shoulderPoint );
     }
 
 

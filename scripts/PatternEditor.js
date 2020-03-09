@@ -263,7 +263,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
 
         var fullPageButton = controls.append("button")
                                      .attr("class", "btn btn-default toggle-full-page")
-                                     .text( "full" )
+                                     .html( '<i class="icon-fullscreen" />' )
                                      .on("click", toggleFullScreen );
     }
 
@@ -306,7 +306,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "td" ).text( wallpaper.imageurl );
+                wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
             });
     }
@@ -568,8 +568,12 @@ function doWallpapers( wallpaperGroups, pattern )
                     //.filter(function(w){return !w.hide;})
                     .each( function(w,i) {
                         var g = d3.select(this);
+                        var box = g.node().getBBox();
+                        w.width = box.width;
+                        w.height = box.height;
+
                         if ( w.editable )
-                        {                            
+                        {
                             g.append("rect")
                             .attr("x",0)
                             .attr("y",0)
@@ -581,7 +585,7 @@ function doWallpapers( wallpaperGroups, pattern )
                             g.append( "circle") 
                             .attr("cx", function(w) { return w.width } )
                             .attr("cy", function(w) { return w.height } )
-                            .attr("r", 25 )
+                            .attr("r", 10 / scale / w.scaleX / fontsSizedForScale )
                             .attr("fill", "red");
                             
                             g.call(drag);

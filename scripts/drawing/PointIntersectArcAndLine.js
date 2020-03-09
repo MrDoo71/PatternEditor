@@ -25,7 +25,7 @@ class PointIntersectArcAndLine extends DrawingObject {
             this.radius = this.patternPiece.newFormula(d.radius);
 
         var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
-        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 2*Math.PI );
+        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
         this.p = line.intersectArc( arc );
 
