@@ -42,18 +42,27 @@ class PointIntersectCircles extends DrawingObject {
         }
         else if ( intersections.points.length === 1 )
         {
+            //surely there must always be two intersects, unless they just touch
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         else
         {
+            /* we do not know what logic valentina/seamly uses
+
+            the smallest angle, except that if angle1 beween 270 and 360 and angle2 between 0 and 90 then add 360 to angle2. */
+
             //NB: this is a subset of the logic that applies to PointIntersectArcs.
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
             var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
             var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( circle1.center, p1)).angle;
-            var angle2 = (new GeoLine( circle1.center, p2)).angle;
+            var angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
+            var angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
+            if (( angle1 >= 270 ) && ( angle2 > 0 ) && ( angle2 < 90 ))
+                angle2 += 360;
+            else if (( angle2 >= 270 ) && ( angle1 > 0 ) && ( angle1 < 90 ))
+                angle1 += 360;
 
             if ( this.data.crossPoint === "One" )
             {
@@ -69,6 +78,26 @@ class PointIntersectCircles extends DrawingObject {
                 else
                     this.p = p1;
             }
+            
+           /*
+            //this is just a guess.. TODO what happens if the two y's are the same??
+            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            if ( this.data.crossPoint === "One" )
+            {
+                if ( p1.y < p2.y )
+                    this.p = p2;
+                else
+                    this.p = p1;
+            }
+            else
+            {
+                if ( p1.y < p2.y )
+                    this.p = p1;
+                else
+                    this.p = p2;
+            }
+            */
         }
 
         bounds.adjust(this.p);

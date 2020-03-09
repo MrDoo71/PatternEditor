@@ -141,7 +141,7 @@ class GeoLine {
         //work around a bug where the arc spans 0 deg
         if (    ( arc.angle1 < 0 ) 
              && ( arc.angle2 > 0 ) 
-             && ( arc instanceof GeoArc ) )
+             && ( arc instanceof GeoArc ) ) //not an elliptical
         {
             if ( arc instanceof GeoArc )
             {
@@ -178,7 +178,7 @@ class GeoLine {
             arcSI = nrArc.asShapeInfo();
             
             var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
-            lineSI = lineRotated.asShapeInfo();    
+            lineSI = extendedLine.asShapeInfo();    
         }
         else
         {
@@ -192,26 +192,46 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        //intersections.points.forEach(console.log);    
+        console.log( "Intersections:" );
+        intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
 
         var whichPoint = 0;
         if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
-        {
-            //choose the point with the smallest angle. 
-            var smallestAngle = 361;
-            for (var i = 0; i < intersections.points.length; i++) 
+        {            
+            if ( false )
             {
-                var pi = intersections.points[i];
-                var p1pi = new GeoLine( this.p1, pi );
-                if ( p1pi.angleDeg() < smallestAngle )
+                //choose the point with the smallest angle. 
+                var smallestAngle = 361;
+                for (var i = 0; i < intersections.points.length; i++) 
                 {
-                    smallestAngle = p1pi.angleDeg();
-                    whichPoint = i;
+                    var pi = intersections.points[i];
+                    var p1pi = new GeoLine( arc.center, pi );
+                    console.log( i + " " + p1pi.angleDeg() );
+                    if ( p1pi.angleDeg() < smallestAngle )
+                    {
+                        smallestAngle = p1pi.angleDeg();
+                        whichPoint = i;
+                    }
                 }
             }
+            else
+            {
+                //choose the first point we get to along the line. 
+                var smallestDistance = undefined;
+                for (var i = 0; i < intersections.points.length; i++) 
+                {
+                    var pi = intersections.points[i];
+                    var p1pi = new GeoLine( this.p1, pi );
+                    console.log( i + " " + p1pi.length );
+                    if ( ( smallestDistance === undefined ) || ( p1pi.length < smallestDistance ) )
+                    {
+                        smallestDistance = p1pi.length;
+                        whichPoint = i;
+                    }
+                }            }
         }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
@@ -805,7 +825,15 @@ class ArcElliptical extends DrawingObject {
                                          this.angle1.value(), 
                                          this.angle2.value(),
                                          this.rotationAngle.value() );
-
+        /*
+        if ( this.rotationAngle.value() != 0 )                                         
+        this.debugArc = new GeoEllipticalArc( this.center.p, 
+                                            this.radius1.value(),
+                                            this.radius2.value(), 
+                                            this.angle1.value(), 
+                                            this.angle2.value(),
+                                            0 );*/
+   
         this.p = this.arc.pointAlongPathFraction( 0.5 );
 
         bounds.adjust( this.p );
@@ -831,6 +859,10 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, isOutline ) {
         this.drawPath( g, this.arc.svgPath(), isOutline );
+
+        //if ( this.debugArc )
+        //    this.drawPath( g, this.debugArc.svgPath(), isOutline );
+
         this.drawLabel( g, isOutline );
     }
 
@@ -2134,18 +2166,27 @@ class PointIntersectCircles extends DrawingObject {
         }
         else if ( intersections.points.length === 1 )
         {
+            //surely there must always be two intersects, unless they just touch
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         else
         {
+            /* we do not know what logic valentina/seamly uses
+
+            the smallest angle, except that if angle1 beween 270 and 360 and angle2 between 0 and 90 then add 360 to angle2. */
+
             //NB: this is a subset of the logic that applies to PointIntersectArcs.
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
             var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
             var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( circle1.center, p1)).angle;
-            var angle2 = (new GeoLine( circle1.center, p2)).angle;
+            var angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
+            var angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
+            if (( angle1 >= 270 ) && ( angle2 > 0 ) && ( angle2 < 90 ))
+                angle2 += 360;
+            else if (( angle2 >= 270 ) && ( angle1 > 0 ) && ( angle1 < 90 ))
+                angle1 += 360;
 
             if ( this.data.crossPoint === "One" )
             {
@@ -2161,6 +2202,26 @@ class PointIntersectCircles extends DrawingObject {
                 else
                     this.p = p1;
             }
+            
+           /*
+            //this is just a guess.. TODO what happens if the two y's are the same??
+            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            if ( this.data.crossPoint === "One" )
+            {
+                if ( p1.y < p2.y )
+                    this.p = p2;
+                else
+                    this.p = p1;
+            }
+            else
+            {
+                if ( p1.y < p2.y )
+                    this.p = p1;
+                else
+                    this.p = p2;
+            }
+            */
         }
 
         bounds.adjust(this.p);
@@ -4096,6 +4157,7 @@ function doWallpapers( wallpaperGroups, pattern )
             wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
         });
 
+
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers )
                     //.filter(function(w){return !w.hide;})
@@ -4105,8 +4167,8 @@ function doWallpapers( wallpaperGroups, pattern )
                     .attr("transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
                                                                     + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
                     .append( "image" )
-                    .attr( "width", function(w) { return w.width } )   //does this do anything?
-                    .attr( "height", function(w) { return w.height } )
+                    //.attr( "width", function(w) { return w.width } )   //does this do anything?
+                    //.attr( "height", function(w) { return w.height } )
                     .attr( "href", function(w) { return w.imageurl } )
                     .attr( "opacity", function(w) { return w.opacity } );
 
@@ -4114,6 +4176,7 @@ function doWallpapers( wallpaperGroups, pattern )
                     .data( visibleWallpapers )
                     .exit().remove();
 
+    //Add a resizing boundary to each editable wallpaper.                 
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers )
                     //.filter(function(w){return !w.hide;})

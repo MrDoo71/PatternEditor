@@ -32,8 +32,18 @@
             import  { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "wallpaper": [ 
+                    { "imageurl": "expectedResults/pointIntersectionCircles.png",
+                      "offsetX": -0.13219982147217024,
+                      "offsetY": -0.0429337501525886, 
+                      "scaleX": 0.8351596181, //0.029462575415722402 * 72 / 2.54
+                      "scaleY": 0.8351596181,
+                      "opacity": 0.7
+                      }  
+                  ],                
                   "pattern":
                   {
+                    "units": "cm",
                     "patternPiece":
                       [
                         {
@@ -130,9 +140,6 @@
       </div>
     </div>
 
-    <div>
-      <img src="expectedResults/pointIntersectionCircles.png" />
-    </div>
 
 </body>
 

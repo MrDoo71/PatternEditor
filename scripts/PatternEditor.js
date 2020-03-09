@@ -545,6 +545,7 @@ function doWallpapers( wallpaperGroups, pattern )
             wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
         });
 
+
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers )
                     //.filter(function(w){return !w.hide;})
@@ -554,8 +555,8 @@ function doWallpapers( wallpaperGroups, pattern )
                     .attr("transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
                                                                     + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
                     .append( "image" )
-                    .attr( "width", function(w) { return w.width } )   //does this do anything?
-                    .attr( "height", function(w) { return w.height } )
+                    //.attr( "width", function(w) { return w.width } )   //does this do anything?
+                    //.attr( "height", function(w) { return w.height } )
                     .attr( "href", function(w) { return w.imageurl } )
                     .attr( "opacity", function(w) { return w.opacity } );
 
@@ -563,6 +564,7 @@ function doWallpapers( wallpaperGroups, pattern )
                     .data( visibleWallpapers )
                     .exit().remove();
 
+    //Add a resizing boundary to each editable wallpaper.                 
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers )
                     //.filter(function(w){return !w.hide;})

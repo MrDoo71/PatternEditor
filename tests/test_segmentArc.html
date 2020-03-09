@@ -32,8 +32,18 @@
             import  { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "wallpaper": [ 
+                    { "imageurl": "expectedResults/segmentingAnArc.png",
+                      "offsetX": -0.026268539428711435,
+                      "offsetY": -0.021750736236572976,
+                      "scaleX": 0.4890520108, //0.0172526681602021 * 72 / 2.54
+                      "scaleY": 0.4890520108,
+                      "opacity": 0.4
+                      }  
+                  ],                
                   "pattern":
                   {
+                    "units": "cm",
                     "patternPiece":
                       [
                         {
@@ -108,10 +118,6 @@
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/segmentingAnArc.png" />   
     </div>
 </body>
 

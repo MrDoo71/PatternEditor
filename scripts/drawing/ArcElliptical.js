@@ -37,7 +37,15 @@ class ArcElliptical extends DrawingObject {
                                          this.angle1.value(), 
                                          this.angle2.value(),
                                          this.rotationAngle.value() );
-
+        /*
+        if ( this.rotationAngle.value() != 0 )                                         
+        this.debugArc = new GeoEllipticalArc( this.center.p, 
+                                            this.radius1.value(),
+                                            this.radius2.value(), 
+                                            this.angle1.value(), 
+                                            this.angle2.value(),
+                                            0 );*/
+   
         this.p = this.arc.pointAlongPathFraction( 0.5 );
 
         bounds.adjust( this.p );
@@ -63,6 +71,10 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, isOutline ) {
         this.drawPath( g, this.arc.svgPath(), isOutline );
+
+        //if ( this.debugArc )
+        //    this.drawPath( g, this.debugArc.svgPath(), isOutline );
+
         this.drawLabel( g, isOutline );
     }
 

@@ -133,7 +133,7 @@ class GeoLine {
         //work around a bug where the arc spans 0 deg
         if (    ( arc.angle1 < 0 ) 
              && ( arc.angle2 > 0 ) 
-             && ( arc instanceof GeoArc ) )
+             && ( arc instanceof GeoArc ) ) //not an elliptical
         {
             if ( arc instanceof GeoArc )
             {
@@ -170,7 +170,7 @@ class GeoLine {
             arcSI = nrArc.asShapeInfo();
             
             var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
-            lineSI = lineRotated.asShapeInfo();    
+            lineSI = extendedLine.asShapeInfo();    
         }
         else
         {
@@ -184,26 +184,46 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        //intersections.points.forEach(console.log);    
+        console.log( "Intersections:" );
+        intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
 
         var whichPoint = 0;
         if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
-        {
-            //choose the point with the smallest angle. 
-            var smallestAngle = 361;
-            for (var i = 0; i < intersections.points.length; i++) 
+        {            
+            if ( false )
             {
-                var pi = intersections.points[i];
-                var p1pi = new GeoLine( this.p1, pi );
-                if ( p1pi.angleDeg() < smallestAngle )
+                //choose the point with the smallest angle. 
+                var smallestAngle = 361;
+                for (var i = 0; i < intersections.points.length; i++) 
                 {
-                    smallestAngle = p1pi.angleDeg();
-                    whichPoint = i;
+                    var pi = intersections.points[i];
+                    var p1pi = new GeoLine( arc.center, pi );
+                    console.log( i + " " + p1pi.angleDeg() );
+                    if ( p1pi.angleDeg() < smallestAngle )
+                    {
+                        smallestAngle = p1pi.angleDeg();
+                        whichPoint = i;
+                    }
                 }
             }
+            else
+            {
+                //choose the first point we get to along the line. 
+                var smallestDistance = undefined;
+                for (var i = 0; i < intersections.points.length; i++) 
+                {
+                    var pi = intersections.points[i];
+                    var p1pi = new GeoLine( this.p1, pi );
+                    console.log( i + " " + p1pi.length );
+                    if ( ( smallestDistance === undefined ) || ( p1pi.length < smallestDistance ) )
+                    {
+                        smallestDistance = p1pi.length;
+                        whichPoint = i;
+                    }
+                }            }
         }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
