@@ -3274,6 +3274,7 @@ class Pattern {
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
+        this.bounds = new Bounds();
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
@@ -3334,8 +3335,6 @@ class Pattern {
             }
         }        
 
-        //TODO support multiple pattern pieces
-        //this.patternPiece1 = new PatternPiece( this.patternData.patternPiece[0], this );     
         this.patternPieces = [];
         for( var i=0; i<this.patternData.patternPiece.length; i++ )
         {
@@ -3362,6 +3361,52 @@ class Pattern {
 
 
 }
+class Bounds {
+    
+    constructor() {
+        this.minX = undefined;
+        this.maxX = undefined;
+        this.minY = undefined;
+        this.maxY = undefined;
+    }
+
+    adjust(p) {
+
+        if (!p)
+            return; //e.g. an error
+
+        var x = p.x;
+        var y = p.y;
+
+        if (x !== undefined) {
+            if ((this.minX === undefined) || (x < this.minX))
+                this.minX = x;
+            if ((this.maxX === undefined) || (x > this.maxX))
+                this.maxX = x;
+        }
+
+        if (y !== undefined) {
+            if ((this.minY === undefined) || (y < this.minY))
+                this.minY = y;
+            if ((this.maxY === undefined) || (y > this.maxY))
+                this.maxY = y;
+        }
+
+        if ( this.parent )
+            this.parent.adjust(p);
+    }
+
+    adjustForLine(line) {
+
+        if (!line)
+            return;
+
+        this.adjust(line.p1);
+        this.adjust(line.p2);
+    }
+}
+
+
 class PatternPiece {
 
     constructor (data, pattern) {
@@ -3376,48 +3421,12 @@ class PatternPiece {
         else {
             this.drawingObjects = [];
         }
-        this.bounds = {
-            minX: undefined,
-            maxX: undefined,
-            minY: undefined,
-            maxY: undefined
-        };
+        this.bounds = new Bounds();
+        this.bounds.parent = pattern.bounds;
         this.init();
     }
     
     init() {
-        this.bounds = {
-            minX: undefined,
-            maxX: undefined,
-            minY: undefined,
-            maxY: undefined,
-            adjust: function (p) {
-                if (!p)
-                    return; //e.g. an error
-
-                var x = p.x;
-                var y = p.y;
-                if (x !== undefined) {
-                    if ((this.minX === undefined) || (x < this.minX))
-                        this.minX = x;
-                    if ((this.maxX === undefined) || (x > this.maxX))
-                        this.maxX = x;
-                }
-                if (y !== undefined) {
-                    if ((this.minY === undefined) || (y < this.minY))
-                        this.minY = y;
-                    if ((this.maxY === undefined) || (y > this.maxY))
-                        this.maxY = y;
-                }
-            },
-            adjustForLine: function (line) {
-                if (!line)
-                    return;
-
-                this.adjust(line.p1);
-                this.adjust(line.p2);
-            }
-        };
         if (!this.data)
             return;
         //Take each drawingObject in the JSON and convert to the appropriate 
@@ -3960,7 +3969,6 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     var margin = layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
-    var patternPiece1 = pattern.patternPieces[0];
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -3972,8 +3980,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     var transformGroup1 = svg.append("g")
                             .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
 
-    var patternWidth = ( patternPiece1.bounds.maxX - patternPiece1.bounds.minX );
-    var patternHeight =( patternPiece1.bounds.maxY - patternPiece1.bounds.minY );
+    var patternWidth = ( pattern.bounds.maxX - pattern.bounds.minX );
+    var patternHeight =( pattern.bounds.maxY - pattern.bounds.minY );
 
     var scaleX = width / patternWidth;                   
     var scaleY = height / patternHeight;           
@@ -3993,20 +4001,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         .attr("transform", "scale(" + scale + "," + scale + ")");
 
     //centralise horizontally                            
-    var boundsWidth = patternPiece1.bounds.maxX - patternPiece1.bounds.minX;
+    var boundsWidth = pattern.bounds.maxX - pattern.bounds.minX;
     var availableWidth = width / scale;
     var offSetX = ( availableWidth - boundsWidth ) /2;
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")
                                .attr("class","pattern")
-                               .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")");    
+                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")");    
 
     if ( pattern.wallpapers )
     {
         var wallpaperGroups = transformGroup2.append("g")
                                              .attr("class","wallpapers")
-                                             .attr("transform", "translate(" + ( ( -1.0 * ( patternPiece1.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * patternPiece1.bounds.minY ) ) + ")")   
+                                             .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")")   
                                              .lower();
         doWallpapers( wallpaperGroups, pattern );
     }
@@ -4017,40 +4025,43 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         focusDrawingObject(d,true);
     };
 
-    var outlineGroup = transformGroup3.append("g");
-    var drawingGroup = transformGroup3.append("g");
+    for( var j=0; j< pattern.patternPieces.length; j++ )
+    {
+        var patternPiece = pattern.patternPieces[j];
 
-    var a = drawingGroup.selectAll("g");    
-    a = a.data( patternPiece1.drawingObjects );
-    a.enter()
-     .append("g")
-     //.attr("class", "j-point")
-     .each( function(d,i) {
-        var g = d3.select( this );
+        var outlineGroup = transformGroup3.append("g");
+        var drawingGroup = transformGroup3.append("g");
 
-        d.drawingSvg = g;
-        
-        g.on("contextmenu", contextMenu)
-         .on("click", onclick)
-         .attr("class", "j-point");
-        
-        if (( typeof d.draw === "function" ) && ( ! d.error ))
-        {
-            d.draw( g );
+        var a = drawingGroup.selectAll("g");    
+        a = a.data( patternPiece.drawingObjects );
+        a.enter()
+         .append("g")
+         .each( function(d,i) {
+            var g = d3.select( this );
+
+            d.drawingSvg = g;
             
-            var g2 = outlineGroup.append("g")
-                                  .attr("class", "j-outline")
-                                  //.on("contextmenu", contextMenu);
-                                  .on("click", function( m ) { 
-                                    d3.event.preventDefault();
-                                    focusDrawingObject(d,true);                            
-                                  });
-
-            d.draw( g2, true );
-            d.outlineSvg = g2;
+            g.on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .attr("class", "j-point");
             
-        }
-    });
+            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            {
+                d.draw( g );
+                
+                var g2 = outlineGroup.append("g")
+                                    .attr("class", "j-outline")
+                                    //.on("contextmenu", contextMenu);
+                                    .on("click", function( m ) { 
+                                        d3.event.preventDefault();
+                                        focusDrawingObject(d,true);                                                    
+                                    });
+
+                d.draw( g2, true );
+                d.outlineSvg = g2;                      
+            }
+        });
+    }
 
     var zoomed = function() {
         transformGroup1.attr("transform", d3.event.transform);
@@ -4067,43 +4078,47 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
                     //console.log( "Resize for " + fontsSizedForScale);
 
-                    for( var i=0; i< patternPiece1.drawingObjects.length; i++ )
+                    for( var j=0; j< pattern.patternPieces.length; j++ )
                     {
-                        var a = patternPiece1.drawingObjects[i];
-                        var g = a.drawingSvg;
-                        
-                        g.selectAll( "text" )
-                         .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
-
-                        g.selectAll( "circle" )
-                         .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
-
+                        var patternPiece = pattern.patternPieces[j];
+                
+                        for( var i=0; i< patternPiece.drawingObjects.length; i++ )
                         {
-                            var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
-
-                            g.selectAll( "line" )
-                                .attr( "stroke-width", strokeWidth );
-
-                            g.selectAll( "path" )
-                                .attr( "stroke-width", strokeWidth );       
-                        }
-
-                        g = a.outlineSvg;
-                        if ( g )
-                        {
-                            var strokeWidth = a.getStrokeWidth( true );
-
-                            g.selectAll( "line" )
-                             .attr( "stroke-width", strokeWidth );
-
-                            g.selectAll( "path" )
-                             .attr( "stroke-width", strokeWidth );       
+                            var a = patternPiece.drawingObjects[i];
+                            var g = a.drawingSvg;
+                            
+                            g.selectAll( "text" )
+                            .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
 
                             g.selectAll( "circle" )
-                                .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
-                        }
-                    }        
+                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 
+                            {
+                                var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
+                                g.selectAll( "line" )
+                                    .attr( "stroke-width", strokeWidth );
+
+                                g.selectAll( "path" )
+                                    .attr( "stroke-width", strokeWidth );            
+                            }
+
+                            g = a.outlineSvg;
+                            if ( g )
+                            {
+                                var strokeWidth = a.getStrokeWidth( true );
+
+                                g.selectAll( "line" )
+                                .attr( "stroke-width", strokeWidth );
+
+                                g.selectAll( "path" )
+                                .attr( "stroke-width", strokeWidth );           
+
+                                g.selectAll( "circle" )
+                                    .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
+                            }
+                        }        
+                    }
                 }, 50);         
             }   
         }
@@ -4292,18 +4307,25 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     graphdiv.select("div.pattern-table").remove();
 
+    var combinedDrawingObjects = pattern.patternPieces.length == 1 ? pattern.patternPieces[0].drawingObjects 
+                                                                   : pattern.patternPieces[0].drawingObjects.concat( pattern.patternPieces[1].drawingObjects);
+    for( var j=2; j< pattern.patternPieces.length; j++ )
+    {
+        combinedDrawingObjects = combinedDrawingObjects.concat( pattern.patternPieces[2].drawingObjects);
+    }
+
     var svg = graphdiv.append("div")
                       .attr("class", "pattern-table")
                       .style( "height", height +"px" )    
                       .append("svg")
                       .attr("width", width + ( 2 * margin ) )
-                      .attr("height", minItemHeight * patternPiece1.drawingObjects.length );    
+                      .attr("height", minItemHeight * combinedDrawingObjects.length );    
 
     var a = svg.selectAll("g");
-    a = a.data( patternPiece1.drawingObjects );
+    a = a.data( combinedDrawingObjects );
     a.enter()        
-     .append("g")
-     .each( function(d,i) {
+    .append("g")
+    .each( function(d,i) {
 
         var divHeight = function(that) {
 
@@ -4333,20 +4355,20 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         d.tableSvgY = ypos + ( 0.5 * minItemHeight );
 
         var fo = g.append( "foreignObject" )
-         .attr( "x", 0 )
-         .attr( "y", function (d) { 
+        .attr( "x", 0 )
+        .attr( "y", function (d) { 
              return ypos;
          } )
          .attr( "width", itemWidth  );
 
-         var html;
-         try {
+        var html;
+        try {
             html = d.html( asFormula );
             if (d.error)
                 html += '<div class="error">' + d.error + '</div>';
-         } catch ( e ) {
-             html = "Failed to generate description.";
-         }
+        } catch ( e ) {
+            html = "Failed to generate description.";
+        }
 
          var div = fo.append( "xhtml:div" )
            .attr("class","outer")
@@ -4358,7 +4380,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         fo.attr( "height", divHeight );
 
         g.attr( "height", divHeight )
-         .attr( "y", function (d) { 
+        .attr( "y", function (d) { 
                                     //Get the height of the foreignObject.
                                     var h = this.childNodes[0].getBoundingClientRect().height;
                                     ypos += h + itemMargin; 
@@ -4368,7 +4390,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         g.on("contextmenu", contextMenu)
          .on("click", onclick );
     });                   
-    
+        
     svg.attr("height", ypos );    
 
     linksGroup = svg.append("g")

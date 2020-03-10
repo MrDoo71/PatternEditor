@@ -1,3 +1,49 @@
+class Bounds {
+    
+    constructor() {
+        this.minX = undefined;
+        this.maxX = undefined;
+        this.minY = undefined;
+        this.maxY = undefined;
+    }
+
+    adjust(p) {
+
+        if (!p)
+            return; //e.g. an error
+
+        var x = p.x;
+        var y = p.y;
+
+        if (x !== undefined) {
+            if ((this.minX === undefined) || (x < this.minX))
+                this.minX = x;
+            if ((this.maxX === undefined) || (x > this.maxX))
+                this.maxX = x;
+        }
+
+        if (y !== undefined) {
+            if ((this.minY === undefined) || (y < this.minY))
+                this.minY = y;
+            if ((this.maxY === undefined) || (y > this.maxY))
+                this.maxY = y;
+        }
+
+        if ( this.parent )
+            this.parent.adjust(p);
+    }
+
+    adjustForLine(line) {
+
+        if (!line)
+            return;
+
+        this.adjust(line.p1);
+        this.adjust(line.p2);
+    }
+}
+
+
 class PatternPiece {
 
     constructor (data, pattern) {
@@ -12,48 +58,12 @@ class PatternPiece {
         else {
             this.drawingObjects = [];
         }
-        this.bounds = {
-            minX: undefined,
-            maxX: undefined,
-            minY: undefined,
-            maxY: undefined
-        };
+        this.bounds = new Bounds();
+        this.bounds.parent = pattern.bounds;
         this.init();
     }
     
     init() {
-        this.bounds = {
-            minX: undefined,
-            maxX: undefined,
-            minY: undefined,
-            maxY: undefined,
-            adjust: function (p) {
-                if (!p)
-                    return; //e.g. an error
-
-                var x = p.x;
-                var y = p.y;
-                if (x !== undefined) {
-                    if ((this.minX === undefined) || (x < this.minX))
-                        this.minX = x;
-                    if ((this.maxX === undefined) || (x > this.maxX))
-                        this.maxX = x;
-                }
-                if (y !== undefined) {
-                    if ((this.minY === undefined) || (y < this.minY))
-                        this.minY = y;
-                    if ((this.maxY === undefined) || (y > this.maxY))
-                        this.maxY = y;
-                }
-            },
-            adjustForLine: function (line) {
-                if (!line)
-                    return;
-
-                this.adjust(line.p1);
-                this.adjust(line.p2);
-            }
-        };
         if (!this.data)
             return;
         //Take each drawingObject in the JSON and convert to the appropriate 
