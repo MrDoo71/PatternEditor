@@ -39,13 +39,21 @@
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "defaultViewOption": 2,
+                  "viewOption": [{ "label": "4:0", "drawingWidth": 12, "descriptionsWidth": 0 }, { "label": "3:1", "drawingWidth": 9, "descriptionsWidth": 3 }, { "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }, { "label": "1:3", "drawingWidth": 3, "descriptionsWidth": 9 }, { "label": "0:4", "drawingWidth": 0, "descriptionsWidth": 12 }]
+                },
                 "pattern":
                 {
+                  "units": "cm",
                   "description":
                     "Stockings Pattern\u000aSecond attempt with Seamly2D.\u000aRe-worked to use standard measurements wherevever possible.\u000aHas variable stocking length (e.g. top of thigh, mid-thigh), stocking-top height, and variable heel design. ",
                   "notes":
                     "Pattern contains some constants based on observation.",
-                  "measurement": [{ "name": "height_gluteal_fold", "value": 87 }, { "name": "height_knee", "value": 53 }, { "name": "height_calf", "value": 39 }, { "name": "height_ankle_high", "value": 12 }, { "name": "foot_length", "value": 27 }, { "name": "foot_circ", "value": 23 }, { "name": "foot_instep_circ", "value": 25 }, { "name": "leg_thigh_upper_circ", "value": 58 }, { "name": "leg_thigh_mid_circ", "value": 47 }, { "name": "leg_knee_circ", "value": 36 }, { "name": "leg_knee_small_circ", "value": 31 }, { "name": "leg_calf_circ", "value": 35 }, { "name": "leg_ankle_high_circ", "value": 21 }, { "name": "leg_ankle_diag_circ", "value": 31 }],
+                  "measurement": [{ "name": "height_gluteal_fold", "value": 80, "units": "cm" }, { "name": "height_knee", "value": 50, "units": "cm" }, { "name": "height_calf", "value": 35.5, "units": "cm" }, { "name": "height_ankle_high", "value": 10.5, "units": "cm" }, { "name": "foot_length", "value": 24.5, "units": "cm" }, { "name": "foot_circ", "value": 22, "units": "cm" }, { "name": "foot_instep_circ", "value": 25, "units": "cm" }, { "name": "leg_thigh_upper_circ", "value": 62, "units": "cm" }, { "name": "leg_thigh_mid_circ", "value": 55, "units": "cm" }, { "name": "leg_knee_circ", "value": 40.5, "units": "cm" }, { "name": "leg_knee_small_circ", "value": 38, "units": "cm" }, { "name": "leg_calf_circ", "value": 40.5, "units": "cm" }, { "name": "leg_ankle_high_circ", "value": 22.5, "units": "cm" }, { "name": "leg_ankle_diag_circ", "value": 31.5, "units": "cm" }],
                   "increment":
                     [
                       { "name": "#EaseMultiplier", "constant": 0.85 },
@@ -60,7 +68,7 @@
                           "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SeamOverlap" }, { "operationType": "Integer value", "integerValue": 2 }]
                         }
                       },
-                      { "name": "#StockingHeight", "constant": 1 },
+                      { "name": "#StockingHeight", "constant": 0.95 },
                       { "name": "#TopPanelHeight", "constant": 8 },
                       { "name": "#HeelPointWidth", "constant": 1.5 },
                       { "name": "#height_ankle_diagonal", "constant": 6 },
@@ -506,8 +514,8 @@
                               "basePoint": "L5_Mid",
                               "lineStyle": "dotLine",
                               "color": "black",
-                              "mx": -1.25821,
-                              "my": -1.57579,
+                              "mx": 0.733576,
+                              "my": -0.260329,
                               "angle":
                                 { "constant": 0 },
                               "length":
@@ -954,7 +962,7 @@
                                 { "constant": 0 }
                             },
                             {
-                              "derivedName": "Spl_S0BL_S4B",
+                              "derivedName": "SplPath_S0BL_S4B",
                               "objectType": "splinePathInteractive",
                               "lineStyle": "hair",
                               "color": "deeppink",
@@ -999,7 +1007,7 @@
                               "name": "S1B",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "S1",
-                              "curve": "Spl_S0BL_S4B",
+                              "curve": "SplPath_S0BL_S4B",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": -1.50902,
@@ -1011,7 +1019,7 @@
                               "name": "S3B",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "S3",
-                              "curve": "Spl_S0BL_S4B",
+                              "curve": "SplPath_S0BL_S4B",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": -1.82103,
@@ -1613,12 +1621,12 @@
                               }
                             },
                             { "derivedName": "Line_S4A2_S4A", "objectType": "line", "firstPoint": "S4A2", "secondPoint": "S4A", "lineStyle": "hair", "color": "darkRed" },
-                            { "objectType": "operationFlipByAxis", "center": "SL2", "suffix": "R", "operationName": "ObjectID: 202", "axis": "Vertical" },
-                            { "derivedName": "SL2CR", "objectType": "operationResult", "basePoint": "SL2C", "fromOperation": "ObjectID: 202", "mx": -2.9901, "my": -0.632975 },
-                            { "derivedName": "SL2CBR", "objectType": "operationResult", "basePoint": "SL2CB", "fromOperation": "ObjectID: 202", "mx": -3.65128, "my": -0.593678 },
-                            { "derivedName": "S0BHR", "objectType": "operationResult", "basePoint": "S0BH", "fromOperation": "ObjectID: 202", "mx": -3.06285, "my": -0.583613 },
-                            { "derivedName": "S0BLR", "objectType": "operationResult", "basePoint": "S0BL", "fromOperation": "ObjectID: 202", "mx": -2.85764, "my": -0.513732 },
-                            { "derivedName": "S2BR", "objectType": "operationResult", "basePoint": "S2B", "fromOperation": "ObjectID: 202", "mx": 0.107432, "my": -0.846508 },
+                            { "objectType": "operationFlipByAxis", "center": "SL2", "suffix": "R", "operationName": "operation_202", "axis": "Vertical" },
+                            { "derivedName": "SL2CR", "objectType": "operationResult", "basePoint": "SL2C", "fromOperation": "operation_202", "mx": -2.9901, "my": -0.632975 },
+                            { "derivedName": "SL2CBR", "objectType": "operationResult", "basePoint": "SL2CB", "fromOperation": "operation_202", "mx": -3.65128, "my": -0.593678 },
+                            { "derivedName": "S0BHR", "objectType": "operationResult", "basePoint": "S0BH", "fromOperation": "operation_202", "mx": -3.06285, "my": -0.583613 },
+                            { "derivedName": "S0BLR", "objectType": "operationResult", "basePoint": "S0BL", "fromOperation": "operation_202", "mx": -2.85764, "my": -0.513732 },
+                            { "derivedName": "S2BR", "objectType": "operationResult", "basePoint": "S2B", "fromOperation": "operation_202", "mx": 0.107432, "my": -0.846508 },
                             { "derivedName": "Line_SL2CR_SL2", "objectType": "line", "firstPoint": "SL2CR", "secondPoint": "SL2", "lineStyle": "hair", "color": "black" },
                             { "derivedName": "Line_SL2CR_SL2CBR", "objectType": "line", "firstPoint": "SL2CR", "secondPoint": "SL2CBR", "lineStyle": "hair", "color": "darkviolet" },
                             {
@@ -1670,7 +1678,7 @@
                                 { "constant": 0 }
                             },
                             {
-                              "derivedName": "Spl_S0BLR_S4A",
+                              "derivedName": "SplPath_S0BLR_S4A",
                               "objectType": "splinePathInteractive",
                               "lineStyle": "hair",
                               "color": "deeppink",
@@ -1718,7 +1726,7 @@
                               "objectType": "pointIntersectLineAndAxis",
                               "basePoint": "L0",
                               "p1Line1": "GF_C",
-                              "p2Line1": "L4C",
+                              "p2Line1": "L5C",
                               "lineStyle": "hair",
                               "color": "black",
                               "mx": -2.73172,
@@ -1734,9 +1742,22 @@
                               "lineStyle": "hair",
                               "color": "cornflowerblue",
                               "angle1":
-                                { "constant": 65 },
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "subtract",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 1 }
+                                    ]
+                                }
+                              },
                               "angle2":
-                                { "constant": 95 },
+                                { "constant": 91 },
                               "radius":
                               {
                                 "expression":
@@ -1750,9 +1771,22 @@
                               "lineStyle": "hair",
                               "color": "cornflowerblue",
                               "angle1":
-                                { "constant": 65 },
+                              {
+                                "expression":
+                                {
+                                  "operationType": "subtract",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "subtract",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 1 }
+                                    ]
+                                }
+                              },
                               "angle2":
-                                { "constant": 95 },
+                                { "constant": 91 },
                               "radius":
                               {
                                 "expression":
@@ -1763,7 +1797,7 @@
                               }
                             },
                             {
-                              "derivedName": "Spl_L0C_GF_C",
+                              "derivedName": "SplPath_L0C_GF_C",
                               "objectType": "splinePathInteractive",
                               "lineStyle": "hair",
                               "color": "black",
@@ -1776,7 +1810,7 @@
                                     "length1":
                                       { "constant": 0 },
                                     "angle2":
-                                      { "constant": 85.3923 },
+                                      { "constant": 85.392 },
                                     "length2":
                                       { "constant": 3.37484 }
                                   },
@@ -1827,13 +1861,13 @@
                                   {
                                     "point": "L5C",
                                     "angle1":
-                                      { "constant": 253.917 },
+                                      { "constant": 256.204 },
                                     "length1":
-                                      { "constant": 2 },
+                                      { "constant": 4.91332 },
                                     "angle2":
-                                      { "constant": 73.917 },
+                                      { "constant": 76.2038 },
                                     "length2":
-                                      { "constant": 2 }
+                                      { "constant": 2.47343 }
                                   },
                                   {
                                     "point": "GF_C",
@@ -1848,8 +1882,8 @@
                                   }
                                 ]
                             },
-                            { "name": "STC", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_227", "curve2": "Spl_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": -2.26276, "my": -0.034798 },
-                            { "name": "STD", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_228", "curve2": "Spl_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": 0.452645, "my": -1.29487 },
+                            { "name": "STC", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_227", "curve2": "SplPath_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": -2.26276, "my": -0.034798 },
+                            { "name": "STD", "objectType": "pointIntersectCurves", "curve1": "Arc_ARC_228", "curve2": "SplPath_L0C_GF_C", "verticalCrossPoint": "One", "horizontalCrossPoint": "One", "mx": 0.452645, "my": -1.29487 },
                             { "derivedName": "Line_S4A2_S4B2", "objectType": "line", "firstPoint": "S4A2", "secondPoint": "S4B2", "lineStyle": "hair", "color": "black" },
                             {
                               "name": "P1",
@@ -1871,7 +1905,7 @@
                               "name": "P3",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "P1",
-                              "curve": "Spl_L0C_GF_C",
+                              "curve": "SplPath_L0C_GF_C",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": 0.32466,
@@ -1896,7 +1930,7 @@
                               "name": "P4",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "P2",
-                              "curve": "Spl_L0C_GF_C",
+                              "curve": "SplPath_L0C_GF_C",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": 0.181728,
@@ -1922,7 +1956,7 @@
                               }
                             },
                             {
-                              "derivedName": "Spl_L0C_P5",
+                              "derivedName": "SplPath_L0C_P5",
                               "objectType": "splinePathInteractive",
                               "lineStyle": "hair",
                               "color": "black",
@@ -1967,7 +2001,7 @@
                               "name": "S1BR",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "S1",
-                              "curve": "Spl_S0BLR_S4A",
+                              "curve": "SplPath_S0BLR_S4A",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": 0.199865,
@@ -1979,7 +2013,7 @@
                               "name": "S3BR",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "S3",
-                              "curve": "Spl_S0BLR_S4A",
+                              "curve": "SplPath_S0BLR_S4A",
                               "lineStyle": "dotLine",
                               "color": "black",
                               "mx": -2.47501,
@@ -2000,7 +2034,7 @@
                                 { "constant": 180 }
                             },
                             {
-                              "derivedName": "Spl_L0C_LF4C",
+                              "derivedName": "SplPath_L0C_LF4C",
                               "objectType": "splinePathInteractive",
                               "lineStyle": "hair",
                               "color": "black",
@@ -2066,7 +2100,7 @@
                             {
                               "name": "LP20",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_L0C_LF4C",
+                              "splinePath": "SplPath_L0C_LF4C",
                               "mx": 0.330991,
                               "my": -0.419826,
                               "length":
@@ -2074,14 +2108,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
                             {
                               "name": "LP40",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_L0C_LF4C",
+                              "splinePath": "SplPath_L0C_LF4C",
                               "mx": 0.375147,
                               "my": -0.486057,
                               "length":
@@ -2089,14 +2123,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
                             {
                               "name": "LP60",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_L0C_LF4C",
+                              "splinePath": "SplPath_L0C_LF4C",
                               "mx": 0.330991,
                               "my": -0.419825,
                               "length":
@@ -2104,14 +2138,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
                             {
                               "name": "LP80",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_L0C_LF4C",
+                              "splinePath": "SplPath_L0C_LF4C",
                               "mx": 0.286836,
                               "my": -0.397747,
                               "length":
@@ -2119,14 +2153,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "L0C", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
                             {
                               "name": "SP20",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BL_S4B",
+                              "splinePath": "SplPath_S0BL_S4B",
                               "mx": 0.330991,
                               "my": -0.441903,
                               "length":
@@ -2134,14 +2168,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP40",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BL_S4B",
+                              "splinePath": "SplPath_S0BL_S4B",
                               "mx": 0.330991,
                               "my": -0.331514,
                               "length":
@@ -2149,14 +2183,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP60",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BL_S4B",
+                              "splinePath": "SplPath_S0BL_S4B",
                               "mx": 0.24268,
                               "my": -0.508136,
                               "length":
@@ -2164,14 +2198,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP80",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BL_S4B",
+                              "splinePath": "SplPath_S0BL_S4B",
                               "mx": 0.397224,
                               "my": -0.486058,
                               "length":
@@ -2179,14 +2213,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP20R",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BLR_S4A",
+                              "splinePath": "SplPath_S0BLR_S4A",
                               "mx": -2.5391,
                               "my": -0.331515,
                               "length":
@@ -2194,14 +2228,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP40R",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BLR_S4A",
+                              "splinePath": "SplPath_S0BLR_S4A",
                               "mx": -2.62742,
                               "my": -0.397747,
                               "length":
@@ -2209,14 +2243,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP60R",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BLR_S4A",
+                              "splinePath": "SplPath_S0BLR_S4A",
                               "mx": -2.53911,
                               "my": -0.486058,
                               "length":
@@ -2224,14 +2258,14 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
                             {
                               "name": "SP80R",
                               "objectType": "pointCutSplinePath",
-                              "splinePath": "Spl_S0BLR_S4A",
+                              "splinePath": "SplPath_S0BLR_S4A",
                               "mx": -2.60534,
                               "my": -0.552291,
                               "length":
@@ -2239,7 +2273,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "S0BLR", "drawingObject2": "S4A" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2293,7 +2327,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.3 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.15 }]
                                 }
                               }
                             },
@@ -2308,7 +2342,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.85 }]
                                 }
                               }
                             },
@@ -2323,7 +2357,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
                                 }
                               }
                             },
@@ -2338,7 +2372,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.3 }]
                                 }
                               }
                             },
@@ -2353,7 +2387,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.45 }]
                                 }
                               }
                             },
@@ -2368,7 +2402,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.7 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
                                 }
                               }
                             },
@@ -2383,7 +2417,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2398,7 +2432,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2458,7 +2492,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
                                 }
                               }
                             },
@@ -2473,7 +2507,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
                                 }
                               }
                             },
@@ -2488,7 +2522,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
                                 }
                               }
                             },
@@ -2503,7 +2537,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S5B", "drawingObject2": "S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.2 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.2 }]
                                 }
                               }
                             },
@@ -2518,7 +2552,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
                                 }
                               }
                             },
@@ -2533,7 +2567,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -2548,25 +2582,25 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "S4B2", "drawingObject2": "S5B" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
+                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
                                 }
                               }
                             },
-                            { "objectType": "operationFlipByAxis", "center": "A3", "suffix": "t", "operationName": "ObjectID: 601", "axis": "Vertical" },
-                            { "derivedName": "S4A2t", "objectType": "operationResult", "basePoint": "S4A2", "fromOperation": "ObjectID: 601", "mx": -2.37148, "my": -1.22264 },
-                            { "derivedName": "S4t", "objectType": "operationResult", "basePoint": "S4", "fromOperation": "ObjectID: 601", "mx": -0.492472, "my": -1.66537 },
-                            { "derivedName": "S4B2t", "objectType": "operationResult", "basePoint": "S4B2", "fromOperation": "ObjectID: 601", "mx": -3.36086, "my": -0.585351 },
-                            { "derivedName": "Spl_S4B2_S5Bt", "objectType": "operationResult", "basePoint": "Spl_S4B2_S5B", "fromOperation": "ObjectID: 601", "mx": 0, "my": 0 },
-                            { "derivedName": "S4B25t", "objectType": "operationResult", "basePoint": "S4B25", "fromOperation": "ObjectID: 601", "mx": -3.4131, "my": -0.309433 },
-                            { "derivedName": "S4B50t", "objectType": "operationResult", "basePoint": "S4B50", "fromOperation": "ObjectID: 601", "mx": -3.64946, "my": 0.0957545 },
-                            { "derivedName": "S4B75t", "objectType": "operationResult", "basePoint": "S4B75", "fromOperation": "ObjectID: 601", "mx": -2.97415, "my": 0.298349 },
-                            { "derivedName": "S5Bt", "objectType": "operationResult", "basePoint": "S5B", "fromOperation": "ObjectID: 601", "mx": -2.4339, "my": 1.17626 },
-                            { "derivedName": "S5B20t", "objectType": "operationResult", "basePoint": "S5B20", "fromOperation": "ObjectID: 601", "mx": -1.58976, "my": 1.78403 },
-                            { "derivedName": "S5t", "objectType": "operationResult", "basePoint": "S5", "fromOperation": "ObjectID: 601", "mx": 0.159798, "my": 0.265971 },
-                            { "derivedName": "S5B40t", "objectType": "operationResult", "basePoint": "S5B40", "fromOperation": "ObjectID: 601", "mx": 0.301124, "my": 0.939892 },
-                            { "derivedName": "S5B60t", "objectType": "operationResult", "basePoint": "S5B60", "fromOperation": "ObjectID: 601", "mx": 0.132293, "my": 0.568473 },
-                            { "derivedName": "S5B80t", "objectType": "operationResult", "basePoint": "S5B80", "fromOperation": "ObjectID: 601", "mx": 0.13229, "my": 0.163286 },
-                            { "derivedName": "Spl_S5B_S4A2t", "objectType": "operationResult", "basePoint": "Spl_S5B_S4A2", "fromOperation": "ObjectID: 601", "mx": 0, "my": 0 },
+                            { "objectType": "operationFlipByAxis", "center": "A3", "suffix": "t", "operationName": "operation_601", "axis": "Vertical" },
+                            { "derivedName": "S4A2t", "objectType": "operationResult", "basePoint": "S4A2", "fromOperation": "operation_601", "mx": -2.37148, "my": -1.22264 },
+                            { "derivedName": "S4t", "objectType": "operationResult", "basePoint": "S4", "fromOperation": "operation_601", "mx": -0.492472, "my": -1.66537 },
+                            { "derivedName": "S4B2t", "objectType": "operationResult", "basePoint": "S4B2", "fromOperation": "operation_601", "mx": -3.36086, "my": -0.585351 },
+                            { "derivedName": "Spl_S4B2_S5Bt", "objectType": "operationResult", "basePoint": "Spl_S4B2_S5B", "fromOperation": "operation_601", "mx": 0, "my": 0 },
+                            { "derivedName": "S4B25t", "objectType": "operationResult", "basePoint": "S4B25", "fromOperation": "operation_601", "mx": -3.4131, "my": -0.309433 },
+                            { "derivedName": "S4B50t", "objectType": "operationResult", "basePoint": "S4B50", "fromOperation": "operation_601", "mx": -3.64946, "my": 0.0957545 },
+                            { "derivedName": "S4B75t", "objectType": "operationResult", "basePoint": "S4B75", "fromOperation": "operation_601", "mx": -2.97415, "my": 0.298349 },
+                            { "derivedName": "S5Bt", "objectType": "operationResult", "basePoint": "S5B", "fromOperation": "operation_601", "mx": -2.4339, "my": 1.17626 },
+                            { "derivedName": "S5B20t", "objectType": "operationResult", "basePoint": "S5B20", "fromOperation": "operation_601", "mx": -1.58976, "my": 1.78403 },
+                            { "derivedName": "S5t", "objectType": "operationResult", "basePoint": "S5", "fromOperation": "operation_601", "mx": 0.159798, "my": 0.265971 },
+                            { "derivedName": "S5B40t", "objectType": "operationResult", "basePoint": "S5B40", "fromOperation": "operation_601", "mx": 0.301124, "my": 0.939892 },
+                            { "derivedName": "S5B60t", "objectType": "operationResult", "basePoint": "S5B60", "fromOperation": "operation_601", "mx": 0.132293, "my": 0.568473 },
+                            { "derivedName": "S5B80t", "objectType": "operationResult", "basePoint": "S5B80", "fromOperation": "operation_601", "mx": 0.13229, "my": 0.163286 },
+                            { "derivedName": "Spl_S5B_S4A2t", "objectType": "operationResult", "basePoint": "Spl_S5B_S4A2", "fromOperation": "operation_601", "mx": 0, "my": 0 },
                             { "derivedName": "Line_S4t_S5t", "objectType": "line", "firstPoint": "S4t", "secondPoint": "S5t", "lineStyle": "dashDotLine", "color": "black" },
                             { "derivedName": "Line_S4B2t_S4A2t", "objectType": "line", "firstPoint": "S4B2t", "secondPoint": "S4A2t", "lineStyle": "hair", "color": "black" },
                             {
@@ -2583,7 +2617,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2601,7 +2635,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2619,7 +2653,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2637,7 +2671,7 @@
                                 "expression":
                                 {
                                   "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "LF4", "drawingObject2": "LF4C" }]
+                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2711,7 +2745,7 @@
                     ]
                 }
               }
-                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
           </script>
         </div>
       </div>

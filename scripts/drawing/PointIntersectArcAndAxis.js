@@ -31,7 +31,6 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-
         if ( this.arc.arc )
             this.p = longLine.intersectArc( this.arc.arc );
         else

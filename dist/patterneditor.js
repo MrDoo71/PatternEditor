@@ -136,7 +136,7 @@ class GeoLine {
         //return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
     }    
 
-    intersectArc( arc )
+    intersectArc( arc ) //nb. arc can be GeoArc, GeoEllipticalArc, or GeoSpline
     {
         //work around a bug where the arc spans 0 deg
         if (    ( arc.angle1 < 0 ) 
@@ -192,8 +192,8 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        console.log( "Intersections:" );
-        intersections.points.forEach(console.log);    
+        //console.log( "Intersections:" );
+        //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
@@ -225,13 +225,16 @@ class GeoLine {
                 {
                     var pi = intersections.points[i];
                     var p1pi = new GeoLine( this.p1, pi );
-                    console.log( i + " " + p1pi.length );
-                    if ( ( smallestDistance === undefined ) || ( p1pi.length < smallestDistance ) )
+                    //console.log( i + " " + p1pi.length );
+                    if (    ( smallestDistance === undefined ) 
+                         || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
+                              && ( p1pi.length < smallestDistance ) ) )
                     {
                         smallestDistance = p1pi.length;
                         whichPoint = i;
                     }
-                }            }
+                }            
+            }
         }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
@@ -616,7 +619,7 @@ class GeoEllipticalArc {
             return ShapeInfo.arc( this.center.x, this.center.y, this.radius1, this.radius2, this.angle1/180*Math.PI, this.angle2/180*Math.PI)
 
         var svgPath = this.svgPath();
-        console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
+        //console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
         return ShapeInfo.path( svgPath );
     }
     
@@ -1927,7 +1930,6 @@ class PointIntersectArcAndAxis extends DrawingObject {
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, angleDeg );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
-
 
         if ( this.arc.arc )
             this.p = longLine.intersectArc( this.arc.arc );
@@ -3736,11 +3738,16 @@ function drawPattern( dataAndConfig, ptarget, options )
             {
                 var a = pattern.patternPieces[j].drawingObjects[i];
                 var g = a.drawingSvg;
-                var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
-                g.selectAll( "line" )
-                .attr("stroke-width", strokeWidth );
-                g.selectAll( "path" )
-                .attr("stroke-width", strokeWidth );
+                if ( g )
+                {
+                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                    g.selectAll( "line" )
+                     .attr("stroke-width", strokeWidth );
+                    g.selectAll( "path" )
+                     .attr("stroke-width", strokeWidth );
+                }
+                else 
+                    console.log("No drawing object for " + a.data.name );
             }        
 
         var graphdiv = targetdiv;
@@ -3752,7 +3759,8 @@ function drawPattern( dataAndConfig, ptarget, options )
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
-        selectedObject.tableSvg.node().classList.add("j-active");
+        if ( selectedObject.tableSvg ) //should always be set unless there has been a problem
+            selectedObject.tableSvg.node().classList.add("j-active");
 
         if ( selectedObject.drawingSvg )
             selectedObject.drawingSvg.node().classList.add("j-active");
@@ -3793,9 +3801,15 @@ function drawPattern( dataAndConfig, ptarget, options )
         //Scroll the table to ensure that d.tableSvg is in view.    
         if ( scrollTable )
         {
-            var table = d3.select("div.pattern-table");
-            table.transition().duration(500)
-            .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+            if ( selectedObject.tableSvg )
+            {
+                var table = d3.select("div.pattern-table");
+                table.transition()
+                     .duration(500)
+                     .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+            }
+            else
+                console.log( "Cannot scroll table, no tableSvg - " + selectedObject.data.name );
         }
     };
 
@@ -3902,8 +3916,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
             .enter()
             .append("tr")
             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
-            .each( function(wallpaper,i){
-                console.log("here");
+            .each( function(wallpaper,i){                
                 var wallpaperDiv = d3.select(this);
                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
                                            .on("click", function(w) { w.hide = ! w.hide; 

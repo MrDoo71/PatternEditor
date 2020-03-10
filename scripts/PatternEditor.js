@@ -124,11 +124,16 @@ function drawPattern( dataAndConfig, ptarget, options )
             {
                 var a = pattern.patternPieces[j].drawingObjects[i];
                 var g = a.drawingSvg;
-                var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
-                g.selectAll( "line" )
-                .attr("stroke-width", strokeWidth );
-                g.selectAll( "path" )
-                .attr("stroke-width", strokeWidth );
+                if ( g )
+                {
+                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                    g.selectAll( "line" )
+                     .attr("stroke-width", strokeWidth );
+                    g.selectAll( "path" )
+                     .attr("stroke-width", strokeWidth );
+                }
+                else 
+                    console.log("No drawing object for " + a.data.name );
             }        
 
         var graphdiv = targetdiv;
@@ -140,7 +145,8 @@ function drawPattern( dataAndConfig, ptarget, options )
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
-        selectedObject.tableSvg.node().classList.add("j-active");
+        if ( selectedObject.tableSvg ) //should always be set unless there has been a problem
+            selectedObject.tableSvg.node().classList.add("j-active");
 
         if ( selectedObject.drawingSvg )
             selectedObject.drawingSvg.node().classList.add("j-active");
@@ -181,9 +187,15 @@ function drawPattern( dataAndConfig, ptarget, options )
         //Scroll the table to ensure that d.tableSvg is in view.    
         if ( scrollTable )
         {
-            var table = d3.select("div.pattern-table");
-            table.transition().duration(500)
-            .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+            if ( selectedObject.tableSvg )
+            {
+                var table = d3.select("div.pattern-table");
+                table.transition()
+                     .duration(500)
+                     .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
+            }
+            else
+                console.log( "Cannot scroll table, no tableSvg - " + selectedObject.data.name );
         }
     };
 
@@ -290,8 +302,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
             .enter()
             .append("tr")
             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
-            .each( function(wallpaper,i){
-                console.log("here");
+            .each( function(wallpaper,i){                
                 var wallpaperDiv = d3.select(this);
                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
                                            .on("click", function(w) { w.hide = ! w.hide; 

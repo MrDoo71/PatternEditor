@@ -128,7 +128,7 @@ class GeoLine {
         //return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
     }    
 
-    intersectArc( arc )
+    intersectArc( arc ) //nb. arc can be GeoArc, GeoEllipticalArc, or GeoSpline
     {
         //work around a bug where the arc spans 0 deg
         if (    ( arc.angle1 < 0 ) 
@@ -184,8 +184,8 @@ class GeoLine {
     
         var intersections = Intersection.intersect(arcSI, lineSI);
         
-        console.log( "Intersections:" );
-        intersections.points.forEach(console.log);    
+        //console.log( "Intersections:" );
+        //intersections.points.forEach(console.log);    
 
         if ( intersections.points.length === 0 )
             throw "No intersection with arc. ";
@@ -217,13 +217,16 @@ class GeoLine {
                 {
                     var pi = intersections.points[i];
                     var p1pi = new GeoLine( this.p1, pi );
-                    console.log( i + " " + p1pi.length );
-                    if ( ( smallestDistance === undefined ) || ( p1pi.length < smallestDistance ) )
+                    //console.log( i + " " + p1pi.length );
+                    if (    ( smallestDistance === undefined ) 
+                         || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
+                              && ( p1pi.length < smallestDistance ) ) )
                     {
                         smallestDistance = p1pi.length;
                         whichPoint = i;
                     }
-                }            }
+                }            
+            }
         }
 
         var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
@@ -608,7 +611,7 @@ class GeoEllipticalArc {
             return ShapeInfo.arc( this.center.x, this.center.y, this.radius1, this.radius2, this.angle1/180*Math.PI, this.angle2/180*Math.PI)
 
         var svgPath = this.svgPath();
-        console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
+        //console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
         return ShapeInfo.path( svgPath );
     }
     
