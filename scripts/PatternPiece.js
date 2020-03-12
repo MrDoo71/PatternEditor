@@ -203,7 +203,7 @@ class PatternPiece {
                 return this.constant;
             };
             f.htmlLength = function() {
-                return this.constant + patternUnits;
+                return this.constant + " " + patternUnits;
             };
             f.htmlAngle = function() {
                 return this.constant + "&#176;";
@@ -220,7 +220,7 @@ class PatternPiece {
             f.htmlLength = function( asFormula, currentLength ) {
                 var s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
-                    s += patternUnits;
+                    s += " " + patternUnits;
                 return s;
             };
             f.htmlAngle = function( asFormula, currentLength ) {

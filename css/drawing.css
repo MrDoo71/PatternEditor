@@ -18,42 +18,42 @@ g.j-item.j-active span.ps-ref {
 }
 
 
-g.j-point > line.dotLine,
-g.j-point > path.dotLine {
+g.j-drawing line.dotLine,
+g.j-drawing path.dotLine {
     stroke-dasharray: 0.25, 0.25; 
 }
 
-g.j-point > line.dashLine,
-g.j-point > path.dashLine {
+g.j-drawing line.dashLine,
+g.j-drawing path.dashLine {
     stroke-dasharray: 1, 0.25; 
 }
 
-g.j-point > line.dashDotLine,
-g.j-point > path.dashDotLine {
+g.j-drawing line.dashDotLine,
+g.j-drawing path.dashDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25; 
 }
 
-g.j-point > line.dashDotLine,
-g.j-point > path.dashDotLine {
+g.j-drawing line.dashDotLine,
+g.j-drawing path.dashDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25, 0.25, 0.25; 
 }
 
-g.j-point > line.hair,
-g.j-point > path.hair {
+g.j-drawing line.hair,
+g.j-drawing path.hair {
     stroke:solid;
 }
 
-g.j-point > circle {
+g.j-drawing circle {
     fill:#999;
     stroke-width: 0px;
 }
 
-g.j-point > text {
+g.j-drawing text {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     fill:#000;
 }
 
-g.j-active.j-point > circle {
+g.j-drawing g.j-active > circle {
     fill:#000;
 }
 
@@ -113,14 +113,14 @@ g.j-item.target div.desc {
     padding: 3px 7px;
 }
 
-g.j-outline > circle {
+g.j-outline circle {
     fill: #fff;
     opacity: 0.01; /* like none, but clickable*/
     stroke-width: 0px;
 }
 
-g.j-outline > path,
-g.j-outline > line {
+g.j-outline path,
+g.j-outline line {
     stroke: #fff;
     opacity: 0.01; /*like none, but clickable*/
 }
@@ -131,7 +131,7 @@ g.j-outline.target > circle {
     opacity: 1;
 }*/
 
-g.j-outline.source > circle {
+g.j-outline g.source > circle {
     fill: #449fdc80;
     opacity: 1;
 }
@@ -166,7 +166,7 @@ g.j-outline.source > circle {
     }
 }*/
 
-g.j-outline.j-active > circle {
+g.j-outline g.j-active > circle {
     fill: #ff8;
     opacity: 1;
     /*
@@ -179,8 +179,8 @@ g.j-outline.j-active > circle {
 }
     
 
-g.j-outline.j-active > path,
-g.j-outline.j-active > line {
+g.j-outline g.j-active > path,
+g.j-outline g.j-active > line {
     /*stroke: #ff8;*/
     animation-name: k-throb-stroke;
     animation-duration: 2s;

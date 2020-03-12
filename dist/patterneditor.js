@@ -3566,7 +3566,7 @@ class PatternPiece {
                 return this.constant;
             };
             f.htmlLength = function() {
-                return this.constant + patternUnits;
+                return this.constant + " " + patternUnits;
             };
             f.htmlAngle = function() {
                 return this.constant + "&#176;";
@@ -3583,7 +3583,7 @@ class PatternPiece {
             f.htmlLength = function( asFormula, currentLength ) {
                 var s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
-                    s += patternUnits;
+                    s += " " + patternUnits;
                 return s;
             };
             f.htmlAngle = function( asFormula, currentLength ) {
@@ -4089,38 +4089,40 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
     {
         var patternPiece = pattern.patternPieces[j];
 
-        var outlineGroup = transformGroup3.append("g");
-        var drawingGroup = transformGroup3.append("g");
+        var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
+        var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
         var a = drawingGroup.selectAll("g");    
         a = a.data( patternPiece.drawingObjects );
         a.enter()
          .append("g")
+         //.attr("class", "j-point")
+         .on("contextmenu", contextMenu)
+         .on("click", onclick)
          .each( function(d,i) {
-            var g = d3.select( this );
-
-            d.drawingSvg = g;
-            
-            g.on("contextmenu", contextMenu)
-            .on("click", onclick)
-            .attr("class", "j-point");
-            
+            var g = d3.select( this );            
             if (( typeof d.draw === "function" ) && ( ! d.error ))
             {
                 d.draw( g );
-                
-                var g2 = outlineGroup.append("g")
-                                    .attr("class", "j-outline")
-                                    //.on("contextmenu", contextMenu);
-                                    .on("click", function( m ) { 
-                                        d3.event.preventDefault();
-                                        focusDrawingObject(d,true);                                                    
-                                    });
-
-                d.draw( g2, true );
-                d.outlineSvg = g2;                      
+                d.drawingSvg = g;                 
             }
         });
+
+        var a = outlineGroup.selectAll("g");    
+        a = a.data( patternPiece.drawingObjects );
+        a.enter()
+         .append("g")
+         //.attr("class", "j-outline")
+         .on("contextmenu", contextMenu)
+         .on("click", onclick)
+         .each( function(d,i) {
+            var g = d3.select( this );
+            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            {
+                d.draw( g, true );
+                d.outlineSvg = g;
+            }
+        });        
     }
 
     var zoomed = function() {
