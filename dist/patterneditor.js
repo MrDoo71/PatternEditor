@@ -3648,7 +3648,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     var pattern = new Pattern( dataAndConfig, options );            
     
     // show menu on right-click.
-    var contextMenu = function(d) {
+    var contextMenu = typeof goGraph === "function" ? function(d) {
    		d3.event.preventDefault() ;
     	var v = newkvpSet(false) ;
     	v.add("x", d.x) ;   
@@ -3656,7 +3656,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     	goGraph( options.interactionPrefix + ':' + d.data.contextMenu ,
     			 d3.event, 
     			 v ) ;
-    }      
+    } : function(d){};     
     
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
@@ -3927,8 +3927,8 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
 
 
 function initialiseWallpapers( pattern, interactionPrefix )
-{
-    var updateServer = function(e) {
+{    
+    var updateServer = ( typeof goGraph === "function" ) ? function(e) {
         var kvpSet = newkvpSet(true) ;
         kvpSet.add('offsetX', w.offsetX ) ;
         kvpSet.add('offsetY', w.offsetY ) ;
@@ -3937,6 +3937,17 @@ function initialiseWallpapers( pattern, interactionPrefix )
         kvpSet.add('opacity', w.opacity ) ;
         kvpSet.add('visible', ! w.hide ) ;
         goGraph(interactionPrefix + ':' + w.update, fakeEvent(), kvpSet) ;    
+    } : function(e){};
+
+    var dimensionsKnown = function() 
+    {
+        console.log( "Wallpaper dimensions known. Image loaded w.imageurl width:" + w.width + " height:" + w.height );
+        if ( this.image )
+        {
+            console.log( " setting d3Image dimentions." );
+            d3.select( this.image ).attr("width", w.width );        
+            d3.select( this.image ).attr("height", w.height );        
+        }
     };
 
     for( var i=0; i<pattern.wallpapers.length; i++ )
@@ -3959,8 +3970,20 @@ function initialiseWallpapers( pattern, interactionPrefix )
             }
             w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
             w.scaleY = w.scaleY / defaultScale /*dpi*/;
-            w.hide = ( w.visible === undefined ) || (! w.visible );
-            w.updateServer = updateServer;
+            w.hide = ( w.visible !== undefined ) && (! w.visible );
+            
+            w.dimensionsKnown = dimensionsKnown;
+            $("<img/>") // Make in memory copy of image to avoid css issues
+                .attr("src", w.imageurl )
+                .on( "load", function() {
+                    w.width = this.width;   // Note: $(this).width() will not
+                    w.height = this.height; // work for in memory images.
+                    console.log( "jquery Image loaded w.imageurl width:" + w.width + " height:" + w.height);
+                    w.dimensionsKnown();   
+                });
+                
+            if ( updateServer )
+                w.updateServer = updateServer;
             w.initialised = true;
         }    
     }
@@ -4196,10 +4219,18 @@ function doWallpapers( wallpaperGroups, pattern )
                     .attr("transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
                                                                     + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
                     .append( "image" )
-                    //.attr( "width", function(w) { return w.width } )   //does this do anything?
-                    //.attr( "height", function(w) { return w.height } )
+                    //.on( "load", function(w) {
+                    //    console.log("d3 image loaded");
+                    //})
                     .attr( "href", function(w) { return w.imageurl } )
-                    .attr( "opacity", function(w) { return w.opacity } );
+                    .attr( "opacity", function(w) { return w.opacity } )
+                    .each( function(w){
+                        //Set this up so that we can later use dimensionsKnown()
+                        w.image = this; 
+                        //if we know the dimensions already, set them! (Safari needs this on showing a hidden wallpaper)
+                        d3.select(this).attr( "width",w.width);
+                        d3.select(this).attr( "height",w.height);
+                    } );
 
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers )
@@ -4211,9 +4242,10 @@ function doWallpapers( wallpaperGroups, pattern )
                     //.filter(function(w){return !w.hide;})
                     .each( function(w,i) {
                         var g = d3.select(this);
-                        var box = g.node().getBBox();
-                        w.width = box.width;
-                        w.height = box.height;
+                        //This worked on Firefox and Chrome, but not Safari.
+                        //var box = g.node().getBBox();
+                        //w.width = box.width;
+                        //w.height = box.height;
 
                         if ( w.editable )
                         {
