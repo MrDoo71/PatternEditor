@@ -3622,10 +3622,10 @@ class PatternPiece {
 
 
 //(c) Copyright 2019 Jason Dore
-//Inspired by the excellent seamly2D/Valentina (XXX ref) developed by Roman/Susan etc.
-//this is a ground up implementation in Javascript intended to be compatible with, but
-//not based on, the seamly2D/Valentina pattern making systen in order to support community
-//pattern sharing website. 
+//Inspired by the excellent Seamly2D/Valentina pattern drawing software.
+//This library is a ground up implementation in Javascript intended to be compatible with, but
+//not based on, the Seamly2D/Valentina pattern making systen in order to support the community
+//pattern sharing website https://my-pattern.cloud/ . 
 
 var selectedObject;
 var linksGroup;
@@ -3645,35 +3645,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     //This is a graph initialisation
 
-    var pattern = new Pattern( dataAndConfig, options );        
-    
-    function newkvpSet(noRefresh)
-    {
-        var kvp = { } ;
-        kvp.kvps = new Array() ;
-
-        kvp.add = function (k, v)
-        {
-            this.kvps.push ( {k: k, v: v} ) ;
-        } ;
-
-        kvp.toString = function (p)
-        {
-            var r = '' ;
-
-            for (var i = 0 ; i < this.kvps.length ; i++)
-            {
-                r += '&' + p + this.kvps[i].k + '=' + this.kvps[i].v ;
-            }
-
-            return r ;
-        } ;
-
-        if (noRefresh)
-            kvp.add("_noRefresh", -1) ;
-
-        return kvp ;
-    }
+    var pattern = new Pattern( dataAndConfig, options );            
     
     // show menu on right-click.
     var contextMenu = function(d) {
@@ -3725,6 +3697,8 @@ function drawPattern( dataAndConfig, ptarget, options )
     };    
 
     dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
+
+    dataAndConfig.options.interactionPrefix = options.interactionPrefix;
 
     var focusDrawingObject = function( d, scrollTable )
     {
@@ -3919,6 +3893,8 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
 
     if ( pattern.wallpapers )
     {
+        initialiseWallpapers( pattern, editorOptions.interactionPrefix );
+
         var wallpaperControlsGroups = controls.append("table").attr("class","wallpapers");
         wallpaperControlsGroups.selectAll("tr")
             .data( pattern.wallpapers )
@@ -3928,14 +3904,17 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
             .each( function(wallpaper,i){                
                 var wallpaperDiv = d3.select(this);
                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
-                                           .on("click", function(w) { w.hide = ! w.hide; 
+                                           .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
+                                                                      w.hide = ! w.hide; 
                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
+                                                                      w.updateServer();
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
                 wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' } )
-                                           .on("click", function(w) { w.editable = ! w.editable; 
+                                           .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
+                                                                      w.editable = ! w.editable; 
                                                                       d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
@@ -3946,6 +3925,46 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
     }
 }
 
+
+function initialiseWallpapers( pattern, interactionPrefix )
+{
+    var updateServer = function(e) {
+        var kvpSet = newkvpSet(true) ;
+        kvpSet.add('offsetX', w.offsetX ) ;
+        kvpSet.add('offsetY', w.offsetY ) ;
+        kvpSet.add('scaleX', w.scaleX * defaultScale ) ;
+        kvpSet.add('scaleY', w.scaleY * defaultScale ) ;
+        kvpSet.add('opacity', w.opacity ) ;
+        kvpSet.add('visible', ! w.hide ) ;
+        goGraph(interactionPrefix + ':' + w.update, fakeEvent(), kvpSet) ;    
+    };
+
+    for( var i=0; i<pattern.wallpapers.length; i++ )
+    {
+        var w = pattern.wallpapers[i];
+
+        if ( ! w.initialised )
+        {
+            //A 720px image is naturally 10in (at 72dpi)
+            //If our pattern as 10in across then our image should be 10 units.
+            //If our pattern was 10cm across then our image should be 25.4 units and we would expect to need to specify a scale of 1/2.54
+            var defaultScale = 72;
+            if ( pattern.units === "cm" )
+            {
+                defaultScale = 72 / 2.54;
+            }
+            else if ( pattern.units === "mm" )
+            {
+                defaultScale = 72 / 25.4;
+            }
+            w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
+            w.scaleY = w.scaleY / defaultScale /*dpi*/;
+            w.hide = ( w.visible === undefined ) || (! w.visible );
+            w.updateServer = updateServer;
+            w.initialised = true;
+        }    
+    }
+}
 
 
 //http://bl.ocks.org/humbletim/5507619
@@ -4142,30 +4161,9 @@ function doWallpapers( wallpaperGroups, pattern )
     for( var i=0; i<pattern.wallpapers.length; i++ )
     {
         var w = pattern.wallpapers[i];
-        if ( ! w.scaleAdjusted )
-        {
-            //A 720px image is naturally 10in (at 72dpi)
-            //If our pattern as 10in across then our image should be 10 units.
-            //If our pattern was 10cm across then our image should be 25.4 units and we would expect to need to specify a scale of 1/2.54
-            if ( pattern.units === "cm" )
-            {
-                w.scaleX = w.scaleX * 2.54;
-                w.scaleY = w.scaleY * 2.54;
-            }
-            else if ( pattern.units === "mm" )
-            {
-                w.scaleX = w.scaleX * 25.4;
-                w.scaleY = w.scaleY * 25.4;
-            }
-            w.scaleX = w.scaleX / 72 /*dpi*/; //And adjust by pattern.units
-            w.scaleY = w.scaleY / 72 /*dpi*/;
-            w.scaleAdjusted = true;
-        }
 
-        if ( w.hide )
-            continue;
-
-        visibleWallpapers.push( w );
+        if ( ! w.hide )
+            visibleWallpapers.push( w );
     }
 
     var drag = d3.drag()
@@ -4183,6 +4181,9 @@ function doWallpapers( wallpaperGroups, pattern )
             wallpaper.offsetX = wallpaper.offsetXdragStart + d3.event.x;
             wallpaper.offsetY = wallpaper.offsetYdragStart + d3.event.y;
             wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
+        })
+        .on("end", function(wallpaper){
+            wallpaper.updateServer( d3.event );
         });
 
 
@@ -4260,6 +4261,7 @@ function doWallpapers( wallpaperGroups, pattern )
                     .attr("cy", wallpaper.height );
             rect.attr("width", wallpaper.width )
                 .attr("height", wallpaper.height );
+            wallpaper.updateServer( d3.event );
         } )
         .on("drag", function(wallpaper) {
             var wallpaperG = d3.select(this.parentNode);
@@ -4442,6 +4444,56 @@ function curve(link) {
     path.moveTo( x0, y0 );
     path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
     return path;                      
+}
+
+
+function newkvpSet(noRefresh)
+{
+    var kvp = { } ;
+    kvp.kvps = new Array() ;
+
+    kvp.add = function (k, v)
+    {
+        this.kvps.push ( {k: k, v: v} ) ;
+    } ;
+
+    kvp.toString = function (p)
+    {
+        var r = '' ;
+
+        for (var i = 0 ; i < this.kvps.length ; i++)
+        {
+            r += '&' + p + this.kvps[i].k + '=' + this.kvps[i].v ;
+        }
+
+        return r ;
+    } ;
+
+    if (noRefresh)
+        kvp.add("_noRefresh", -1) ;
+
+    return kvp ;
+}
+
+
+function fakeEvent(location, x, y)
+{
+    var pXY = {x: 0, y: 0} ;
+    
+    if (location !== undefined)
+    {
+        pXY = getElementXY(location) ;
+        pXY.x = Math.round(pXY.x + x) ;
+        pXY.y = Math.round(pXY.y + y) ;
+    }
+    else
+    {
+        pXY.x = Math.round(x) ;
+        pXY.y = Math.round(y) ;
+    }
+    
+    // event to satisfy goGraph's requirements
+    return { target: location, pageX: 0, pageY: 0, processedXY: pXY } ;
 }
 
 
