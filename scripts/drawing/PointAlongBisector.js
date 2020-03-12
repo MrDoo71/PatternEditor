@@ -46,7 +46,7 @@ class PointAlongBisector extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
+                + this.data.length.htmlLength( asFormula ) 
                 + " along line bisecting " + this.refOf( this.secondPoint ) 
                 + "-" + this.refOf( firstPoint )
                 + " and " + this.refOf( this.secondPoint ) 

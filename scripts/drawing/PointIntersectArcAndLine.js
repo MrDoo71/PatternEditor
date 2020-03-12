@@ -46,7 +46,7 @@ class PointIntersectArcAndLine extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'intersect arc with center ' 
                 + this.refOf( this.center ) 
-                + ", radius " + this.radius.html( asFormula ) 
+                + ", radius " + this.radius.htmlLength( asFormula ) 
                 +  " with line " + this.refOf( this.firstPoint ) 
                 + "-" + this.refOf( this.secondPoint );
     }

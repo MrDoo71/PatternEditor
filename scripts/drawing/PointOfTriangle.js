@@ -53,7 +53,7 @@ class PointOfTriangle extends DrawingObject {
                 + " Point along " + this.refOf( this.p1Line1 )
                 + "-" + this.refOf( this.p2Line1 )
                 + " that forms a right angle triangle with line  " + this.refOf( this.firstPoint )
-                + "-" + this.secondPoint.ref();
+                + "-" + this.refOf( this.secondPoint );
     }
 
 

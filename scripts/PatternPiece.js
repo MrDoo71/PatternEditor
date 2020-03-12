@@ -193,7 +193,7 @@ class PatternPiece {
 
     newFormula(formula) {
 
-
+        var patternUnits = this.pattern.units;
         var f = formula;
         if (typeof formula.constant !== "undefined") {
             f.value = function () {
@@ -201,6 +201,12 @@ class PatternPiece {
             };
             f.html = function() {
                 return this.constant;
+            };
+            f.htmlLength = function() {
+                return this.constant + patternUnits;
+            };
+            f.htmlAngle = function() {
+                return this.constant + "&#176;";
             };
         }
         else if (typeof formula.expression === "object") {
@@ -210,6 +216,18 @@ class PatternPiece {
             };
             f.html = function( asFormula, currentLength ) {
                 return f.expression.html( asFormula, currentLength );
+            };
+            f.htmlLength = function( asFormula, currentLength ) {
+                var s = f.expression.html( asFormula, currentLength );
+                if ( ! asFormula )
+                    s += patternUnits;
+                return s;
+            };
+            f.htmlAngle = function( asFormula, currentLength ) {
+                var s = f.expression.html( asFormula, currentLength );
+                if ( ! asFormula )
+                  s += "&#176;";
+                return s;
             };
         }
         return f;

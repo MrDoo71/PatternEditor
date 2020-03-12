@@ -50,7 +50,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
                 + ' intersection of ' + this.refOf( this.p1Line1 ) 
                 + "-" + this.refOf( this.p2Line1 ) 
                 + " with line from " + this.refOf( this.basePoint ) 
-                + " at angle " + this.angle.html( asFormula );
+                + " at angle " + this.angle.htmlAngle( asFormula );
     }
 
 

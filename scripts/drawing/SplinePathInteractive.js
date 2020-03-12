@@ -78,11 +78,11 @@ class SplinePathInteractive extends DrawingObject {
                 html+= "; ";
          
             html += "<br />";    
-            html += d.pathNode[i].point.ref() + " " + 
-                    d.pathNode[i].angle1.html( asFormula ) + " " + 
-                    d.pathNode[i].length1.html( asFormula ) + " " + 
-                    d.pathNode[i].angle2.html( asFormula ) + " " + 
-                    d.pathNode[i].length2.html( asFormula );
+            html += this.refOf( d.pathNode[i].point ) + " " + 
+                    d.pathNode[i].angle1.htmlAngle( asFormula ) + " " + 
+                    d.pathNode[i].length1.htmlLength( asFormula ) + " " + 
+                    d.pathNode[i].angle2.htmlAngle( asFormula ) + " " + 
+                    d.pathNode[i].length2.htmlLength( asFormula );
         }
 
         return html;

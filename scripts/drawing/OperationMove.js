@@ -40,9 +40,9 @@ class OperationMove extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                    + 'Move operation: ' + this.data.length.html( asFormula ) 
+                    + 'Move operation: ' + this.data.length.htmlLength( asFormula ) 
                     //" from " + this.basePoint.data.name +
-                    + " angle:" + this.data.angle.html( asFormula ) 
+                    + " angle:" + this.data.angle.htmlAngle( asFormula ) 
                     + " suffix:" + this.data.suffix;
     }
 

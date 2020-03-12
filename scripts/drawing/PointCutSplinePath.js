@@ -30,8 +30,8 @@ class PointCutSplinePath extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
-                + " along path " + this.splinePath.ref();
+                + this.data.length.htmlLength( asFormula ) 
+                + " along path " + this.refOf( this.splinePath );
     }
 
 

@@ -873,11 +873,11 @@ class ArcElliptical extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'elliptical arc with center ' + this.refOf( this.center )
-                + " radius-x " + this.data.radius1.html( asFormula ) 
-                + " radius-y " + this.data.radius2.html( asFormula ) 
-                + " from angle " + this.data.angle1.html( asFormula ) 
-                + " to " + this.data.angle2.html( asFormula )
-                + " rotation angle " + this.data.rotationAngle.html( asFormula ) ;
+                + " radius-x " + this.data.radius1.htmlLength( asFormula ) 
+                + " radius-y " + this.data.radius2.htmlLength( asFormula ) 
+                + " from angle " + this.data.angle1.htmlAngle( asFormula ) 
+                + " to " + this.data.angle2.htmlAngle( asFormula )
+                + " rotation angle " + this.data.rotationAngle.htmlAngle( asFormula ) ;
     }
 
     
@@ -963,9 +963,9 @@ class ArcSimple extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'arc with center ' + this.refOf( this.center )
-                + " radius " + this.radius.html( asFormula ) 
-                + " from angle " + this.angle1.html( asFormula ) 
-                + " to " + this.angle2.html( asFormula );
+                + " radius " + this.radius.htmlLength( asFormula ) 
+                + " from angle " + this.angle1.htmlAngle( asFormula ) 
+                + " to " + this.angle2.htmlAngle( asFormula );
     }
 
     
@@ -1011,7 +1011,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
+                + this.data.length.htmlLength( asFormula ) 
                 + " along curve " + this.refOf( this.curve );
     }
 
@@ -1184,9 +1184,9 @@ class OperationMove extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                    + 'Move operation: ' + this.data.length.html( asFormula ) 
+                    + 'Move operation: ' + this.data.length.htmlLength( asFormula ) 
                     //" from " + this.basePoint.data.name +
-                    + " angle:" + this.data.angle.html( asFormula ) 
+                    + " angle:" + this.data.angle.htmlAngle( asFormula ) 
                     + " suffix:" + this.data.suffix;
     }
 
@@ -1336,7 +1336,7 @@ class OperationRotate extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'Move rotate: ' 
                 + " center: " + this.refOf( this.center ) 
-                + " angle:" + this.data.angle.html( asFormula ) 
+                + " angle:" + this.data.angle.htmlAngle( asFormula ) 
                 + " suffix:" + this.data.suffix;
     }
 
@@ -1456,7 +1456,7 @@ class PointAlongBisector extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
+                + this.data.length.htmlLength( asFormula ) 
                 + " along line bisecting " + this.refOf( this.secondPoint ) 
                 + "-" + this.refOf( firstPoint )
                 + " and " + this.refOf( this.secondPoint ) 
@@ -1513,9 +1513,9 @@ class PointAlongLine extends DrawingObject {
     html( asFormula ) {
         
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula, this.baseLine? this.baseLine.length : 0 ) 
+                + this.data.length.htmlLength( asFormula, this.baseLine? this.baseLine.length : 0 ) 
                 + " along line from " + this.refOf( this.firstPoint )
-                + " to " + this.secondPoint.ref();
+                + " to " + this.refOf( this.secondPoint );
     }
 
 
@@ -1570,13 +1570,13 @@ class PointAlongPerpendicular extends DrawingObject {
 
     html( asFormula ) {
         var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
+                + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.firstPoint ) 
-                + " perpendicular to the line to " + this.secondPoint.ref();
+                + " perpendicular to the line to " + this.refOf( this.secondPoint );
 
         if (    ( this.data.angle.constant )
              && ( this.data.angle.constant != 0 ) )
-            h += " additional angle " + this.data.angle.html( asFormula );
+            h += " additional angle " + this.data.angle.htmlAngle( asFormula );
 
         return h;
     }
@@ -1623,8 +1623,8 @@ class PointCutArc extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
-                + " along arc " + this.arc.ref();
+                + this.data.length.htmlLength( asFormula ) 
+                + " along arc " + this.refOf( this.arc );
     }
 
 
@@ -1667,8 +1667,8 @@ class PointCutSplinePath extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
-                + " along path " + this.splinePath.ref();
+                + this.data.length.htmlLength( asFormula ) 
+                + " along path " + this.refOf( this.splinePath );
     }
 
 
@@ -1719,9 +1719,9 @@ class PointEndLine extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + this.data.length.html( asFormula ) 
+                + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.basePoint ) 
-                + " angle " + this.data.angle.html( asFormula );
+                + " angle " + this.data.angle.htmlAngle( asFormula );
     }
 
 
@@ -1777,7 +1777,7 @@ class PointFromArcAndTangent extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + 'point on arc ' + this.arc.ref() //derivedName?
+                + 'point on arc ' + this.refOf( this.arc ) //derivedName?
                 + ' of tangent from point ' + this.refOf( this.tangent )
                 + ' crosspoint:' + this.crossPoint;
     }
@@ -1841,7 +1841,7 @@ class PointFromCircleAndTangent extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'point on circle with center ' + this.refOf( this.center ) 
-                + ' radius ' + this.radius.html( asFormula ) 
+                + ' radius ' + this.radius.htmlLength( asFormula ) 
                 + ' of tangent from point ' + this.refOf( this.tangent )
                 + ' crosspoint:' + this.crossPoint;
     }
@@ -1888,7 +1888,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.refOf( this.firstPoint ) +  " - " + this.secondPoint.ref();
+        return 'line ' + this.refOf( this.firstPoint ) +  " - " + this.refOf( this.secondPoint );
     }
 
 
@@ -1954,9 +1954,9 @@ class PointIntersectArcAndAxis extends DrawingObject {
     html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect arc ' + this.arc.ref()
+                + 'intersect arc ' + this.refOf( this.arc )
                 + " with line from " + this.refOf( this.basePoint ) 
-                + " at angle " + this.angle.html( asFormula );
+                + " at angle " + this.angle.htmlAngle( asFormula );
     }
 
 
@@ -2016,7 +2016,7 @@ class PointIntersectArcAndLine extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + 'intersect arc with center ' 
                 + this.refOf( this.center ) 
-                + ", radius " + this.radius.html( asFormula ) 
+                + ", radius " + this.radius.htmlLength( asFormula ) 
                 +  " with line " + this.refOf( this.firstPoint ) 
                 + "-" + this.refOf( this.secondPoint );
     }
@@ -2109,10 +2109,9 @@ class PointIntersectArcs extends DrawingObject {
 
 
     html( asFormula ) {
-        //TODO use a better name for this.arc, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect arcs ' + this.firstArc.ref()
-                + " and " + this.secondArc.ref()
+                + 'intersect arcs ' + this.refOf( this.firstArc )
+                + " and " + this.refOf( this.secondArc )
                 + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
@@ -2239,10 +2238,10 @@ class PointIntersectCircles extends DrawingObject {
     html( asFormula ) {
         //TODO use a better name for this.arc, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect circles ' + this.center1.ref() 
-                + " radius " + this.radius1.html( asFormula ) 
-                + " and " + this.center2.ref() 
-                + " radius " + this.radius2.html( asFormula )
+                + 'intersect circles ' + this.refOf( this.center1 ) 
+                + " radius " + this.radius1.htmlAngle( asFormula ) 
+                + " and " + this.refOf( this.center2 ) 
+                + " radius " + this.radius2.htmlLength( asFormula )
                 + ( this.data.crossPoint === "One" ? "" : " - second point");
     }
 
@@ -2317,11 +2316,10 @@ class PointIntersectCurveAndAxis extends DrawingObject {
 
 
     html( asFormula ) {
-        //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect curve ' + this.curve.ref() 
+                + 'intersect curve ' + this.refOf( this.curve )
                 + " with line from " + this.refOf( this.basePoint )
-                + " at angle " + this.angle.html( asFormula );
+                + " at angle " + this.angle.htmlAngle( asFormula );
     }
 
 
@@ -2415,8 +2413,8 @@ class PointIntersectCurves extends DrawingObject {
     html( asFormula ) {
         //TODO use a better name for this.curve, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'intersect curve ' + this.curve1.ref() 
-                + " with " + this.curve2.ref();
+                + 'intersect curve ' + this.refOf( this.curve1 ) 
+                + " with " + this.refOf( this.curve2 );
     }
 
 
@@ -2479,7 +2477,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
                 + ' intersection of ' + this.refOf( this.p1Line1 ) 
                 + "-" + this.refOf( this.p2Line1 ) 
                 + " with line from " + this.refOf( this.basePoint ) 
-                + " at angle " + this.angle.html( asFormula );
+                + " at angle " + this.angle.htmlAngle( asFormula );
     }
 
 
@@ -2536,8 +2534,8 @@ class PointLineIntersect extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect ' + this.refOf( this.p1Line1 )
                 + "-" + this.refOf( this.p2Line1 ) 
-                + " with " + this.p1Line2.ref() 
-                + "-" + this.p2Line2.ref();
+                + " with " + this.refOf( this.p1Line2 ) 
+                + "-" + this.refOf( this.p2Line2 );
     }
 
 
@@ -2606,7 +2604,7 @@ class PointOfTriangle extends DrawingObject {
                 + " Point along " + this.refOf( this.p1Line1 )
                 + "-" + this.refOf( this.p2Line1 )
                 + " that forms a right angle triangle with line  " + this.refOf( this.firstPoint )
-                + "-" + this.secondPoint.ref();
+                + "-" + this.refOf( this.secondPoint );
     }
 
 
@@ -2672,7 +2670,7 @@ class PointShoulder extends DrawingObject {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
             + " Point along " + this.refOf( this.p1Line1 ) 
             + "-" + this.refOf( this.p2Line1 )
-            + " being " + this.length.html( asFormula ) 
+            + " being " + this.length.htmlLength( asFormula ) 
             + " from " + this.refOf( this.shoulderPoint );
     }
 
@@ -2708,7 +2706,7 @@ class PointSingle extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>:' 
-            + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin";
+            + " point at x:" + this.data.x + ", y:" + this.data.y + " from origin"; //TODO add units
     }
 
 
@@ -2797,11 +2795,11 @@ class SplinePathInteractive extends DrawingObject {
                 html+= "; ";
          
             html += "<br />";    
-            html += d.pathNode[i].point.ref() + " " + 
-                    d.pathNode[i].angle1.html( asFormula ) + " " + 
-                    d.pathNode[i].length1.html( asFormula ) + " " + 
-                    d.pathNode[i].angle2.html( asFormula ) + " " + 
-                    d.pathNode[i].length2.html( asFormula );
+            html += this.refOf( d.pathNode[i].point ) + " " + 
+                    d.pathNode[i].angle1.htmlAngle( asFormula ) + " " + 
+                    d.pathNode[i].length1.htmlLength( asFormula ) + " " + 
+                    d.pathNode[i].angle2.htmlAngle( asFormula ) + " " + 
+                    d.pathNode[i].length2.htmlLength( asFormula );
         }
 
         return html;
@@ -2898,12 +2896,14 @@ class SplinePathUsingPoints extends DrawingObject {
         for( var i=0; i< d.pathNode.length; i+=3 )
         {
             if ( (i-1)>0 )
-                html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
+                html += this.refOf( this.data.pathNode[i-1].point );
+                //html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
 
             html += d.pathNode[i].point.ref() + " ";            
 
             if ( (i+1) < this.data.pathNode.length )
-                html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
+                html += this.refOf(  this.data.pathNode[i+1].point );
+                //html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
         }
 
         return html;
@@ -2997,12 +2997,12 @@ class SplineSimple extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'spline from ' + this.startPoint.ref() 
-                + " angle " + this.angle1.html( asFormula ) 
-                + " length " + this.length1.html( asFormula )
-            + " to " + this.endPoint.ref() 
-            + " angle " + this.angle2.html( asFormula ) 
-            + " length " + this.length2.html( asFormula );
+                + 'spline from ' + this.refOf( this.startPoint ) 
+                + " angle " + this.angle1.htmlAngle( asFormula ) 
+                + " length " + this.length1.htmlLength( asFormula )
+            + " to " + this.refOf( this.endPoint ) 
+            + " angle " + this.angle2.htmlAngle( asFormula ) 
+            + " length " + this.length2.htmlLength( asFormula );
     }
 
     
@@ -3082,10 +3082,10 @@ class SplineUsingControlPoints extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-            + 'spline from ' + this.startPoint.ref()
-            + " using control point " + this.startControlPoint.ref()
-            + " to " + this.endPoint.ref()
-            + " using control point " + this.endControlPoint.ref();
+            + 'spline from ' + this.refOf( this.startPoint )
+            + " using control point " + this.refOf( this.startControlPoint )
+            + " to " + this.refOf( this.endPoint )
+            + " using control point " + this.refOf( this.endControlPoint );
     }
 
     
@@ -3556,7 +3556,7 @@ class PatternPiece {
 
     newFormula(formula) {
 
-
+        var patternUnits = this.pattern.units;
         var f = formula;
         if (typeof formula.constant !== "undefined") {
             f.value = function () {
@@ -3564,6 +3564,12 @@ class PatternPiece {
             };
             f.html = function() {
                 return this.constant;
+            };
+            f.htmlLength = function() {
+                return this.constant + patternUnits;
+            };
+            f.htmlAngle = function() {
+                return this.constant + "&#176;";
             };
         }
         else if (typeof formula.expression === "object") {
@@ -3573,6 +3579,18 @@ class PatternPiece {
             };
             f.html = function( asFormula, currentLength ) {
                 return f.expression.html( asFormula, currentLength );
+            };
+            f.htmlLength = function( asFormula, currentLength ) {
+                var s = f.expression.html( asFormula, currentLength );
+                if ( ! asFormula )
+                    s += patternUnits;
+                return s;
+            };
+            f.htmlAngle = function( asFormula, currentLength ) {
+                var s = f.expression.html( asFormula, currentLength );
+                if ( ! asFormula )
+                  s += "&#176;";
+                return s;
             };
         }
         return f;

@@ -76,12 +76,12 @@ class SplineSimple extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'spline from ' + this.startPoint.ref() 
-                + " angle " + this.angle1.html( asFormula ) 
-                + " length " + this.length1.html( asFormula )
-            + " to " + this.endPoint.ref() 
-            + " angle " + this.angle2.html( asFormula ) 
-            + " length " + this.length2.html( asFormula );
+                + 'spline from ' + this.refOf( this.startPoint ) 
+                + " angle " + this.angle1.htmlAngle( asFormula ) 
+                + " length " + this.length1.htmlLength( asFormula )
+            + " to " + this.refOf( this.endPoint ) 
+            + " angle " + this.angle2.htmlAngle( asFormula ) 
+            + " length " + this.length2.htmlLength( asFormula );
     }
 
     
