@@ -72,7 +72,7 @@ class DrawingObject /*abstract*/ {
 
 
     ref() {
-        return '<span class="ps-ref">' + this.data.name + '</span>';
+        return '<a class="ps-ref">' + this.data.name + '</a>';
     }
 
 

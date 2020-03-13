@@ -724,7 +724,7 @@ class DrawingObject /*abstract*/ {
 
 
     ref() {
-        return '<span class="ps-ref">' + this.data.name + '</span>';
+        return '<a class="ps-ref">' + this.data.name + '</a>';
     }
 
 
@@ -3727,6 +3727,15 @@ function drawPattern( dataAndConfig, ptarget, options )
              )
         {
             selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
+            scrollTable = true;
+        }
+        else if (    ( d3.event) 
+                  && ( d3.event.srcElement )
+                  && ( d3.event.srcElement.className === "ps-ref" )
+                  && ( selectedObject == d )
+             )
+        {
+            selectedObject = d.patternPiece.getObject( d3.event.srcElement.innerHTML );
             scrollTable = true;
         }
         else
