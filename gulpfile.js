@@ -39,7 +39,7 @@ function jsTask(){
         ])
         .pipe(sourcemaps.init()) // initialize sourcemaps first
         .pipe(order([ 
-            "nodefine.js",
+            //"nodefine.js",
             "Expression.js",
             "Geometry.js",
             "drawing/DrawingObject.js",

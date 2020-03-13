@@ -1,17 +1,13 @@
-//TODO rename to do imports...
-//and set up a tail file to do the exports...
-
-console.log("Loading patterneditor.js" );
+//(c) Copyright 2019 Jason Dore
+//
+//This library collates the various geometric calclulation requirements
+//of the drawing objects into a small number of primitives. 
+//
+//This library then generally uses other libraries to perform those 
+//geometric calculations where they are non trivial
+//(e.g. intersection of lines with splines).
 
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
-
-
-//(c) Copyright 2019 Jason Dore
-//Inspired by the excellent seamly2D/Valentina (XXX ref) developed by Roman/Susan etc.
-//this is a ground up implementation in Javascript intended to be compatible with, but
-//not based on, the seamly2D/Valentina pattern making systen in order to support community
-//pattern sharing website. 
-
 
 //A point
 class GeoPoint {
@@ -1024,11 +1020,6 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 }
 
 //(c) Copyright 2019 Jason Dore
-//Inspired by the excellent seamly2D/Valentina (XXX ref) developed by Roman/Susan etc.
-//this is a ground up implementation in Javascript intended to be compatible with, but
-//not based on, the seamly2D/Valentina pattern making systen in order to support community
-//pattern sharing website. 
-
 
 var scale;
 
@@ -3264,6 +3255,8 @@ class TrueDartResult extends DrawingObject {
 
 }
 
+//(c) Copyright 2019 Jason Dore
+
 class Pattern {
 
     constructor (data, options ) {
@@ -3361,6 +3354,8 @@ class Pattern {
 
 
 }
+//(c) Copyright 2019 Jason Dore
+
 class Bounds {
     
     constructor() {
@@ -3640,6 +3635,7 @@ class PatternPiece {
 
 
 //(c) Copyright 2019 Jason Dore
+//
 //Inspired by the excellent Seamly2D/Valentina pattern drawing software.
 //This library is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the Seamly2D/Valentina pattern making systen in order to support the community
@@ -4559,6 +4555,13 @@ function fakeEvent(location, x, y)
 
 
 export{ PatternPiece, doDrawing, doTable, drawPattern  };
+//(c) Copyright 2019 Jason Dore
+//
+//Inspired by the excellent Seamly2D/Valentina pattern drawing software.
+//This library is a ground up implementation in Javascript intended to be compatible with, but
+//not based on, the Seamly2D/Valentina pattern making systen in order to support the community
+//pattern sharing website https://my-pattern.cloud/ . 
+
 class Expression {
 
     constructor(data, pattern, patternPiece) {

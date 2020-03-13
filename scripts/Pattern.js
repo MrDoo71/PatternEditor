@@ -1,3 +1,5 @@
+//(c) Copyright 2019 Jason Dore
+
 class Pattern {
 
     constructor (data, options ) {

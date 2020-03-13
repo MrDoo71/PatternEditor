@@ -1,9 +1,13 @@
 //(c) Copyright 2019 Jason Dore
-//Inspired by the excellent seamly2D/Valentina (XXX ref) developed by Roman/Susan etc.
-//this is a ground up implementation in Javascript intended to be compatible with, but
-//not based on, the seamly2D/Valentina pattern making systen in order to support community
-//pattern sharing website. 
+//
+//This library collates the various geometric calclulation requirements
+//of the drawing objects into a small number of primitives. 
+//
+//This library then generally uses other libraries to perform those 
+//geometric calculations where they are non trivial
+//(e.g. intersection of lines with splines).
 
+import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 
 //A point
 class GeoPoint {

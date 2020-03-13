@@ -1,3 +1,10 @@
+//(c) Copyright 2019 Jason Dore
+//
+//Inspired by the excellent Seamly2D/Valentina pattern drawing software.
+//This library is a ground up implementation in Javascript intended to be compatible with, but
+//not based on, the Seamly2D/Valentina pattern making systen in order to support the community
+//pattern sharing website https://my-pattern.cloud/ . 
+
 class Expression {
 
     constructor(data, pattern, patternPiece) {
