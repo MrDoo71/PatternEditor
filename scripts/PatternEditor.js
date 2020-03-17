@@ -63,6 +63,15 @@ function drawPattern( dataAndConfig, ptarget, options )
                                            tableHeight: 600,
                                            tableMargin: 0 };//25 };
 
+    if ( ! dataAndConfig.options.translateX )                                           
+        dataAndConfig.options.translateX = 0;
+
+    if ( ! dataAndConfig.options.translateY )                                           
+        dataAndConfig.options.translateY = 0;
+
+    if ( ! dataAndConfig.options.scale )                                           
+        dataAndConfig.options.scale = 1;
+
     dataAndConfig.options.setButton = function( viewOption ) {
 
         if ( ! viewOption )
