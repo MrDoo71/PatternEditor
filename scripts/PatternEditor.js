@@ -9,6 +9,8 @@ var selectedObject;
 var linksGroup;
 var fontsSizedForScale = 1;
 var fontResizeTimer;
+var updateServerTimer;
+var timeOfLastTweak;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
@@ -52,6 +54,8 @@ function drawPattern( dataAndConfig, ptarget, options )
     if ( ! dataAndConfig.options.viewOption )
         dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
 
+    dataAndConfig.options.interactionPrefix = options.interactionPrefix;
+
     dataAndConfig.options.layoutConfig = { drawingWidth: 400,
                                            drawingHeight: 600,
                                            drawingMargin: 0,//25,
@@ -74,9 +78,24 @@ function drawPattern( dataAndConfig, ptarget, options )
         this.layoutConfig.viewOption = viewOption; //so we can call this without a parameter when toggling full size. 
     };    
 
-    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
+    dataAndConfig.options.updateServer = options.interactionPrefix ? function( k, x, y ) {
+        console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
+        if ( x ) dataAndConfig.options.translateX = x;
+        if ( y ) dataAndConfig.options.translateY = y;
+        if ( k ) dataAndConfig.options.scale = k;
+        var kvpSet = newkvpSet(true) ;
+        kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
+        kvpSet.add('viewOption', 1 ) ;
+        kvpSet.add('scale', dataAndConfig.options.scale ) ;
+        kvpSet.add('translateX', dataAndConfig.options.translateX ) ;
+        kvpSet.add('translateY', dataAndConfig.options.translateY ) ;        
+        goGraph( dataAndConfig.options.interactionPrefix + ':' + dataAndConfig.options.update, fakeEvent(), kvpSet) ;    
+    } : undefined;
 
-    dataAndConfig.options.interactionPrefix = options.interactionPrefix;
+    if ( dataAndConfig.options.fullWindow )
+        targetdiv.node().classList.add("full-page");
+
+    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
 
     var focusDrawingObject = function( d, scrollTable )
     {
@@ -254,6 +273,7 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
                 graphdiv.node().classList.add("full-page");
 
             editorOptions.setButton();
+            if ( editorOptions.updateServer ) editorOptions.updateServer();
             doDrawingAndTable();
         };
 
@@ -406,8 +426,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
-    var transformGroup1 = svg.append("g")
-                            .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
+    //var transformGroup1 = svg.append("g")
+    //                        .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
+    var transformGroup1 = svg.append("g");
+                            //.attr("transform", "translate(" + ( editorOptions.translateX ) + "," + ( editorOptions.translateY ) + ") scale(" + editorOptions.scale + ")");
 
     var patternWidth = ( pattern.bounds.maxX - pattern.bounds.minX );
     var patternHeight =( pattern.bounds.maxY - pattern.bounds.minY );
@@ -492,7 +514,33 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                 d.outlineSvg = g;
             }
         });        
-    }
+    };
+
+    var updateServerAfterDelay = function()
+    {
+        //Lets only update the server if we've stopped panning and zooming for > 1s.
+        timeOfLastTweak = (new Date()).getTime();
+        if ( ! updateServerTimer )
+        {
+            var updateServerTimerExpired = function () {
+
+                updateServerTimer = null;          
+                //console.log("Zoom update server timer activated. TimeOfLastTweak:" + timeOfLastTweak + " Now:" + (new Date()).getTime());
+
+                if ( (new Date()).getTime() >= ( timeOfLastTweak + 500 ) )
+                {
+                    console.log( svg.attr("transform") );
+                    var zt = d3.zoomTransform( transformGroup1.node() );
+                    if ( editorOptions.updateServer )
+                        editorOptions.updateServer( zt.k, zt.x, zt.y );
+                }
+                else
+                    updateServerTimer = setTimeout(updateServerTimerExpired, 500);
+            }
+
+            updateServerTimer = setTimeout(updateServerTimerExpired, 500);
+        }           
+    };
 
     var zoomed = function() {
         transformGroup1.attr("transform", d3.event.transform);
@@ -516,22 +564,24 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                         for( var i=0; i< patternPiece.drawingObjects.length; i++ )
                         {
                             var a = patternPiece.drawingObjects[i];
-                            var g = a.drawingSvg;
-                            
-                            g.selectAll( "text" )
-                            .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
-
-                            g.selectAll( "circle" )
-                            .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
-
+                            var g = a.drawingSvg;                            
+                            if ( g )
                             {
-                                var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                                g.selectAll( "text" )
+                                .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
 
-                                g.selectAll( "line" )
-                                    .attr( "stroke-width", strokeWidth );
+                                g.selectAll( "circle" )
+                                .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 
-                                g.selectAll( "path" )
-                                    .attr( "stroke-width", strokeWidth );            
+                                {
+                                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
+                                    g.selectAll( "line" )
+                                        .attr( "stroke-width", strokeWidth );
+
+                                    g.selectAll( "path" )
+                                        .attr( "stroke-width", strokeWidth );            
+                                }
                             }
 
                             g = a.outlineSvg;
@@ -551,19 +601,26 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                         }        
                     }
                 }, 50);         
-            }   
+            }
         }
+        updateServerAfterDelay();         
     };           
 
+    fontsSizedForScale = 1; //the starting scale of transformGroup1.
     if ( editorOptions.allowPanAndZoom )
     {
-        svg.call(d3.zoom()
-            .extent([[0, 0], [width, height]])
-            .scaleExtent([0.5, 8])
-            .on("zoom", zoomed));
-    }
+        //TODO just the fontsize needs setting initially to take editorOptions.scale into account
 
-    fontsSizedForScale = 1; //the starting scale of transformGroup1.
+        var transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
+        var zoom = d3.zoom()
+                    .extent([[0, 0], [width, height]])
+                    .scaleExtent([0.5, 8])
+                    .on("zoom", zoomed);
+        svg.call( zoom)
+           .call(zoom.transform, transform);
+
+        fontsSizedForScale = editorOptions.scale;
+    }
 }
 
 

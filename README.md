@@ -13,7 +13,9 @@ Acknowledgement and thanks must go to all the contributors and leaders of the Se
 
 The input to this library is a JSON representation (and simplification) of the XML format that Seamly2D/Valentina uses to save patterns. 
 
-The pattern sharing website https://my-pattern.cloud/ can import Seamly2D/Valentina .val and .vit files and uses this library to display a representation of the pattern in the browser.
+The pattern sharing website [https://my-pattern.cloud/](https://my-pattern.cloud/) can import Seamly2D/Valentina .val and .vit files and uses this library to display a representation of the pattern in the browser.
+
+Static test files: [https://my-pattern.cloud/patternEditor/tests/test.html](https://my-pattern.cloud/patternEditor/tests/test.html)
 
 
 

@@ -15,7 +15,7 @@ class DrawingObject /*abstract*/ {
         if (typeof this.p.x !== "number")
             return;
 
-        var fontSize = Math.round( ( 1200 / scale ))/100;
+        var fontSize = Math.round( ( 1200 / scale / fontsSizedForScale ))/100;
 
         g.append("text")
             .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx ) ) )
