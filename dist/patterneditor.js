@@ -6,6 +6,8 @@
 //This library then generally uses other libraries to perform those 
 //geometric calculations where they are non trivial
 //(e.g. intersection of lines with splines).
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 
@@ -2888,13 +2890,11 @@ class SplinePathUsingPoints extends DrawingObject {
         {
             if ( (i-1)>0 )
                 html += this.refOf( this.data.pathNode[i-1].point );
-                //html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
 
             html += d.pathNode[i].point.ref() + " ";            
 
             if ( (i+1) < this.data.pathNode.length )
                 html += this.refOf(  this.data.pathNode[i+1].point );
-                //html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
         }
 
         return html;
@@ -3561,10 +3561,10 @@ class PatternPiece {
                 return this.constant;
             };
             f.htmlLength = function() {
-                return this.constant + " " + patternUnits;
+                return '<span class="const">' + this.constant + " " + patternUnits + '</span>';
             };
             f.htmlAngle = function() {
-                return this.constant + "&#176;";
+                return '<span class="const">' + this.constant + "&#176;" + '</span>';
             };
         }
         else if (typeof formula.expression === "object") {
@@ -3640,6 +3640,8 @@ class PatternPiece {
 //This library is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the Seamly2D/Valentina pattern making systen in order to support the community
 //pattern sharing website https://my-pattern.cloud/ . 
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 var selectedObject;
 var linksGroup;
@@ -3724,10 +3726,18 @@ function drawPattern( dataAndConfig, ptarget, options )
     };    
 
     dataAndConfig.options.updateServer = options.interactionPrefix ? function( k, x, y ) {
+        if ( k )
+        {
+            if (    (dataAndConfig.options.translateX == x)
+                 && (dataAndConfig.options.translateY == y)
+                 && (dataAndConfig.options.scale == k) )
+                 return;
+
+            dataAndConfig.options.translateX = x;
+            dataAndConfig.options.translateY = y;
+            dataAndConfig.options.scale = k;
+        }
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
-        if ( x ) dataAndConfig.options.translateX = x;
-        if ( y ) dataAndConfig.options.translateY = y;
-        if ( k ) dataAndConfig.options.scale = k;
         var kvpSet = newkvpSet(true) ;
         kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
         kvpSet.add('viewOption', 1 ) ;
@@ -3832,7 +3842,7 @@ function drawPattern( dataAndConfig, ptarget, options )
                 return "link"; 
             } )
             .each( function( d ) { 
-                if (( selectedObject.source == selectedObject ) || ( selectedObject.target == selectedObject ))
+                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
                     d3.select(this).raise();
              } );
 
@@ -3968,12 +3978,15 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' } )
+                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-                                                                      w.editable = ! w.editable; 
-                                                                      d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
-                                                                      var wallpaperGroups = graphdiv.select( "g.wallpapers");
-                                                                      doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                      if ( w.allowEdit )
+                                                                      {
+                                                                        w.editable = ! w.editable; 
+                                                                        d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
+                                                                        var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                        doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                      }
                                                                      } );
                 wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
@@ -3986,13 +3999,13 @@ function initialiseWallpapers( pattern, interactionPrefix )
 {    
     var updateServer = ( typeof goGraph === "function" ) ? function(e) {
         var kvpSet = newkvpSet(true) ;
-        kvpSet.add('offsetX', w.offsetX ) ;
-        kvpSet.add('offsetY', w.offsetY ) ;
-        kvpSet.add('scaleX', w.scaleX * defaultScale ) ;
-        kvpSet.add('scaleY', w.scaleY * defaultScale ) ;
-        kvpSet.add('opacity', w.opacity ) ;
-        kvpSet.add('visible', ! w.hide ) ;
-        goGraph(interactionPrefix + ':' + w.update, fakeEvent(), kvpSet) ;    
+        kvpSet.add('offsetX', this.offsetX ) ;
+        kvpSet.add('offsetY', this.offsetY ) ;
+        kvpSet.add('scaleX', this.scaleX * defaultScale ) ;
+        kvpSet.add('scaleY', this.scaleY * defaultScale ) ;
+        kvpSet.add('opacity', this.opacity ) ;
+        kvpSet.add('visible', ! this.hide ) ;
+        goGraph(interactionPrefix + ':' + this.update, fakeEvent(), kvpSet) ;    
     } : function(e){};
     /*
     var dimensionsKnown = function() 
@@ -4028,13 +4041,14 @@ function initialiseWallpapers( pattern, interactionPrefix )
             w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
             w.scaleY = w.scaleY / defaultScale /*dpi*/;
             w.hide = ( w.visible !== undefined ) && (! w.visible );
+            w.allowEdit = ( w.allowEdit === undefined ) || ( w.allowEdit );
             
             //w.dimensionsKnown = dimensionsKnown;
             $("<img/>") // Make in memory copy of image to avoid css issues
                 .attr("src", w.imageurl )
                 .attr("data-wallpaper", i)
                 .on( "load", function() {
-                    //seems like we can't rely on closure to pass w in, it always points to the final wallpaper
+                    //seems like we can't rely on closure to pass w in, it always   points to the final wallpaper
                     w = wallpapers[ this.dataset.wallpaper ];
                     w.width = this.width;   // Note: $(this).width() will not
                     w.height = this.height; // work for in memory images.
@@ -4641,6 +4655,8 @@ export{ PatternPiece, doDrawing, doTable, drawPattern  };
 //This library is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the Seamly2D/Valentina pattern making systen in order to support the community
 //pattern sharing website https://my-pattern.cloud/ . 
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 class Expression {
 

@@ -205,10 +205,10 @@ class PatternPiece {
                 return this.constant;
             };
             f.htmlLength = function() {
-                return this.constant + " " + patternUnits;
+                return '<span class="const">' + this.constant + " " + patternUnits + '</span>';
             };
             f.htmlAngle = function() {
-                return this.constant + "&#176;";
+                return '<span class="const">' + this.constant + "&#176;" + '</span>';
             };
         }
         else if (typeof formula.expression === "object") {

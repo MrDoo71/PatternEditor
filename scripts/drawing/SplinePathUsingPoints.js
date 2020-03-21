@@ -75,13 +75,11 @@ class SplinePathUsingPoints extends DrawingObject {
         {
             if ( (i-1)>0 )
                 html += this.refOf( this.data.pathNode[i-1].point );
-                //html += '<span class="control-point">' + this.data.pathNode[i-1].point.ref() + '</span> ';
 
             html += d.pathNode[i].point.ref() + " ";            
 
             if ( (i+1) < this.data.pathNode.length )
                 html += this.refOf(  this.data.pathNode[i+1].point );
-                //html += '<span class="control-point">' + this.data.pathNode[i+1].point.ref() + '</span> ';
         }
 
         return html;

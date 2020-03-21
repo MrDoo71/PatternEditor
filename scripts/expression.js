@@ -4,6 +4,8 @@
 //This library is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the Seamly2D/Valentina pattern making systen in order to support the community
 //pattern sharing website https://my-pattern.cloud/ . 
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 class Expression {
 

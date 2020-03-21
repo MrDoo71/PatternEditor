@@ -6,6 +6,8 @@
 //This library then generally uses other libraries to perform those 
 //geometric calculations where they are non trivial
 //(e.g. intersection of lines with splines).
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 

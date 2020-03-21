@@ -4,6 +4,8 @@
 //This library is a ground up implementation in Javascript intended to be compatible with, but
 //not based on, the Seamly2D/Valentina pattern making systen in order to support the community
 //pattern sharing website https://my-pattern.cloud/ . 
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 var selectedObject;
 var linksGroup;
@@ -88,10 +90,18 @@ function drawPattern( dataAndConfig, ptarget, options )
     };    
 
     dataAndConfig.options.updateServer = options.interactionPrefix ? function( k, x, y ) {
+        if ( k )
+        {
+            if (    (dataAndConfig.options.translateX == x)
+                 && (dataAndConfig.options.translateY == y)
+                 && (dataAndConfig.options.scale == k) )
+                 return;
+
+            dataAndConfig.options.translateX = x;
+            dataAndConfig.options.translateY = y;
+            dataAndConfig.options.scale = k;
+        }
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
-        if ( x ) dataAndConfig.options.translateX = x;
-        if ( y ) dataAndConfig.options.translateY = y;
-        if ( k ) dataAndConfig.options.scale = k;
         var kvpSet = newkvpSet(true) ;
         kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
         kvpSet.add('viewOption', 1 ) ;
@@ -196,7 +206,7 @@ function drawPattern( dataAndConfig, ptarget, options )
                 return "link"; 
             } )
             .each( function( d ) { 
-                if (( selectedObject.source == selectedObject ) || ( selectedObject.target == selectedObject ))
+                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
                     d3.select(this).raise();
              } );
 
@@ -332,12 +342,15 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' } )
+                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-                                                                      w.editable = ! w.editable; 
-                                                                      d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
-                                                                      var wallpaperGroups = graphdiv.select( "g.wallpapers");
-                                                                      doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                      if ( w.allowEdit )
+                                                                      {
+                                                                        w.editable = ! w.editable; 
+                                                                        d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
+                                                                        var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                        doWallpapers( wallpaperGroups, pattern );                                                              
+                                                                      }
                                                                      } );
                 wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
@@ -350,13 +363,13 @@ function initialiseWallpapers( pattern, interactionPrefix )
 {    
     var updateServer = ( typeof goGraph === "function" ) ? function(e) {
         var kvpSet = newkvpSet(true) ;
-        kvpSet.add('offsetX', w.offsetX ) ;
-        kvpSet.add('offsetY', w.offsetY ) ;
-        kvpSet.add('scaleX', w.scaleX * defaultScale ) ;
-        kvpSet.add('scaleY', w.scaleY * defaultScale ) ;
-        kvpSet.add('opacity', w.opacity ) ;
-        kvpSet.add('visible', ! w.hide ) ;
-        goGraph(interactionPrefix + ':' + w.update, fakeEvent(), kvpSet) ;    
+        kvpSet.add('offsetX', this.offsetX ) ;
+        kvpSet.add('offsetY', this.offsetY ) ;
+        kvpSet.add('scaleX', this.scaleX * defaultScale ) ;
+        kvpSet.add('scaleY', this.scaleY * defaultScale ) ;
+        kvpSet.add('opacity', this.opacity ) ;
+        kvpSet.add('visible', ! this.hide ) ;
+        goGraph(interactionPrefix + ':' + this.update, fakeEvent(), kvpSet) ;    
     } : function(e){};
     /*
     var dimensionsKnown = function() 
@@ -392,6 +405,7 @@ function initialiseWallpapers( pattern, interactionPrefix )
             w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
             w.scaleY = w.scaleY / defaultScale /*dpi*/;
             w.hide = ( w.visible !== undefined ) && (! w.visible );
+            w.allowEdit = ( w.allowEdit === undefined ) || ( w.allowEdit );
             
             //w.dimensionsKnown = dimensionsKnown;
             $("<img/>") // Make in memory copy of image to avoid css issues

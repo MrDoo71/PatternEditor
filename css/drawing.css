@@ -7,16 +7,15 @@ span.ps-name,
 a.ps-ref {
     font-weight: bold;
 }
-/*
-span.ps-ref:hover {
-    text-decoration: underline;
-}*/
 
 g.j-item.j-active a.ps-ref {
     /*text-decoration: underline; try dotted */
-    color: #3378a7;
+    color:#2b7cb3;/* #3378a7;*/
 }
 
+g.j-item span.const {
+    color: #ae2eae;
+}
 
 g.j-drawing line.dotLine,
 g.j-drawing path.dotLine {
@@ -188,8 +187,6 @@ g.j-outline g.j-active > line {
     animation-direction: alternate;
     animation-timing-function: ease-out;
 }
-
-span.control-point { color: green }
 
 div.pattern-editor-controls {    
     margin-bottom:15px;
