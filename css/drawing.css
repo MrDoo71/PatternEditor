@@ -149,21 +149,6 @@ g.j-outline g.source > circle {
         opacity: 0.01;
     }
 }
-/*
-@keyframes k-throb-fill {
-    0% {
-      fill:#fff;
-      opacity: 0.01;
-    }
-    5% {
-      fill: #ff8;
-      opacity: 1;
-    }
-    100% {
-        fill:#fff;
-        opacity: 0.01;
-    }
-}*/
 
 g.j-outline g.j-active > circle {
     fill: #ff8;
@@ -192,17 +177,30 @@ div.pattern-editor-controls {
     margin-bottom:15px;
 }
 
+
+div.pattern-editor-resize {
+    display: inline-block;
+    margin-left:10px;
+    margin-right:10px;
+    width:2px;
+    border:1px solid #eee;
+    position: relative;
+}
+
+div.pattern-editor-resize:hover{
+    border-color: black;
+    cursor: ew-resize;
+}
+
 table.wallpapers td { padding-left:6px; }
 table.wallpapers tr.wallpaper-hidden td { color:#ccc; }
 
 svg.pattern-drawing { 
     display: inline-block;
-    margin-right: 15px; 
 }
 
 div.pattern-table { 
     display: inline-block;
-    margin-left: 15px; 
     overflow-y: scroll;
     vertical-align: top;
 }

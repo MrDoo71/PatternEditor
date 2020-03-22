@@ -13,8 +13,9 @@ var fontsSizedForScale = 1;
 var fontResizeTimer;
 var updateServerTimer;
 var timeOfLastTweak;
+var doDrawingAndTable;
 
-function drawPattern( dataAndConfig, ptarget, options ) 
+function drawPattern( dataAndConfig, ptarget, graphOptions ) 
 {
     //Remove the svg if called by graph_kill
     if ( dataAndConfig === null )
@@ -27,7 +28,7 @@ function drawPattern( dataAndConfig, ptarget, options )
 
     //This is a graph initialisation
 
-    var pattern = new Pattern( dataAndConfig, options );            
+    var pattern = new Pattern( dataAndConfig, graphOptions );            
     
     // show menu on right-click.
     var contextMenu = typeof goGraph === "function" ? function(d) {
@@ -35,7 +36,7 @@ function drawPattern( dataAndConfig, ptarget, options )
     	var v = newkvpSet(false) ;
     	v.add("x", d.x) ;   
     	v.add("y", d.y) ;    
-    	goGraph( options.interactionPrefix + ':' + d.data.contextMenu ,
+    	goGraph( graphOptions.interactionPrefix + ':' + d.data.contextMenu ,
     			 d3.event, 
     			 v ) ;
     } : function(d){};     
@@ -47,74 +48,126 @@ function drawPattern( dataAndConfig, ptarget, options )
     if ( ! dataAndConfig.options )
         dataAndConfig.options = {};
 
-    if ( dataAndConfig.options.allowPanAndZoom === undefined )
-        dataAndConfig.options.allowPanAndZoom = true;
+    var options = dataAndConfig.options;
 
-    if ( dataAndConfig.options.showFormulas === undefined )
-        dataAndConfig.options.showFormulas = true;
+    if ( options.allowPanAndZoom === undefined )
+        options.allowPanAndZoom = true;
 
-    if ( ! dataAndConfig.options.viewOption )
-        dataAndConfig.options.viewOption = [{ "label": "2:2", "drawingWidth": 6, "descriptionsWidth": 6 }];
+    if ( options.showFormulas === undefined )
+        options.showFormulas = true;
 
-    dataAndConfig.options.interactionPrefix = options.interactionPrefix;
+    if ( options.drawingTableSplit === undefined )
+        options.drawingTableSplit = 0.66;
 
-    dataAndConfig.options.layoutConfig = { drawingWidth: 400,
-                                           drawingHeight: 600,
-                                           drawingMargin: 0,//25,
-                                           tableWidth: 400,
-                                           tableHeight: 600,
-                                           tableMargin: 0 };//25 };
+    if ( options.lastMixedSplit === undefined )
+        options.lastMixedSplit = options.drawingTableSplit > 0.0 && options.drawingTableSplit < 1.0 ? options.drawingTableSplit : 0.66;
 
-    if ( ! dataAndConfig.options.translateX )                                           
-        dataAndConfig.options.translateX = 0;
+    if ( ! options.viewOption )
+        options.viewOption = [  { "mode":"drawing", "icon": "icon-picture",       "drawingTableSplit": 1.0 },
+                                { "mode":"mixed",   "icon": "icon-columns",       "drawingTableSplit": 0.5 },
+                                { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
 
-    if ( ! dataAndConfig.options.translateY )                                           
-        dataAndConfig.options.translateY = 0;
+    options.interactionPrefix = graphOptions.interactionPrefix;
 
-    if ( ! dataAndConfig.options.scale )                                           
-        dataAndConfig.options.scale = 1;
+    options.layoutConfig = { drawingWidth: 400,
+                             drawingHeight: 600,
+                             drawingMargin: 0,
+                             tableWidth: 400,
+                             tableHeight: 600,
+                             tableMargin: 0 };
 
-    dataAndConfig.options.setButton = function( viewOption ) {
+    if ( ! options.translateX )                                           
+        options.translateX = 0;
 
-        if ( ! viewOption )
-           viewOption = this.layoutConfig.viewOption;
+    if ( ! options.translateY )                                           
+        options.translateY = 0;
 
-        var totalWidth = viewOption.drawingWidth + viewOption.descriptionsWidth; //should be tableWidth
-        var availableWidth = targetdiv.style('width').slice(0, -2) -30;// 1000;
-        var availableHeight= window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/;
-        this.layoutConfig.drawingWidth = availableWidth * viewOption.drawingWidth / totalWidth;
-        this.layoutConfig.tableWidth   = availableWidth * viewOption.descriptionsWidth / totalWidth;
+    if ( ! options.scale )                                           
+        options.scale = 1;
+
+    options.setDrawingTableSplit = function( drawingTableSplit ) { //can be called with a decimal (0.0 - 1.0), a mode ("drawing","mixed","table"), or nothing.
+
+        //TODO if going full-screen and not specifying a split here, then keep the table the same width and give all extra space to the drawing
+        
+        if ( drawingTableSplit === undefined )
+            drawingTableSplit = this.drawingTableSplit;
+        else if ( drawingTableSplit === "drawing" )
+            drawingTableSplit = 1.0;
+        else if ( drawingTableSplit === "mixed" )
+            drawingTableSplit = this.lastMixedSplit ? this.lastMixedSplit : 0.5;
+        else if ( drawingTableSplit === "table" )
+            drawingTableSplit = 0.0;
+
+        if ( drawingTableSplit < 0.05 ) 
+        {
+            drawingTableSplit = 0.0;
+            this.drawingTableSplitMode = "table";
+        }
+        else if ( drawingTableSplit > 0.95 ) 
+        {
+            drawingTableSplit = 1.0;
+            this.drawingTableSplitMode = "drawing";
+        }
+        else
+        {
+            this.drawingTableSplitMode = "mixed";
+            this.lastMixedSplit = drawingTableSplit;
+        }
+
+        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 );// 1000;
+        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/);
+        this.layoutConfig.drawingWidth = availableWidth * drawingTableSplit;
+        this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
         this.layoutConfig.drawingHeight = availableHeight;
         this.layoutConfig.tableHeight = availableHeight;
-        this.layoutConfig.viewOption = viewOption; //so we can call this without a parameter when toggling full size. 
+
+        
+        if ( this.sizeButtons )
+        {
+            var drawingTableSplitMode = this.drawingTableSplitMode;
+            this.sizeButtons.selectAll("button")
+                        .data( this.viewOption )
+                        //.enter()
+                        //.append("button")
+                        .attr( "class",  function(d) { 
+                            return d.mode == drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } );
+        }
+
+        if ( this.drawingTableSplit != drawingTableSplit )
+        {
+            this.drawingTableSplit = drawingTableSplit; //so we can call this without a parameter when toggling full size. 
+            this.updateServer(); 
+        }
     };    
 
-    dataAndConfig.options.updateServer = options.interactionPrefix ? function( k, x, y ) {
+    options.updateServer = graphOptions.interactionPrefix ? function( k, x, y ) {
         if ( k )
         {
-            if (    (dataAndConfig.options.translateX == x)
-                 && (dataAndConfig.options.translateY == y)
-                 && (dataAndConfig.options.scale == k) )
+//TODO shouldn't this be this. rather than options.  ???
+
+            if (    (options.translateX == x)
+                 && (options.translateY == y)
+                 && (options.scale == k) )
                  return;
 
-            dataAndConfig.options.translateX = x;
-            dataAndConfig.options.translateY = y;
-            dataAndConfig.options.scale = k;
+            options.translateX = x;
+            options.translateY = y;
+            options.scale = k;
         }
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
         var kvpSet = newkvpSet(true) ;
         kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
-        kvpSet.add('viewOption', 1 ) ;
-        kvpSet.add('scale', dataAndConfig.options.scale ) ;
-        kvpSet.add('translateX', dataAndConfig.options.translateX ) ;
-        kvpSet.add('translateY', dataAndConfig.options.translateY ) ;        
-        goGraph( dataAndConfig.options.interactionPrefix + ':' + dataAndConfig.options.update, fakeEvent(), kvpSet) ;    
+        kvpSet.add('drawingTableSplit', options.drawingTableSplit ) ;
+        kvpSet.add('scale', options.scale ) ;
+        kvpSet.add('translateX', options.translateX ) ;
+        kvpSet.add('translateY', options.translateY ) ;        
+        goGraph( options.interactionPrefix + ':' + options.update, fakeEvent(), kvpSet) ;    
     } : undefined;
 
-    if ( dataAndConfig.options.fullWindow )
+    if ( options.fullWindow )
         targetdiv.node().classList.add("full-page");
 
-    dataAndConfig.options.setButton( dataAndConfig.options.viewOption[ dataAndConfig.options.defaultViewOption ? dataAndConfig.options.defaultViewOption : 0 ] );
+    options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
     var focusDrawingObject = function( d, scrollTable )
     {
@@ -225,19 +278,25 @@ function drawPattern( dataAndConfig, ptarget, options )
         }
     };
 
-    var doDrawingAndTable = function() {
-                                    if ( dataAndConfig.options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern, dataAndConfig.options, contextMenu, focusDrawingObject );
+    doDrawingAndTable = function() {
+                                    if ( options.layoutConfig.drawingWidth )
+                                        doDrawing( targetdiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("svg.pattern-drawing").remove();
+                                                                            
+                                    if (   ( options.layoutConfig.drawingWidth )
+                                        && ( options.layoutConfig.tableWidth ) )
+                                        doResizeBar( targetdiv, options );    
+                                    else
+                                        targetdiv.select("div.pattern-editor-resize").remove();
 
-                                    if ( dataAndConfig.options.layoutConfig.tableWidth )
-                                        doTable( targetdiv, pattern, dataAndConfig.options, contextMenu, focusDrawingObject );
+                                    if ( options.layoutConfig.tableWidth )
+                                        doTable( targetdiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
                                         targetdiv.select("div.pattern-table").remove();
                                 };
 
-    doControls( targetdiv, dataAndConfig.options, pattern, doDrawingAndTable );
+    doControls( targetdiv, options, pattern );
     doDrawingAndTable();                   
     
     var errorFound = false;
@@ -260,7 +319,47 @@ function drawPattern( dataAndConfig, ptarget, options )
 }
 
 
-function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
+function doResizeBar( graphdiv, editorOptions )
+{
+    var layoutConfig = editorOptions.layoutConfig;
+    var drag = d3.drag()
+    .on("start", function(r) {
+        console.log("dragStart");
+        var rg = d3.select(this);        
+        r.initialX = d3.event.x;
+        r.resizeBarBaseStyle = rg.attr("style");
+    })
+    .on("drag", function(r) {
+        console.log("drag");
+        var rg = d3.select(this);       
+        rg.attr("style", r.resizeBarBaseStyle + " left:" + ( d3.event.x - r.initialX ) + "px;" ); 
+    })
+    .on("end", function(r){
+        console.log("dragEnd: " + d3.event.x + " (" + ( d3.event.x - r.initialX ) + ")" );
+        console.log( "layoutConfig:" + layoutConfig ); 
+        var rg = d3.select(this);       
+        rg.attr("style", r.resizeBarBaseStyle ); 
+        var newDrawingWidth = layoutConfig.drawingWidth + ( d3.event.x - r.initialX );
+        var newTableWidth  = layoutConfig.tableWidth - ( d3.event.x - r.initialX );
+        editorOptions.setDrawingTableSplit( newDrawingWidth / ( newDrawingWidth + newTableWidth) );
+        doDrawingAndTable();
+    });
+
+    var layoutConfig = editorOptions.layoutConfig;
+    var height = layoutConfig.drawingHeight;
+
+    graphdiv.select( "div.pattern-editor-resize" ).remove();
+    graphdiv.selectAll( "div.pattern-editor-resize" )
+            .data( [ editorOptions ] )
+            .enter()
+            .append("div")
+            .attr("class", "pattern-editor-resize")
+            .attr("style", "height:" + height + "px;" )
+            .call( drag );
+}
+
+
+function doControls( graphdiv, editorOptions, pattern )
 {
     if ( ! editorOptions )
         return;
@@ -270,19 +369,21 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
     if (    ( editorOptions.viewOption )
          && ( editorOptions.viewOption.length > 1 ) )
     {
-        var sizeButtons = controls.append("div").attr("class", "btn-group view-options");
-        sizeButtons.selectAll("button")
+        editorOptions.sizeButtons = controls.append("div").attr("class", "btn-group view-options");
+        editorOptions.sizeButtons.selectAll("button")
                     .data( editorOptions.viewOption )
                     .enter()
                     .append("button")
-                    .attr( "class", "btn btn-default" )
-                    .text(function(d) { return d.label; })
+                    .attr( "class",  function(d) { return d.mode == editorOptions.drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } )
+                    .html(function(d) { return '<i class="' + d.icon + '"></i>'; })
                     .on("click", function(d) {
                         d3.event.preventDefault();
-                        editorOptions.setButton( d );
+                        editorOptions.setDrawingTableSplit( d.mode );
                         doDrawingAndTable();
-                        //d3.event.stopPropagation();
+                        //$(this).parent().find("button").removeClass("btn-primary").addClass("btn-default");
+                        //$(this).addClass("btn-primary");
                     } );
+                    //TODO set the selected button to button-primary
     }
 
     if ( editorOptions.includeFullPageOption )
@@ -295,8 +396,11 @@ function doControls( graphdiv, editorOptions, pattern, doDrawingAndTable )
             else
                 graphdiv.node().classList.add("full-page");
 
-            editorOptions.setButton();
-            if ( editorOptions.updateServer ) editorOptions.updateServer();
+            editorOptions.setDrawingTableSplit();
+
+            if ( editorOptions.updateServer ) 
+                editorOptions.updateServer();
+
             doDrawingAndTable();
         };
 
@@ -371,17 +475,6 @@ function initialiseWallpapers( pattern, interactionPrefix )
         kvpSet.add('visible', ! this.hide ) ;
         goGraph(interactionPrefix + ':' + this.update, fakeEvent(), kvpSet) ;    
     } : function(e){};
-    /*
-    var dimensionsKnown = function() 
-    {
-        console.log( "Wallpaper dimensions known. Image loaded w.imageurl width:" + w.width + " height:" + w.height );
-        if ( this.image )
-        {
-            console.log( " setting d3Image dimentions." );
-            d3.select( this.image ).attr("width", w.width );        
-            d3.select( this.image ).attr("height", w.height );        
-        }
-    };*/
 
     var wallpapers = pattern.wallpapers; 
     for( var i=0; i<wallpapers.length; i++ )
@@ -453,7 +546,7 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
+    var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
 
