@@ -1711,6 +1711,10 @@ class PointEndLine extends DrawingObject {
 
 
     html( asFormula ) {
+
+        if ( this.data.name === "A28" )
+        console.log("A28");
+
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.basePoint ) 
@@ -3695,6 +3699,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( options.drawingTableSplit === undefined )
         options.drawingTableSplit = 0.66;
 
+    if ( options.lastMixedSplit === undefined )
+        options.lastMixedSplit = options.drawingTableSplit > 0.0 && options.drawingTableSplit < 1.0 ? options.drawingTableSplit : 0.66;
+
     if ( ! options.viewOption )
         options.viewOption = [  { "mode":"drawing", "icon": "icon-picture",       "drawingTableSplit": 1.0 },
                                 { "mode":"mixed",   "icon": "icon-columns",       "drawingTableSplit": 0.5 },
@@ -3747,13 +3754,19 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 );// 1000;
-        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/);
+        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar
+        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
+        if ( this.fullWindow )
+        {
+            availableWidth -= 32; //left & right padding 
+            availableHeight -= 30;
+        }
+        //console.log("setDrawingTableSplit availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         this.layoutConfig.drawingWidth = availableWidth * drawingTableSplit;
         this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
         this.layoutConfig.drawingHeight = availableHeight;
         this.layoutConfig.tableHeight = availableHeight;
-
+        console.log("setDrawingTableSplit split:" + drawingTableSplit + " availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         
         if ( this.sizeButtons )
         {
@@ -3789,7 +3802,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
         var kvpSet = newkvpSet(true) ;
-        kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
+        kvpSet.add('fullWindow', options.fullWindow ) ;
         kvpSet.add('drawingTableSplit', options.drawingTableSplit ) ;
         kvpSet.add('scale', options.scale ) ;
         kvpSet.add('translateX', options.translateX ) ;
@@ -4025,9 +4038,15 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.event.preventDefault();
 
             if ( graphdiv.classed("full-page") ) 
+            {
                 graphdiv.node().classList.remove("full-page");
+                editorOptions.fullWindow = false;
+            }
             else
+            {
                 graphdiv.node().classList.add("full-page");
+                editorOptions.fullWindow = true;
+            }
 
             editorOptions.setDrawingTableSplit();
 
@@ -4770,12 +4789,12 @@ class Expression {
         if (typeof data.integerValue !== "undefined") 
         {
             this.constant = data.integerValue;
-            this.value = this.constantValue; //eh?
+            this.value = this.constantValue; //the method constantValue()
         }
         else if (typeof data.decimalValue !== "undefined") 
         {
             this.constant = data.decimalValue;
-            this.value = this.constantValue; //eh?
+            this.value = this.constantValue; //the method constantValue()
         }
         else if (data.operationType === "Variable") 
         {
@@ -5043,6 +5062,11 @@ class Expression {
     }
 
 
+    nameWithPopupValue( name ) {
+        return '<span title="' + this.value() + '">' + name + '</span>';
+    }
+
+
     html( asFormula, currentLength ) {
 
         if ( ! asFormula )
@@ -5057,28 +5081,28 @@ class Expression {
         if ( this.variable )
         {
             if (this.variable === "CurrentLength")
-                return "CurrentLength";
+                return this.nameWithPopupValue( "CurrentLength" );
 
-            return this.variable.name;
+            return this.nameWithPopupValue( this.variable.name );
         }
 
-        if ( this.constant )
+        if ( this.constant !== undefined )
             return this.constant;
 
         if ( this.function )
         {
             if ( this.function === "lengthOfLine" )
-                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
             if ( this.function === "angleOfLine" )
-                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+                return this.nameWithPopupValue( "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
             if ( this.function === "lengthOfSpline" )
             {
                 if ( ! this.drawingObject )
                     return "lengthOfSpline( ??? )";
                 
-                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfSpline(" + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "lengthOfSplinePath" )
@@ -5086,7 +5110,7 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfSplinePath( ??? )";
 
-                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfSplinePath(" + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "lengthOfArc" )
@@ -5094,7 +5118,7 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfArc( ??? )";
                 
-                return "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")";
+                    return this.nameWithPopupValue( "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "sqrt" )
@@ -5118,13 +5142,13 @@ class Expression {
             if (this.operation === "add") 
                 useOperatorNotation = " + ";
 
-            if (this.operation === "subtract") 
+            else if (this.operation === "subtract") 
                 useOperatorNotation = " - ";
 
-            if (this.operation === "divide") 
+            else if (this.operation === "divide") 
                 useOperatorNotation = " / ";
 
-            if (this.operation === "multiply") 
+            else if (this.operation === "multiply") 
                 useOperatorNotation = " * ";
                 
             var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";

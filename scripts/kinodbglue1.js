@@ -7,6 +7,8 @@ function drawPattern( dataAndConfig, ptarget, options )
 {
     console.log( "Calling moduleExports.drawPattern");
 
+    $( "div.k-bottom-main-buttons-wrapper" ).remove();
+
     if ( moduleExports.drawPattern )
         moduleExports.drawPattern( dataAndConfig, ptarget, options );
     else

@@ -33,8 +33,26 @@
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": true
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/flipByAxisHorizontal.png",
+                  "offsetX": 0.000001, "offsetY": -3.554854, "scaleX": 0.347267, "scaleY": 0.347267,
+                  "opacity": 0.3,
+                  "filename": "flipByAxisHorizontal.png",
+                  "visible": true,
+                  "allowEdit": false
+                }],
                 "pattern":
                 {
+                  "units": "cm",
                   "patternPiece":
                     [
                       {
@@ -84,10 +102,10 @@
                               "length":
                                 { "constant": 10 }
                             },
-                            { "objectType": "operationFlipByAxis", "center": "A", "suffix": "B", "operationName": "ObjectID: 8", "axis": "Horizontal" },
-                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "ObjectID: 8", "mx": -2.04213, "my": -0.691206 },
-                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "ObjectID: 8", "mx": 0.251766, "my": -1.07352 },
-                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "ObjectID: 8", "mx": 0.180081, "my": -0.452259 },
+                            { "objectType": "operationFlipByAxis", "center": "A", "suffix": "B", "operationName": "operation_8", "axis": "Horizontal" },
+                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "operation_8", "mx": -2.04213, "my": -0.691206 },
+                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "operation_8", "mx": 0.251766, "my": -1.07352 },
+                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "operation_8", "mx": 0.180081, "my": -0.452259 },
                             { "derivedName": "Line_A2B_A1B", "objectType": "line", "firstPoint": "A2B", "secondPoint": "A1B", "lineStyle": "hair", "color": "deeppink" },
                             { "derivedName": "Line_A1B_A3B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
                             { "derivedName": "Line_A2B_A3B", "objectType": "line", "firstPoint": "A2B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
@@ -97,18 +115,11 @@
                     ]
                 }
               }
-              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              , 'v343110_graph1', {});
           </script>
         </div>
-
-        <div style="opacity:0.6; margin-left:0px; margin-top:0px; padding-left:0px; padding-top:0px">
-          <img src="expectedResults/flipByAxisHorizontal.png" width="400" />
-        </div>
-  
-
       </div>
     </div>
-
 </body>
 
 </html>

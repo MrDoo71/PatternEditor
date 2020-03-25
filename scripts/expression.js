@@ -29,12 +29,12 @@ class Expression {
         if (typeof data.integerValue !== "undefined") 
         {
             this.constant = data.integerValue;
-            this.value = this.constantValue; //eh?
+            this.value = this.constantValue; //the method constantValue()
         }
         else if (typeof data.decimalValue !== "undefined") 
         {
             this.constant = data.decimalValue;
-            this.value = this.constantValue; //eh?
+            this.value = this.constantValue; //the method constantValue()
         }
         else if (data.operationType === "Variable") 
         {
@@ -302,6 +302,11 @@ class Expression {
     }
 
 
+    nameWithPopupValue( name ) {
+        return '<span title="' + this.value() + '">' + name + '</span>';
+    }
+
+
     html( asFormula, currentLength ) {
 
         if ( ! asFormula )
@@ -316,28 +321,28 @@ class Expression {
         if ( this.variable )
         {
             if (this.variable === "CurrentLength")
-                return "CurrentLength";
+                return this.nameWithPopupValue( "CurrentLength" );
 
-            return this.variable.name;
+            return this.nameWithPopupValue( this.variable.name );
         }
 
-        if ( this.constant )
+        if ( this.constant !== undefined )
             return this.constant;
 
         if ( this.function )
         {
             if ( this.function === "lengthOfLine" )
-                return "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
             if ( this.function === "angleOfLine" )
-                return "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")";
+                return this.nameWithPopupValue( "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
             if ( this.function === "lengthOfSpline" )
             {
                 if ( ! this.drawingObject )
                     return "lengthOfSpline( ??? )";
                 
-                return "lengthOfSpline(" + this.drawingObject.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfSpline(" + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "lengthOfSplinePath" )
@@ -345,7 +350,7 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfSplinePath( ??? )";
 
-                return "lengthOfSplinePath(" + this.drawingObject.ref() + ")";
+                return this.nameWithPopupValue( "lengthOfSplinePath(" + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "lengthOfArc" )
@@ -353,7 +358,7 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfArc( ??? )";
                 
-                return "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")";
+                    return this.nameWithPopupValue( "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")" );
             };
 
             if ( this.function === "sqrt" )
@@ -377,13 +382,13 @@ class Expression {
             if (this.operation === "add") 
                 useOperatorNotation = " + ";
 
-            if (this.operation === "subtract") 
+            else if (this.operation === "subtract") 
                 useOperatorNotation = " - ";
 
-            if (this.operation === "divide") 
+            else if (this.operation === "divide") 
                 useOperatorNotation = " / ";
 
-            if (this.operation === "multiply") 
+            else if (this.operation === "multiply") 
                 useOperatorNotation = " * ";
                 
             var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";

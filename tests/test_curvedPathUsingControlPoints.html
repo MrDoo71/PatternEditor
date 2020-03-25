@@ -29,153 +29,162 @@
       <div id="REP1002132">
         <div id="v343110_graph1">
           <script type="module">
-            import  { drawPattern } from '../dist/patterneditor.js';
+            import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
-             {
-                  "pattern":
+              {
+                "options":
+                  { "includeFullPageOption": true, "allowPanAndZoom": true, "drawingTableSplit": 0.66, "lastMixedSplit": 0.66, "scale": 0.85975649, "translateX": 44.0365, "translateY": 17.5304, "fullWindow": true },
+                "wallpaper": [
                   {
-                    "patternPiece":
-                      [
-                        {
-                          "name": "Pattern piece 1",
-                          "drawingObject":
-                            [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
-                              {
-                                "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 8 }
-                              },
-                              {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.223979,
-                                "my": -1.27117,
-                                "angle":
-                                  { "constant": 60 },
-                                "length":
-                                  { "constant": 8 }
-                              },
-                              {
-                                "name": "A3",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 115 },
-                                "length":
-                                  { "constant": 8 }
-                              },
-                              {
-                                "name": "A5",
-                                "objectType": "pointAlongPerpendicular",
-                                "firstPoint": "A3",
-                                "secondPoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 2 }
-                              },
-                              {
-                                "name": "A6",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A5",
-                                "secondPoint": "A3",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 6 }
-                              },
-                              {
-                                "name": "A7",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A2",
-                                "secondPoint": "A",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 12 }
-                              },
-                              {
-                                "name": "A8",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A2",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": -0.532438,
-                                "my": -1.68376,
-                                "angle":
-                                  { "constant": 144.263 },
-                                "length":
-                                  { "constant": 1.33106 }
-                              },
-                              {
-                                "name": "A9",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A8",
-                                "secondPoint": "A2",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.567805,
-                                "my": -1.17949,
-                                "length":
-                                  { "constant": 3 }
-                              },
-                              {
-                                "name": "A10",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A1",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 89.9455 },
-                                "length":
-                                  { "constant": 4 }
-                              },
-                              {
-                                "derivedName": "Spl_A_A1",
-                                "objectType": "splinePathUsingPoints",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "pathNode": [{ "point": "A" }, { "point": "A7" }, { "point": "A6" }, { "point": "A3" }, { "point": "A5" }, { "point": "A8" }, { "point": "A2" }, { "point": "A9" }, { "point": "A10" }, { "point": "A1" }]
-                              }
-                            ]
-                        }
-                      ]
+                    "imageurl": "expectedResults/toolsForCreatingCurves.png",
+                    "offsetX": -7.254881512260436,
+                    "offsetY": -10.660286368370055, 
+                    "scaleX": 0.4919031973, // 0.01735325168271546*72/2.54  
+                    "scaleY": 0.4919031973,
+                    "opacity": 0.3
                   }
+                ],
+                "pattern":
+                {
+                  "units": "cm",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.223979,
+                              "my": -1.27117,
+                              "angle":
+                                { "constant": 60 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 115 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A3",
+                              "secondPoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A5",
+                              "secondPoint": "A3",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 12 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -0.532438,
+                              "my": -1.68376,
+                              "angle":
+                                { "constant": 144.263 },
+                              "length":
+                                { "constant": 1.33106 }
+                            },
+                            {
+                              "name": "A9",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A8",
+                              "secondPoint": "A2",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.567805,
+                              "my": -1.17949,
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A10",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 89.9455 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "derivedName": "SplPath_A_A1",
+                              "objectType": "splinePathUsingPoints",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "pathNode": [{ "point": "A" }, { "point": "A7" }, { "point": "A6" }, { "point": "A3" }, { "point": "A5" }, { "point": "A8" }, { "point": "A2" }, { "point": "A9" }, { "point": "A10" }, { "point": "A1" }]
+                            }
+                          ]
+                      }
+                    ]
                 }
-                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/toolsForCreatingCurves.png" />
     </div>
 </body>
 

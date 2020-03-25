@@ -32,8 +32,26 @@
             import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": true
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/operationRotate.png",
+                  "offsetX": 0.010287, "offsetY": -0.009133, "scaleX": 0.526339, "scaleY": 0.526339,
+                  "opacity": 0.3,
+                  "filename": "operationRotate.png",
+                  "visible": true,
+                  "allowEdit": false
+                }],
                 "pattern":
                 {
+                  "units": "cm",
                   "patternPiece":
                     [
                       {
@@ -87,13 +105,13 @@
                               "objectType": "operationRotate",
                               "center": "A",
                               "suffix": "B",
-                              "operationName": "ObjectID: 8",
+                              "operationName": "operation_8",
                               "angle":
                                 { "constant": 315 }
                             },
-                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "ObjectID: 8", "mx": -1.27611, "my": -0.474481 },
-                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "ObjectID: 8", "mx": -0.188434, "my": 0.0693585 },
-                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "ObjectID: 8", "mx": 0.243849, "my": -0.474481 },
+                            { "derivedName": "A1B", "objectType": "operationResult", "basePoint": "A1", "fromOperation": "operation_8", "mx": -1.27611, "my": -0.474481 },
+                            { "derivedName": "A3B", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "operation_8", "mx": -0.188434, "my": 0.0693585 },
+                            { "derivedName": "A2B", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "operation_8", "mx": 0.243849, "my": -0.474481 },
                             { "derivedName": "Line_A1B_A2B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A2B", "lineStyle": "hair", "color": "deeppink" },
                             { "derivedName": "Line_A2B_A3B", "objectType": "line", "firstPoint": "A2B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
                             { "derivedName": "Line_A1B_A3B", "objectType": "line", "firstPoint": "A1B", "secondPoint": "A3B", "lineStyle": "hair", "color": "deeppink" },
@@ -115,14 +133,9 @@
                     ]
                 }
               }
-              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              , 'v343110_graph1', { });
           </script>
         </div>
-
-        <div style="opacity:0.6; margin-left:0px; margin-top:0px; padding-left:0px; padding-top:0px">
-          <img src="expectedResults/operationRotate.png" width="400" />
-        </div>
-
       </div>
     </div>
 

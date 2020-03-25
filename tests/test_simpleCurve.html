@@ -29,73 +29,87 @@
       <div id="REP1002132">
         <div id="v343110_graph1">
           <script type="module">
-            import  { drawPattern } from '../dist/patterneditor.js';
+            import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
-                  "pattern":
-                  {
-                    "patternPiece":
-                      [
-                        {
-                          "name": "Pattern piece 1",
-                          "drawingObject":
-                            [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
-                              {
-                                "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 10 }
-                              },
-                              {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 45 },
-                                "length":
-                                  { "constant": 8 }
-                              },
-                              {
-                                "derivedName": "Spl_A2_A1",
-                                "objectType": "splineSimple",
-                                "point1": "A2",
-                                "point4": "A1",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "length1":
-                                  { "constant": 2.47958 },
-                                "length2":
-                                  { "constant": 3.57381 },
-                                "angle1":
-                                  { "constant": 224.835 },
-                                "angle2":
-                                  { "constant": 180.026 }
-                              }
-                            ]
-                        }
-                      ]
-                  }
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": true
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/simpleCurve.png",
+                  "offsetX": 0.48063, "offsetY": -6.603349, "scaleX": 0.292656, "scaleY": 0.292656, 
+                  "opacity": 0.3,
+                  "filename": "simpleCurve.png",
+                  "visible": true,
+                  "allowEdit": false
+                }],
+                "pattern":
+                {
+                  "units": "cm",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 45 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "derivedName": "Spl_A2_A1",
+                              "objectType": "splineSimple",
+                              "point1": "A2",
+                              "point4": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "length1":
+                                { "constant": 2.47958 },
+                              "length2":
+                                { "constant": 3.57381 },
+                              "angle1":
+                                { "constant": 224.835 },
+                              "angle2":
+                                { "constant": 180.026 }
+                            }
+                          ]
+                      }
+                    ]
                 }
-                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              }
+              , 'v343110_graph1', {  });
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/simpleCurve.png" />
     </div>
 </body>
 

@@ -29,82 +29,91 @@
       <div id="REP1002132">
         <div id="v343110_graph1">
           <script type="module">
-            import  { drawPattern } from '../dist/patterneditor.js';
+            import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
-                  "pattern":
+                "options":
+                  { "includeFullPageOption": true, "allowPanAndZoom": true, "drawingTableSplit": 0.75, "lastMixedSplit": 0.75, "scale": 0.87539133, "translateX": 28.1616, "translateY": 24.1741, "fullWindow": true },
+                "wallpaper": [
                   {
-                    "patternPiece":
-                      [
-                        {
-                          "name": "Pattern piece 1",
-                          "drawingObject":
-                            [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
-                              {
-                                "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 10 }
-                              },
-                              {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 60 },
-                                "length":
-                                  { "constant": 8 }
-                              },
-                              {
-                                "name": "A3",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A2",
-                                "secondPoint": "A",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 3 }
-                              },
-                              {
-                                "name": "A4",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A1",
-                                "secondPoint": "A",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 3 }
-                              },
-                              { "derivedName": "Spl_A1_A2", "objectType": "splineUsingPoints", "point1": "A1", "point2": "A4", "point3": "A3", "point4": "A2", "lineStyle": "hair", "color": "black" }
-                            ]
-                        }
-                      ]
+                    "imageurl": "expectedResults/curveToolWhichUsesPointAsControlHandle.png",
+                    "offsetX": 0.23676918830871685,
+                    "offsetY": -7.745180071830749,
+                    "scaleX": 0.3225142594, // 0.011377586371962033*72/2.54  
+                    "scaleY": 0.3225142594,
+                    "opacity": 0.3
                   }
+                ],
+                "pattern":
+                {
+                  "units": "cm",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 60 },
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A1",
+                              "secondPoint": "A",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 3 }
+                            },
+                            { "derivedName": "Spl_A1_A2", "objectType": "splineUsingPoints", "point1": "A1", "point2": "A4", "point3": "A3", "point4": "A2", "lineStyle": "hair", "color": "black" }
+                          ]
+                      }
+                    ]
                 }
-                , 'v343110_graph1', { interactionPrefix: 'RF346740' });
+              }
+              , 'v343110_graph1', { interactionPrefix: 'RF346740' });
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/curveToolWhichUsesPointAsControlHandle.png" />
     </div>
 </body>
 

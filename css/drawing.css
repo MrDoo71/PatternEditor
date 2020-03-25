@@ -220,9 +220,10 @@ div.pattern-editor.full-page {
     padding: 15px;
     */
     position:absolute;
-    top:15px;
-    left:15px;
-    right:15px;
-    bottom: 15px;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    padding:15px;
     background-color: white;
 }

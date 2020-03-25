@@ -114,13 +114,19 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 );// 1000;
-        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height nad margin*/);
+        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar
+        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
+        if ( this.fullWindow )
+        {
+            availableWidth -= 32; //left & right padding 
+            availableHeight -= 30;
+        }
+        //console.log("setDrawingTableSplit availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         this.layoutConfig.drawingWidth = availableWidth * drawingTableSplit;
         this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
         this.layoutConfig.drawingHeight = availableHeight;
         this.layoutConfig.tableHeight = availableHeight;
-
+        console.log("setDrawingTableSplit split:" + drawingTableSplit + " availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         
         if ( this.sizeButtons )
         {
@@ -156,7 +162,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
         var kvpSet = newkvpSet(true) ;
-        kvpSet.add('fullWindow', targetdiv.classed("full-page") ) ;
+        kvpSet.add('fullWindow', options.fullWindow ) ;
         kvpSet.add('drawingTableSplit', options.drawingTableSplit ) ;
         kvpSet.add('scale', options.scale ) ;
         kvpSet.add('translateX', options.translateX ) ;
@@ -392,9 +398,15 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.event.preventDefault();
 
             if ( graphdiv.classed("full-page") ) 
+            {
                 graphdiv.node().classList.remove("full-page");
+                editorOptions.fullWindow = false;
+            }
             else
+            {
                 graphdiv.node().classList.add("full-page");
+                editorOptions.fullWindow = true;
+            }
 
             editorOptions.setDrawingTableSplit();
 

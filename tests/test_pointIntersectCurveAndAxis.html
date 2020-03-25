@@ -29,185 +29,199 @@
       <div id="REP1002132">
         <div id="v343110_graph1">
           <script type="module">
-            import  { drawPattern } from '../dist/patterneditor.js';
+            import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
               {
-                  "pattern":
-                  {
-                    "patternPiece":
-                      [
-                        {
-                          "name": "Pattern piece 1",
-                          "drawingObject":
-                            [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
-                              {
-                                "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": -1.15844,
-                                "my": -0.511586,
-                                "angle":
-                                  { "constant": 135 },
-                                "length":
-                                  { "constant": 10 }
-                              },
-                              {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.290019,
-                                "my": -0.506528,
-                                "angle":
-                                  { "constant": 45 },
-                                "length":
-                                  { "constant": 10 }
-                              },
-                              {
-                                "derivedName": "Spl_A1_A2",
-                                "objectType": "splineSimple",
-                                "point1": "A1",
-                                "point4": "A2",
-                                "lineStyle": "hair",
-                                "color": "darkviolet",
-                                "length1":
-                                  { "constant": 6.29493 },
-                                "length2":
-                                  { "constant": 4.65973 },
-                                "angle1":
-                                  { "constant": 335.61 },
-                                "angle2":
-                                  { "constant": 116.873 }
-                              },
-                              {
-                                "name": "A3",
-                                "objectType": "pointAlongPerpendicular",
-                                "firstPoint": "A1",
-                                "secondPoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 5 }
-                              },
-                              {
-                                "name": "A4",
-                                "objectType": "pointAlongPerpendicular",
-                                "firstPoint": "A2",
-                                "secondPoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 3 }
-                              },
-                              { "derivedName": "Spl_A1_A4", "objectType": "splineUsingPoints", "point1": "A1", "point2": "A3", "point3": "A2", "point4": "A4", "lineStyle": "hair", "color": "green" },
-                              {
-                                "name": "A5",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.0449177,
-                                "my": -0.0141188,
-                                "angle":
-                                  { "constant": 90 },
-                                "length":
-                                  { "constant": 5 }
-                              },
-                              {
-                                "name": "A6",
-                                "objectType": "pointAlongPerpendicular",
-                                "firstPoint": "A5",
-                                "secondPoint": "A",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.342289,
-                                "my": -0.593261,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 3 }
-                              },
-                              {
-                                "name": "A7",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A6",
-                                "secondPoint": "A5",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.14915,
-                                "my": 0.176481,
-                                "length":
-                                  { "constant": 6 }
-                              },
-                              {
-                                "name": "A8",
-                                "objectType": "pointAlongLine",
-                                "firstPoint": "A1",
-                                "secondPoint": "A3",
-                                "lineStyle": "none",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 7 }
-                              },
-                              {
-                                "name": "A9",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A2",
-                                "lineStyle": "dotLine",
-                                "color": "black",
-                                "mx": 0.167342,
-                                "my": -0.085922,
-                                "angle":
-                                  { "constant": 90 },
-                                "length":
-                                  { "constant": 4.04414 }
-                              },
-                              {
-                                "derivedName": "Spl_A1_A4",
-                                "objectType": "splinePathUsingPoints",
-                                "lineStyle": "hair",
-                                "color": "deeppink",
-                                "pathNode": [{ "point": "A1" }, { "point": "A8" }, { "point": "A7" }, { "point": "A5" }, { "point": "A6" }, { "point": "A9" }, { "point": "A4" }]
-                              },
-                              {
-                                "name": "A10",
-                                "objectType": "pointIntersectCurveAndAxis",
-                                "basePoint": "A7",
-                                "curve": "Spl_A1_A4",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": -0.410991,
-                                "my": -1.06734,
-                                "angle":
-                                  { "constant": 11.2131 }
-                              }
-                            ]
-                        }
-                      ]
-                  }
+                "options":
+                  { "includeFullPageOption": true, 
+                    "allowPanAndZoom": true, 
+                    "drawingTableSplit": 0.75, "lastMixedSplit": 0.66, 
+                    "scale": 0.63463544, 
+                    "translateX": 272.1018, 
+                    "translateY": 130.8581, 
+                    "fullWindow": true },
+                "wallpaper": [{ "imageurl": "expectedResults/pointIntersectCurveAndAxis.png", 
+                                "offsetX": -8.05904, 
+                                "offsetY": -13.859021, 
+                                "scaleX": 0.497128, 
+                                "scaleY": 0.497128, 
+                                "opacity": 0.3, 
+                                "filename": "pointIntersectCurveAndAxis.png", 
+                                "visible": true, 
+                                "allowEdit": false }],
+                "pattern":
+                {
+                  "units": "cm",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": -1.15844,
+                              "my": -0.511586,
+                              "angle":
+                                { "constant": 135 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.290019,
+                              "my": -0.506528,
+                              "angle":
+                                { "constant": 45 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "derivedName": "Spl_A1_A2",
+                              "objectType": "splineSimple",
+                              "point1": "A1",
+                              "point4": "A2",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "length1":
+                                { "constant": 6.29493 },
+                              "length2":
+                                { "constant": 4.65973 },
+                              "angle1":
+                                { "constant": 335.61 },
+                              "angle2":
+                                { "constant": 116.873 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A1",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 3 }
+                            },
+                            { "derivedName": "Spl_A1_A4", "objectType": "splineUsingPoints", "point1": "A1", "point2": "A3", "point3": "A2", "point4": "A4", "lineStyle": "hair", "color": "green" },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.0449177,
+                              "my": -0.0141188,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A5",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.342289,
+                              "my": -0.593261,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A6",
+                              "secondPoint": "A5",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.14915,
+                              "my": 0.176481,
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A1",
+                              "secondPoint": "A3",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 7 }
+                            },
+                            {
+                              "name": "A9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.167342,
+                              "my": -0.085922,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 4.04414 }
+                            },
+                            {
+                              "derivedName": "SplPath_A1_A4",
+                              "objectType": "splinePathUsingPoints",
+                              "lineStyle": "hair",
+                              "color": "deeppink",
+                              "pathNode": [{ "point": "A1" }, { "point": "A8" }, { "point": "A7" }, { "point": "A5" }, { "point": "A6" }, { "point": "A9" }, { "point": "A4" }]
+                            },
+                            {
+                              "name": "A10",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A7",
+                              "curve": "SplPath_A1_A4",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": -0.410991,
+                              "my": -1.06734,
+                              "angle":
+                                { "constant": 11.2131 }
+                            }
+                          ]
+                      }
+                    ]
                 }
-                , 'v343110_graph1', {});
+              }
+              , 'v343110_graph1', {});
           </script>
         </div>
       </div>
-    </div>
-
-    <div style="margin-top:20px">
-      <img src="expectedResults/pointIntersectCurveAndAxis.png" />
     </div>
 </body>
 
