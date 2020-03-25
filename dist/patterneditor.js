@@ -3782,7 +3782,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         if ( this.drawingTableSplit != drawingTableSplit )
         {
             this.drawingTableSplit = drawingTableSplit; //so we can call this without a parameter when toggling full size. 
-            this.updateServer(); 
+            if ( this.updateServer ) 
+                this.updateServer(); 
         }
     };    
 
