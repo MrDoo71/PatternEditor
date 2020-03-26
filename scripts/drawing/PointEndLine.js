@@ -38,9 +38,6 @@ class PointEndLine extends DrawingObject {
 
     html( asFormula ) {
 
-        if ( this.data.name === "A28" )
-        console.log("A28");
-
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.basePoint ) 

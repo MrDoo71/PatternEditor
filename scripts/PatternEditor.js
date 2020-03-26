@@ -220,7 +220,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
         var graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
-        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active").removeClass("j-active-2s");
         $(graphdiv.node()).find( ".source" ).removeClass("source");
         $(graphdiv.node()).find( ".target" ).removeClass("target");
         //$(graphdiv.node()).find( ".j-outline.j-outline-active" ).removeClass("j-outline-active");
@@ -237,7 +237,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         {
             selectedObject.outlineSvg.node().classList.add("j-active");
             //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
-            setTimeout( function(){ selectedObject.outlineSvg.node().classList.remove("j-active");}, 2000 );
+            setTimeout( function(){ selectedObject.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
         }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.

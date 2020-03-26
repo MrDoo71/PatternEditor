@@ -684,7 +684,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawLine( g, isOutline ) {
-        if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
+        if ( ( this.lineVisible() || isOutline ) && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
                      .attr("x1", this.line.p1.x)
@@ -701,7 +701,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawPath( g, path, isOutline ) {
-        if ( this.lineVisible() )
+        if ( this.lineVisible() || isOutline )
         {
             var p = g.append("path")
                     .attr("d", path )
@@ -716,7 +716,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawCurve( g, isOutline ) {
-        if ( this.lineVisible() && this.curve )
+        if ( ( this.lineVisible() || isOutline ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), isOutline );
     }
 
@@ -1712,9 +1712,6 @@ class PointEndLine extends DrawingObject {
 
     html( asFormula ) {
 
-        if ( this.data.name === "A28" )
-        console.log("A28");
-
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.basePoint ) 
@@ -1885,7 +1882,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'line ' + this.refOf( this.firstPoint ) +  " - " + this.refOf( this.secondPoint );
+        return 'point at X from ' + this.refOf( this.firstPoint ) +  " and Y from " + this.refOf( this.secondPoint );
     }
 
 
@@ -3860,7 +3857,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
         var graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
-        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active");
+        $(graphdiv.node()).find( ".j-active" ).removeClass("j-active").removeClass("j-active-2s");
         $(graphdiv.node()).find( ".source" ).removeClass("source");
         $(graphdiv.node()).find( ".target" ).removeClass("target");
         //$(graphdiv.node()).find( ".j-outline.j-outline-active" ).removeClass("j-outline-active");
@@ -3877,7 +3874,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         {
             selectedObject.outlineSvg.node().classList.add("j-active");
             //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
-            setTimeout( function(){ selectedObject.outlineSvg.node().classList.remove("j-active");}, 2000 );
+            setTimeout( function(){ selectedObject.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
         }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.

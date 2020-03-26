@@ -11,6 +11,7 @@ a.ps-ref {
 g.j-item.j-active a.ps-ref {
     /*text-decoration: underline; try dotted */
     color:#2b7cb3;/* #3378a7;*/
+    cursor: pointer;
 }
 
 g.j-item span.const {
@@ -153,18 +154,11 @@ g.j-outline g.source > circle {
 g.j-outline g.j-active > circle {
     fill: #ff8;
     opacity: 1;
-    /*
-    animation-name: k-throb-fill;
-    animation-duration: 2s;
-    animation-iteration-count: 1;
-    animation-direction: alternate;
-    animation-timing-function: ease-out;
-    */
 }
     
 
-g.j-outline g.j-active > path,
-g.j-outline g.j-active > line {
+g.j-outline g.j-active:not(.j-active-2s) > path,
+g.j-outline g.j-active:not(.j-active-2s) > line {
     /*stroke: #ff8;*/
     animation-name: k-throb-stroke;
     animation-duration: 2s;
