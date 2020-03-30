@@ -30,109 +30,123 @@
       <div id="REP1002132">
         <div id="v343110_graph1">
           <script type="module">
-            import  { drawPattern } from '../dist/patterneditor.js';
+            import { drawPattern } from '../dist/patterneditor.js';
             drawPattern(
+              {
+                "options":
                 {
-                  "pattern":
-                  {
-                    "patternPiece":
-                      [
-                        {
-                          "name": "Pattern piece 1",
-                          "drawingObject":
-                            [
-                              { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
-                              {
-                                "name": "A1",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 0 },
-                                "length":
-                                  { "constant": 5 }
-                              },
-                              {
-                                "name": "A2",
-                                "objectType": "pointEndLine",
-                                "basePoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "angle":
-                                  { "constant": 90 },
-                                "length":
-                                  { "constant": 5 }
-                              },
-                              {
-                                "name": "A3",
-                                "objectType": "pointAlongBisector",
-                                "firstPoint": "A2",
-                                "secondPoint": "A",
-                                "thirdPoint": "A1",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 10 }
-                              },
-                              {
-                                "name": "A4",
-                                "objectType": "pointAlongBisector",
-                                "firstPoint": "A2",
-                                "secondPoint": "A",
-                                "thirdPoint": "A1",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": -10 }
-                              },
-                              {
-                                "name": "A5",
-                                "objectType": "pointAlongBisector",
-                                "firstPoint": "A1",
-                                "secondPoint": "A",
-                                "thirdPoint": "A3",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": 7 }
-                              },
-                              {
-                                "name": "A6",
-                                "objectType": "pointAlongBisector",
-                                "firstPoint": "A1",
-                                "secondPoint": "A3",
-                                "thirdPoint": "A",
-                                "lineStyle": "hair",
-                                "color": "black",
-                                "mx": 0.132292,
-                                "my": 0.264583,
-                                "length":
-                                  { "constant": -2 }
-                              }
-                            ]
-                        }
-                      ]
-                  }
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": true
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/pointAlongBisector.png",
+                  "offsetX": -7.340377, "offsetY": -11.491041, "scaleX": 0.654168, "scaleY": 0.654168,
+                  "opacity": 0.3,
+                  "filename": "pointAlongBisector.png",
+                  "visible": true,
+                  "allowEdit": false
+                }],
+                "pattern":
+                {
+                  "units": "cm",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "angle":
+                                { "constant": 90 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongBisector",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "thirdPoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointAlongBisector",
+                              "firstPoint": "A2",
+                              "secondPoint": "A",
+                              "thirdPoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": -10 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointAlongBisector",
+                              "firstPoint": "A1",
+                              "secondPoint": "A",
+                              "thirdPoint": "A3",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": 7 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointAlongBisector",
+                              "firstPoint": "A1",
+                              "secondPoint": "A3",
+                              "thirdPoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.132292,
+                              "my": 0.264583,
+                              "length":
+                                { "constant": -2 }
+                            }
+                          ]
+                      }
+                    ]
                 }
-                , 'v343110_graph1', { });
+              }
+              , 'v343110_graph1', {});
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/pointAlongBisector.png" />
     </div>
 </body>
 
