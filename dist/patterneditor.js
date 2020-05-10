@@ -1104,10 +1104,10 @@ class OperationFlipByAxis extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                + 'Flip operation: axis:' + this.axis 
+                + 'Flip ' + this.axis 
                 + " around " + this.refOf( this.center ) 
                          //" angle:" + this.data.angle.value() +
-                + " suffix:" + this.data.suffix;
+                + " applying suffix '" + this.data.suffix + "'";
     }
 
 
@@ -1177,10 +1177,10 @@ class OperationMove extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
-                    + 'Move operation: ' + this.data.length.htmlLength( asFormula ) 
+                    + 'Move ' + this.data.length.htmlLength( asFormula ) 
                     //" from " + this.basePoint.data.name +
-                    + " angle:" + this.data.angle.htmlAngle( asFormula ) 
-                    + " suffix:" + this.data.suffix;
+                    + " at angle " + this.data.angle.htmlAngle( asFormula ) 
+                    + " applying suffix '" + this.data.suffix + "'";
     }
 
 
@@ -1281,7 +1281,7 @@ class OperationResult extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Operation ' + this.refOf( this.fromOperation )
+                + 'Result of ' + this.refOf( this.fromOperation )
                 + ' on ' + this.refOf( this.basePoint ); 
     }
 
@@ -1327,10 +1327,10 @@ class OperationRotate extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Move rotate: ' 
-                + " center: " + this.refOf( this.center ) 
-                + " angle:" + this.data.angle.htmlAngle( asFormula ) 
-                + " suffix:" + this.data.suffix;
+                + 'Rotate: ' 
+                + this.data.angle.htmlAngle( asFormula ) 
+                + " around " + this.refOf( this.center ) 
+                + " applying suffix '" + this.data.suffix + "'";
     }
 
 
@@ -3119,17 +3119,52 @@ class TrueDart extends DrawingObject {
         if (typeof this.p2Line1 === "undefined")
             this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
 
-        var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
-        var lineD2D1 = new GeoLine( this.point2.p, this.point1.p );    
-        var angleA1D2D1 = lineD2A1.angleRad() - lineD2D1.angleRad();
-        var lengthD2TD1 = Math.cos( angleA1D2D1 ) * lineD2A1.length;
-        this.td1 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD1, lineD2D1.angleRad() );
-    
-        var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );
+        //var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
+        //var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );
+
+        var lineD2D1 = new GeoLine( this.point2.p, this.point1.p ); 
         var lineD2D3 = new GeoLine( this.point2.p, this.point3.p );    
-        var angleA1D2D3 = lineD2D3.angleRad() - lineD2A2.angleRad();
-        var lengthD2TD3 = Math.cos( angleA1D2D3 ) * lineD2A2.length;
-        this.td3 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD3, lineD2D3.angleRad() );
+
+        var angleD2D1 = lineD2D1.angleDeg();
+        var angleD2D3 = lineD2D3.angleDeg();
+
+        var totalDartAngle = angleD2D1 - angleD2D3;
+
+        //edge case:
+        //if D2D1 angle is 10 and D2D3 is 350 (or vice versa) then it would be better to consider D2D3 to be -10. 
+        if ( totalDartAngle > 180 )
+        {
+            angleD2D1 -= 360;
+            totalDartAngle = angleD2D1 - angleD2D3;
+        }
+        else if ( totalDartAngle < -180 ) 
+        {
+            angleD2D3 -= 360;
+            totalDartAngle = angleD2D1 - angleD2D3;
+        }
+
+        var halfDartAngle = totalDartAngle /2;
+
+        var pointA1rotated = this.p1Line1.p.rotate( this.point2.p, -halfDartAngle );
+        var pointD1rotated = this.point1.p.rotate( this.point2.p, -halfDartAngle );
+        var pointA2rotated = this.p2Line1.p.rotate( this.point2.p, halfDartAngle );
+        var pointD2rotated = this.point3.p.rotate( this.point2.p, halfDartAngle );
+
+        var lineA1RA2R = new GeoLine( pointA1rotated, pointA2rotated );
+        this.line = lineA1RA2R; //TEMP
+        var pointClosure = lineA1RA2R.intersect( new GeoLine( this.point2.p, pointD1rotated ) ); //could equally use pointD2rotated
+        this.p = pointClosure; //TEMP
+
+        this.td1 = pointClosure.rotate( this.point2.p, halfDartAngle );
+        this.td3 = pointClosure.rotate( this.point2.p, -halfDartAngle );
+
+        //Only works where D2 is perpendicular to the midpoint of D1D3
+        //var angleA1D2D1 = lineD2A1.angleRad() - lineD2D1.angleRad();
+        //var lengthD2TD1 = Math.cos( angleA1D2D1 ) * lineD2A1.length;
+        //this.td1 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD1, lineD2D1.angleRad() );    
+        //var angleA1D2D3 = lineD2D3.angleRad() - lineD2A2.angleRad();
+        //var lengthD2TD3 = Math.cos( angleA1D2D3 ) * lineD2A2.length;
+        //this.td3 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD3, lineD2D3.angleRad() );
 
         //Nb. this.data.trueDartResult1 and trueDartResult2 give the names of the dart points generated.
 
@@ -3139,9 +3174,9 @@ class TrueDart extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        //no!
-        //this.drawDotForSpecificPoint( g, isOutline, this.td3 );
-        //this.drawLabel( g, isOutline );
+        this.drawLine( g, isOutline ); //TEMP - though actually handy
+        this.drawDot( g, isOutline); //TEMP
+        this.drawLabel( g, isOutline ); //TEMP
     }
 
 

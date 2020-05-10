@@ -32,10 +32,10 @@ class OperationRotate extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Move rotate: ' 
-                + " center: " + this.refOf( this.center ) 
-                + " angle:" + this.data.angle.htmlAngle( asFormula ) 
-                + " suffix:" + this.data.suffix;
+                + 'Rotate: ' 
+                + this.data.angle.htmlAngle( asFormula ) 
+                + " around " + this.refOf( this.center ) 
+                + " applying suffix '" + this.data.suffix + "'";
     }
 
 

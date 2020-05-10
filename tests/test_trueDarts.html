@@ -33,11 +33,15 @@
             drawPattern(
               {
                 "options":
-                {
-                  "includeFullPageOption": true,
-                  "allowPanAndZoom": true,
-                  "drawingTableSplit": 0.5                  
-                },
+                  { "includeFullPageOption": true, 
+                  "allowPanAndZoom": true, 
+                  "drawingTableSplit": 0.66, 
+                  "lastMixedSplit": 0.66, "scale": 0.8, 
+                  "translateX": 18, 
+                  "translateY": 34, 
+                  "fullWindow": false },
+                "wallpaper": [
+                    { "imageurl": "expectedResults/trueDarts3.png", "offsetX": -4.501552, "offsetY": 0.044296, "scaleX": 0.979895, "scaleY": 0.979895, "opacity": 0.5, "filename": "trueDarts3.png", "visible": true, "allowEdit": true }],
                 "pattern":
                 {
                   "units": "inch",
@@ -53,7 +57,7 @@
                               "objectType": "pointEndLine",
                               "basePoint": "A",
                               "lineStyle": "hair",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.0520833,
                               "my": 0.104167,
                               "angle":
@@ -79,7 +83,7 @@
                               "firstPoint": "D0",
                               "secondPoint": "A",
                               "lineStyle": "dashDotLine",
-                              "color": "black",
+                              "color": "cornflowerblue",
                               "mx": 0.0520833,
                               "my": 0.104167,
                               "angle":
@@ -119,20 +123,113 @@
                             { "derivedName": "Line_A_TD1", "objectType": "line", "firstPoint": "A", "secondPoint": "TD1", "lineStyle": "hair", "color": "black" },
                             { "derivedName": "Line_TD2_A1", "objectType": "line", "firstPoint": "TD2", "secondPoint": "A1", "lineStyle": "hair", "color": "black" },
                             { "derivedName": "Line_TD1_D2", "objectType": "line", "firstPoint": "TD1", "secondPoint": "D2", "lineStyle": "hair", "color": "black" },
-                            { "derivedName": "Line_TD2_D2", "objectType": "line", "firstPoint": "TD2", "secondPoint": "D2", "lineStyle": "hair", "color": "black" }
+                            { "derivedName": "Line_TD2_D2", "objectType": "line", "firstPoint": "TD2", "secondPoint": "D2", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "A2",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A1",
+                              "secondPoint": "A",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.0331294,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A1",
+                              "secondPoint": "A2",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "length":
+                              {
+                                "expression":
+                                {
+                                  "operationType": "divide",
+                                  "parameter":
+                                    [
+                                      {
+                                        "operationType": "multiply",
+                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                      },
+                                      { "operationType": "Integer value", "integerValue": 4 }
+                                    ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "E2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A3",
+                              "lineStyle": "dotLine",
+                              "color": "cornflowerblue",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 140 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "E1",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A3",
+                              "secondPoint": "A1",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -0.592349,
+                              "my": 0.0283515,
+                              "length":
+                                { "constant": 1.5 }
+                            },
+                            {
+                              "name": "E3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A3",
+                              "secondPoint": "A2",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": -0.630257,
+                              "my": -0.237003,
+                              "length":
+                                { "constant": 1 }
+                            },
+                            { "objectType": "trueDart", "point1": "E1", "point2": "E2", "point3": "E3", "p1Line1": "A1", "p2Line1": "A2", "operationName": "operation_21", "trueDartResult1": "ER1", "trueDartResult2": "ER2" },
+                            { "name": "ER1", "objectType": "trueDartResult", "fromOperation": "operation_21", "mx": 0.0520833, "my": 0.104167 },
+                            { "name": "ER2", "objectType": "trueDartResult", "fromOperation": "operation_21", "mx": 0.0331294, "my": 0.00939758 },
+                            { "derivedName": "Line_E2_ER2", "objectType": "line", "firstPoint": "E2", "secondPoint": "ER2", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_E2_ER1", "objectType": "line", "firstPoint": "E2", "secondPoint": "ER1", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_A1_ER1", "objectType": "line", "firstPoint": "A1", "secondPoint": "ER1", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Line_ER2_A2", "objectType": "line", "firstPoint": "ER2", "secondPoint": "A2", "lineStyle": "hair", "color": "black" },
+                            {
+                              "name": "A9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 154.366 },
+                              "length":
+                                { "constant": 7.0113 }
+                            },
+                            { "derivedName": "Line_A_A9", "objectType": "line", "firstPoint": "A", "secondPoint": "A9", "lineStyle": "hair", "color": "black" }
                           ]
                       }
                     ]
                 }
               }
-              , 'v343110_graph1', { });
+              , 'v343110_graph1', {});
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/trueDarts.png" />
     </div>
 </body>
 

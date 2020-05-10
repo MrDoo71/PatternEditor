@@ -79,7 +79,7 @@ class OperationResult extends DrawingObject {
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
-                + 'Operation ' + this.refOf( this.fromOperation )
+                + 'Result of ' + this.refOf( this.fromOperation )
                 + ' on ' + this.refOf( this.basePoint ); 
     }
 

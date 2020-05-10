@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="0.0520833" my="0.104167" name="A" type="single" x="0.3125" y="0.416667"/>
+            <point angle="340" basePoint="1" id="2" length="6" lineColor="cornflowerblue" mx="0.0520833" my="0.104167" name="A1" type="endLine" typeLine="hair"/>
+            <point firstPoint="1" id="3" length="3" lineColor="black" mx="-0.344399" my="0.130599" name="D0" secondPoint="2" type="alongLine" typeLine="none"/>
+            <point angle="0" firstPoint="3" id="4" length="4" lineColor="cornflowerblue" mx="0.0520833" my="0.104167" name="D2" secondPoint="1" type="normal" typeLine="dashDotLine"/>
+            <point firstPoint="3" id="5" length="0.5" lineColor="black" mx="-0.000780855" my="0.14822" name="D3" secondPoint="2" type="alongLine" typeLine="dotLine"/>
+            <point firstPoint="3" id="6" length="0.5" lineColor="black" mx="-0.547045" my="-0.089669" name="D1" secondPoint="1" type="alongLine" typeLine="none"/>
+            <line firstPoint="4" id="7" lineColor="black" secondPoint="5" typeLine="dotLine"/>
+            <line firstPoint="4" id="8" lineColor="black" secondPoint="6" typeLine="dotLine"/>
+            <point baseLineP1="1" baseLineP2="2" dartP1="6" dartP2="4" dartP3="5" id="9" mx1="-0.23867" mx2="0.175433" my1="-0.583069" my2="-0.318747" name1="TD1" name2="TD2" point1="10" point2="11" type="trueDarts"/>
+            <line firstPoint="1" id="12" lineColor="black" secondPoint="10" typeLine="hair"/>
+            <line firstPoint="11" id="13" lineColor="black" secondPoint="2" typeLine="hair"/>
+            <line firstPoint="10" id="14" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <line firstPoint="11" id="15" lineColor="black" secondPoint="4" typeLine="hair"/>
+            <point angle="0" firstPoint="2" id="16" length="10" lineColor="cornflowerblue" mx="0.0331294" my="0.104167" name="A2" secondPoint="1" type="normal" typeLine="dotLine"/>
+            <point firstPoint="2" id="17" length="CurrentLength*3/4" lineColor="black" mx="0.0520833" my="0.104167" name="A3" secondPoint="16" type="alongLine" typeLine="none"/>
+            <point angle="140" basePoint="17" id="18" length="5" lineColor="cornflowerblue" mx="0.0520833" my="0.104167" name="E2" type="endLine" typeLine="dotLine"/>
+            <point firstPoint="17" id="19" length="1.5" lineColor="black" mx="-0.592349" my="0.0283515" name="E1" secondPoint="2" type="alongLine" typeLine="none"/>
+            <point firstPoint="17" id="20" length="1" lineColor="black" mx="-0.630257" my="-0.237003" name="E3" secondPoint="16" type="alongLine" typeLine="none"/>
+            <point baseLineP1="2" baseLineP2="16" dartP1="19" dartP2="18" dartP3="20" id="21" mx1="0.0520833" mx2="0.0331294" my1="0.104167" my2="0.00939758" name1="ER1" name2="ER2" point1="22" point2="23" type="trueDarts"/>
+            <line firstPoint="18" id="24" lineColor="black" secondPoint="23" typeLine="hair"/>
+            <line firstPoint="18" id="25" lineColor="black" secondPoint="22" typeLine="hair"/>
+            <line firstPoint="2" id="26" lineColor="black" secondPoint="22" typeLine="hair"/>
+            <line firstPoint="23" id="27" lineColor="black" secondPoint="16" typeLine="hair"/>
+            <point angle="154.366" basePoint="16" id="28" length="7.0113" lineColor="black" mx="0.0520833" my="0.104167" name="A9" type="endLine" typeLine="hair"/>
+            <line firstPoint="1" id="29" lineColor="black" secondPoint="28" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>
