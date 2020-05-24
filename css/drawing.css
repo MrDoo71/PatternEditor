@@ -204,6 +204,12 @@ button.toggle-show_formulas {
     margin-left: 8px;
 }
 
+div.pattern-editor div.pattern-main {
+    position:absolute;
+    right:0px;
+    left:0px;    
+}
+
 div.pattern-editor.full-page {
     /* better, but is then on top of any callouts! also adjust availeble width/height by 30 
     position:fixed; z-index: 2000;
@@ -220,4 +226,8 @@ div.pattern-editor.full-page {
     bottom:0px;
     padding:15px;
     background-color: white;
+}
+
+div.pattern-editor.full-page div.pattern-main {
+        position: static;
 }

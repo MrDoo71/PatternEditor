@@ -3670,7 +3670,7 @@ class PatternPiece {
 }
 
 
-//(c) Copyright 2019 Jason Dore
+//(c) Copyright 2019-20 Jason Dore
 //
 //Inspired by the excellent Seamly2D/Valentina pattern drawing software.
 //This library is a ground up implementation in Javascript intended to be compatible with, but
@@ -3786,7 +3786,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar
+        var availableWidth = Math.round( window.innerWidth - 30);//targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar
         var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
         if ( this.fullWindow )
         {
@@ -3957,25 +3957,28 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
+    doControls( targetdiv, options, pattern );
+
+    var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
+
     doDrawingAndTable = function() {
                                     if ( options.layoutConfig.drawingWidth )
-                                        doDrawing( targetdiv, pattern, options, contextMenu, focusDrawingObject );
+                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
-                                        targetdiv.select("svg.pattern-drawing").remove();
+                                    drawingAndTableDiv.select("svg.pattern-drawing").remove();
                                                                             
                                     if (   ( options.layoutConfig.drawingWidth )
                                         && ( options.layoutConfig.tableWidth ) )
-                                        doResizeBar( targetdiv, options );    
+                                        doResizeBar( drawingAndTableDiv, options );    
                                     else
-                                        targetdiv.select("div.pattern-editor-resize").remove();
+                                    drawingAndTableDiv.select("div.pattern-editor-resize").remove();
 
                                     if ( options.layoutConfig.tableWidth )
-                                        doTable( targetdiv, pattern, options, contextMenu, focusDrawingObject );
+                                        doTable( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
-                                        targetdiv.select("div.pattern-table").remove();
+                                    drawingAndTableDiv.select("div.pattern-table").remove();
                                 };
 
-    doControls( targetdiv, options, pattern );
     doDrawingAndTable();                   
     
     var errorFound = false;
