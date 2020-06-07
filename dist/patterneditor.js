@@ -3793,6 +3793,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             availableWidth -= 32; //left & right padding 
             availableHeight -= 30;
         }
+
+        //TODO availableHeight remove height of wallpapers descriptions
+
         //console.log("setDrawingTableSplit availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         this.layoutConfig.drawingWidth = availableWidth * drawingTableSplit;
         this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
@@ -4883,6 +4886,20 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
+            else if ( data.variableType === "radiusOfArc" )
+            {
+                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+
+                if ( data.radiusSelection === "ellipticalArcRadius1" )
+                    this.radiusSelection = 1;
+                else if ( data.radiusSelection === "ellipticalArcRadius2" )
+                    this.radiusSelection = 2;
+                else
+                    this.radiusSelection = null;
+
+                this.function = data.variableType;
+                this.value = this.functionValue;
+            }            
             else 
                 throw "Unsupported variableType:" + data.variableType;
         }
@@ -5007,7 +5024,16 @@ class Expression {
                     }
                 }
             }
-        }        
+        }    
+        else if ( this.function === "radiusOfArc" )
+        {
+            if ( this.radiusSelection === 1 )
+                return this.drawingObject.radius1.value();
+            else if ( this.radiusSelection === 2 )
+                return this.drawingObject.radius2.value();
+            else
+                return this.drawingObject.radius.value();
+        }
         else if  ( this.function === "sqrt" )
         {
             var p1 = this.params[0].value(currentLength);
@@ -5154,8 +5180,16 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfArc( ??? )";
                 
-                    return this.nameWithPopupValue( "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")" );
+                return this.nameWithPopupValue( "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")" );
             };
+
+            if ( this.function === "radiusOfArc" )
+            {
+                if ( ! this.drawingObject )
+                    return "radiusOfArc( ??? )";
+                
+                return this.nameWithPopupValue( "radiusOfArc(" + this.drawingObject.ref() + ( this.radiusSelection ? ", radius-" + this.radiusSelection : "" ) + ")" );
+            };            
 
             if ( this.function === "sqrt" )
             {

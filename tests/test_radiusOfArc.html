@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - radius of arc</title>
+
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap_ultra.css?version=2.28.52rc1" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <h1 class="col-sm-12 ">
+          Radius of arc
+        </h1>
+      </div>
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "wallpaper": [
+                  {
+                    "imageurl": "expectedResults/radiusOfArc.png",
+                    "offsetX": -3.4180564880371094,  //scale(0.023763221367666322,0.023763221367666322 )"
+                    "offsetY": -3.655585289001465,
+                    "scaleX": 1.711, //0.023763221367666322 * 72  (inches)
+                    "scaleY": 1.711,
+                    "opacity": 0.6
+                  }
+                ],
+                "options":
+                  { "includeFullPageOption": true, "allowPanAndZoom": true, "scale": 1, "fullWindow": false },
+                "pattern":
+                {
+                  "units": "inch",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.3125, "y": 0.416667, "mx": 0.0520833, "my": 0.104167 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "derivedName": "Arc_A1_3",
+                              "objectType": "arcSimple",
+                              "center": "A1",
+                              "lineStyle": "hair",
+                              "color": "black",
+                              "angle1":
+                                { "constant": 270 },
+                              "angle2":
+                                { "constant": 90 },
+                              "radius":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "dotLine",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 12 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A1",
+                              "secondPoint": "A2",
+                              "lineStyle": "none",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "radiusOfArc", "drawingObject1": "Arc_A1_3" }
+                              }
+                            },
+                            {
+                              "derivedName": "ElArc_A1_6",
+                              "objectType": "arcElliptical",
+                              "center": "A1",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "angle1":
+                                { "constant": 270 },
+                              "angle2":
+                                { "constant": 90 },
+                              "radius1":
+                                { "constant": 5 },
+                              "radius2":
+                                { "constant": 6 },
+                              "rotationAngle":
+                                { "constant": 30 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 300 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "radiusOfArc", "drawingObject1": "ElArc_A1_6", "radiusSelection": "ellipticalArcRadius2" }
+                              }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A1",
+                              "lineStyle": "hair",
+                              "color": "darkviolet",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 28.3 },
+                              "length":
+                              {
+                                "expression":
+                                  { "operationType": "Variable", "variableType": "radiusOfArc", "drawingObject1": "ElArc_A1_6", "radiusSelection": "ellipticalArcRadius1" }
+                              }
+                            }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', {});
+          </script>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
