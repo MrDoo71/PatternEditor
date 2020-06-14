@@ -716,9 +716,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                             var g = a.drawingSvg;                            
                             if ( g )
                             {
-                                g.selectAll( "text" )
-                                .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
+                                var labelPosition = a.labelPosition();
 
+                                if ( labelPosition )
+                                {
+                                    g.selectAll( "text" )
+                                    .attr("font-size", labelPosition.fontSize + "px")
+                                    .attr("x", labelPosition.labelX )
+                                    .attr("y", labelPosition.labelY );
+
+                                    g.selectAll( "line.labelLine" )
+                                    .attr("x2", labelPosition.labelLineX )
+                                    .attr("y2", labelPosition.labelLineY );
+                                }
+                       
                                 g.selectAll( "circle" )
                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 

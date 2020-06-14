@@ -661,17 +661,72 @@ class DrawingObject /*abstract*/ {
 
         //g - the svg group we want to add the text to
         //o - the drawing object
-        var d = this.data; //the original json data
+
+        if ( ! this.p )
+            return;
+        
         if (typeof this.p.x !== "number")
             return;
 
-        var fontSize = Math.round( ( 1200 / scale / fontsSizedForScale ))/100;
+        //TODO adjust labelX, labelY to be the appropriate side and top/bottom of the label. 
+        //TODO don't show the line if it would be really short - taking the effective scaling into account
+        //TODO do the line first, or lower it, so that the label is on top of the line. 
 
-        g.append("text")
-            .attr("x", this.p.x + (typeof d.mx === "undefined" ? 0 : ( d.mx ) ) )
-            .attr("y", this.p.y + (typeof d.my === "undefined" ? 0 : ( d.my + fontSize ) ) )
+        var d = this.data; //the original json data
+
+        {
+            var labelPosition = this.labelPosition();
+
+            if ( labelPosition.drawLine )
+                g.append("line")
+                .attr("x1", this.p.x)
+                .attr("y1", this.p.y)
+                .attr("x2", labelPosition.labelLineX )
+                .attr("y2", labelPosition.labelLineY )
+                .attr("stroke-width", this.getStrokeWidth( false ) )
+                .attr("class", "labelLine" );
+
+            g.append("text")
+            .attr("x", labelPosition.labelX )
+            .attr("y", labelPosition.labelY )
             .text(d.name)
-            .attr("font-size", fontSize + "px");
+            .attr("font-size", labelPosition.fontSize + "px");
+        }
+    }
+
+
+    labelPosition() {
+
+        if ( ! this.p )
+            return null;
+
+        //console.log( "Scale: " + scale + " fontsSizedForScale:" + fontsSizedForScale );    
+
+        var d = this.data; //the original json data
+        var fontSize = Math.round( 1800 / scale / fontsSizedForScale )/100;
+        var fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
+
+        //This is different to seamly2d behaviour, we'll actually reduce mx/my a bit if you zoom in
+        if ( fontsSizedForScale > 1 )
+            fudge = (1 + 1/fontsSizedForScale) /2;
+
+        var mx = (typeof d.mx === "undefined") ? 0 : d.mx;
+        var my = (typeof d.my === "undefined") ? 0 : d.my;
+
+        var pos = { labelX: this.p.x + fudge * mx,
+                    labelY: this.p.y + fudge *( my + fontSize ),
+                    labelLineX: this.p.x + fudge* ( ( mx > 0 ) ? mx  //line goes to left of label
+                                                                : ( mx + 0.5 * d.name.length * fontSize ) ), //otherwise line goes to center of label
+                    labelLineY: this.p.y + fudge* ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
+                    fontSize: fontSize
+                    };
+
+        var minLineLength = 2 * fontSize;
+
+        pos.drawLine =    ( Math.abs( this.p.x - pos.labelX ) > minLineLength )
+                       || ( Math.abs( this.p.y - pos.labelY ) > minLineLength );
+
+        return pos;
     }
 
 
@@ -4388,9 +4443,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                             var g = a.drawingSvg;                            
                             if ( g )
                             {
-                                g.selectAll( "text" )
-                                .attr("font-size", Math.round(1200 / scale / fontsSizedForScale)/100 + "px");
+                                var labelPosition = a.labelPosition();
 
+                                if ( labelPosition )
+                                {
+                                    g.selectAll( "text" )
+                                    .attr("font-size", labelPosition.fontSize + "px")
+                                    .attr("x", labelPosition.labelX )
+                                    .attr("y", labelPosition.labelY );
+
+                                    g.selectAll( "line.labelLine" )
+                                    .attr("x2", labelPosition.labelLineX )
+                                    .attr("y2", labelPosition.labelLineY );
+                                }
+                       
                                 g.selectAll( "circle" )
                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 

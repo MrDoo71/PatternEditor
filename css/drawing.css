@@ -167,6 +167,11 @@ g.j-outline g.j-active:not(.j-active-2s) > line {
     animation-timing-function: ease-out;
 }
 
+/* the line from a point to its label positioned at mx,my */
+line.labelLine {
+    stroke:#d0d0d0;
+}
+
 div.pattern-editor-controls {    
     margin-bottom:15px;
 }
