@@ -668,10 +668,6 @@ class DrawingObject /*abstract*/ {
         if (typeof this.p.x !== "number")
             return;
 
-        //TODO adjust labelX, labelY to be the appropriate side and top/bottom of the label. 
-        //TODO don't show the line if it would be really short - taking the effective scaling into account
-        //TODO do the line first, or lower it, so that the label is on top of the line. 
-
         var d = this.data; //the original json data
 
         {
@@ -703,7 +699,7 @@ class DrawingObject /*abstract*/ {
         //console.log( "Scale: " + scale + " fontsSizedForScale:" + fontsSizedForScale );    
 
         var d = this.data; //the original json data
-        var fontSize = Math.round( 1800 / scale / fontsSizedForScale )/100;
+        var fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
         var fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
 
         //This is different to seamly2d behaviour, we'll actually reduce mx/my a bit if you zoom in
@@ -721,10 +717,14 @@ class DrawingObject /*abstract*/ {
                     fontSize: fontSize
                     };
 
+        //TODO adjust the labelLine to be cleverer, intersecting a boundary box around the text.            
+
         var minLineLength = 2 * fontSize;
 
         pos.drawLine =    ( Math.abs( this.p.x - pos.labelX ) > minLineLength )
                        || ( Math.abs( this.p.y - pos.labelY ) > minLineLength );
+
+        //TODO drawing a line can become newly desirable because of zooming, but we won't have added it. 
 
         return pos;
     }
@@ -3443,6 +3443,18 @@ class Pattern {
         return m;
     }
 
+    getObject( name )
+    {
+        for( var j=0; j< this.patternPieces.length; j++ )
+        {
+            var piece = this.patternPieces[j];
+            var obj = piece.getObject( name );
+            if ( obj )
+                return obj;
+        }
+        return null;
+    }
+
 
 }
 //(c) Copyright 2019 Jason Dore
@@ -4054,6 +4066,13 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
         if ( errorFound )
             break;
+    }
+
+    if ( ( ! errorFound ) && ( options.focus ) )
+    {
+        var a = pattern.getObject( options.focus );
+        if ( a )
+            focusDrawingObject(a, true);
     }
 
 }

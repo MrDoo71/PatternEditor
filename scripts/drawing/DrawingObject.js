@@ -49,7 +49,7 @@ class DrawingObject /*abstract*/ {
         //console.log( "Scale: " + scale + " fontsSizedForScale:" + fontsSizedForScale );    
 
         var d = this.data; //the original json data
-        var fontSize = Math.round( 1800 / scale / fontsSizedForScale )/100;
+        var fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
         var fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
 
         //This is different to seamly2d behaviour, we'll actually reduce mx/my a bit if you zoom in

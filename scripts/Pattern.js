@@ -95,5 +95,17 @@ class Pattern {
         return m;
     }
 
+    getObject( name )
+    {
+        for( var j=0; j< this.patternPieces.length; j++ )
+        {
+            var piece = this.patternPieces[j];
+            var obj = piece.getObject( name );
+            if ( obj )
+                return obj;
+        }
+        return null;
+    }
+
 
 }

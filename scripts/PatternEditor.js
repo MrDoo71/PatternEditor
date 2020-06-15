@@ -329,6 +329,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             break;
     }
 
+    //if not focussing on an error then see if there is a recently edited item to focus on. 
+    if ( ( ! errorFound ) && ( options.focus ) )
+    {
+        var a = pattern.getObject( options.focus );
+        if ( a )
+            focusDrawingObject(a, true);
+    }
+
 }
 
 
