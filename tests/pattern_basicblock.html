@@ -41,12 +41,13 @@
               {
                 "pattern":
                 {
+                  "units": "cm",
                   "description":
                     "Close fitting bodice block from page 62 of Winifred Aldrich's Metric Pattern Cutting for Women's Wear, with 'close fitting sleeveless block' variation from page 76.\u000a\u000aAn incremement 'isCloseFittingSleevelessBlock'  (set to 0 or 1) controls whether this is the sleeveless block or not. \u000a\u000aClose waist shaping darts (pg.77) are also included (points labelled C and coloured MediumSeaGreen).\u000a\u000aWaist darts extended to hip as for dress variation from pg. 79",
                   "notes":
                     "Some measurements use literals that are to be adjusted for different sizes.  This is based on the size 12 example from the book. \u000aThe bezier curve control points for the armscye are a guess, chosen to go through the points specified in the book.  ",
-                    "measurement": [{ "name": "neck_circ", "value": 37 }, { "name": "bust_circ", "value": 88 }, { "name": "waist_circ", "value": 68 }, { "name": "hip_circ", "value": 94 }, { "name": "neck_back_to_waist_b", "value": 41 }, { "name": "waist_to_hip_b", "value": 20.6 }, { "name": "shoulder_length", "value": 12.3 }, { "name": "across_chest_f", "value": 32.4 }, { "name": "across_back_b", "value": 34.4 }, { "name": "armscye_length", "value": 21 } ],
-                       "increment":
+                  "measurement": [{ "name": "waist_to_hip_b", "value": 20.6, "units": "cm" }, { "name": "shoulder_length", "value": 12.3, "units": "cm" }, { "name": "across_chest_f", "value": 32.4, "units": "cm" }, { "name": "across_back_b", "value": 34.4, "units": "cm" }, { "name": "armscye_length", "value": 21, "units": "cm" }, { "name": "neck_circ", "value": 37, "units": "cm" }, { "name": "bust_circ", "value": 88, "units": "cm" }, { "name": "waist_circ", "value": 68, "units": "cm" }, { "name": "hip_circ", "value": 94, "units": "cm" }, { "name": "neck_back_to_waist_b", "value": 41, "units": "cm" }],
+                  "increment":
                     [
                       { "name": "#isCloseFittingSleevelessBlock", "constant": 1 },
                       { "name": "#isCloseWaistShaping", "constant": 1 },
@@ -57,48 +58,47 @@
                         "name": "#BustEase",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
                               {
-                                "operationType": "equalTo",
-                                "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 0 }]
+                                "operation": "==",
+                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
-                              { "operationType": "Integer value", "integerValue": 5 },
+                              { "integerValue": 5 },
                               {
-                                "operationType": "parenthesis",
+                                "operation": "()",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "ternary",
+                                      "operation": "?",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "equalTo",
-                                            "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 1 }]
+                                            "operation": "==",
+                                            "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
                                           },
-                                          { "operationType": "Integer value", "integerValue": 2 },
+                                          { "integerValue": 2 },
                                           {
-                                            "operationType": "parenthesis",
+                                            "operation": "()",
                                             "parameter":
                                               [
                                                 {
-                                                  "operationType": "multiply",
+                                                  "operation": "*",
                                                   "parameter":
                                                     [
                                                       {
-                                                        "operationType": "divide",
+                                                        "operation": "/",
                                                         "parameter":
                                                           [
                                                             {
-                                                              "operationType": "function",
-                                                              "functionName": "-",
-                                                              "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "bust_circ" }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "bust_circ" }]
+                                                                    "functionName": "-",
+                                                              "parameter": [{ "measurement": "bust_circ" }, { "measurement": "bust_circ" }]
                                                             },
-                                                            { "operationType": "Integer value", "integerValue": 2 }
+                                                            { "integerValue": 2 }
                                                           ]
                                                       },
-                                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#NegativeBustEase" }
+                                                      { "increment": "#NegativeBustEase" }
                                                     ]
                                                 }
                                               ]
@@ -114,47 +114,46 @@
                         "name": "#WaistEase",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseWaistShaping" },
+                              { "increment": "#isCloseWaistShaping" },
                               {
-                                "operationType": "ternary",
+                                "operation": "?",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "equalTo",
-                                      "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                      "operation": "==",
+                                      "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
                                     },
                                     {
-                                      "operationType": "parenthesis",
+                                      "operation": "()",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "multiply",
+                                            "operation": "*",
                                             "parameter":
                                               [
                                                 {
-                                                  "operationType": "divide",
+                                                  "operation": "/",
                                                   "parameter":
                                                     [
                                                       {
-                                                        "operationType": "function",
                                                         "functionName": "-",
-                                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }]
+                                                        "parameter": [{ "measurement": "waist_circ" }, { "measurement": "waist_circ" }]
                                                       },
-                                                      { "operationType": "Integer value", "integerValue": 2 }
+                                                      { "integerValue": 2 }
                                                     ]
                                                 },
-                                                { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#NegativeWaistEase" }
+                                                { "increment": "#NegativeWaistEase" }
                                               ]
                                           }
                                         ]
                                     },
-                                    { "operationType": "Integer value", "integerValue": 3 }
+                                    { "integerValue": 3 }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 }
+                              { "integerValue": 0 }
                             ]
                         }
                       },
@@ -162,44 +161,43 @@
                         "name": "#HipEase",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
                               {
-                                "operationType": "equalTo",
-                                "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 0 }]
+                                "operation": "==",
+                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
-                              { "operationType": "Integer value", "integerValue": 2 },
+                              { "integerValue": 2 },
                               {
-                                "operationType": "ternary",
+                                "operation": "?",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "equalTo",
-                                      "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 1 }]
+                                      "operation": "==",
+                                      "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
                                     },
-                                    { "operationType": "Integer value", "integerValue": 0 },
+                                    { "integerValue": 0 },
                                     {
-                                      "operationType": "parenthesis",
+                                      "operation": "()",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "multiply",
+                                            "operation": "*",
                                             "parameter":
                                               [
                                                 {
-                                                  "operationType": "divide",
+                                                  "operation": "/",
                                                   "parameter":
                                                     [
                                                       {
-                                                        "operationType": "function",
                                                         "functionName": "-",
-                                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }]
+                                                        "parameter": [{ "measurement": "hip_circ" }, { "measurement": "hip_circ" }]
                                                       },
-                                                      { "operationType": "Integer value", "integerValue": 2 }
+                                                      { "integerValue": 2 }
                                                     ]
                                                 },
-                                                { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#NegativeHipEase" }
+                                                { "increment": "#NegativeHipEase" }
                                               ]
                                           }
                                         ]
@@ -213,15 +211,15 @@
                         "name": "#SleevelessBlock",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
                               {
-                                "operationType": "equalTo",
-                                "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 0 }]
+                                "operation": "==",
+                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 },
-                              { "operationType": "Integer value", "integerValue": 1 }
+                              { "integerValue": 0 },
+                              { "integerValue": 1 }
                             ]
                         }
                       },
@@ -230,15 +228,15 @@
                         "name": "#AcrossBackEase",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
                               {
-                                "operationType": "equalTo",
-                                "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseFittingSleevelessBlock" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                "operation": "==",
+                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 },
-                              { "operationType": "Decimal value", "decimalValue": 0.5 }
+                              { "integerValue": 0 },
+                              { "decimalValue": 0.5 }
                             ]
                         }
                       },
@@ -248,43 +246,43 @@
                         "name": "#BustWaistDifference",
                         "expression":
                         {
-                          "operationType": "subtract",
+                          "operation": "-",
                           "parameter":
                             [
                               {
-                                "operationType": "subtract",
+                                "operation": "-",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "add",
+                                      "operation": "+",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "parenthesis",
+                                            "operation": "()",
                                             "parameter":
                                               [
                                                 {
-                                                  "operationType": "divide",
-                                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "bust_circ" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                                  "operation": "/",
+                                                  "parameter": [{ "measurement": "bust_circ" }, { "integerValue": 2 }]
                                                 }
                                               ]
                                           },
-                                          { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustEase" }
+                                          { "increment": "#BustEase" }
                                         ]
                                     },
                                     {
-                                      "operationType": "parenthesis",
+                                      "operation": "()",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "divide",
-                                            "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                            "operation": "/",
+                                            "parameter": [{ "measurement": "waist_circ" }, { "integerValue": 2 }]
                                           }
                                         ]
                                     }
                                   ]
                               },
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#WaistEase" }
+                              { "increment": "#WaistEase" }
                             ]
                         }
                       },
@@ -292,22 +290,22 @@
                         "name": "#RearWaistDart",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseWaistShaping" },
+                              { "increment": "#isCloseWaistShaping" },
                               {
-                                "operationType": "multiply",
+                                "operation": "*",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "divide",
-                                      "parameter": [{ "operationType": "Decimal value", "decimalValue": 3.5 }, { "operationType": "Integer value", "integerValue": 12 }]
+                                      "operation": "/",
+                                      "parameter": [{ "decimalValue": 3.5 }, { "integerValue": 12 }]
                                     },
-                                    { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustWaistDifference" }
+                                    { "increment": "#BustWaistDifference" }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 }
+                              { "integerValue": 0 }
                             ]
                         }
                       },
@@ -315,22 +313,22 @@
                         "name": "#FrontWaistDart",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseWaistShaping" },
+                              { "increment": "#isCloseWaistShaping" },
                               {
-                                "operationType": "multiply",
+                                "operation": "*",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "divide",
-                                      "parameter": [{ "operationType": "Decimal value", "decimalValue": 4.5 }, { "operationType": "Integer value", "integerValue": 12 }]
+                                      "operation": "/",
+                                      "parameter": [{ "decimalValue": 4.5 }, { "integerValue": 12 }]
                                     },
-                                    { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustWaistDifference" }
+                                    { "increment": "#BustWaistDifference" }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 }
+                              { "integerValue": 0 }
                             ]
                         }
                       },
@@ -338,22 +336,22 @@
                         "name": "#SideWaistDartFront",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseWaistShaping" },
+                              { "increment": "#isCloseWaistShaping" },
                               {
-                                "operationType": "multiply",
+                                "operation": "*",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "divide",
-                                      "parameter": [{ "operationType": "Decimal value", "decimalValue": 2.5 }, { "operationType": "Integer value", "integerValue": 12 }]
+                                      "operation": "/",
+                                      "parameter": [{ "decimalValue": 2.5 }, { "integerValue": 12 }]
                                     },
-                                    { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustWaistDifference" }
+                                    { "increment": "#BustWaistDifference" }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 }
+                              { "integerValue": 0 }
                             ]
                         }
                       },
@@ -361,22 +359,22 @@
                         "name": "#SideWaistDartRear",
                         "expression":
                         {
-                          "operationType": "ternary",
+                          "operation": "?",
                           "parameter":
                             [
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#isCloseWaistShaping" },
+                              { "increment": "#isCloseWaistShaping" },
                               {
-                                "operationType": "multiply",
+                                "operation": "*",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "divide",
-                                      "parameter": [{ "operationType": "Decimal value", "decimalValue": 1.5 }, { "operationType": "Integer value", "integerValue": 12 }]
+                                      "operation": "/",
+                                      "parameter": [{ "decimalValue": 1.5 }, { "integerValue": 12 }]
                                     },
-                                    { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustWaistDifference" }
+                                    { "increment": "#BustWaistDifference" }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 0 }
+                              { "integerValue": 0 }
                             ]
                         }
                       }
@@ -401,7 +399,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_back_to_waist_b" }
+                                  { "measurement": "neck_back_to_waist_b" }
                               }
                             },
                             {
@@ -417,7 +415,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_to_hip_b" }
+                                  { "measurement": "waist_to_hip_b" }
                               }
                             },
                             {
@@ -445,14 +443,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "armscye_length" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                        "operation": "+",
+                                        "parameter": [{ "measurement": "armscye_length" }, { "decimalValue": 0.5 }]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }
+                                      { "increment": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -472,14 +470,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "bust_circ" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                        "operation": "/",
+                                        "parameter": [{ "measurement": "bust_circ" }, { "integerValue": 2 }]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#BustEase" }
+                                      { "increment": "#BustEase" }
                                     ]
                                 }
                               }
@@ -496,7 +494,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }
+                                  { "increment": "#SleevelessBlock" }
                               }
                             },
                             { "name": "A3b", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "A3", "secondPoint": "A2a", "mx": 0.420793, "my": -1.21398 },
@@ -515,14 +513,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 5 }]
+                                        "operation": "/",
+                                        "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 5 }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 0.2 }
+                                      { "decimalValue": 0.2 }
                                     ]
                                 }
                               }
@@ -541,7 +539,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A2", "drawingObject2": "A5" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "A2", "drawingObject2": "A5" }
                               }
                             },
                             {
@@ -557,7 +555,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A5", "drawingObject2": "A7" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "A5", "drawingObject2": "A7" }
                               }
                             },
                             { "derivedName": "Line_A7_A8", "objectType": "line", "firstPoint": "A7", "secondPoint": "A8", "lineStyle": "hair", "color": "black" },
@@ -575,14 +573,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A0", "drawingObject2": "A1" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A1", "drawingObject2": "A2" }]
+                                        "operation": "+",
+                                        "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A0", "drawingObject2": "A1" }, { "variableType": "lengthOfLine", "drawingObject1": "A1", "drawingObject2": "A2" }]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#Size14PlusTweak" }
+                                      { "increment": "#Size14PlusTweak" }
                                     ]
                                 }
                               }
@@ -614,14 +612,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "armscye_length" }, { "operationType": "Integer value", "integerValue": 5 }]
+                                        "operation": "/",
+                                        "parameter": [{ "measurement": "armscye_length" }, { "integerValue": 5 }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 0.7 }
+                                      { "decimalValue": 0.7 }
                                     ]
                                 }
                               }
@@ -653,14 +651,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "shoulder_length" }, { "operationType": "Integer value", "integerValue": 1 }]
+                                        "operation": "+",
+                                        "parameter": [{ "measurement": "shoulder_length" }, { "integerValue": 1 }]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }
+                                      { "increment": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -680,8 +678,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -699,35 +697,34 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "function",
                                   "functionName": "sqrt",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "subtract",
+                                        "operation": "-",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "power",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 5 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "^",
+                                              "parameter": [{ "integerValue": 5 }, { "integerValue": 2 }]
                                             },
                                             {
-                                              "operationType": "power",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "^",
+                                              "parameter": [{ "integerValue": 1 }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
                                       {
-                                        "operationType": "subtract",
+                                        "operation": "-",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "power",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 5 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "^",
+                                              "parameter": [{ "integerValue": 5 }, { "integerValue": 2 }]
                                             },
                                             {
-                                              "operationType": "power",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "^",
+                                              "parameter": [{ "integerValue": 1 }, { "integerValue": 2 }]
                                             }
                                           ]
                                       }
@@ -762,8 +759,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#RearShoulderDartWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -780,8 +777,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#RearShoulderDartWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -801,21 +798,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
+                                        "operation": "+",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "across_back_b" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "measurement": "across_back_b" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AcrossBackEase" }
+                                            { "increment": "#AcrossBackEase" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }
+                                      { "increment": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -835,8 +832,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -853,8 +850,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -873,8 +870,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -904,14 +901,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 5 }]
+                                        "operation": "/",
+                                        "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 5 }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 0.7 }
+                                      { "decimalValue": 0.7 }
                                     ]
                                 }
                               }
@@ -929,14 +926,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 5 }]
+                                        "operation": "/",
+                                        "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 5 }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 0.2 }
+                                      { "decimalValue": 0.2 }
                                     ]
                                 }
                               }
@@ -981,24 +978,24 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
+                                        "operation": "+",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "across_chest_f" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "measurement": "across_chest_f" }, { "integerValue": 2 }]
                                             },
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#FrontShoulderDart" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "increment": "#FrontShoulderDart" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }
+                                      { "increment": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -1018,20 +1015,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "subtract",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A3", "drawingObject2": "A4" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A4", "drawingObject2": "A21" }]
+                                              "operation": "-",
+                                              "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A3", "drawingObject2": "A4" }, { "variableType": "lengthOfLine", "drawingObject1": "A4", "drawingObject2": "A21" }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 3 }
+                                      { "integerValue": 3 }
                                     ]
                                 }
                               }
@@ -1050,8 +1047,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1095,7 +1092,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#FrontShoulderDart" }
+                                  { "increment": "#FrontShoulderDart" }
                               }
                             },
                             { "derivedName": "Line_A26_A27", "objectType": "line", "firstPoint": "A26", "secondPoint": "A27", "lineStyle": "hair", "color": "black" },
@@ -1113,23 +1110,23 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
-                                      { "operationType": "Decimal value", "decimalValue": 1.5 },
+                                      { "decimalValue": 1.5 },
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "multiply",
-                                                    "parameter": [{ "operationType": "Integer value", "integerValue": 0 }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A10", "drawingObject2": "A2" }]
+                                                    "operation": "*",
+                                                    "parameter": [{ "integerValue": 0 }, { "variableType": "lengthOfLine", "drawingObject1": "A10", "drawingObject2": "A2" }]
                                                   },
-                                                  { "operationType": "Decimal value", "decimalValue": 0.085 }
+                                                  { "decimalValue": 0.085 }
                                                 ]
                                             }
                                           ]
@@ -1181,8 +1178,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "shoulder_length" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SleevelessBlock" }]
+                                  "operation": "-",
+                                  "parameter": [{ "measurement": "shoulder_length" }, { "increment": "#SleevelessBlock" }]
                                 }
                               }
                             },
@@ -1200,8 +1197,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1221,14 +1218,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.3225 }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "armscye_length" }]
+                                        "operation": "*",
+                                        "parameter": [{ "decimalValue": 0.3225 }, { "measurement": "armscye_length" }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 4.2855 }
+                                      { "decimalValue": 4.2855 }
                                     ]
                                 }
                               }
@@ -1247,14 +1244,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.3225 }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "armscye_length" }]
+                                        "operation": "*",
+                                        "parameter": [{ "decimalValue": 0.3225 }, { "measurement": "armscye_length" }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 4.7855 }
+                                      { "decimalValue": 4.7855 }
                                     ]
                                 }
                               }
@@ -1275,8 +1272,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A30", "drawingObject2": "A31" }, { "operationType": "Decimal value", "decimalValue": 0.333 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A30", "drawingObject2": "A31" }, { "decimalValue": 0.333 }]
                                 }
                               }
                             },
@@ -1295,8 +1292,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A10", "drawingObject2": "A2" }, { "operationType": "Decimal value", "decimalValue": 0.11 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A10", "drawingObject2": "A2" }, { "decimalValue": 0.11 }]
                                 }
                               }
                             },
@@ -1313,8 +1310,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.66 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.66 }]
                                 }
                               }
                             },
@@ -1331,8 +1328,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -1349,8 +1346,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.63 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.63 }]
                                 }
                               }
                             },
@@ -1367,8 +1364,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.63 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.63 }]
                                 }
                               }
                             },
@@ -1388,8 +1385,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A30", "drawingObject2": "A31" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A30", "drawingObject2": "A31" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -1406,8 +1403,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.66 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.66 }]
                                 }
                               }
                             },
@@ -1430,8 +1427,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#RearWaistDart" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#RearWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1448,8 +1445,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#RearWaistDart" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#RearWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1470,8 +1467,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#FrontWaistDart" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#FrontWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1488,8 +1485,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#FrontWaistDart" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#FrontWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1509,7 +1506,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SideWaistDartFront" }
+                                  { "increment": "#SideWaistDartFront" }
                               }
                             },
                             {
@@ -1524,7 +1521,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SideWaistDartRear" }
+                                  { "increment": "#SideWaistDartRear" }
                               }
                             },
                             { "derivedName": "Line_A32_C5", "objectType": "line", "firstPoint": "A32", "secondPoint": "C5", "lineStyle": "hair", "color": "mediumseagreen" },
@@ -1557,7 +1554,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "A11", "drawingObject2": "A30" }
+                                  { "variableType": "lengthOfSplinePath", "drawingObject1": "A11", "drawingObject2": "A30" }
                               }
                             },
                             {
@@ -1572,7 +1569,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A13", "drawingObject2": "A12a" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "A13", "drawingObject2": "A12a" }
                               }
                             },
                             { "derivedName": "Line_A12c_A11", "objectType": "line", "firstPoint": "A12c", "secondPoint": "A11", "lineStyle": "hair", "color": "black" },

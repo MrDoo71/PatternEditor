@@ -58,16 +58,16 @@
                         "name": "#a",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Integer value", "integerValue": 2 }, { "operationType": "Integer value", "integerValue": 5 }]
+                          "operation": "*",
+                          "parameter": [{ "integerValue": 2 }, { "integerValue": 5 }]
                         }
                       },
                       {
                         "name": "#b",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#a" }, { "operationType": "Decimal value", "decimalValue": 4.5 }]
+                          "operation": "*",
+                          "parameter": [{ "increment": "#a" }, { "decimalValue": 4.5 }]
                         }
                       }
                     ],
@@ -89,12 +89,12 @@
                               "angle":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#b" }
+                                  { "increment": "#b" }
                               },
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#a" }
+                                  { "increment": "#a" }
                               }
                             },
                             {
@@ -110,7 +110,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height" }
+                                  { "measurement": "height" }
                               }
                             },
                             {
@@ -126,7 +126,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }
+                                  { "measurement": "waist_circ" }
                               }
                             }
                           ]

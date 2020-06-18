@@ -59,8 +59,8 @@
                         "name": "#SeamOverlapHalved",
                         "expression":
                         {
-                          "operationType": "divide",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SeamOverlap" }, { "operationType": "Integer value", "integerValue": 2 }]
+                          "operation": "/",
+                          "parameter": [{ "increment": "#SeamOverlap" }, { "integerValue": 2 }]
                         }
                       },
                       { "name": "#StockingHeight", "constant": 0.95 },
@@ -71,41 +71,41 @@
                         "name": "#ankle_to_glutealfold",
                         "expression":
                         {
-                          "operationType": "subtract",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_gluteal_fold" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                          "operation": "-",
+                          "parameter": [{ "measurement": "height_gluteal_fold" }, { "increment": "#height_ankle_diagonal" }]
                         }
                       },
                       {
                         "name": "#ankle_to_thigh",
                         "expression":
                         {
-                          "operationType": "subtract",
+                          "operation": "-",
                           "parameter":
                             [
                               {
-                                "operationType": "parenthesis",
+                                "operation": "()",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "divide",
+                                      "operation": "/",
                                       "parameter":
                                         [
                                           {
-                                            "operationType": "parenthesis",
+                                            "operation": "()",
                                             "parameter":
                                               [
                                                 {
-                                                  "operationType": "add",
-                                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_gluteal_fold" }, { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_knee" }]
+                                                  "operation": "+",
+                                                  "parameter": [{ "measurement": "height_gluteal_fold" }, { "measurement": "height_knee" }]
                                                 }
                                               ]
                                           },
-                                          { "operationType": "Integer value", "integerValue": 2 }
+                                          { "integerValue": 2 }
                                         ]
                                     }
                                   ]
                               },
-                              { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }
+                              { "increment": "#height_ankle_diagonal" }
                             ]
                         }
                       },
@@ -113,46 +113,46 @@
                         "name": "#ankle_to_knee",
                         "expression":
                         {
-                          "operationType": "subtract",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_knee" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                          "operation": "-",
+                          "parameter": [{ "measurement": "height_knee" }, { "increment": "#height_ankle_diagonal" }]
                         }
                       },
                       {
                         "name": "#ankle_to_knee_small",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee" }, { "operationType": "Decimal value", "decimalValue": 0.9 }]
+                          "operation": "*",
+                          "parameter": [{ "increment": "#ankle_to_knee" }, { "decimalValue": 0.9 }]
                         }
                       },
                       {
                         "name": "#ankle_to_calf",
                         "expression":
                         {
-                          "operationType": "subtract",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_calf" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                          "operation": "-",
+                          "parameter": [{ "measurement": "height_calf" }, { "increment": "#height_ankle_diagonal" }]
                         }
                       },
                       {
                         "name": "#ankle_to_above_ankle",
                         "expression":
                         {
-                          "operationType": "subtract",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "height_ankle_high" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                          "operation": "-",
+                          "parameter": [{ "measurement": "height_ankle_high" }, { "increment": "#height_ankle_diagonal" }]
                         }
                       },
                       {
                         "name": "#ankle_to_instep",
                         "expression":
                         {
-                          "operationType": "multiply",
+                          "operation": "*",
                           "parameter":
                             [
                               {
-                                "operationType": "divide",
-                                "parameter": [{ "operationType": "Integer value", "integerValue": 4 }, { "operationType": "Integer value", "integerValue": 27 }]
+                                "operation": "/",
+                                "parameter": [{ "integerValue": 4 }, { "integerValue": 27 }]
                               },
-                              { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }
+                              { "measurement": "foot_length" }
                             ]
                         }
                       },
@@ -160,14 +160,14 @@
                         "name": "#ankle_to_widest_foot",
                         "expression":
                         {
-                          "operationType": "multiply",
+                          "operation": "*",
                           "parameter":
                             [
                               {
-                                "operationType": "divide",
-                                "parameter": [{ "operationType": "Integer value", "integerValue": 14 }, { "operationType": "Integer value", "integerValue": 27 }]
+                                "operation": "/",
+                                "parameter": [{ "integerValue": 14 }, { "integerValue": 27 }]
                               },
-                              { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }
+                              { "measurement": "foot_length" }
                             ]
                         }
                       },
@@ -175,14 +175,14 @@
                         "name": "#ankle_to_tip",
                         "expression":
                         {
-                          "operationType": "subtract",
+                          "operation": "-",
                           "parameter":
                             [
                               {
-                                "operationType": "subtract",
-                                "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_length" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#height_ankle_diagonal" }]
+                                "operation": "-",
+                                "parameter": [{ "measurement": "foot_length" }, { "increment": "#height_ankle_diagonal" }]
                               },
-                              { "operationType": "Integer value", "integerValue": 1 }
+                              { "integerValue": 1 }
                             ]
                         }
                       },
@@ -190,20 +190,20 @@
                         "name": "#ThighGF",
                         "expression":
                         {
-                          "operationType": "divide",
+                          "operation": "/",
                           "parameter":
                             [
                               {
-                                "operationType": "parenthesis",
+                                "operation": "()",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "multiply",
-                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_thigh_upper_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierThigh" }]
+                                      "operation": "*",
+                                      "parameter": [{ "measurement": "leg_thigh_upper_circ" }, { "increment": "#EaseMultiplierThigh" }]
                                     }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 2 }
+                              { "integerValue": 2 }
                             ]
                         }
                       },
@@ -211,20 +211,20 @@
                         "name": "#ThighCircEased",
                         "expression":
                         {
-                          "operationType": "divide",
+                          "operation": "/",
                           "parameter":
                             [
                               {
-                                "operationType": "parenthesis",
+                                "operation": "()",
                                 "parameter":
                                   [
                                     {
-                                      "operationType": "multiply",
-                                      "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_thigh_mid_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierThigh" }]
+                                      "operation": "*",
+                                      "parameter": [{ "measurement": "leg_thigh_mid_circ" }, { "increment": "#EaseMultiplierThigh" }]
                                     }
                                   ]
                               },
-                              { "operationType": "Integer value", "integerValue": 2 }
+                              { "integerValue": 2 }
                             ]
                         }
                       },
@@ -232,64 +232,64 @@
                         "name": "#KneeEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_knee_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "leg_knee_circ" }, { "increment": "#EaseMultiplier" }]
                         }
                       },
                       {
                         "name": "#KneeSmallEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_knee_small_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "leg_knee_small_circ" }, { "increment": "#EaseMultiplier" }]
                         }
                       },
                       {
                         "name": "#CalfEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_calf_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplier" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "leg_calf_circ" }, { "increment": "#EaseMultiplier" }]
                         }
                       },
                       {
                         "name": "#AboveAnkleEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_high_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "leg_ankle_high_circ" }, { "increment": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
                         "name": "#AnkleDiagEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_diag_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "leg_ankle_diag_circ" }, { "increment": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
                         "name": "#InstepEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_instep_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "foot_instep_circ" }, { "increment": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
                         "name": "#footWidestEased",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_circ" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#EaseMultiplierFoot" }]
+                          "operation": "*",
+                          "parameter": [{ "measurement": "foot_circ" }, { "increment": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
                         "name": "#ToeWidth",
                         "expression":
                         {
-                          "operationType": "multiply",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#footWidestEased" }, { "operationType": "Decimal value", "decimalValue": 0.95 }]
+                          "operation": "*",
+                          "parameter": [{ "increment": "#footWidestEased" }, { "decimalValue": 0.95 }]
                         }
                       },
                       { "name": "#___sole_shape_parameters____", "constant": 0 },
@@ -319,7 +319,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_glutealfold" }
+                                  { "increment": "#ankle_to_glutealfold" }
                               }
                             },
                             {
@@ -334,7 +334,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }
+                                  { "increment": "#ankle_to_above_ankle" }
                               }
                             },
                             {
@@ -350,8 +350,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_calf" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                  "operation": "-",
+                                  "parameter": [{ "increment": "#ankle_to_calf" }, { "increment": "#verticalEase" }]
                                 }
                               }
                             },
@@ -368,8 +368,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee_small" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                  "operation": "-",
+                                  "parameter": [{ "increment": "#ankle_to_knee_small" }, { "increment": "#verticalEase" }]
                                 }
                               }
                             },
@@ -386,8 +386,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_knee" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#verticalEase" }]
+                                  "operation": "-",
+                                  "parameter": [{ "increment": "#ankle_to_knee" }, { "increment": "#verticalEase" }]
                                 }
                               }
                             },
@@ -403,7 +403,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_thigh" }
+                                  { "increment": "#ankle_to_thigh" }
                               }
                             },
                             {
@@ -419,7 +419,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ThighGF" }
+                                  { "increment": "#ThighGF" }
                               }
                             },
                             {
@@ -437,14 +437,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CalfEased" }]
+                                        "operation": "()",
+                                        "parameter": [{ "increment": "#CalfEased" }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -464,14 +464,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#KneeSmallEased" }]
+                                        "operation": "()",
+                                        "parameter": [{ "increment": "#KneeSmallEased" }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -491,14 +491,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#KneeEased" }]
+                                        "operation": "()",
+                                        "parameter": [{ "increment": "#KneeEased" }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -516,7 +516,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ThighCircEased" }
+                                  { "increment": "#ThighCircEased" }
                               }
                             },
                             {
@@ -533,29 +533,29 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
-                                      { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" },
+                                      { "increment": "#ankle_to_tip" },
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "parenthesis",
+                                                    "operation": "()",
                                                     "parameter":
                                                       [
                                                         {
-                                                          "operationType": "subtract",
-                                                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }]
+                                                          "operation": "-",
+                                                          "parameter": [{ "increment": "#ankle_to_tip" }, { "increment": "#ankle_to_widest_foot" }]
                                                         }
                                                       ]
                                                   },
-                                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#proportionOfToeSection" }
+                                                  { "increment": "#proportionOfToeSection" }
                                                 ]
                                             }
                                           ]
@@ -579,14 +579,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "leg_ankle_diag_circ" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                        "operation": "*",
+                                        "parameter": [{ "measurement": "leg_ankle_diag_circ" }, { "decimalValue": 0.5 }]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 4.6 }
+                                      { "decimalValue": 4.6 }
                                     ]
                                 }
                               }
@@ -606,8 +606,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -624,8 +624,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_instep" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_instep" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -642,20 +642,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
+                                  "operation": "*",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 0.33 }]
+                                              "operation": "*",
+                                              "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Decimal value", "decimalValue": 1.22 }
+                                      { "decimalValue": 1.22 }
                                     ]
                                 }
                               }
@@ -673,8 +673,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_widest_foot" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -691,24 +691,24 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "parenthesis",
+                                  "operation": "()",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "parenthesis",
+                                              "operation": "()",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "subtract",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }]
+                                                    "operation": "-",
+                                                    "parameter": [{ "increment": "#ankle_to_tip" }, { "increment": "#ankle_to_widest_foot" }]
                                                   }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#proportionOfToeSection" }
+                                            { "increment": "#proportionOfToeSection" }
                                           ]
                                       }
                                     ]
@@ -730,30 +730,30 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AnkleDiagEased" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#AnkleDiagEased" }]
                                                   },
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePrcntageHeel" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#SolePrcntageHeel" }]
                                                   }
                                                 ]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -773,21 +773,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Decimal value", "decimalValue": 0.87 }]
+                                              "operation": "*",
+                                              "parameter": [{ "increment": "#InstepEased" }, { "decimalValue": 0.87 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelMid" }
+                                            { "increment": "#SolePanelMid" }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -807,30 +807,30 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#ToeWidth" }]
                                                   },
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelToe" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#SolePanelToe" }]
                                                   }
                                                 ]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -850,8 +850,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -870,24 +870,24 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "parenthesis",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                              "operation": "()",
+                                              "parameter": [{ "increment": "#ToeWidth" }]
                                             },
                                             {
-                                              "operationType": "parenthesis",
-                                              "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                              "operation": "()",
+                                              "parameter": [{ "decimalValue": 0.25 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -905,7 +905,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
                               }
                             },
                             {
@@ -921,7 +921,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "S0", "drawingObject2": "S0B" }
                               }
                             },
                             {
@@ -1037,8 +1037,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 2.11 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 2.11 }]
                                 }
                               }
                             },
@@ -1055,8 +1055,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 1.22 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -1074,8 +1074,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#HeelPointWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#HeelPointWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1093,8 +1093,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_above_ankle" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -1113,8 +1113,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "foot_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "foot_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -1161,28 +1161,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AnkleDiagEased" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#AnkleDiagEased" }]
                                                   },
                                                   {
-                                                    "operationType": "parenthesis",
+                                                    "operation": "()",
                                                     "parameter":
                                                       [
                                                         {
-                                                          "operationType": "subtract",
-                                                          "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePrcntageHeel" }]
+                                                          "operation": "-",
+                                                          "parameter": [{ "integerValue": 1 }, { "increment": "#SolePrcntageHeel" }]
                                                         }
                                                       ]
                                                   }
@@ -1190,7 +1190,7 @@
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -1210,20 +1210,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#AboveAnkleEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "increment": "#AboveAnkleEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL1C" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL1C" }
                                     ]
                                 }
                               }
@@ -1240,7 +1240,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_instep" }
+                                  { "increment": "#ankle_to_instep" }
                               }
                             },
                             {
@@ -1256,12 +1256,12 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "parenthesis",
+                                  "operation": "()",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }, { "operationType": "Decimal value", "decimalValue": 0.33 }]
+                                        "operation": "*",
+                                        "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
                                       }
                                     ]
                                 }
@@ -1279,7 +1279,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_widest_foot" }
+                                  { "increment": "#ankle_to_widest_foot" }
                               }
                             },
                             {
@@ -1295,7 +1295,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_tip" }
+                                  { "increment": "#ankle_to_tip" }
                               }
                             },
                             {
@@ -1312,20 +1312,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "increment": "#InstepEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S1", "drawingObject2": "S1B" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "S1", "drawingObject2": "S1B" }
                                     ]
                                 }
                               }
@@ -1344,20 +1344,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#footWidestEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "increment": "#footWidestEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S3", "drawingObject2": "S3B" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "S3", "drawingObject2": "S3B" }
                                     ]
                                 }
                               }
@@ -1376,20 +1376,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B" }
                                     ]
                                 }
                               }
@@ -1409,33 +1409,33 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
+                                  "operation": "*",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "divide",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#InstepEased" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                                    "operation": "/",
+                                                    "parameter": [{ "increment": "#InstepEased" }, { "integerValue": 2 }]
                                                   },
-                                                  { "operationType": "Decimal value", "decimalValue": 0.87 }
+                                                  { "decimalValue": 0.87 }
                                                 ]
                                             }
                                           ]
                                       },
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "subtract",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 1 }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelMid" }]
+                                              "operation": "-",
+                                              "parameter": [{ "integerValue": 1 }, { "increment": "#SolePanelMid" }]
                                             }
                                           ]
                                       }
@@ -1468,7 +1468,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B2" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "S4", "drawingObject2": "S4B2" }
                               }
                             },
                             {
@@ -1499,8 +1499,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#StockingHeight" }, { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ankle_to_glutealfold" }]
+                                  "operation": "*",
+                                  "parameter": [{ "increment": "#StockingHeight" }, { "increment": "#ankle_to_glutealfold" }]
                                 }
                               }
                             },
@@ -1516,7 +1516,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#TopPanelHeight" }
+                                  { "increment": "#TopPanelHeight" }
                               }
                             },
                             { "derivedName": "Line_S4B_S4B2", "objectType": "line", "firstPoint": "S4B", "secondPoint": "S4B2", "lineStyle": "hair", "color": "darkRed" },
@@ -1551,8 +1551,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -1587,30 +1587,30 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "multiply",
+                                              "operation": "*",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#ToeWidth" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#ToeWidth" }]
                                                   },
                                                   {
-                                                    "operationType": "parenthesis",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#SolePanelToe" }]
+                                                    "operation": "()",
+                                                    "parameter": [{ "increment": "#SolePanelToe" }]
                                                   }
                                                 ]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -1740,14 +1740,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "subtract",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                        "operation": "-",
+                                        "parameter": [{ "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "integerValue": 180 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 1 }
+                                      { "integerValue": 1 }
                                     ]
                                 }
                               },
@@ -1756,7 +1756,7 @@
                               "radius":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }
                               }
                             },
                             {
@@ -1769,14 +1769,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "subtract",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                        "operation": "-",
+                                        "parameter": [{ "variableType": "angleOfLine", "drawingObject1": "GF_C", "drawingObject2": "ARC" }, { "integerValue": 180 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 1 }
+                                      { "integerValue": 1 }
                                     ]
                                 }
                               },
@@ -1786,8 +1786,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "STA" }]
+                                  "operation": "-",
+                                  "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "ARC" }, { "variableType": "lengthOfLine", "drawingObject1": "ST", "drawingObject2": "STA" }]
                                 }
                               }
                             },
@@ -1893,7 +1893,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL2" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "SL1", "drawingObject2": "SL2" }
                               }
                             },
                             {
@@ -1947,7 +1947,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "SL2", "drawingObject2": "SL2C" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "SL2", "drawingObject2": "SL2C" }
                               }
                             },
                             {
@@ -2102,8 +2102,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.2 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
@@ -2117,8 +2117,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.4 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
@@ -2132,8 +2132,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.6 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
@@ -2147,8 +2147,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.8 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_L0C_LF4C" }]
                                 }
                               }
                             },
@@ -2162,8 +2162,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.2 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2177,8 +2177,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.4 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2192,8 +2192,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.6 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2207,8 +2207,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.8 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2222,8 +2222,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.2 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.2 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2237,8 +2237,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.4 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.4 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2252,8 +2252,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.6 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.6 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2267,8 +2267,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.8 }, { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.8 }, { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_S0BLR_S4A" }]
                                 }
                               }
                             },
@@ -2321,8 +2321,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.15 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.15 }]
                                 }
                               }
                             },
@@ -2336,8 +2336,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.85 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.85 }]
                                 }
                               }
                             },
@@ -2351,8 +2351,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.6 }]
                                 }
                               }
                             },
@@ -2366,8 +2366,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.3 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.3 }]
                                 }
                               }
                             },
@@ -2381,8 +2381,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.45 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.45 }]
                                 }
                               }
                             },
@@ -2396,8 +2396,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "Arc_ARC_228", "drawingObject2": "Arc_ARC_228", "arcSelection": "wholeArc" }, { "decimalValue": 0.75 }]
                                 }
                               }
                             },
@@ -2411,8 +2411,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.25 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2426,8 +2426,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.5 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2471,8 +2471,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "L0", "drawingObject2": "S0" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "L0", "drawingObject2": "S0" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2486,8 +2486,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.6 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "decimalValue": 0.6 }]
                                 }
                               }
                             },
@@ -2501,8 +2501,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.4 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "decimalValue": 0.4 }]
                                 }
                               }
                             },
@@ -2516,8 +2516,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.8 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "decimalValue": 0.8 }]
                                 }
                               }
                             },
@@ -2531,8 +2531,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "operationType": "Decimal value", "decimalValue": 0.2 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S5B_S4A2" }, { "decimalValue": 0.2 }]
                                 }
                               }
                             },
@@ -2546,8 +2546,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.5 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "decimalValue": 0.5 }]
                                 }
                               }
                             },
@@ -2561,8 +2561,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -2576,8 +2576,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "operationType": "Decimal value", "decimalValue": 0.75 }]
+                                  "operation": "*",
+                                  "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_S4B2_S5B" }, { "decimalValue": 0.75 }]
                                 }
                               }
                             },
@@ -2611,8 +2611,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.25 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2629,8 +2629,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.5 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2647,8 +2647,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.25 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.25 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },
@@ -2665,8 +2665,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 0.5 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
+                                  "operation": "*",
+                                  "parameter": [{ "decimalValue": 0.5 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_LF4_LF4C" }]
                                 }
                               }
                             },

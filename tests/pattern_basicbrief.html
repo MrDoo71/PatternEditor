@@ -69,7 +69,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "rise_length_side_sitting" }
+                                  { "measurement": "rise_length_side_sitting" }
                               }
                             },
                             {
@@ -112,8 +112,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "hip_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -131,8 +131,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "hip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "hip_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -149,7 +149,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
                               }
                             },
                             {
@@ -165,7 +165,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "WAIST", "drawingObject2": "A0" }
                               }
                             },
                             { "derivedName": "Line_A0_CF", "objectType": "line", "firstPoint": "A0", "secondPoint": "CF", "lineStyle": "dotLine", "color": "cornflowerblue" },
@@ -195,8 +195,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                 }
                               }
                             },
@@ -213,14 +213,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
+                                  "operation": "*",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "/",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -244,8 +244,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "waist_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -262,8 +262,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "waist_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "waist_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -306,8 +306,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "highhip_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -324,8 +324,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "highhip_circ" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "highhip_circ" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -342,8 +342,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -362,8 +362,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -380,8 +380,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Decimal value", "decimalValue": 0.25 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -426,8 +426,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -444,8 +444,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -464,7 +464,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_f" }
+                                  { "measurement": "crotch_length_f" }
                               }
                             },
                             {
@@ -481,8 +481,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#CrotchWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -499,8 +499,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                 }
                               }
                             },
@@ -517,14 +517,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
+                                  "operation": "*",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "/",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -556,7 +556,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "crotch_length_b" }
+                                  { "measurement": "crotch_length_b" }
                               }
                             },
                             {
@@ -572,8 +572,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -590,7 +590,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }
+                                  { "increment": "#CrotchWidth" }
                               }
                             },
                             {
@@ -607,8 +607,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#CrotchWidth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#CrotchWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -627,8 +627,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -686,8 +686,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "+",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -704,8 +704,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "+",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -825,7 +825,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }
+                                  { "keyword": "CurrentLength" }
                               }
                             },
                             { "derivedName": "Line_CF3_LOWWAIST", "objectType": "line", "firstPoint": "CF3", "secondPoint": "LOWWAIST", "lineStyle": "dotLine", "color": "cornflowerblue" },
@@ -842,7 +842,7 @@
                               "angle":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A2", "drawingObject2": "A32" }
+                                  { "variableType": "angleOfLine", "drawingObject1": "A2", "drawingObject2": "A32" }
                               },
                               "length":
                                 { "constant": 3 }
@@ -860,8 +860,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -877,7 +877,7 @@
                               "angle":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A18", "drawingObject2": "A32" }
+                                  { "variableType": "angleOfLine", "drawingObject1": "A18", "drawingObject2": "A32" }
                               },
                               "length":
                                 { "constant": 3 }
@@ -895,8 +895,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },

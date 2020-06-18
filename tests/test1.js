@@ -38,9 +38,9 @@ function v343110_graph1_init()
                            
     let a5 = a1.pointAlongLine( { "name": "A5",
                                   "secondPoint": a3,
-                                  "length": { "expression": { "operationType": "divide", //divide (lets standardise on lower case?  operationType->operandType
-                                                              "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, 
-                                                                            { "operationType": "Integer value", "integerValue": 2 } ]
+                                  "length": { "expression": { "operation": "/", 
+                                                              "parameter": [{ "keyword": "CurrentLength" }, 
+                                                                            { "integerValue": 2 } ]
                                                             }
                                     }
                                 } );        

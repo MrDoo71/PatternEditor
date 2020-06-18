@@ -57,14 +57,14 @@
                         "name": "#halfSeamOverlay",
                         "expression":
                         {
-                          "operationType": "divide",
-                          "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#seamOverlap" }, { "operationType": "Integer value", "integerValue": 2 }]
+                          "operation": "/",
+                          "parameter": [{ "increment": "#seamOverlap" }, { "integerValue": 2 }]
                         }
                       },
                       {
                         "name": "#neck",
                         "expression":
-                          { "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_mid_circ" }
+                          { "measurement": "neck_mid_circ" }
                       },
                       { "name": "#top_side_to_side", "constant": 29.8 }
                     ],
@@ -115,8 +115,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#top_half_circ" }, { "operationType": "Decimal value", "decimalValue": 3.1415 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#top_half_circ" }, { "decimalValue": 3.1415 }]
                                 }
                               }
                             },
@@ -142,7 +142,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "Arc_S1_12", "drawingObject2": "Arc_S1_12", "arcSelection": "wholeArc" }
+                                  { "variableType": "lengthOfArc", "drawingObject1": "Arc_S1_12", "drawingObject2": "Arc_S1_12", "arcSelection": "wholeArc" }
                               }
                             },
                             {
@@ -181,7 +181,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }
+                                  { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }
                               }
                             },
                             {
@@ -196,7 +196,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S11", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }
+                                  { "variableType": "lengthOfArc", "drawingObject1": "S11", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }
                               }
                             },
                             {
@@ -239,8 +239,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#top_side_to_side" }, { "operationType": "Decimal value", "decimalValue": 3.1415 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#top_side_to_side" }, { "decimalValue": 3.1415 }]
                                 }
                               }
                             },
@@ -286,8 +286,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_width" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_width" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -333,7 +333,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_F8_F9" }
+                                  { "variableType": "lengthOfSpline", "drawingObject1": "Spl_F8_F9" }
                               }
                             },
                             {
@@ -350,8 +350,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#top_side_to_side" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#top_side_to_side" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -368,20 +368,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "add",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 45 }, { "operationType": "Integer value", "integerValue": 90 }]
+                                              "operation": "+",
+                                              "parameter": [{ "integerValue": 45 }, { "integerValue": 90 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -402,8 +402,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_depth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_depth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -436,7 +436,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_S8_S11" }
+                                  { "variableType": "lengthOfSpline", "drawingObject1": "Spl_S8_S11" }
                               }
                             },
                             {
@@ -466,8 +466,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_depth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_depth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -485,8 +485,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_width" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_width" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -520,16 +520,16 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_depth" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_depth" }, { "integerValue": 2 }]
                                 }
                               },
                               "radius2":
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "head_width" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "head_width" }, { "integerValue": 2 }]
                                 }
                               },
                               "rotationAngle":
@@ -549,8 +549,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#top_side_to_side" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#top_side_to_side" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -567,7 +567,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "ElArc_planview_247", "drawingObject2": "ElArc_planview_247", "arcSelection": "wholeArc" }
+                                  { "variableType": "lengthOfArc", "drawingObject1": "ElArc_planview_247", "drawingObject2": "ElArc_planview_247", "arcSelection": "wholeArc" }
                               }
                             },
                             {
@@ -584,8 +584,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Integer value", "integerValue": 4 }, { "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_side_front" }]
+                                  "operation": "*",
+                                  "parameter": [{ "integerValue": 4 }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_side_front" }]
                                 }
                               }
                             },
@@ -602,14 +602,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
+                                  "operation": "*",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Integer value", "integerValue": 90 }, { "operationType": "Integer value", "integerValue": 8 }]
+                                        "operation": "/",
+                                        "parameter": [{ "integerValue": 90 }, { "integerValue": 8 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 7 }
+                                      { "integerValue": 7 }
                                     ]
                                 }
                               }
@@ -669,8 +669,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 7.4 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "decimalValue": 7.4 }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -688,8 +688,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 28.5 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "decimalValue": 28.5 }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -732,20 +732,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "add",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 45 }, { "operationType": "Integer value", "integerValue": 90 }]
+                                              "operation": "+",
+                                              "parameter": [{ "integerValue": 45 }, { "integerValue": 90 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -763,14 +763,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 4 }
+                                      { "integerValue": 4 }
                                     ]
                                 }
                               }
@@ -790,21 +790,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -824,29 +824,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -865,8 +864,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -902,8 +901,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -922,21 +921,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -955,21 +954,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1025,17 +1024,17 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
-                                      { "operationType": "Integer value", "integerValue": 90 },
+                                      { "integerValue": 90 },
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Integer value", "integerValue": 45 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "integerValue": 45 }, { "integerValue": 2 }]
                                             }
                                           ]
                                       }
@@ -1056,8 +1055,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1076,29 +1075,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1118,21 +1116,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1151,8 +1149,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1171,21 +1169,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1204,14 +1202,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 7 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 7 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 8 }
+                                      { "integerValue": 8 }
                                     ]
                                 }
                               }
@@ -1229,14 +1227,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 4 }
+                                      { "integerValue": 4 }
                                     ]
                                 }
                               }
@@ -1256,21 +1254,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1290,29 +1288,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1331,21 +1328,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1364,21 +1361,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1398,21 +1395,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1432,29 +1429,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1517,21 +1513,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
+                                        "operation": "+",
                                         "parameter":
                                           [
-                                            { "operationType": "Integer value", "integerValue": 135 },
+                                            { "integerValue": 135 },
                                             {
-                                              "operationType": "parenthesis",
-                                              "parameter": [{ "operationType": "Decimal value", "decimalValue": 22.4 }]
+                                              "operation": "()",
+                                              "parameter": [{ "decimalValue": 22.4 }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 180 }
+                                      { "integerValue": 180 }
                                     ]
                                 }
                               }
@@ -1549,13 +1545,13 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
-                                      { "operationType": "Integer value", "integerValue": 135 },
+                                      { "integerValue": 135 },
                                       {
-                                        "operationType": "parenthesis",
-                                        "parameter": [{ "operationType": "Decimal value", "decimalValue": 22.5 }]
+                                        "operation": "()",
+                                        "parameter": [{ "decimalValue": 22.5 }]
                                       }
                                     ]
                                 }
@@ -1575,8 +1571,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1606,14 +1602,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "subtract",
+                                  "operation": "-",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "divide",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                        "operation": "/",
+                                        "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A", "drawingObject2": "A22" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "A", "drawingObject2": "A22" }
                                     ]
                                 }
                               }
@@ -1683,29 +1679,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1723,14 +1718,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 7 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 7 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 8 }
+                                      { "integerValue": 8 }
                                     ]
                                 }
                               }
@@ -1750,21 +1745,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1784,29 +1779,28 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
+                                              "operation": "/",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "function",
-                                                    "functionName": "-",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
+                                                                      "functionName": "-",
+                                                    "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }]
                                                   },
-                                                  { "operationType": "Integer value", "integerValue": 2 }
+                                                  { "integerValue": 2 }
                                                 ]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -1888,7 +1882,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_A_D1a" }
+                                  { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_A_D1a" }
                               }
                             },
                             {
@@ -1903,7 +1897,7 @@
                               "angle":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A", "drawingObject2": "A34" }
+                                  { "variableType": "angleOfLine", "drawingObject1": "A", "drawingObject2": "A34" }
                               }
                             },
                             {
@@ -2019,8 +2013,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "multiply",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "*",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2110,8 +2104,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 27.2 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "decimalValue": 27.2 }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2128,27 +2122,27 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "add",
+                                        "operation": "+",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "parenthesis",
+                                              "operation": "()",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "divide",
-                                                    "parameter": [{ "operationType": "Integer value", "integerValue": 45 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                                    "operation": "/",
+                                                    "parameter": [{ "integerValue": 45 }, { "integerValue": 2 }]
                                                   }
                                                 ]
                                             },
-                                            { "operationType": "Decimal value", "decimalValue": 0.1 }
+                                            { "decimalValue": 0.1 }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 180 }
+                                      { "integerValue": 180 }
                                     ]
                                 }
                               }
@@ -2166,8 +2160,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2184,14 +2178,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 4 }
+                                      { "integerValue": 4 }
                                     ]
                                 }
                               }
@@ -2209,14 +2203,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 7 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 7 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 8 }
+                                      { "integerValue": 8 }
                                     ]
                                 }
                               }
@@ -2236,21 +2230,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2270,21 +2264,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2304,21 +2298,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2337,8 +2331,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2371,8 +2365,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2389,14 +2383,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 4 }
+                                      { "integerValue": 4 }
                                     ]
                                 }
                               }
@@ -2414,14 +2408,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 7 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 7 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 8 }
+                                      { "integerValue": 8 }
                                     ]
                                 }
                               }
@@ -2439,21 +2433,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F3" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2471,21 +2465,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F5" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2504,21 +2498,21 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
+                                        "operation": "*",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "divide",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                              "operation": "/",
+                                              "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                             },
-                                            { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
+                                            { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F7" }
                                           ]
                                       },
-                                      { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
+                                      { "variableType": "lengthOfLine", "drawingObject1": "F1", "drawingObject2": "F0" }
                                     ]
                                 }
                               }
@@ -2538,8 +2532,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2627,8 +2621,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2645,14 +2639,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 3 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 3 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 4 }
+                                      { "integerValue": 4 }
                                     ]
                                 }
                               }
@@ -2670,14 +2664,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 7 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 7 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 8 }
+                                      { "integerValue": 8 }
                                     ]
                                 }
                               }
@@ -2696,8 +2690,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "variableType": "lengthOfArc", "drawingObject1": "S10", "drawingObject2": "Arc_S1_12", "arcSelection": "beforeArcCut" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2786,8 +2780,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Decimal value", "decimalValue": 28.5 }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "decimalValue": 28.5 }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2805,8 +2799,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#neck" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -2823,8 +2817,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#neck" }, { "operationType": "Integer value", "integerValue": 8 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 8 }]
                                 }
                               }
                             },
@@ -2842,8 +2836,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#neck" }, { "operationType": "Integer value", "integerValue": 4 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -2860,8 +2854,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#neck" }, { "operationType": "Integer value", "integerValue": 8 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 8 }]
                                 }
                               }
                             },
@@ -2929,8 +2923,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2961,8 +2955,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2980,8 +2974,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -3015,20 +3009,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "subtract",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_A61_I2" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A61", "drawingObject2": "A78" }]
+                                              "operation": "-",
+                                              "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_A61_I2" }, { "variableType": "lengthOfLine", "drawingObject1": "A61", "drawingObject2": "A78" }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -3047,20 +3041,20 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "subtract",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "lengthOfSpline", "drawingObject1": "Spl_A61_I2" }, { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "A61", "drawingObject2": "A78" }]
+                                              "operation": "-",
+                                              "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_A61_I2" }, { "variableType": "lengthOfLine", "drawingObject1": "A61", "drawingObject2": "A78" }]
                                             }
                                           ]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 2 }
+                                      { "integerValue": 2 }
                                     ]
                                 }
                               }
@@ -3079,8 +3073,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3098,8 +3092,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3131,8 +3125,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3150,8 +3144,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3169,8 +3163,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3188,8 +3182,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3206,8 +3200,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                  "operation": "/",
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -3226,8 +3220,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3245,8 +3239,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3264,7 +3258,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "M1", "drawingObject2": "B1b" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "M1", "drawingObject2": "B1b" }
                               }
                             },
                             {
@@ -3968,8 +3962,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Measurement (standard)", "measurement": "neck_circ" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "measurement": "neck_circ" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -3986,7 +3980,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "N0", "drawingObject2": "A76" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "N0", "drawingObject2": "A76" }
                               }
                             },
                             {
@@ -4003,8 +3997,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "Increment", "incrementVar": "#neck" }, { "operationType": "Integer value", "integerValue": 16 }]
+                                  "operation": "/",
+                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 16 }]
                                 }
                               }
                             },
@@ -4022,7 +4016,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "M1", "drawingObject2": "M2" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "M1", "drawingObject2": "M2" }
                               }
                             },
                             { "derivedName": "Line_R2_R4", "objectType": "line", "firstPoint": "R2", "secondPoint": "R4", "lineStyle": "hair", "color": "black" },
@@ -4039,33 +4033,33 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
+                                  "operation": "+",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "subtract",
+                                        "operation": "-",
                                         "parameter":
                                           [
-                                            { "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "R5", "drawingObject2": "R6" },
+                                            { "variableType": "angleOfLine", "drawingObject1": "R5", "drawingObject2": "R6" },
                                             {
-                                              "operationType": "parenthesis",
+                                              "operation": "()",
                                               "parameter":
                                                 [
                                                   {
-                                                    "operationType": "subtract",
-                                                    "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "M1", "drawingObject2": "B1b" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                                    "operation": "-",
+                                                    "parameter": [{ "variableType": "angleOfLine", "drawingObject1": "M1", "drawingObject2": "B1b" }, { "integerValue": 180 }]
                                                   }
                                                 ]
                                             }
                                           ]
                                       },
                                       {
-                                        "operationType": "parenthesis",
+                                        "operation": "()",
                                         "parameter":
                                           [
                                             {
-                                              "operationType": "subtract",
-                                              "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "B1a", "drawingObject2": "B1b" }, { "operationType": "Integer value", "integerValue": 180 }]
+                                              "operation": "-",
+                                              "parameter": [{ "variableType": "angleOfLine", "drawingObject1": "B1a", "drawingObject2": "B1b" }, { "integerValue": 180 }]
                                             }
                                           ]
                                       }
@@ -4075,7 +4069,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "B1a", "drawingObject2": "B1b" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "B1a", "drawingObject2": "B1b" }
                               }
                             },
                             {
@@ -4091,14 +4085,14 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "divide",
+                                  "operation": "/",
                                   "parameter":
                                     [
                                       {
-                                        "operationType": "multiply",
-                                        "parameter": [{ "operationType": "Variable", "variableType": "Keyword", "keyword": "CurrentLength" }, { "operationType": "Integer value", "integerValue": 2 }]
+                                        "operation": "*",
+                                        "parameter": [{ "keyword": "CurrentLength" }, { "integerValue": 2 }]
                                       },
-                                      { "operationType": "Integer value", "integerValue": 3 }
+                                      { "integerValue": 3 }
                                     ]
                                 }
                               }
@@ -4116,8 +4110,8 @@
                               {
                                 "expression":
                                 {
-                                  "operationType": "add",
-                                  "parameter": [{ "operationType": "Variable", "variableType": "angleOfLine", "drawingObject1": "A", "drawingObject2": "B1" }, { "operationType": "Integer value", "integerValue": 90 }]
+                                  "operation": "+",
+                                  "parameter": [{ "variableType": "angleOfLine", "drawingObject1": "A", "drawingObject2": "B1" }, { "integerValue": 90 }]
                                 }
                               }
                             },
@@ -4137,7 +4131,7 @@
                               "radius":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "B8", "drawingObject2": "B1a" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "B8", "drawingObject2": "B1a" }
                               }
                             },
                             {
@@ -4153,7 +4147,7 @@
                               "radius":
                               {
                                 "expression":
-                                  { "operationType": "Variable", "variableType": "lengthOfLine", "drawingObject1": "B8", "drawingObject2": "M1" }
+                                  { "variableType": "lengthOfLine", "drawingObject1": "B8", "drawingObject2": "M1" }
                               }
                             },
                             { "name": "R8", "objectType": "pointIntersectArcs", "firstArc": "Arc_R6_439", "secondArc": "Arc_R7_438", "crossPoint": "One", "mx": 0.132292, "my": 0.264583 },

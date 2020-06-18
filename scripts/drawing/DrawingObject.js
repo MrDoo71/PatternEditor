@@ -60,14 +60,19 @@ class DrawingObject /*abstract*/ {
         var my = (typeof d.my === "undefined") ? 0 : d.my;
 
         var pos = { labelX: this.p.x + fudge * mx,
-                    labelY: this.p.y + fudge *( my + fontSize ),
-                    labelLineX: this.p.x + fudge* ( ( mx > 0 ) ? mx  //line goes to left of label
-                                                                : ( mx + 0.5 * d.name.length * fontSize ) ), //otherwise line goes to center of label
-                    labelLineY: this.p.y + fudge* ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
+                    labelY: this.p.y + fudge * ( my + fontSize ),
+                    labelLineX: this.p.x + fudge * mx,  //line goes to left of label
+                    labelLineY: this.p.y + fudge * ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
                     fontSize: fontSize
                     };
 
-        //TODO adjust the labelLine to be cleverer, intersecting a boundary box around the text.            
+        //TODO adjust the labelLine to be cleverer, intersecting a boundary box around the text.      
+        
+        if (( mx <= 0 ) && ( d.name ))
+            pos.labelLineX = this.p.x + fudge * ( mx + 0.5 * d.name.length * fontSize ); //otherwise line goes to center of label
+
+        if ( my <= 0 )
+            pos.labelLineY = this.p.y + fudge * ( my + fontSize ); //align to bottom of text
 
         var minLineLength = 2 * fontSize;
 

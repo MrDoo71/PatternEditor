@@ -32,6 +32,18 @@
               import  { drawPattern } from '../dist/patterneditor.js';
               drawPattern(
                 {
+                  "wallpaper": [
+                  {
+                    "imageurl": "expectedResults/pointAlongPerpendicular.png",  
+                    "offsetX": -5.408775329589844,
+                    "offsetY": -11.743000030517578,
+                    "scaleX": 0.7056568503, //0.024894005551818706 * 72 /2.54
+                    "scaleY": 0.7056568503,
+                    "opacity": 0.3
+                  }
+                ],
+                "options":
+                  { "includeFullPageOption": true, "allowPanAndZoom": true, "scale": 1, "fullWindow": false },                               
                   "pattern":
                   {
                     "patternPiece":
@@ -133,10 +145,6 @@
           </script>
         </div>
       </div>
-    </div>
-
-    <div>
-      <img src="expectedResults/pointAlongPerpendicular.png" />
     </div>
 </body>
 

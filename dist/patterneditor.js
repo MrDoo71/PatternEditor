@@ -710,14 +710,19 @@ class DrawingObject /*abstract*/ {
         var my = (typeof d.my === "undefined") ? 0 : d.my;
 
         var pos = { labelX: this.p.x + fudge * mx,
-                    labelY: this.p.y + fudge *( my + fontSize ),
-                    labelLineX: this.p.x + fudge* ( ( mx > 0 ) ? mx  //line goes to left of label
-                                                                : ( mx + 0.5 * d.name.length * fontSize ) ), //otherwise line goes to center of label
-                    labelLineY: this.p.y + fudge* ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
+                    labelY: this.p.y + fudge * ( my + fontSize ),
+                    labelLineX: this.p.x + fudge * mx,  //line goes to left of label
+                    labelLineY: this.p.y + fudge * ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
                     fontSize: fontSize
                     };
 
-        //TODO adjust the labelLine to be cleverer, intersecting a boundary box around the text.            
+        //TODO adjust the labelLine to be cleverer, intersecting a boundary box around the text.      
+        
+        if (( mx <= 0 ) && ( d.name ))
+            pos.labelLineX = this.p.x + fudge * ( mx + 0.5 * d.name.length * fontSize ); //otherwise line goes to center of label
+
+        if ( my <= 0 )
+            pos.labelLineY = this.p.y + fudge * ( my + fontSize ); //align to bottom of text
 
         var minLineLength = 2 * fontSize;
 
@@ -4068,6 +4073,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             break;
     }
 
+    //if not focussing on an error then see if there is a recently edited item to focus on. 
     if ( ( ! errorFound ) && ( options.focus ) )
     {
         var a = pattern.getObject( options.focus );
@@ -4895,7 +4901,7 @@ class Expression {
 
     constructor(data, pattern, patternPiece) {
         this.dataDebug = data;
-        this.operation = data.operationType;
+        //this.operation = data.operation;// ? data.operation : data.operationType ;
         this.pattern = pattern;
         this.patternPiece = patternPiece;
 
@@ -4909,7 +4915,6 @@ class Expression {
             }            
         }
 
-        //integer constant
         if (typeof data.integerValue !== "undefined") 
         {
             this.constant = data.integerValue;
@@ -4920,16 +4925,17 @@ class Expression {
             this.constant = data.decimalValue;
             this.value = this.constantValue; //the method constantValue()
         }
-        else if (data.operationType === "Variable") 
-        {
-            if (data.variableType === "Keyword")
+        //else 
+        //if (this.operation === "Variable") 
+        //{
+            else if (  typeof data.keyword !== "undefined" )
             {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
             }
-            else if (data.variableType === "Increment")
+            else if ( typeof data.increment !== "undefined")
             {
-                this.variable = pattern.getIncrement( data.incrementVar );
+                this.variable = pattern.getIncrement( data.increment );
                 this.value = this.incrementValue;
             }
             else if ( data.measurement )
@@ -4985,18 +4991,19 @@ class Expression {
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
-            else 
+            else if ( typeof data.variableType !== "undefined" )
                 throw "Unsupported variableType:" + data.variableType;
-        }
+        //}
         else if ( typeof data.functionName !== "undefined" )
         {
             this.function = data.functionName;
             this.value = this.functionValue;
             //having done the parameters earlier. 
         }
-        else if ( this.operationType !== "undefined" )
+        else if ( typeof data.operation !== "undefined" )
         {
             //add, multiply etc.
+            this.operation = data.operation;
             this.value = this.operationValue;
         }
         else throw "Unsupported expression." ;
@@ -5143,52 +5150,52 @@ class Expression {
         if (typeof this.params[0].value !== "function")
             throw "expression p1 not valid";
 
-        if ( this.operation !== "parenthesis" )    
+        if ( this.operation !== "()" )    
         {
             if (typeof this.params[1].value !== "function")
                 throw "expression p2 not valid";
         }
 
-        if (this.operation === "add")
+        if (this.operation === "+")
             return this.params[0].value(currentLength) + this.params[1].value(currentLength);
 
-        else if (this.operation === "subtract")
+        else if (this.operation === "-")
             return this.params[0].value(currentLength) - this.params[1].value(currentLength);
 
-        else if (this.operation === "multiply")
+        else if (this.operation === "*")
             return this.params[0].value(currentLength) * this.params[1].value(currentLength);
 
-        else if (this.operation === "divide")
+        else if (this.operation === "/")
             return this.params[0].value(currentLength) / this.params[1].value(currentLength);
             
-        else if (this.operation === "equalTo")
+        else if (this.operation === "==")
             return this.params[0].value(currentLength) == this.params[1].value(currentLength);
 
-        else if (this.operation === "notEqualTo")
+        else if (this.operation === "!=")
             return this.params[0].value(currentLength) != this.params[1].value(currentLength);
 
-        else if (this.operation === "lessThan")
+        else if (this.operation === "<")
             return this.params[0].value(currentLength) < this.params[1].value(currentLength);
 
-        else if (this.operation === "lessThanOrEqualTo")
+        else if (this.operation === "<=")
             return this.params[0].value(currentLength) <= this.params[1].value(currentLength);
             
-        else if (this.operation === "greaterThan")
+        else if (this.operation === ">")
             return this.params[0].value(currentLength) > this.params[1].value(currentLength);
 
-        else if (this.operation === "greaterThanOrEqualTo")
+        else if (this.operation === ">=")
             return this.params[0].value(currentLength) >= this.params[1].value(currentLength);
 
-        else if (this.operation === "parenthesis")
+        else if (this.operation === "()")
             return this.params[0].value(currentLength);
 
-        else if  ( this.operation === "power" )
+        else if  ( this.operation === "^" )
         {
             var p1 = this.params[0].value(currentLength);
             var p2 = this.params[1].value(currentLength);
             return Math.pow( p1, p2 );
         }    
-        else if (this.operation === "ternary")
+        else if (this.operation === "?")
         {
             var conditionTestResult = this.params[0].value(currentLength);
             if ( conditionTestResult )
@@ -5294,19 +5301,19 @@ class Expression {
         {
             var useOperatorNotation = false;
 
-            if (this.operation === "add") 
+            if (this.operation === "+") 
                 useOperatorNotation = " + ";
 
-            else if (this.operation === "subtract") 
+            else if (this.operation === "-") 
                 useOperatorNotation = " - ";
 
-            else if (this.operation === "divide") 
+            else if (this.operation === "/") 
                 useOperatorNotation = " / ";
 
-            else if (this.operation === "multiply") 
+            else if (this.operation === "*") 
                 useOperatorNotation = " * ";
                 
-            var t = ( useOperatorNotation || this.operation === "parenthesis" ? "" : this.operation ) + "(";
+            var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation ) + "(";
             var first = true;
             for ( var p in this.params )
             {
