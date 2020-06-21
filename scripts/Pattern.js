@@ -16,6 +16,7 @@ class Pattern {
         {
             for (var a = 0; a < this.patternData.measurement.length; a++) {
                 var m = this.patternData.measurement[a];
+                var measurementUnits = this.units;
 
                 //TODO test this increment that is a simple value...            
                 if (typeof m.value !== "undefined") 
@@ -25,8 +26,8 @@ class Pattern {
                         return this.constant;
                     };
                     m.html = function() {
-                        return this.constant;
-                    };
+                        return this.name + ": " + this.constant + measurementUnits;
+                    };                    
                 }
                 else
                 {
@@ -34,11 +35,12 @@ class Pattern {
                     m.value = function () {
                         return this.expression.value();
                     };
-                    m.html = function() {
-                        return this.expression.html( asFormula );
+                    m.html = function(asFormula) {
+                        return this.name + ": " + this.expression.html( asFormula );
                     };
                 }
                 this.measurement[ m.name ] = m;
+                m.isMeasurement = true;
             }
         }        
         
@@ -54,7 +56,7 @@ class Pattern {
                         return this.constant;
                     };
                     inc.html = function() {
-                        return this.constant;
+                        return this.name + ": " + this.constant;
                     };
                 }
                 else
@@ -63,11 +65,12 @@ class Pattern {
                     inc.value = function () {
                         return this.expression.value();
                     };
-                    inc.html = function() {
-                        return this.expression.html( asFormula );
+                    inc.html = function(asFormula) {
+                        return this.name + ": " + this.expression.html( asFormula );
                     };
                 }
                 this.increment[ inc.name ] = inc;
+                inc.isIncrement = true;
             }
         }        
 

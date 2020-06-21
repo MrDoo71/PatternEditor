@@ -32,13 +32,16 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     
     // show menu on right-click.
     var contextMenu = typeof goGraph === "function" ? function(d) {
-   		d3.event.preventDefault() ;
-    	var v = newkvpSet(false) ;
-    	v.add("x", d.x) ;   
-    	v.add("y", d.y) ;    
-    	goGraph( graphOptions.interactionPrefix + ':' + d.data.contextMenu ,
-    			 d3.event, 
-    			 v ) ;
+        if ( d.contextMenu )
+        {
+            d3.event.preventDefault() ;
+            var v = newkvpSet(false) ;
+            v.add("x", d.x) ;   
+            v.add("y", d.y) ;    
+            goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
+                    d3.event, 
+                    v ) ;
+        }
     } : function(d){};     
     
     var targetdiv = d3.select( "#" + ptarget )
@@ -239,8 +242,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         if ( selectedObject.outlineSvg )
         {
             selectedObject.outlineSvg.node().classList.add("j-active");
+            var selectedObjectToAdjustAfter2Secs = selectedObject; //The user may have clicked on something else within 2 seconds
             //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
-            setTimeout( function(){ selectedObject.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
+            setTimeout( function(){ selectedObjectToAdjustAfter2Secs.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
         }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
@@ -313,11 +317,16 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     doDrawingAndTable();                   
     
     var errorFound = false;
+    var firstDrawingObject;
     for( var j=0; j< pattern.patternPieces.length; j++ )
     {
         for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
         {
             var a = pattern.patternPieces[j].drawingObjects[i];
+
+            if ( firstDrawingObject === undefined )
+                firstDrawingObject = a;
+
             if ( a.error )
             {
                 focusDrawingObject(a, true);
@@ -333,10 +342,23 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( ( ! errorFound ) && ( options.focus ) )
     {
         var a = pattern.getObject( options.focus );
+
+        if ( ! a )
+        try {
+            a = pattern.getMeasurement( options.focus );
+        } catch (e){
+        }
+
+        if ( ! a )
+            a = pattern.getIncrement( options.focus );
+
         if ( a )
             focusDrawingObject(a, true);
     }
-
+    else
+    {
+        focusDrawingObject(firstDrawingObject, true);
+    }
 }
 
 
@@ -955,11 +977,24 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     graphdiv.select("div.pattern-table").remove();
 
-    var combinedDrawingObjects = pattern.patternPieces.length == 1 ? pattern.patternPieces[0].drawingObjects 
-                                                                   : pattern.patternPieces[0].drawingObjects.concat( pattern.patternPieces[1].drawingObjects);
-    for( var j=2; j< pattern.patternPieces.length; j++ )
+    var combinedObjects = [];
+
+    //TODO ? a mode where we don't include measurements and increments in the table.
+    if ( pattern.measurement )
     {
-        combinedDrawingObjects = combinedDrawingObjects.concat( pattern.patternPieces[2].drawingObjects);
+        for( var m in pattern.measurement )
+            combinedObjects.push( pattern.measurement[m] );
+    }
+
+    if ( pattern.increment )
+    {
+        for( var i in pattern.increment )
+            combinedObjects.push( pattern.increment[i] );
+    }
+
+    for( var j=0; j< pattern.patternPieces.length; j++ )
+    {
+        combinedObjects = combinedObjects.concat( pattern.patternPieces[j].drawingObjects);
     }
 
     var svg = graphdiv.append("div")
@@ -967,10 +1002,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
                       .style( "height", height +"px" )    
                       .append("svg")
                       .attr("width", width + ( 2 * margin ) )
-                      .attr("height", minItemHeight * combinedDrawingObjects.length );    
+                      .attr("height", minItemHeight * combinedObjects.length );    
 
     var a = svg.selectAll("g");
-    a = a.data( combinedDrawingObjects );
+    a = a.data( combinedObjects );
     a.enter()        
     .append("g")
     .each( function(d,i) {
@@ -993,10 +1028,18 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         var g = d3.select( this );
 
-        g.attr( "class", "j-item") ;
+        var classes = "j-item";
 
         if ( d.error )
-            g.attr( "class", "j-item error") ;
+            classes += "j-item error";
+
+        if ( d.isMeasurement )
+            classes += " j-measurement";
+
+        if ( d.isIncrement )
+            classes += " j-increment";
+
+        g.attr( "class", classes ) ;    
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
@@ -1092,7 +1135,7 @@ function curve(link) {
     return path;                      
 }
 
-
+//TODO move to kinodbglue
 function newkvpSet(noRefresh)
 {
     var kvp = { } ;
@@ -1121,7 +1164,7 @@ function newkvpSet(noRefresh)
     return kvp ;
 }
 
-
+//TODO move to kinodbglue
 function fakeEvent(location, x, y)
 {
     var pXY = {x: 0, y: 0} ;

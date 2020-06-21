@@ -2,6 +2,7 @@ class DrawingObject /*abstract*/ {
     
     constructor(data) {
         this.data = data;
+        this.contextMenu = data.contextMenu;
     }
 
     drawLabel( g, isOutline ) {

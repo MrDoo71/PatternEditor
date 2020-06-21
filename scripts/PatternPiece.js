@@ -88,9 +88,13 @@ class PatternPiece {
         this.dependencies = { 
             dependencies: [], 
             add: function ( source, target ) { 
-                if ( target && typeof target.expression === "object" )
+                if (   ( target && typeof target.expression === "object" )
+                    && ( ! target.isMeasurement )
+                    && ( ! target.isIncrement ) )
                     target.expression.addDependencies( source, this );
-                else if ( target instanceof DrawingObject )
+                else if (   ( target instanceof DrawingObject )
+                         || ( target.isMeasurement )
+                         || ( target.isIncrement ) )
                     this.dependencies.push( { source: source, target: target } ); 
             }  
         };

@@ -457,6 +457,12 @@ class Expression {
         if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );
 
+        //increment or measurement
+        if (    ( typeof this.variable !== "undefined")
+             && (    ( this.variable.isMeasurement  )
+                  || ( this.variable.isIncrement  ) ) )
+            dependencies.add( source, this.variable );
+
         //recurse into the expression parameters.
         if ( this.params )
         {       
@@ -465,8 +471,6 @@ class Expression {
                 p.addDependencies( source, dependencies );
             }
         }
-
-        //TODO also add dependencies on measurements and increments and (optionally) show these in the list too. 
     }
 }
 
