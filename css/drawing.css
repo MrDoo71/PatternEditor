@@ -212,6 +212,10 @@ div.pattern-table {
     vertical-align: top;
 }
 
+div.pattern-table:first-child { 
+    margin-left:15px;
+}
+
 button.toggle-full-page,
 button.toggle-show_formulas {
     margin-left: 8px;
