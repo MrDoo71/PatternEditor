@@ -3677,10 +3677,13 @@ class PatternPiece {
                 return this.constant;
             };
             f.htmlLength = function() {
-                return '<span class="const">' + this.constant + " " + patternUnits + '</span>';
+                var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                var s = Math.round( precision * this.constant ) / precision;
+                return '<span class="const">' + s + " " + patternUnits + '</span>';
             };
             f.htmlAngle = function() {
-                return '<span class="const">' + this.constant + "&#176;" + '</span>';
+                var s = Math.round( 10.0 * this.constant ) / 10.0;
+                return '<span class="const">' + s + "&#176;" + '</span>';
             };
         }
         else if (typeof formula.expression === "object") {
@@ -3694,13 +3697,20 @@ class PatternPiece {
             f.htmlLength = function( asFormula, currentLength ) {
                 var s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
+                {
+                    var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                    s = Math.round( precision * s ) / precision;
                     s += " " + patternUnits;
+                }
                 return s;
             };
             f.htmlAngle = function( asFormula, currentLength ) {
                 var s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
-                  s += "&#176;";
+                {
+                    s = Math.round( 10.0 * s ) / 10.0;
+                    s += "&#176;"; //degrees
+                }
                 return s;
             };
         }
@@ -5277,7 +5287,11 @@ class Expression {
         if ( ! asFormula )
         {
             try { 
-                return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
+                return this.value( currentLength );
+                //return Math.round( this.value( currentLength ) * 1000 ) / 1000;
+                //if ( ! dp )
+                //    dp = 8;
+                //return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
             } catch ( e ) {
                 return "???"
             }

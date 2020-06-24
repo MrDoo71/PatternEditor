@@ -336,7 +336,8 @@ class Expression {
         if ( ! asFormula )
         {
             try { 
-                return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
+                return this.value( currentLength );
+                //return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
             } catch ( e ) {
                 return "???"
             }
