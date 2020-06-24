@@ -407,7 +407,13 @@ class Expression {
             return "UNKNOWN FUNCTION TYPE" + this.function;
         }
 
-        if ( this.operation ) 
+        if ( this.operation === "?" )
+        {
+            return this.params[0].html( asFormula, currentLength ) + " ? " +
+                   this.params[1].html( asFormula, currentLength ) + " : " +
+                   this.params[2].html( asFormula, currentLength );
+        }
+        else if ( this.operation ) 
         {
             var useOperatorNotation = false;
 
@@ -423,6 +429,9 @@ class Expression {
             else if (this.operation === "*") 
                 useOperatorNotation = " * ";
                 
+            else if (this.operation === "==") 
+                useOperatorNotation = " == ";
+
             var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation ) + "(";
             var first = true;
             for ( var p in this.params )
