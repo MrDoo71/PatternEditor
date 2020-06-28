@@ -1,9 +1,12 @@
 Copyright (c) 2019 Jason Dore
 
-This licence does not apply to third party code copied to this respository (e.g. kld-intersections, font-awesome, and bootstrap).
+This licence does not apply to third party code copied to this respository (e.g. kld-intersections, font-awesome, and bootstrap) which have their own license terms.
 
 The above copyright notice shall be included in all
 copies or substantial portions of the Software.
+
+You may use this software freely provided that it is served from https://my-pattern.cloud/. 
+You may not store copies of this software, nor permit its distribution from, any server other than https://my-pattern.cloud/.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
