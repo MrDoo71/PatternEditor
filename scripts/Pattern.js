@@ -23,17 +23,17 @@ class Pattern {
                 {
                     m.constant = m.value;
                     m.value = function () {
-                        return this.constant;
+                        return this.constant; 
                     };
                     m.html = function() {
-                        return this.name + ": " + this.constant + measurementUnits;
+                        return this.name + ": " + this.constant + " " + this.units;
                     };                    
                 }
                 else
                 {
                     m.expression = new Expression( m.expression, this, null );
                     m.value = function () {
-                        return this.expression.value();
+                        return this.expression.value(); 
                     };
                     m.html = function(asFormula) {
                         return this.name + ": " + this.expression.html( asFormula );

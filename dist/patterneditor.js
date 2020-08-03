@@ -3377,17 +3377,17 @@ class Pattern {
                 {
                     m.constant = m.value;
                     m.value = function () {
-                        return this.constant;
+                        return this.constant; 
                     };
                     m.html = function() {
-                        return this.name + ": " + this.constant + measurementUnits;
+                        return this.name + ": " + this.constant + " " + this.units;
                     };                    
                 }
                 else
                 {
                     m.expression = new Expression( m.expression, this, null );
                     m.value = function () {
-                        return this.expression.value();
+                        return this.expression.value(); 
                     };
                     m.html = function(asFormula) {
                         return this.name + ": " + this.expression.html( asFormula );
@@ -5278,7 +5278,7 @@ class Expression {
 
 
     nameWithPopupValue( name ) {
-        return '<span title="' + this.value() + '">' + name + '</span>';
+        return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
     }
 
 
@@ -5288,9 +5288,6 @@ class Expression {
         {
             try { 
                 return this.value( currentLength );
-                //return Math.round( this.value( currentLength ) * 1000 ) / 1000;
-                //if ( ! dp )
-                //    dp = 8;
                 //return Number.parseFloat( this.value( currentLength ) ).toPrecision(4); 
             } catch ( e ) {
                 return "???"

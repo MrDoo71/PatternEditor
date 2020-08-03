@@ -327,7 +327,7 @@ class Expression {
 
 
     nameWithPopupValue( name ) {
-        return '<span title="' + this.value() + '">' + name + '</span>';
+        return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
     }
 
 
