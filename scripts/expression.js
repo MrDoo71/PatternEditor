@@ -116,7 +116,8 @@ class Expression {
             this.operation = data.operation;
             this.value = this.operationValue;
         }
-        else throw "Unsupported expression." ;
+        //Don't throw, we still need to continue with setting up the expression so we can describe what is wrong. 
+        //else throw "Unsupported expression." ;
     }
 
     
@@ -327,7 +328,11 @@ class Expression {
 
 
     nameWithPopupValue( name ) {
-        return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
+        try {
+            return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
+        } catch ( e ) {
+            return "ERROR1:" + name;
+        }
     }
 
 
@@ -451,7 +456,7 @@ class Expression {
             return t;
         }
 
-        return "UNKNOWN EXPRESSION TYPE";
+        return "???";
     };
 
 

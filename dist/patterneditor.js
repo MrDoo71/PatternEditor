@@ -1083,6 +1083,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 }
 
 //(c) Copyright 2019 Jason Dore
+//https://github.com/MrDoo71/PatternEditor
 
 var scale;
 
@@ -1943,7 +1944,8 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'point at X from ' + this.refOf( this.firstPoint ) +  " and Y from " + this.refOf( this.secondPoint );
+        return '<span class="ps-name">' + this.data.name + '</span>:' +
+               ' point at X from ' + this.refOf( this.firstPoint ) +  " and Y from " + this.refOf( this.secondPoint );
     }
 
 
@@ -3353,6 +3355,7 @@ class TrueDartResult extends DrawingObject {
 }
 
 //(c) Copyright 2019 Jason Dore
+//https://github.com/MrDoo71/PatternEditor
 
 class Pattern {
 
@@ -3467,6 +3470,7 @@ class Pattern {
 
 }
 //(c) Copyright 2019 Jason Dore
+//https://github.com/MrDoo71/PatternEditor
 
 class Bounds {
     
@@ -3556,6 +3560,10 @@ class PatternPiece {
         this.dependencies = { 
             dependencies: [], 
             add: function ( source, target ) { 
+
+                if (( ! source ) || ( ! target ))
+                    return;
+
                 if (   ( target && typeof target.expression === "object" )
                     && ( ! target.isMeasurement )
                     && ( ! target.isIncrement ) )
@@ -4793,7 +4801,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         var classes = "j-item";
 
         if ( d.error )
-            classes += "j-item error";
+            classes += " error";
 
         if ( d.isMeasurement )
             classes += " j-measurement";
@@ -4820,7 +4828,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             if (d.error)
                 html += '<div class="error">' + d.error + '</div>';
         } catch ( e ) {
-            html = "Failed to generate description.";
+            html = '<div class="error">Failed to generate description.</div>';
         }
 
          var div = fo.append( "xhtml:div" )
@@ -5067,7 +5075,8 @@ class Expression {
             this.operation = data.operation;
             this.value = this.operationValue;
         }
-        else throw "Unsupported expression." ;
+        //Don't throw, we still need to continue with setting up the expression so we can describe what is wrong. 
+        //else throw "Unsupported expression." ;
     }
 
     
@@ -5278,7 +5287,11 @@ class Expression {
 
 
     nameWithPopupValue( name ) {
-        return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
+        try {
+            return '<span title="' + ( Math.round( this.value() * 1000 ) / 1000 ) + ' ' + this.pattern.units + '">' + name + '</span>';
+        } catch ( e ) {
+            return "ERROR1:" + name;
+        }
     }
 
 
@@ -5402,7 +5415,7 @@ class Expression {
             return t;
         }
 
-        return "UNKNOWN EXPRESSION TYPE";
+        return "???";
     };
 
 

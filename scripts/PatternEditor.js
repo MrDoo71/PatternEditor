@@ -1031,7 +1031,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         var classes = "j-item";
 
         if ( d.error )
-            classes += "j-item error";
+            classes += " error";
 
         if ( d.isMeasurement )
             classes += " j-measurement";
@@ -1058,7 +1058,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             if (d.error)
                 html += '<div class="error">' + d.error + '</div>';
         } catch ( e ) {
-            html = "Failed to generate description.";
+            html = '<div class="error">Failed to generate description.</div>';
         }
 
          var div = fo.append( "xhtml:div" )

@@ -31,7 +31,8 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return 'point at X from ' + this.refOf( this.firstPoint ) +  " and Y from " + this.refOf( this.secondPoint );
+        return '<span class="ps-name">' + this.data.name + '</span>:' +
+               ' point at X from ' + this.refOf( this.firstPoint ) +  " and Y from " + this.refOf( this.secondPoint );
     }
 
 
