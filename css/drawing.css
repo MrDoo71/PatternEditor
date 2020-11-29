@@ -41,6 +41,11 @@ g.j-drawing path.dashDotLine {
 
 g.j-drawing line.dashDotLine,
 g.j-drawing path.dashDotLine {
+    stroke-dasharray: 1, 0.25, 0.25, 0.25; 
+}
+
+g.j-drawing line.dashDotDotLine,
+g.j-drawing path.dashDotDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25, 0.25, 0.25; 
 }
 
