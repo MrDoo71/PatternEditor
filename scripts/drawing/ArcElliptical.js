@@ -70,11 +70,7 @@ class ArcElliptical extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        this.drawPath( g, this.arc.svgPath(), isOutline );
-
-        //if ( this.debugArc )
-        //    this.drawPath( g, this.debugArc.svgPath(), isOutline );
-
+        this.drawArc( g, isOutline );        
         this.drawLabel( g, isOutline );
     }
 

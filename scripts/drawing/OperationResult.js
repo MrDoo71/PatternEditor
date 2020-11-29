@@ -33,13 +33,19 @@ class OperationResult extends DrawingObject {
             //so we get this captured and can just pass the function around
             this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
         }
-        else if ( this.basePoint.line instanceof GeoLine ) //untested?
+
+        if ( this.basePoint.line instanceof GeoLine ) //untested?
         {
             this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
         }
-        //TODO we might also have operated on an arc, circle, ellipse? Some might required a different approach that needs to be aligned with original behaviour
 
-        //This line would be useful if the operation, or operation result is selected. 
+        if (   ( this.basePoint.arc instanceof GeoArc ) //untested?
+            || ( this.basePoint.arc instanceof GeoEllipticalArc ) )
+        {
+            this.arc = this.basePoint.arc.applyOperation( applyOperationToPointFunc );
+        }
+
+        //TODO This line would be useful if the operation, or operation result is selected. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
         bounds.adjust( this.p );
@@ -61,13 +67,14 @@ class OperationResult extends DrawingObject {
 
         //We might have operated on a point, spline (or presumably line)
 
-        if ( this.p )
+        if (( this.p ) && ( ! this.curve ) && ( ! this.arc ))
             this.drawDot( g, isOutline );
 
         if ( this.curve )
             this.drawCurve( g, isOutline ); 
 
-        //TODO we might also have operated on an arc, circle, ellipse?
+        if ( this.arc )
+            this.drawArc( g, isOutline );             
 
         if ( this.line )
             this.drawLine( g, isOutline ); 

@@ -245,7 +245,7 @@ class GeoLine {
         return intersect;
     }
 
-    applyOperation( pointTransformer ) 
+    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoLine
     {
         var p1Transformed = pointTransformer( this.p1 );
         var p2Transformed =  pointTransformer( this.p2 );
@@ -292,7 +292,7 @@ class GeoArc {
     //angle1 - degrees!
     //angle2 - degrees!
 
-    constructor( center, radius, angle1, angle2 ) {
+    constructor( center, radius, angle1 /*deg*/, angle2 /*deg*/ ) {
         this.center = center;
         this.radius = radius;
         this.angle1 = angle1;
@@ -332,10 +332,22 @@ class GeoArc {
     svgPath()
     {
         var arcPath = d3.path();
+
+        //arcPath.arc( this.center.x, this.center.y, 
+        //             this.radius, 
+        //             -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
+
+        var a2 = this.angle2;
+
+        if ( a2 < this.angle1 )
+            a2 += 360;
+
         arcPath.arc( this.center.x, this.center.y, 
-                     this.radius, 
-                     -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
-        //console.log( "Could have used d3:", arcPath.toString() );
+                    this.radius, 
+                    -this.angle1 * Math.PI / 180, -a2 * Math.PI / 180, true );
+             
+
+                     //console.log( "Could have used d3:", arcPath.toString() );
         return arcPath.toString();
 
         //var a2 = this.angle2;
@@ -413,6 +425,27 @@ class GeoArc {
                 
         return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
+
+
+    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoArc
+    {
+        var center2 = pointTransformer( this.center );
+
+        //s = the point on the arc that we start drawing
+        var s = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle1 );
+        var s2 = pointTransformer( s );
+        var s2line = new GeoLine( center2, s2 );
+        var startAngle2 = s2line.angleDeg();
+
+        //f = the point on the arc that we finish drawing
+        var f = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
+        var f2 = pointTransformer( f );
+        var f2line = new GeoLine( center2, f2 );
+        var finishAngle2 = f2line.angleDeg();
+
+        //Because we've flipped the start angle becomes the finish angle and vice verasa.
+        return new GeoArc(  center2, this.radius, finishAngle2 /*deg*/, startAngle2 /*deg*/  );
+    }
 }
 
 
@@ -431,7 +464,7 @@ class GeoSpline {
         this.nodeData = nodeData;
     }
 
-    applyOperation( pointTransformer ) {
+    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoSpline
         var nodeData = [];
         for ( var i=0; i<this.nodeData.length; i++ )
         {
@@ -485,11 +518,13 @@ class GeoSpline {
         return path;
     }
 
+
     asShapeInfo()
     {        
         return ShapeInfo.path( this.svgPath() );
     }
     
+
     pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
@@ -645,6 +680,43 @@ class GeoEllipticalArc {
         return path.getTotalLength();
     }             
 
+    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoEllipticalArc
+
+
+        var center2 = pointTransformer( this.center );
+
+        //Converted start and finishing angles are calculated identically to a circle
+        //It doesn't matter from this perspective whether we use radius1 or radius2
+
+        //s = the point on the arc that we start drawing
+        var s = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle1 + this.rotationAngle );
+        var s2 = pointTransformer( s );
+        var s2line = new GeoLine( center2, s2 );
+        var startAngle2 = s2line.angleDeg();
+
+        //f = the point on the arc that we finish drawing
+        var f = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle2 + this.rotationAngle );
+        var f2 = pointTransformer( f );
+        var f2line = new GeoLine( center2, f2 );
+        var finishAngle2 = f2line.angleDeg();
+
+        //This is an ellipse, so we also need to adjust the ellipse rotation. 
+        var r = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.rotationAngle );
+        var r2 = pointTransformer( r );
+        var r2line = new GeoLine( center2, r2 );
+        var rotationAngle2 = r2line.angleDeg() +180;
+
+        // + 180;
+        if ( rotationAngle2 >= 360 )
+            rotationAngle2 -= 360;
+
+        //finally, start and finish point angles are defined with respect to the rotation angle
+        startAngle2 -= rotationAngle2;
+        finishAngle2 -= rotationAngle2;
+
+        //Because we've flipped the start angle becomes the finish angle and vice verasa.
+        return new GeoEllipticalArc( center2, this.radius1, this.radius2, finishAngle2 /*deg*/, startAngle2 /*deg*/, rotationAngle2 /*deg*/ )
+    }
 }
 
 
@@ -779,6 +851,18 @@ class DrawingObject /*abstract*/ {
     drawCurve( g, isOutline ) {
         if ( ( this.lineVisible() || isOutline ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), isOutline );
+    }
+
+
+    drawArc( g, isOutline ) {
+        
+        if ( ( this.lineVisible() || isOutline ) && this.arc )
+        {
+                if ( this.lineVisible() )
+                    this.drawPath( g, this.arc.svgPath(), isOutline );    
+
+                this.drawLabel(g, isOutline);
+        }            
     }
 
 
@@ -920,11 +1004,7 @@ class ArcElliptical extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        this.drawPath( g, this.arc.svgPath(), isOutline );
-
-        //if ( this.debugArc )
-        //    this.drawPath( g, this.debugArc.svgPath(), isOutline );
-
+        this.drawArc( g, isOutline );        
         this.drawLabel( g, isOutline );
     }
 
@@ -1001,20 +1081,8 @@ class ArcSimple extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        var d = this.data;
-        var arcPath = d3.path();
-        var a2 = this.angle2.value();
-        if ( a2 < this.angle1.value() )
-            a2 += 360;
-        arcPath.arc( this.center.p.x, this.center.p.y, 
-                     this.radius.value(), 
-                     -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
-        
-        //console.log( "ArcSimple d3 path ", arcPath );
 
-        if ( this.lineVisible() )
-            this.drawPath( g, arcPath, isOutline );
-
+        this.drawArc( g, isOutline );
         this.drawLabel(g, isOutline);
     }
 
@@ -1197,6 +1265,80 @@ class OperationFlipByAxis extends DrawingObject {
 
 }
 
+class OperationFlipByLine extends DrawingObject {
+
+    //operationName
+    //suffix
+    //p1Line1
+    //p2Line1
+  
+
+    constructor(data) {
+        super(data);
+        this.data.name = data.operationName;
+        this.axis = data.axis;
+    }
+
+
+    calculate(bounds) {
+        var d = this.data;
+
+        if (typeof this.p1Line1 === "undefined")
+            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+
+        if (typeof this.p2Line1 === "undefined")
+            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+
+        this.line = new GeoLine( this.p1Line1.p, this.p2Line1.p );
+    }
+
+
+    draw( g, isOutline ) {
+        //g is the svg group
+        //this.drawLine( g ); //TODO put an arrow head on this!
+        //this.drawDot( g );
+        //this.drawLabel( g );
+
+        this.drawLine( g, isOutline );
+    }
+
+
+    html( asFormula ) {
+        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+                + 'Flip over line ' + this.refOf( this.p1Line1 ) 
+                + "-" + this.refOf( this.p2Line1 ) 
+                + " applying suffix '" + this.data.suffix + "'";
+    }
+
+
+    applyOperationToPoint( p ) {
+
+        return this.flipPoint( p, this.line );
+    }
+
+
+    flipPoint( p, line ) {
+        
+        //image the point of view rotated such that this.line is on the x-axis at 0deg. 
+        //if the line is at 45deg, rotate the line and the source point by -45 deg. flip the y component, then rotate back by +45. 
+
+        var p0 = p.rotate( this.line.p1, -this.line.angleDeg() );
+
+        var p0f = new GeoPoint( p0.x, this.line.p1.y - ( p0.y - this.line.p1.y ) );
+
+        var result = p0f.rotate( this.line.p1, this.line.angleDeg() );
+
+        return result;
+    }
+
+    
+    setDependencies( dependencies ) {
+        dependencies.add( this, this.p1Line1 );
+        dependencies.add( this, this.p2Line1 );
+    }    
+
+}
+
 class OperationMove extends DrawingObject {
 
     //operationName
@@ -1297,13 +1439,19 @@ class OperationResult extends DrawingObject {
             //so we get this captured and can just pass the function around
             this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
         }
-        else if ( this.basePoint.line instanceof GeoLine ) //untested?
+
+        if ( this.basePoint.line instanceof GeoLine ) //untested?
         {
             this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
         }
-        //TODO we might also have operated on an arc, circle, ellipse? Some might required a different approach that needs to be aligned with original behaviour
 
-        //This line would be useful if the operation, or operation result is selected. 
+        if (   ( this.basePoint.arc instanceof GeoArc ) //untested?
+            || ( this.basePoint.arc instanceof GeoEllipticalArc ) )
+        {
+            this.arc = this.basePoint.arc.applyOperation( applyOperationToPointFunc );
+        }
+
+        //TODO This line would be useful if the operation, or operation result is selected. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
         bounds.adjust( this.p );
@@ -1325,13 +1473,14 @@ class OperationResult extends DrawingObject {
 
         //We might have operated on a point, spline (or presumably line)
 
-        if ( this.p )
+        if (( this.p ) && ( ! this.curve ) && ( ! this.arc ))
             this.drawDot( g, isOutline );
 
         if ( this.curve )
             this.drawCurve( g, isOutline ); 
 
-        //TODO we might also have operated on an arc, circle, ellipse?
+        if ( this.arc )
+            this.drawArc( g, isOutline );             
 
         if ( this.line )
             this.drawLine( g, isOutline ); 
@@ -1773,7 +1922,6 @@ class PointEndLine extends DrawingObject {
 
 
     html( asFormula ) {
-
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.basePoint ) 
@@ -2508,7 +2656,6 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
-
 
         var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
@@ -3652,6 +3799,8 @@ class PatternPiece {
             return new OperationRotate(dObj);                  
         else if (dObj.objectType === "operationFlipByAxis")
             return new OperationFlipByAxis(dObj);                  
+        else if (dObj.objectType === "operationFlipByLine")
+            return new OperationFlipByLine(dObj);                  
         else if (dObj.objectType === "operationResult")
             return new OperationResult(dObj);                  
         else if (dObj.objectType === "pointFromArcAndTangent")

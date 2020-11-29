@@ -132,6 +132,18 @@ class DrawingObject /*abstract*/ {
     }
 
 
+    drawArc( g, isOutline ) {
+        
+        if ( ( this.lineVisible() || isOutline ) && this.arc )
+        {
+                if ( this.lineVisible() )
+                    this.drawPath( g, this.arc.svgPath(), isOutline );    
+
+                this.drawLabel(g, isOutline);
+        }            
+    }
+
+
     ref() {
         return '<a class="ps-ref">' + this.data.name + '</a>';
     }

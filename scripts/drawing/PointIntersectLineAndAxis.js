@@ -25,7 +25,6 @@ class PointIntersectLineAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
-
         var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
         var otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <version>0.6.0</version>
+    <unit>inch</unit>
+    <description/>
+    <notes/>
+    <patternLabel/>
+    <measurements/>
+    <increments/>
+    <draw name="Flipping by line">
+        <calculation>
+            <point id="1" mx="0.0520833" my="0.104167" name="A" type="single" x="0.3125" y="0.416667"/>
+            <point angle="315" basePoint="1" id="2" length="10" lineColor="black" mx="0.0520833" my="0.104167" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="270" basePoint="1" id="3" length="6" lineColor="black" mx="0.0520833" my="0.104167" name="A2" type="endLine" typeLine="hair"/>
+            <arc angle1="45" angle2="135" center="3" color="blue" id="4" penStyle="hair" radius="3" type="simple"/>
+            <point angle="65" basePoint="3" id="5" length="4" lineColor="black" mx="0.0520833" my="0.104167" name="A3" type="endLine" typeLine="hair"/>
+            <point angle="115" basePoint="3" id="6" length="4" lineColor="black" mx="0.0520833" my="0.104167" name="A4" type="endLine" typeLine="hair"/>
+            <point angle="65" basePoint="3" curve="4" id="7" lineColor="black" mx="0.0520833" my="0.104167" name="A5" type="curveIntersectAxis" typeLine="hair"/>
+            <point angle="300" basePoint="3" id="16" length="5" lineColor="lightsalmon" mx="0" my="0" name="A6" type="endLine" typeLine="dashLine"/>
+            <point angle="30" basePoint="16" id="20" length="4" lineColor="cornflowerblue" mx="0" my="0" name="A7" type="endLine" typeLine="none"/>
+            <point firstPoint="20" id="21" length="8" lineColor="cornflowerblue" mx="0" my="0" name="A8" secondPoint="16" type="alongLine" typeLine="dashDotDotLine"/>
+            <point angle="75" basePoint="16" id="22" length="3" lineColor="cornflowerblue" mx="0" my="0" name="A9" type="endLine" typeLine="dotLine"/>
+            <elArc angle1="45" angle2="180" center="16" color="blue" id="17" penStyle="hair" radius1="4" radius2="2" rotationAngle="30" type="simple"/>
+            <operation id="10" p1Line="1" p2Line="2" suffix="a1" type="flippingByLine">
+                <source>
+                    <item idObject="4"/>
+                    <item idObject="7"/>
+                    <item idObject="5"/>
+                    <item idObject="6"/>
+                    <item idObject="3"/>
+                    <item idObject="17"/>
+                    <item idObject="16"/>
+                    <item idObject="20"/>
+                    <item idObject="22"/>
+                    <item idObject="21"/>
+                </source>
+                <destination>
+                    <item idObject="11"/>
+                    <item idObject="12" mx="0.0520833" my="0.104167"/>
+                    <item idObject="13" mx="0.0520833" my="0.104167"/>
+                    <item idObject="14" mx="0.0520833" my="0.104167"/>
+                    <item idObject="15" mx="0.0520833" my="0.104167"/>
+                    <item idObject="18"/>
+                    <item idObject="19" mx="0" my="0"/>
+                    <item idObject="23" mx="0" my="0"/>
+                    <item idObject="24" mx="0" my="0"/>
+                    <item idObject="25" mx="0" my="0"/>
+                </destination>
+            </operation>
+            <spline color="goldenrod" id="26" penStyle="hair" type="pathInteractive">
+                <pathPoint angle1="0.101411" angle2="180.101" length1="0" length2="1.30127" pSpline="1"/>
+                <pathPoint angle1="9.29208" angle2="189.292" length1="1.08302" length2="1.08302" pSpline="6"/>
+                <pathPoint angle1="160.665" angle2="340.665" length1="0.779354" length2="0.779354" pSpline="21"/>
+            </spline>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

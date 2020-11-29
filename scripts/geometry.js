@@ -245,7 +245,7 @@ class GeoLine {
         return intersect;
     }
 
-    applyOperation( pointTransformer ) 
+    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoLine
     {
         var p1Transformed = pointTransformer( this.p1 );
         var p2Transformed =  pointTransformer( this.p2 );
@@ -292,7 +292,7 @@ class GeoArc {
     //angle1 - degrees!
     //angle2 - degrees!
 
-    constructor( center, radius, angle1, angle2 ) {
+    constructor( center, radius, angle1 /*deg*/, angle2 /*deg*/ ) {
         this.center = center;
         this.radius = radius;
         this.angle1 = angle1;
@@ -332,10 +332,22 @@ class GeoArc {
     svgPath()
     {
         var arcPath = d3.path();
+
+        //arcPath.arc( this.center.x, this.center.y, 
+        //             this.radius, 
+        //             -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
+
+        var a2 = this.angle2;
+
+        if ( a2 < this.angle1 )
+            a2 += 360;
+
         arcPath.arc( this.center.x, this.center.y, 
-                     this.radius, 
-                     -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
-        //console.log( "Could have used d3:", arcPath.toString() );
+                    this.radius, 
+                    -this.angle1 * Math.PI / 180, -a2 * Math.PI / 180, true );
+             
+
+                     //console.log( "Could have used d3:", arcPath.toString() );
         return arcPath.toString();
 
         //var a2 = this.angle2;
@@ -413,6 +425,27 @@ class GeoArc {
                 
         return ShapeInfo.arc( this.center.x, this.center.y, this.radius, this.radius, angle1 * Math.PI/180, angle2 * Math.PI/180 );
     }    
+
+
+    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoArc
+    {
+        var center2 = pointTransformer( this.center );
+
+        //s = the point on the arc that we start drawing
+        var s = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle1 );
+        var s2 = pointTransformer( s );
+        var s2line = new GeoLine( center2, s2 );
+        var startAngle2 = s2line.angleDeg();
+
+        //f = the point on the arc that we finish drawing
+        var f = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
+        var f2 = pointTransformer( f );
+        var f2line = new GeoLine( center2, f2 );
+        var finishAngle2 = f2line.angleDeg();
+
+        //Because we've flipped the start angle becomes the finish angle and vice verasa.
+        return new GeoArc(  center2, this.radius, finishAngle2 /*deg*/, startAngle2 /*deg*/  );
+    }
 }
 
 
@@ -431,7 +464,7 @@ class GeoSpline {
         this.nodeData = nodeData;
     }
 
-    applyOperation( pointTransformer ) {
+    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoSpline
         var nodeData = [];
         for ( var i=0; i<this.nodeData.length; i++ )
         {
@@ -485,11 +518,13 @@ class GeoSpline {
         return path;
     }
 
+
     asShapeInfo()
     {        
         return ShapeInfo.path( this.svgPath() );
     }
     
+
     pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
@@ -645,5 +680,42 @@ class GeoEllipticalArc {
         return path.getTotalLength();
     }             
 
+    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoEllipticalArc
+
+
+        var center2 = pointTransformer( this.center );
+
+        //Converted start and finishing angles are calculated identically to a circle
+        //It doesn't matter from this perspective whether we use radius1 or radius2
+
+        //s = the point on the arc that we start drawing
+        var s = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle1 + this.rotationAngle );
+        var s2 = pointTransformer( s );
+        var s2line = new GeoLine( center2, s2 );
+        var startAngle2 = s2line.angleDeg();
+
+        //f = the point on the arc that we finish drawing
+        var f = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle2 + this.rotationAngle );
+        var f2 = pointTransformer( f );
+        var f2line = new GeoLine( center2, f2 );
+        var finishAngle2 = f2line.angleDeg();
+
+        //This is an ellipse, so we also need to adjust the ellipse rotation. 
+        var r = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.rotationAngle );
+        var r2 = pointTransformer( r );
+        var r2line = new GeoLine( center2, r2 );
+        var rotationAngle2 = r2line.angleDeg() +180;
+
+        // + 180;
+        if ( rotationAngle2 >= 360 )
+            rotationAngle2 -= 360;
+
+        //finally, start and finish point angles are defined with respect to the rotation angle
+        startAngle2 -= rotationAngle2;
+        finishAngle2 -= rotationAngle2;
+
+        //Because we've flipped the start angle becomes the finish angle and vice verasa.
+        return new GeoEllipticalArc( center2, this.radius1, this.radius2, finishAngle2 /*deg*/, startAngle2 /*deg*/, rotationAngle2 /*deg*/ )
+    }
 }
 

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - Operation Flip by Line</title>
+
+  <link rel="stylesheet" href="../../dist/css/kinoBootstrapCSS_ultra.css" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <a class="col-sm-12" style="font-size:12px; font-weight: normal" href="test.html">back to test menu</a>
+        <h1 class="col-sm-12 ">
+          Operation - Flip by Line
+        </h1>
+      </div>
+
+
+
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": false
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/flipByLine.png",
+                  "offsetX": -9.041905, 
+                  "offsetY": -3.983262, 
+                  "scaleX": 1.327751, 
+                  "scaleY": 1.327751, 
+                  "opacity": 0.5, 
+                  "filename": "flipByLine.png", 
+                  "visible": true, 
+                  "allowEdit": false }],
+                "pattern":
+                {
+                  "units": "inch",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Flipping by line",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.3125, "y": 0.416667, "mx": 0.0520833, "my": 0.104167 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 315 },
+                              "length":
+                                { "constant": 10 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 6 }
+                            },
+                            {
+                              "derivedName": "Arc_A2_4",
+                              "objectType": "arcSimple",
+                              "center": "A2",
+                              "color": "blue",
+                              "angle1":
+                                { "constant": 45 },
+                              "angle2":
+                                { "constant": 135 },
+                              "radius":
+                                { "constant": 3 }
+                            },
+                            {
+                              "name": "A3",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 65 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 115 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointIntersectArcAndAxis",
+                              "basePoint": "A2",
+                              "curve": "Arc_A2_4",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 65 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "color": "lightsalmon",
+                              "mx": 0,
+                              "my": 0,
+                              "angle":
+                                { "constant": 300 },
+                              "length":
+                                { "constant": 5 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A6",
+                              "color": "cornflowerblue",
+                              "mx": 0,
+                              "my": 0,
+                              "angle":
+                                { "constant": 30 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            {
+                              "name": "A8",
+                              "objectType": "pointAlongLine",
+                              "firstPoint": "A7",
+                              "secondPoint": "A6",
+                              "color": "cornflowerblue",
+                              "mx": 0,
+                              "my": 0,
+                              "length":
+                                { "constant": 8 }
+                            },
+                            {
+                              "name": "A9",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A6",
+                              "color": "cornflowerblue",
+                              "mx": 0,
+                              "my": 0,
+                              "angle":
+                                { "constant": 75 },
+                              "length":
+                                { "constant": 3 }
+                            },
+                            {
+                              "derivedName": "ElArc_A6_17",
+                              "objectType": "arcElliptical",
+                              "center": "A6",
+                              "color": "blue",
+                              "angle1":
+                                { "constant": 45 },
+                              "angle2":
+                                { "constant": 180 },
+                              "radius1":
+                                { "constant": 4 },
+                              "radius2":
+                                { "constant": 2 },
+                              "rotationAngle":
+                                { "constant": 30 }
+                            },
+                            {
+                              "derivedName": "SplPath_A_A8",
+                              "objectType": "splinePathInteractive",
+                              "color": "goldenrod",
+                              "pathNode":
+                                [
+                                  {
+                                    "point": "A",
+                                    "angle1":
+                                      { "constant": 0.101411 },
+                                    "length1":
+                                      { "constant": 0 },
+                                    "angle2":
+                                      { "constant": 180.101 },
+                                    "length2":
+                                      { "constant": 1.30127 }
+                                  },
+                                  {
+                                    "point": "A4",
+                                    "angle1":
+                                      { "constant": 9.29208 },
+                                    "length1":
+                                      { "constant": 1.08302 },
+                                    "angle2":
+                                      { "constant": 189.292 },
+                                    "length2":
+                                      { "constant": 1.08302 }
+                                  },
+                                  {
+                                    "point": "A8",
+                                    "angle1":
+                                      { "constant": 160.665 },
+                                    "length1":
+                                      { "constant": 0.779354 },
+                                    "angle2":
+                                      { "constant": 340.665 },
+                                    "length2":
+                                      { "constant": 0.779354 }
+                                  }
+                                ]
+                            },
+                            { "objectType": "operationFlipByLine", "p1Line1": "A", "p2Line1": "A1", "suffix": "a1", "operationName": "operation_10" },
+                            { "derivedName": "Arc_A2_4a1", "objectType": "operationResult", "basePoint": "Arc_A2_4", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "A5a1", "objectType": "operationResult", "basePoint": "A5", "fromOperation": "operation_10", "mx": 0.0520833, "my": 0.104167 },
+                            { "derivedName": "A3a1", "objectType": "operationResult", "basePoint": "A3", "fromOperation": "operation_10", "mx": 0.0520833, "my": 0.104167 },
+                            { "derivedName": "A4a1", "objectType": "operationResult", "basePoint": "A4", "fromOperation": "operation_10", "mx": 0.0520833, "my": 0.104167 },
+                            { "derivedName": "A2a1", "objectType": "operationResult", "basePoint": "A2", "fromOperation": "operation_10", "mx": 0.0520833, "my": 0.104167 },
+                            { "derivedName": "ElArc_A6_17a1", "objectType": "operationResult", "basePoint": "ElArc_A6_17", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "A6a1", "objectType": "operationResult", "basePoint": "A6", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "A7a1", "objectType": "operationResult", "basePoint": "A7", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "A9a1", "objectType": "operationResult", "basePoint": "A9", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "A8a1", "objectType": "operationResult", "basePoint": "A8", "fromOperation": "operation_10", "mx": 0, "my": 0 },
+                            { "derivedName": "SplPath_A_A8a1", "objectType": "operationResult", "basePoint": "SplPath_A_A8", "fromOperation": "operation_10", "mx": 0, "my": 0 }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', {});
+          </script>
+        </div>
+      </div>
+    </div>
+
+</body>
+
+</html>

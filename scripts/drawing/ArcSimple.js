@@ -49,20 +49,8 @@ class ArcSimple extends DrawingObject {
 
 
     draw( g, isOutline ) {
-        var d = this.data;
-        var arcPath = d3.path();
-        var a2 = this.angle2.value();
-        if ( a2 < this.angle1.value() )
-            a2 += 360;
-        arcPath.arc( this.center.p.x, this.center.p.y, 
-                     this.radius.value(), 
-                     -this.angle1.value() * Math.PI / 180, -a2 * Math.PI / 180, true );
-        
-        //console.log( "ArcSimple d3 path ", arcPath );
 
-        if ( this.lineVisible() )
-            this.drawPath( g, arcPath, isOutline );
-
+        this.drawArc( g, isOutline );
         this.drawLabel(g, isOutline);
     }
 
