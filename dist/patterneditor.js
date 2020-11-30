@@ -141,15 +141,24 @@ class GeoLine {
              && ( arc.angle2 > 0 ) 
              && ( arc instanceof GeoArc ) ) //not an elliptical
         {
-            if ( arc instanceof GeoArc )
-            {
-                try { 
-                    var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
-                    return this.intersectArc( arc1 );
-                } catch ( e ) {
-                    var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
-                    return this.intersectArc( arc2 );
-                }
+            try { 
+                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
+                return this.intersectArc( arc1 );
+            } catch ( e ) {
+                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
+                return this.intersectArc( arc2 );
+            }
+        }
+        if (    ( arc.angle1 < 360 ) 
+             && ( arc.angle2 > 360 ) 
+             && ( arc instanceof GeoArc ) ) //not an elliptical
+        {
+            try { 
+                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 -360 );
+                return this.intersectArc( arc1 );
+            } catch ( e ) {
+                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1, 360 );
+                return this.intersectArc( arc2 );
             }
         }
 
@@ -5184,6 +5193,9 @@ class Expression {
                 else
                     //this is the spline drawing object itself, the curve comes directly from it. 
                     this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+
+                if ( data.segment )
+                    throw "Not yet supported: segment parameter on:" + data.variableType;
 
                 this.function = data.variableType;
                 this.value = this.functionValue;

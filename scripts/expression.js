@@ -77,6 +77,9 @@ class Expression {
                     //this is the spline drawing object itself, the curve comes directly from it. 
                     this.drawingObject = patternPiece.getObject( data.drawingObject1 );
 
+                if ( data.segment )
+                    throw "Not yet supported: segment parameter: " + data.variableType;
+
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
