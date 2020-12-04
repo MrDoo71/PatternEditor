@@ -118,10 +118,20 @@ class PatternPiece {
         //so that we can remove duplicates.
     }
 
-    getObject(name) {
+    
+    getObject(name, thisPieceOnly) {
         if (typeof name === "object")
             return name;
-        return this.drawing[name];
+
+        var objOnThisPiece = this.drawing[name];
+        if ( objOnThisPiece )
+            return objOnThisPiece;
+
+        //If we are finding a drawing object for a length etc. then we are allowed to reference other
+        //pieces.  And should ask the pattern for the object. But if we are here because we are scanning the whole pattern
+        //already then we shouldn't recurse back to the pattern.
+        if ( ! thisPieceOnly )
+            return this.pattern.getObject(name);
     }
 
     //TODO make this a static method of DrawingObject

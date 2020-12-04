@@ -104,7 +104,7 @@ class Pattern {
         for( var j=0; j< this.patternPieces.length; j++ )
         {
             var piece = this.patternPieces[j];
-            var obj = piece.getObject( name );
+            var obj = piece.getObject( name, true /*restrict search to this piece*/ );
             if ( obj )
                 return obj;
         }

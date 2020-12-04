@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pattern>
+    <!--Pattern created with Seamly2D v0.6.0.1 (https://fashionfreedom.eu/).-->
+    <version>0.6.0</version>
+    <unit>mm</unit>
+    <description/>
+    <notes/>
+    <measurements/>
+    <increments/>
+    <draw name="Pattern piece 1">
+        <calculation>
+            <point id="1" mx="1.32292" my="2.64583" name="A" type="single" x="7.9375" y="10.5833"/>
+            <point angle="0" basePoint="1" id="2" length="50" lineColor="black" mx="1.32292" my="2.64583" name="A1" type="endLine" typeLine="hair"/>
+            <point angle="270" basePoint="1" id="3" length="80" lineColor="black" mx="1.32292" my="2.64583" name="A2" type="endLine" typeLine="hair"/>
+            <point firstPoint="3" id="4" length="20" lineColor="black" mx="1.32292" my="2.64583" name="A3" secondPoint="1" type="alongLine" typeLine="none"/>
+            <point firstPoint="2" id="5" length="20" lineColor="black" mx="1.32292" my="2.64583" name="A4" secondPoint="1" type="alongLine" typeLine="none"/>
+            <spline color="black" id="6" penStyle="hair" point1="3" point2="4" point3="5" point4="2" type="cubicBezier"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+    <draw name="Pattern piece 2">
+        <calculation>
+            <point id="7" mx="1.32292" my="2.64583" name="B" type="single" x="77.9154" y="10.5833"/>
+            <point angle="270" basePoint="7" id="8" length="Spl_A2_A1" lineColor="black" mx="1.32292" my="2.64583" name="B1" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="7" id="9" length="50" lineColor="black" mx="1.32292" my="2.64583" name="B2" type="endLine" typeLine="hair"/>
+            <spline angle1="179.507" angle2="90.5049" color="black" id="10" length1="23.4744" length2="29.3571" penStyle="hair" point1="9" point4="8" type="simpleInteractive"/>
+        </calculation>
+        <modeling/>
+        <details/>
+    </draw>
+    <draw name="Pattern piece 3">
+        <calculation>
+            <point id="11" mx="1.32292" my="2.64583" name="C" type="single" x="7.9375" y="132.08"/>
+            <point angle="0" basePoint="11" id="16" length="Spl_A2_A1 + Spl_B2_B1" lineColor="black" mx="1.32292" my="2.64583" name="C1" type="endLine" typeLine="hair"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+    <draw name="Pattern piece 4">
+        <calculation>
+            <point id="12" mx="1.32292" my="2.64583" name="D" type="single" x="151.155" y="10.5833"/>
+            <point angle="270" basePoint="12" id="13" length="Spl_B2_B1" lineColor="black" mx="1.32292" my="2.64583" name="D1" type="endLine" typeLine="hair"/>
+            <point angle="0" basePoint="12" id="14" length="Spl_A2_A1" lineColor="black" mx="1.32292" my="2.64583" name="D2" type="endLine" typeLine="hair"/>
+            <spline angle1="89.7003" angle2="179.628" color="black" id="15" length1="60.7788" length2="36.3537" penStyle="hair" point1="13" point4="14" type="simpleInteractive"/>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups/>
+    </draw>
+</pattern>

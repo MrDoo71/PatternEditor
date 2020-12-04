@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - Lengths from other pieces</title>
+
+  <link rel="stylesheet" href="../../dist/css/kinoBootstrapCSS_ultra.css" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <a class="col-sm-12" style="font-size:12px; font-weight: normal" href="test.html">back to test menu</a>
+        <h1 class="col-sm-12 ">
+          Expression - Lengths from other pieces
+        </h1>
+      </div>
+
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": false
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/lengthsFromOtherPieces.png",
+                   "offsetX": -15.659561, 
+                   "offsetY": -89.745238, 
+                   "scaleX": 0.922981, 
+                   "scaleY": 0.922981, 
+                   "opacity": 0.5, 
+                   "filename": "lengthsFromOtherPieces.png", 
+                   "visible": true, 
+                   "allowEdit": true } ],
+  "pattern": 
+    {
+      "units": "mm",
+      "patternPiece":
+      [
+        {
+          "name": "Pattern piece 1",
+          "drawingObject":
+          [
+            { "name": "A", "objectType": "pointSingle", "x": 7.9375, "y": 10.5833, "mx": 1.32292, "my": 2.64583 }, 
+            {
+              "name": "A1",
+              "objectType": "pointEndLine",
+              "basePoint": "A",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 0 },
+              "length": 
+                { "constant": 50 }
+            }, 
+            {
+              "name": "A2",
+              "objectType": "pointEndLine",
+              "basePoint": "A",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 270 },
+              "length": 
+                { "constant": 80 }
+            }, 
+            {
+              "name": "A3",
+              "objectType": "pointAlongLine",
+              "firstPoint": "A2",
+              "secondPoint": "A",
+              "lineStyle": "none",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "length": 
+                { "constant": 20 }
+            }, 
+            {
+              "name": "A4",
+              "objectType": "pointAlongLine",
+              "firstPoint": "A1",
+              "secondPoint": "A",
+              "lineStyle": "none",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "length": 
+                { "constant": 20 }
+            }, 
+            { "derivedName": "Spl_A2_A1", "objectType": "splineUsingPoints", "point1": "A2", "point2": "A3", "point3": "A4", "point4": "A1", "lineStyle": "hair", "color": "black" }
+          ]
+        }, 
+        {
+          "name": "Pattern piece 2",
+          "drawingObject":
+          [
+            { "name": "B", "objectType": "pointSingle", "x": 77.9154, "y": 10.5833, "mx": 1.32292, "my": 2.64583 }, 
+            {
+              "name": "B1",
+              "objectType": "pointEndLine",
+              "basePoint": "B",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 270 },
+              "length": 
+                { "expression":  { "variableType": "lengthOfSpline", "drawingObject1": "Spl_A2_A1" } }
+            }, 
+            {
+              "name": "B2",
+              "objectType": "pointEndLine",
+              "basePoint": "B",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 0 },
+              "length": 
+                { "constant": 50 }
+            }, 
+            {
+              "derivedName": "Spl_B2_B1",
+              "objectType": "splineSimple",
+              "point1": "B2",
+              "point4": "B1",
+              "lineStyle": "hair",
+              "color": "black",
+              "length1": 
+                { "constant": 23.4744 },
+              "length2": 
+                { "constant": 29.3571 },
+              "angle1": 
+                { "constant": 179.507 },
+              "angle2": 
+                { "constant": 90.5049 }
+            }
+          ]
+        }, 
+        {
+          "name": "Pattern piece 3",
+          "drawingObject":
+          [
+            { "name": "C", "objectType": "pointSingle", "x": 7.9375, "y": 132.08, "mx": 1.32292, "my": 2.64583 }, 
+            {
+              "name": "C1",
+              "objectType": "pointEndLine",
+              "basePoint": "C",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 0 },
+              "length": 
+                { "expression":  { "operation": "+", "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_A2_A1" }, { "variableType": "lengthOfSpline", "drawingObject1": "Spl_B2_B1" } ] } }
+            }
+          ]
+        }, 
+        {
+          "name": "Pattern piece 4",
+          "drawingObject":
+          [
+            { "name": "D", "objectType": "pointSingle", "x": 151.155, "y": 10.5833, "mx": 1.32292, "my": 2.64583 }, 
+            {
+              "name": "D1",
+              "objectType": "pointEndLine",
+              "basePoint": "D",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 270 },
+              "length": 
+                { "expression":  { "variableType": "lengthOfSpline", "drawingObject1": "Spl_B2_B1" } }
+            }, 
+            {
+              "name": "D2",
+              "objectType": "pointEndLine",
+              "basePoint": "D",
+              "lineStyle": "hair",
+              "color": "black",
+              "mx": 1.32292,
+              "my": 2.64583,
+              "angle": 
+                { "constant": 0 },
+              "length": 
+                { "expression":  { "variableType": "lengthOfSpline", "drawingObject1": "Spl_A2_A1" } }
+            }, 
+            {
+              "derivedName": "Spl_D1_D2",
+              "objectType": "splineSimple",
+              "point1": "D1",
+              "point4": "D2",
+              "lineStyle": "hair",
+              "color": "black",
+              "length1": 
+                { "constant": 60.7788 },
+              "length2": 
+                { "constant": 36.3537 },
+              "angle1": 
+                { "constant": 89.7003 },
+              "angle2": 
+                { "constant": 179.628 }
+            }
+          ]
+        }
+      ]
+    }
+              }
+              , 'v343110_graph1', {});
+          </script>
+        </div>
+      </div>
+    </div>
+
+</body>
+
+</html>
