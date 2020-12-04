@@ -68,7 +68,9 @@ class Expression {
                 this.value = this.functionValue;
             }
             else if (    ( data.variableType === "lengthOfSplinePath" )
-                      || ( data.variableType === "lengthOfSpline" ) )
+                      || ( data.variableType === "lengthOfSpline" )
+                      || ( data.variableType === "angle1OfSpline" )
+                      || ( data.variableType === "angle2OfSpline" ) )
             {
                 if ( data.drawingObject1 && data.drawingObject2 )
                     //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
@@ -177,7 +179,15 @@ class Expression {
                   || ( this.function === "lengthOfSpline" ) )
         {
             return this.drawingObject.curve.pathLength();
-        }        
+        }
+        else if (    ( this.function === "angle1OfSpline" )
+                  || ( this.function === "angle2OfSpline" ) )
+        {
+            if ( this.function === "angle1OfSpline" )
+                return this.drawingObject.curve.nodeData[0].outAngle;
+            else
+                return this.drawingObject.curve.nodeData[1].inAngle;
+        }
         else if ( this.function === "lengthOfArc" )
         {
             if ( this.arcSelection === "wholeArc")
@@ -374,6 +384,8 @@ class Expression {
             {
                 if ( ! this.drawingObject )
                     return "lengthOfSpline( ??? )";
+
+                //do we need to cater for drawingObject1/drawingObject2?
                 
                 return this.nameWithPopupValue( "lengthOfSpline(" + this.drawingObject.ref() + ")" );
             };
@@ -383,8 +395,19 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfSplinePath( ??? )";
 
+                //do we need to cater for drawingObject1/drawingObject2?
+
                 return this.nameWithPopupValue( "lengthOfSplinePath(" + this.drawingObject.ref() + ")" );
             };
+
+            if (    ( this.function === "angle1OfSpline" )
+                 || ( this.function === "angle2OfSpline" ))
+            {
+                if ( ! this.drawingObject )
+                    return this.function + "( ??? )";
+
+                return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
+            };            
 
             if ( this.function === "lengthOfArc" )
             {

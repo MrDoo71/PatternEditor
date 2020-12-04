@@ -96,7 +96,12 @@ class PatternPiece {
                 if (   ( target && typeof target.expression === "object" )
                     && ( ! target.isMeasurement )
                     && ( ! target.isIncrement ) )
-                    target.expression.addDependencies( source, this );
+                {
+                    if ( target.expression.addDependencies )
+                        target.expression.addDependencies( source, this );
+                    else
+                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
+                }
                 else if (   ( target instanceof DrawingObject )
                          || ( target.isMeasurement )
                          || ( target.isIncrement ) )

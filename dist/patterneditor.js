@@ -3723,7 +3723,12 @@ class PatternPiece {
                 if (   ( target && typeof target.expression === "object" )
                     && ( ! target.isMeasurement )
                     && ( ! target.isIncrement ) )
-                    target.expression.addDependencies( source, this );
+                {
+                    if ( target.expression.addDependencies )
+                        target.expression.addDependencies( source, this );
+                    else
+                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
+                }
                 else if (   ( target instanceof DrawingObject )
                          || ( target.isMeasurement )
                          || ( target.isIncrement ) )
@@ -5185,7 +5190,9 @@ class Expression {
                 this.value = this.functionValue;
             }
             else if (    ( data.variableType === "lengthOfSplinePath" )
-                      || ( data.variableType === "lengthOfSpline" ) )
+                      || ( data.variableType === "lengthOfSpline" )
+                      || ( data.variableType === "angle1OfSpline" )
+                      || ( data.variableType === "angle2OfSpline" ) )
             {
                 if ( data.drawingObject1 && data.drawingObject2 )
                     //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
@@ -5195,7 +5202,7 @@ class Expression {
                     this.drawingObject = patternPiece.getObject( data.drawingObject1 );
 
                 if ( data.segment )
-                    throw "Not yet supported: segment parameter on:" + data.variableType;
+                    throw "Not yet supported: segment parameter: " + data.variableType;
 
                 this.function = data.variableType;
                 this.value = this.functionValue;
@@ -5294,7 +5301,15 @@ class Expression {
                   || ( this.function === "lengthOfSpline" ) )
         {
             return this.drawingObject.curve.pathLength();
-        }        
+        }
+        else if (    ( this.function === "angle1OfSpline" )
+                  || ( this.function === "angle2OfSpline" ) )
+        {
+            if ( this.function === "angle1OfSpline" )
+                return this.drawingObject.curve.nodeData[0].outAngle;// * 2 * Math.PI;
+            else
+                return this.drawingObject.curve.nodeData[1].inAngle;// * 2 * Math.PI;
+        }
         else if ( this.function === "lengthOfArc" )
         {
             if ( this.arcSelection === "wholeArc")
@@ -5491,6 +5506,8 @@ class Expression {
             {
                 if ( ! this.drawingObject )
                     return "lengthOfSpline( ??? )";
+
+                //do we need to cater for drawingObject1/drawingObject2?
                 
                 return this.nameWithPopupValue( "lengthOfSpline(" + this.drawingObject.ref() + ")" );
             };
@@ -5500,8 +5517,19 @@ class Expression {
                 if ( ! this.drawingObject )
                     return "lengthOfSplinePath( ??? )";
 
+                //do we need to cater for drawingObject1/drawingObject2?
+
                 return this.nameWithPopupValue( "lengthOfSplinePath(" + this.drawingObject.ref() + ")" );
             };
+
+            if (    ( this.function === "angle1OfSpline" )
+                 || ( this.function === "angle2OfSpline" ))
+            {
+                if ( ! this.drawingObject )
+                    return this.function + "( ??? )";
+
+                return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
+            };            
 
             if ( this.function === "lengthOfArc" )
             {

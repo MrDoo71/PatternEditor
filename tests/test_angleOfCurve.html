@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test from JSON - Angle of Curve</title>
+
+  <link rel="stylesheet" href="../../dist/css/kinoBootstrapCSS_ultra.css" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+
+<body>
+
+  <div>
+    <div class="container">
+      <div class="row">
+        <a class="col-sm-12" style="font-size:12px; font-weight: normal" href="test.html">back to test menu</a>
+        <h1 class="col-sm-12 ">
+          Expression - Angle of Curve
+        </h1>
+      </div>
+
+
+
+      <div id="REP1002132">
+        <div id="v343110_graph1">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+                "options":
+                {
+                  "includeFullPageOption": true,
+                  "allowPanAndZoom": true,
+                  "drawingTableSplit": 0.75,
+                  "lastMixedSplit": 0.66, "scale": 0.68207392,
+                  "translateX": 171.9396, "translateY": 35.2999,
+                  "fullWindow": false
+                },
+                "wallpaper": [{
+                  "imageurl": "expectedResults/angleOfCurve.png",
+                  "offsetX": -0.84931, "offsetY": -4.896195,
+                  "scaleX": 0.921848, "scaleY": 0.921848,
+                  "opacity": 0.5,
+                  "filename": "angleOfCurve.png",
+                  "visible": true, "allowEdit": true
+                }],
+                "pattern":
+                {
+                  "units": "inch",
+                  "patternPiece":
+                    [
+                      {
+                        "name": "Pattern piece 1",
+                        "drawingObject":
+                          [
+                            { "name": "A", "objectType": "pointSingle", "x": 0.3125, "y": 0.416667, "mx": 0.0520833, "my": 0.104167 },
+                            {
+                              "name": "A1",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 12 }
+                            },
+                            {
+                              "name": "A2",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 270 },
+                              "length":
+                                { "constant": 4 }
+                            },
+                            { "name": "A3", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "A1", "secondPoint": "A2", "mx": 0.0520833, "my": 0.104167 },
+                            { "derivedName": "Line_A1_A3", "objectType": "line", "firstPoint": "A1", "secondPoint": "A3", "color": "black" },
+                            {
+                              "derivedName": "Spl_A2_A3",
+                              "objectType": "splineSimple",
+                              "point1": "A2",
+                              "point4": "A3",
+                              "color": "black",
+                              "length1":
+                                { "constant": 5.66904 },
+                              "length2":
+                                { "constant": 5.08495 },
+                              "angle1":
+                                { "constant": 67.2143 },
+                              "angle2":
+                                { "constant": 121.021 }
+                            },
+                            {
+                              "name": "A4",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "expression": { "operation": "-", "parameter": [{ "variableType": "angle1OfSpline", "drawingObject1": "Spl_A2_A3" }, { "integerValue": 90 }] } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A5",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A3",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "expression": { "operation": "+", "parameter": [{ "variableType": "angle2OfSpline", "drawingObject1": "Spl_A2_A3" }, { "integerValue": 90 }] } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A2",
+                              "secondPoint": "A4",
+                              "color": "black",
+                              "mx": 0.0520833,
+                              "my": 0.104167,
+                              "angle":
+                                { "constant": 0 },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointAlongPerpendicular",
+                              "firstPoint": "A3",
+                              "secondPoint": "A5",
+                              "color": "black",
+                              "mx": -0.127062,
+                              "my": -0.586824,
+                              "angle":
+                                { "constant": 180 },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "derivedName": "Spl_A4_A5",
+                              "objectType": "splineSimple",
+                              "point1": "A4",
+                              "point4": "A5",
+                              "color": "black",
+                              "length1":
+                                { "constant": 5 },
+                              "length2":
+                                { "constant": 4 },
+                              "angle1":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "Spl_A2_A3" } },
+                              "angle2":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "Spl_A2_A3" } }
+                            }
+                          ]
+                      }
+                    ]
+                }
+              }
+              , 'v343110_graph1', {});
+          </script>
+        </div>
+      </div>
+    </div>
+
+</body>
+
+</html>
