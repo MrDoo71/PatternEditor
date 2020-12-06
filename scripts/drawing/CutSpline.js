@@ -17,6 +17,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
 
+        //Note tha this.curve might be something like a SplineSimple, but it might also be an OperationResult
         this.p = this.curve.pointAlongPath( this.length.value() );
         
         bounds.adjust(this.p);

@@ -51,6 +51,16 @@ class OperationResult extends DrawingObject {
         bounds.adjust( this.p );
     }
 
+    
+    pointAlongPath( length ) {
+        if ( this.arc )
+            return this.arc.pointAlongPath( length );
+        if ( this.curve )
+            return this.curve.pointAlongPath( length );
+            
+        throw "pointAlongPath not implemented for this operation result. ";
+    }
+
 
     getColor() {
         return this.basePoint.getColor();

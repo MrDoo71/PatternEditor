@@ -1183,6 +1183,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
 
+        //Note tha this.curve might be something like a SplineSimple, but it might also be an OperationResult
         this.p = this.curve.pointAlongPath( this.length.value() );
         
         bounds.adjust(this.p);
@@ -1515,6 +1516,16 @@ class OperationResult extends DrawingObject {
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
         bounds.adjust( this.p );
+    }
+
+    
+    pointAlongPath( length ) {
+        if ( this.arc )
+            return this.arc.pointAlongPath( length );
+        if ( this.curve )
+            return this.curve.pointAlongPath( length );
+            
+        throw "pointAlongPath not implemented for this operation result. ";
     }
 
 
@@ -1965,12 +1976,16 @@ class PointEndLine extends DrawingObject {
             
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
-            
+
+        //if( this.length.value && this.angle.value )    
+        //try{    
         //Convert degrees to radians
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
-        
         bounds.adjustForLine(this.line);
+        //} catch ( e ) {
+        //    console.log("Calc failed.");
+        //}
     }
 
 
@@ -4665,11 +4680,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("contextmenu", contextMenu)
          .on("click", onclick)
          .each( function(d,i) {
-            var g = d3.select( this );            
+            var g = d3.select( this );                        
             if (( typeof d.draw === "function" ) && ( ! d.error ))
-            {
+            try {
                 d.draw( g );
                 d.drawingSvg = g;                 
+            } catch ( e ) {
+                d.error = "Drawing failed. " + e;
             }
         });
 

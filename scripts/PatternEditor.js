@@ -671,11 +671,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("contextmenu", contextMenu)
          .on("click", onclick)
          .each( function(d,i) {
-            var g = d3.select( this );            
+            var g = d3.select( this );                        
             if (( typeof d.draw === "function" ) && ( ! d.error ))
-            {
+            try {
                 d.draw( g );
                 d.drawingSvg = g;                 
+            } catch ( e ) {
+                d.error = "Drawing failed. " + e;
             }
         });
 

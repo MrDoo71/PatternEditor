@@ -20,7 +20,7 @@ class PointEndLine extends DrawingObject {
             
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
-            
+
         //Convert degrees to radians
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
