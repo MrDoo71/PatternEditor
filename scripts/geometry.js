@@ -46,8 +46,7 @@ class GeoPoint {
     }
 
 
-    rotate( center, rotateAngleDeg )
-    {
+    rotate( center, rotateAngleDeg ) {
         //Convert degrees to radians
         
         var centerToSourceLine = new GeoLine( center, this );
@@ -59,8 +58,7 @@ class GeoPoint {
     }
 
 
-    asPoint2D()
-    {
+    asPoint2D() {
         return new Point2D( this.x, this.y );
     }
 }
@@ -134,8 +132,8 @@ class GeoLine {
         //return new GeoPoint( intersections.points[0].x, intersections.points[0].y );
     }    
 
-    intersectArc( arc ) //nb. arc can be GeoArc, GeoEllipticalArc, or GeoSpline
-    {
+
+    intersectArc( arc ) { //nb. arc can be GeoArc, GeoEllipticalArc, or GeoSpline
         //work around a bug where the arc spans 0 deg
         if (    ( arc.angle1 < 0 ) 
              && ( arc.angle2 > 0 ) 
@@ -254,20 +252,20 @@ class GeoLine {
         return intersect;
     }
 
-    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoLine
-    {
+
+    applyOperation( pointTransformer ) {//apply a operationFlip or operationRotate to this GeoLine
         var p1Transformed = pointTransformer( this.p1 );
         var p2Transformed =  pointTransformer( this.p2 );
         return new GeoLine( p1Transformed, p2Transformed );
     }    
 
-    asShapeInfo()
-    {
+
+    asShapeInfo() {
         return ShapeInfo.line( this.p1.x, this.p1.y, this.p2.x, this.p2.y );
     }
 
-    angleDeg() 
-    {
+
+    angleDeg() {
         /*
         var deltaX = (this.p2.x - this.p1.x);
         var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
@@ -280,14 +278,13 @@ class GeoLine {
        return this.angle * 180 / Math.PI;
     }
 
-    angleRad() 
-    {
+
+    angleRad() {
         return this.angle;
     }
 
 
-    getLength() 
-    {
+    getLength() {
         return this.length;
     }
 }
@@ -319,8 +316,7 @@ class GeoArc {
      * 
      * @param {*} pointOnTangent 
      */
-    getPointsOfTangent( pointOnTangent )
-    {
+    getPointsOfTangent( pointOnTangent ) {
         //There is a right angle triangle where
         //hypotenous is the line tangent-arc.center - known length
         //lines tangent-p and p-center form a right angle.   p-center has length arc.radius
@@ -338,8 +334,7 @@ class GeoArc {
     }
 
 
-    svgPath()
-    {
+    svgPath() {
         var arcPath = d3.path();
 
         //arcPath.arc( this.center.x, this.center.y, 
@@ -404,8 +399,7 @@ class GeoArc {
     }             
 
 
-    asShapeInfo()
-    {  
+    asShapeInfo() {  
         if (( this.angle1 == 0 ) && ( this.angle2 == 360 ))
             return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
 
@@ -436,8 +430,7 @@ class GeoArc {
     }    
 
 
-    applyOperation( pointTransformer ) //apply a operationFlip or operationRotate to this GeoArc
-    {
+    applyOperation( pointTransformer ) {//apply a operationFlip or operationRotate to this GeoArc
         var center2 = pointTransformer( this.center );
 
         //s = the point on the arc that we start drawing
@@ -473,6 +466,7 @@ class GeoSpline {
         this.nodeData = nodeData;
     }
 
+
     applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoSpline
         var nodeData = [];
         for ( var i=0; i<this.nodeData.length; i++ )
@@ -499,8 +493,8 @@ class GeoSpline {
         return new GeoSpline( nodeData );
     }
 
-    svgPath()
-    {
+
+    svgPath() {
         var nodeData = this.nodeData;
         var path;
         for ( var i=0; i<nodeData.length; i++ )
@@ -521,15 +515,12 @@ class GeoSpline {
                         " " + nodeData[i].point.x + " " + nodeData[i].point.y;
             }
         }
-
         //console.log( "GeoSpline: " + path );
-
         return path;
     }
 
 
-    asShapeInfo()
-    {        
+    asShapeInfo() {
         return ShapeInfo.path( this.svgPath() );
     }
     
@@ -543,28 +534,89 @@ class GeoSpline {
         return new GeoPoint( p.x, p.y );
     }       
 
+
     pointAlongPath( length ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var p = path.getPointAtLength( length );
         //console.log(p);      
         return new GeoPoint( p.x, p.y );
-    }       
+    }
 
 
-    pathLength() {
+    pathLengthAtPoint( p ) {
+        //do a binary search on the length of the curve to find out best % along curve that is our intersection point. 
+
+        var firstNode = this.nodeData[0].point;
+        if (    ( p.x === firstNode.x )
+             && ( p.y === firstNode.y ) )
+             return 0;
+
+        var lastNode = this.nodeData[ this.nodeData.length -1 ].point;
+        if (    ( p.x === lastNode.x )
+             && ( p.y === lastNode.y ) )
+             return this.pathLength();
+
+
+        var g1 = 0.0,
+            g2 = 1.0,
+            iter = 0;
+            
+
+        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute( "d", this.svgPath() );
+        var l = path.getTotalLength(),
+            targetDistance = l / 100000;
+
+        while( iter < 100 ) { //limit to 100 as a fallback
+            iter++;
+
+            var pg1 = path.getPointAtLength( l * g1 );
+            var pg2 = path.getPointAtLength( l * g2 );
+
+            //which of these points is closest?
+            var pg1p = new GeoPoint( pg1.x, pg1.y );
+            var pg2p = new GeoPoint( pg2.x, pg2.y );
+
+            var distance1 = (new GeoLine(p, pg1p) ).getLength();
+            var distance2 = (new GeoLine(p, pg2p) ).getLength();
+
+            console.log("G1:" + g1 + " G2:" + g2 + "; Distance1: " + distance1 + " distance2:" + distance2 );
+
+            if (( distance1 === 0 ) || ( distance1 < targetDistance )) //TODO this should be a proportion of length e.g. 0.01% i.e. 1:10000 
+                return l*g1;
+            if (( distance2 === 0 ) || ( distance1 < targetDistance ))
+                return l*g2;
+
+            if ( distance1 < distance2 )
+                g2 = g1 + (g2-g1)/2;
+            else
+                g1 = g1 + (g2-g1)/2;
+        }
+        throw "Path length not found.";
+    }
+
+
+    pathLength( segment ) {
+
+        if ( segment ) {
+            //Create a shorter path
+            var startNode = this.nodeData[ segment -1 ];
+            var endNode = this.nodeData[ segment ];
+            var shorterPath = new GeoSpline( [ startNode, endNode ] );
+            return shorterPath.pathLength();
+        }
+
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
     }             
-
 }
 
 
 class GeoEllipticalArc {
 
-    constructor( center, radius1, radius2, angle1, angle2, rotationAngle ) 
-    {
+    constructor( center, radius1, radius2, angle1, angle2, rotationAngle ) {
         this.center = center;
         this.radius1 = radius1;
         this.radius2 = radius2;
@@ -586,8 +638,7 @@ class GeoEllipticalArc {
     //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
     //http://xahlee.info/js/svg_path_ellipse_arc.html
     //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
-    getEllipsePointForAngle(cx, cy, rx, ry, phi, theta) 
-    {
+    getEllipsePointForAngle(cx, cy, rx, ry, phi, theta) {
         const { abs, sin, cos } = Math;
         
         //https://en.wikipedia.org/wiki/Ellipse#Polar_form_relative_to_focus
@@ -603,8 +654,7 @@ class GeoEllipticalArc {
 
 
     //TODO based on SVG book, but corrected
-    centeredToSVG( cx, cy, rx, ry, thetaDeg/*arcStart*/, deltaDeg/*arcExtent*/, phiDeg/*x axis rotation*/ )
-    {
+    centeredToSVG( cx, cy, rx, ry, thetaDeg/*arcStart*/, deltaDeg/*arcExtent*/, phiDeg/*x axis rotation*/ ) {
         var theta, endTheta, phiRad;
         var largeArc, sweep;
         theta = thetaDeg * Math.PI / 180;
@@ -637,8 +687,7 @@ class GeoEllipticalArc {
     }    
 
 
-    svgPath()
-    {
+    svgPath() {
         // 90->180   -90 -> -180     -90,-90
         // 0->90   -0 +-90
         var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
@@ -653,8 +702,8 @@ class GeoEllipticalArc {
         return path;
     }
 
-    asShapeInfo()
-    {     
+
+    asShapeInfo() {
         //TEMPORARY ON TRIAL - THIS WORKS, SO ROTATE TRANSLATE 
         //              cx, cy, rx, ry. start, end   
         if ( this.rotationAngle === 0 )
@@ -665,6 +714,7 @@ class GeoEllipticalArc {
         return ShapeInfo.path( svgPath );
     }
     
+
     pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
@@ -673,6 +723,7 @@ class GeoEllipticalArc {
         //console.log(p);      
         return new GeoPoint( p.x, p.y );
     }       
+
 
     pointAlongPath( length ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -689,8 +740,8 @@ class GeoEllipticalArc {
         return path.getTotalLength();
     }             
 
-    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoEllipticalArc
 
+    applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoEllipticalArc
 
         var center2 = pointTransformer( this.center );
 

@@ -1,6 +1,6 @@
 class PointIntersectArcAndAxis extends DrawingObject {
 
-    //arc (provided as "curve"), and may be an arc or a spline (ob observation)
+    //arc (provided as "curve"), and may be an arc or a spline (by observation)
     //basePoint
     //angle
 
