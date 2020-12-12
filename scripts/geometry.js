@@ -616,7 +616,7 @@ class GeoSpline {
             else
                 g1 = g1 + (g2-g1)/2;
 
-            if ( iter == 13 )
+            if ( iter === 13 )
             {
                 threshold = threshold * 10; //settle for a 1% match once we've restricted ourselves 
                 console.log("Weakening threadhold to " + threshold );

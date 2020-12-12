@@ -604,7 +604,7 @@ class GeoSpline {
             var d1 = Math.sqrt( Math.pow( pg1.x - p.x, 2) + Math.pow( pg1.y - p.y, 2) );
             var d2 = Math.sqrt( Math.pow( pg2.x - p.x, 2) + Math.pow( pg2.y - p.y, 2) );
 
-            console.log( "i:" + iter + " G1:" + g1 + " G2:" + g2 + "; d1: " + d1 + " d2:" + d2  );//+ " d1dx:" + ( pg1.x - p.x )+ " d1dy:" + ( pg1.y - p.y ) + " d2dx:" + ( pg2.x - p.x )+ " d2dy:" + ( pg2.y - p.y ) );
+            //console.log( "i:" + iter + " G1:" + g1 + " G2:" + g2 + "; d1: " + d1 + " d2:" + d2  );//+ " d1dx:" + ( pg1.x - p.x )+ " d1dy:" + ( pg1.y - p.y ) + " d2dx:" + ( pg2.x - p.x )+ " d2dy:" + ( pg2.y - p.y ) );
 
             if (( d1 === 0 ) || ( d1 < threshold )) 
                 return g1;
@@ -616,15 +616,11 @@ class GeoSpline {
             else
                 g1 = g1 + (g2-g1)/2;
 
-            if ( iter == 13 )
+            if ( iter === 13 )
             {
                 threshold = threshold * 10; //settle for a 1% match once we've restricted ourselves 
                 console.log("Weakening threadhold to " + threshold );
             }
-
-                //this will always be iteration 10?
-            //if ( Math.abs( g1-g2 ) < 0.001 ) //we've obviously honed in on the closest point, but it isn't close enough. 
-             //   return undefined;
         }
         return undefined;
     }
@@ -657,10 +653,11 @@ class GeoSpline {
         var c1 = this.cutAtPoint( p1 );
         var c2 = this.cutAtPoint( p2 );
 
-        if ( c1 === undefined ) //this means p1 wasn't on the spline. 
-        {
-            c1 = this.cutAtPoint( p1 );
-        }
+        if ( c1 === undefined )
+            throw "p1 is not on spline;"
+
+        if ( c2 === undefined )
+            throw "p2 is not on spline;"
 
         var d1 = c1.beforePoint == null ? 0 : c1.beforePoint.pathLength();
         var d2 = c2.beforePoint == null ? 0 : c2.beforePoint.pathLength();
@@ -673,10 +670,6 @@ class GeoSpline {
 
         var cut1 = c1;
         var splineAfterPoint = cut1.afterPoint;
-
-        if ( ! splineAfterPoint )
-            console.log("error");
-
         var cut2 = splineAfterPoint.cutAtPoint( p2 ).beforePoint;
         return cut2;
     }
@@ -696,9 +689,6 @@ class GeoSpline {
         //only valid where nodeData.length === 2
         if ( this.nodeData.length !== 2 )
             throw( "applyDecasteljau only valid for a segment" );
-
-        if ( ( this.nodeData[0] === undefined  ) || ( this.nodeData[1] === undefined  ) )
-            throw( "undefined node" );
 
         var points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
         var strutPoints = [];
@@ -727,6 +717,7 @@ class GeoSpline {
 
 
     //Returns { beforePoint: a GeoSpline, afterPoint: a GeoSpline } //though either may be null
+    //https://pomax.github.io/bezierinfo/#splitting
     cutAtPoint( p ) { 
         const nodeData = this.nodeData;
 
@@ -806,8 +797,7 @@ class GeoSpline {
             }
             else
             {
-                var segment = this.pathSegment( i+1 );
-                
+                var segment = this.pathSegment( i+1 );                
                 var pointLiesInThisSegment = segment.findTForPoint(p) !== undefined;
 
                 if ( ! pointLiesInThisSegment )
@@ -5525,7 +5515,7 @@ class Expression {
                         else if ( drawingObjectDefiningSpline.curve )                             
                             this.splineDrawingObject = drawingObjectDefiningSpline.curve;
                         else
-                            console.log("didnt find path");
+                            throw "Path not found.";
 
                         //console.log("Function " + data.variableType + " this.drawingObject1.data.objectType:" + this.drawingObject1.data.objectType + " this.drawingObject2.data.objectType:" + this.drawingObject2.data.objectType + " splineDrawingObject:" + this.splineDrawingObject );
 
@@ -5639,8 +5629,6 @@ class Expression {
             {
                 //how far along the spline is each drawingObject (one is likely at the start or end)
                 //create a copy of the spline with the intersection point added (where along the line if it has multiple nodes? the place where the line length doesn't grow).
-                //
-                //https://stackoverflow.com/questions/18655135/divide-bezier-curve-into-two-equal-halves
                 //https://pomax.github.io/bezierinfo/#splitting
                 return    this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject2.p )
                         - this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject1.p );
