@@ -45,10 +45,10 @@
                 },
                 "wallpaper": [{
                   "imageurl": "expectedResults/splineSegments.png",
-                  "offsetX": -3.12385,
-                  "offsetY": -6.849542,
-                  "scaleX": 0.734841,
-                  "scaleY": 0.734841,
+                  "offsetX": -1.731748,
+                  "offsetY": -1.895474,
+                  "scaleX": 0.501487,
+                  "scaleY": 0.501487,
                   "opacity": 0.5,
                   "filename": "splineSegments.png",
                   "visible": true,
@@ -68,7 +68,7 @@
                               "name": "A1",
                               "objectType": "pointEndLine",
                               "basePoint": "A",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
@@ -81,7 +81,7 @@
                               "name": "A2",
                               "objectType": "pointEndLine",
                               "basePoint": "A",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": -1.31698,
                               "my": -1.2882,
@@ -97,8 +97,8 @@
                               "secondPoint": "A",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
+                              "mx": -0.945959,
+                              "my": -0.583877,
                               "length":
                                 { "constant": 5 }
                             },
@@ -109,18 +109,18 @@
                               "secondPoint": "A",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
+                              "mx": -0.769197,
+                              "my": -0.902049,
                               "length":
                                 { "constant": 5 }
                             },
-                            { "derivedName": "Spl_A2_A1", "objectType": "splineUsingPoints", "point1": "A2", "point2": "A3", "point3": "A4", "point4": "A1", "lineStyle": "hair", "color": "black" },
+                            { "derivedName": "Spl_A2_A1", "objectType": "splineUsingPoints", "point1": "A2", "point2": "A3", "point3": "A4", "point4": "A1", "lineStyle": "solidLine", "color": "black" },
                             {
                               "name": "A5",
                               "objectType": "pointIntersectArcAndAxis",
                               "basePoint": "A",
                               "curve": "Spl_A2_A1",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": 0.0592497,
                               "my": 0.0892814,
@@ -131,7 +131,7 @@
                               "name": "A2A5",
                               "objectType": "pointEndLine",
                               "basePoint": "A2",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": 0.0446412,
                               "my": 0.191541,
@@ -147,8 +147,8 @@
                               "secondPoint": "A2",
                               "lineStyle": "none",
                               "color": "black",
-                              "mx": 0.132292,
-                              "my": 0.264583,
+                              "mx": -0.486377,
+                              "my": -0.84902,
                               "length":
                                 { "constant": 7 }
                             },
@@ -158,7 +158,7 @@
                               "firstPoint": "A2",
                               "secondPoint": "A8",
                               "lineStyle": "none",
-                              "color": "black",
+                              "color": "darkRed",
                               "mx": 0.132292,
                               "my": 0.264583,
                               "length":
@@ -167,7 +167,7 @@
                             {
                               "derivedName": "SplPath_A9_A2",
                               "objectType": "splinePathInteractive",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "pathNode":
                                 [
@@ -210,7 +210,7 @@
                               "name": "A2A8",
                               "objectType": "pointEndLine",
                               "basePoint": "A2",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": -0.359424,
                               "my": -1.59876,
@@ -224,7 +224,7 @@
                               "objectType": "pointAlongLine",
                               "firstPoint": "A2A8",
                               "secondPoint": "A2",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": 0.106412,
                               "my": -1.57288,
@@ -235,7 +235,7 @@
                               "name": "A10",
                               "objectType": "pointEndLine",
                               "basePoint": "A2",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": -2.40393,
                               "my": -0.61533,
@@ -248,7 +248,7 @@
                               "name": "A2A9",
                               "objectType": "pointEndLine",
                               "basePoint": "A10",
-                              "lineStyle": "hair",
+                              "lineStyle": "solidLine",
                               "color": "black",
                               "mx": 0.132292,
                               "my": 0.264583,
@@ -256,6 +256,167 @@
                                 { "constant": 0 },
                               "length":
                                 { "expression": { "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_A9_A2" } }
+                            },
+                            {
+                              "name": "A6",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A5",
+                              "lineStyle": "solidLine",
+                              "color": "cornflowerblue",
+                              "mx": -0.652306,
+                              "my": -0.929019,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "A2", "drawingObject2": "A5" } },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A7",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A5",
+                              "lineStyle": "solidLine",
+                              "color": "cornflowerblue",
+                              "mx": -0.451024,
+                              "my": -0.884373,
+                              "angle":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "A2", "drawingObject2": "A5" } },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A11",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A5",
+                              "lineStyle": "solidLine",
+                              "color": "darkBlue",
+                              "mx": 0.167644,
+                              "my": -0.0182369,
+                              "angle":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "A5", "drawingObject2": "A1" } },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A12",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A5",
+                              "lineStyle": "solidLine",
+                              "color": "darkBlue",
+                              "mx": -0.786873,
+                              "my": -0.884373,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "A5", "drawingObject2": "A1" } },
+                              "length":
+                                { "constant": 1.13314 }
+                            },
+                            {
+                              "name": "A13",
+                              "objectType": "pointCutSplinePath",
+                              "splinePath": "SplPath_A9_A2",
+                              "mx": 0.114616,
+                              "my": -0.0889417,
+                              "length":
+                                { "expression": { "operation": "/", "parameter": [{ "operation": "*", "parameter": [{ "variableType": "lengthOfSplinePath", "drawingObject1": "SplPath_A9_A2" }, { "integerValue": 2 }] }, { "integerValue": 3 }] } }
+                            },
+                            {
+                              "name": "A14",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A13",
+                              "lineStyle": "solidLine",
+                              "color": "darkRed",
+                              "mx": -0.592434,
+                              "my": 0.052468,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "A9", "drawingObject2": "A13" } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A15",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A9",
+                              "lineStyle": "solidLine",
+                              "color": "black",
+                              "mx": -1.12272,
+                              "my": -0.283381,
+                              "angle":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "A9", "drawingObject2": "A13" } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A16",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A2",
+                              "lineStyle": "solidLine",
+                              "color": "darkviolet",
+                              "mx": 0.0615873,
+                              "my": -0.177323,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "A13", "drawingObject2": "A2" } },
+                              "length":
+                                { "constant": 2 }
+                            },
+                            {
+                              "name": "A17",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A13",
+                              "lineStyle": "solidLine",
+                              "color": "darkviolet",
+                              "mx": 0.202997,
+                              "my": -0.283381,
+                              "angle":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "A13", "drawingObject2": "A2" } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A18",
+                              "objectType": "cutSpline",
+                              "spline": "Spl_A2_A1",
+                              "mx": 0.00855828,
+                              "my": 0.0701443,
+                              "length":
+                                { "expression": { "operation": "/", "parameter": [{ "operation": "*", "parameter": [{ "variableType": "lengthOfSpline", "drawingObject1": "Spl_A2_A1" }, { "integerValue": 3 }] }, { "integerValue": 4 }] } }
+                            },
+                            {
+                              "name": "A19",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A18",
+                              "lineStyle": "solidLine",
+                              "color": "green",
+                              "mx": 0.0792633,
+                              "my": 0.052468,
+                              "angle":
+                                { "expression": { "variableType": "angle1OfSpline", "drawingObject1": "A18", "drawingObject2": "A1" } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A20",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A18",
+                              "lineStyle": "solidLine",
+                              "color": "darkGreen",
+                              "mx": -0.0974992,
+                              "my": 0.176202,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "A2", "drawingObject2": "A18" } },
+                              "length":
+                                { "constant": 1 }
+                            },
+                            {
+                              "name": "A21",
+                              "objectType": "pointEndLine",
+                              "basePoint": "A8",
+                              "lineStyle": "solidLine",
+                              "color": "violet",
+                              "mx": -0.981311,
+                              "my": -0.866697,
+                              "angle":
+                                { "expression": { "variableType": "angle2OfSpline", "drawingObject1": "SplPath_A9_A2", "segment": "1" } },
+                              "length":
+                                { "constant": 1.38204 }
                             }
                           ]
                       }

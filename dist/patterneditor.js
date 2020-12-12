@@ -61,6 +61,12 @@ class GeoPoint {
     asPoint2D() {
         return new Point2D( this.x, this.y );
     }
+
+
+    equals( p )
+    {
+        return this.x === p.x && this.y === p.y;
+    }
 }
 
 
@@ -455,15 +461,26 @@ class GeoSpline {
 
     //nodeData - an array of
     //{ 
-    //  inAngle  : 
+    //  inAngle  : deg
     //  inLength : 
     //  point    : 
-    //  outAngle : 
+    //  outAngle : deg
     //  outLength:  
     //} 
 
     constructor( nodeData ) {
         this.nodeData = nodeData;
+
+        for( var i in this.nodeData )
+        {
+            var n = this.nodeData[i];
+
+            if (( ! n.outControlPoint ) && ( n.outAngle ) && ( n.outLength ))
+                n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
+
+            if (( ! n.inControlPoint ) && ( n.inAngle ) && ( n.inLength ))
+                n.inControlPoint = n.point.pointAtDistanceAndAngleDeg( n.inLength, n.inAngle );
+        }
     }
 
 
@@ -557,60 +574,274 @@ class GeoSpline {
              && ( p.y === lastNode.y ) )
              return this.pathLength();
 
+        var cutSpline = this.cutAtPoint( p ).beforePoint;
+
+        return cutSpline.pathLength();
+    }
+
+    findTForPoint(p) {
+        //only where nodeData.length == 2
+        //we could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
+        //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
+
+        //TODO special handing for where p is either nodeData[0 or 1].point return 0 or 1
+        //if ( )
+
+        //TODO we can shortcut and return undefined if p is outside the binding box
 
         var g1 = 0.0,
             g2 = 1.0,
-            iter = 0;
+            iter = 0,
+            threshold = this.pathLength() / 1000;
             
-
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute( "d", this.svgPath() );
-        var l = path.getTotalLength(),
-            targetDistance = l / 100000;
-
-        while( iter < 100 ) { //limit to 100 as a fallback
+        while( iter < 14 ) { //limit to 14 as a fallback
             iter++;
 
-            var pg1 = path.getPointAtLength( l * g1 );
-            var pg2 = path.getPointAtLength( l * g2 );
+            var pg1 = this.getPointForT( g1 );
+            var pg2 = this.getPointForT( g2 );
 
             //which of these points is closest?
-            var pg1p = new GeoPoint( pg1.x, pg1.y );
-            var pg2p = new GeoPoint( pg2.x, pg2.y );
+            var d1 = Math.sqrt( Math.pow( pg1.x - p.x, 2) + Math.pow( pg1.y - p.y, 2) );
+            var d2 = Math.sqrt( Math.pow( pg2.x - p.x, 2) + Math.pow( pg2.y - p.y, 2) );
 
-            var distance1 = (new GeoLine(p, pg1p) ).getLength();
-            var distance2 = (new GeoLine(p, pg2p) ).getLength();
+            console.log( "i:" + iter + " G1:" + g1 + " G2:" + g2 + "; d1: " + d1 + " d2:" + d2  );//+ " d1dx:" + ( pg1.x - p.x )+ " d1dy:" + ( pg1.y - p.y ) + " d2dx:" + ( pg2.x - p.x )+ " d2dy:" + ( pg2.y - p.y ) );
 
-            console.log("G1:" + g1 + " G2:" + g2 + "; Distance1: " + distance1 + " distance2:" + distance2 );
+            if (( d1 === 0 ) || ( d1 < threshold )) 
+                return g1;
+            if (( d2 === 0 ) || ( d2 < threshold ))
+                return g2;
 
-            if (( distance1 === 0 ) || ( distance1 < targetDistance )) //TODO this should be a proportion of length e.g. 0.01% i.e. 1:10000 
-                return l*g1;
-            if (( distance2 === 0 ) || ( distance1 < targetDistance ))
-                return l*g2;
-
-            if ( distance1 < distance2 )
+            if ( d1 < d2 )
                 g2 = g1 + (g2-g1)/2;
             else
                 g1 = g1 + (g2-g1)/2;
+
+            if ( iter == 13 )
+            {
+                threshold = threshold * 10; //settle for a 1% match once we've restricted ourselves 
+                console.log("Weakening threadhold to " + threshold );
+            }
+
+                //this will always be iteration 10?
+            //if ( Math.abs( g1-g2 ) < 0.001 ) //we've obviously honed in on the closest point, but it isn't close enough. 
+             //   return undefined;
         }
-        throw "Path length not found.";
+        return undefined;
     }
 
+    pathSegment( segment ) {
+        if ( ! segment )
+            return this;
+
+        //Create a shorter path
+        var startNode = this.nodeData[ segment -1 ];
+        var endNode = this.nodeData[ segment ];
+        var shorterPath = new GeoSpline( [ startNode, endNode ] );
+        return shorterPath;
+    }
 
     pathLength( segment ) {
 
         if ( segment ) {
-            //Create a shorter path
-            var startNode = this.nodeData[ segment -1 ];
-            var endNode = this.nodeData[ segment ];
-            var shorterPath = new GeoSpline( [ startNode, endNode ] );
-            return shorterPath.pathLength();
+            return this.pathSegment(segment).pathLength();
         }
 
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
-    }             
+    }
+
+
+    splineBetweenPoints( p1, p2 )
+    {
+        var c1 = this.cutAtPoint( p1 );
+        var c2 = this.cutAtPoint( p2 );
+
+        if ( c1 === undefined ) //this means p1 wasn't on the spline. 
+        {
+            c1 = this.cutAtPoint( p1 );
+        }
+
+        var d1 = c1.beforePoint == null ? 0 : c1.beforePoint.pathLength();
+        var d2 = c2.beforePoint == null ? 0 : c2.beforePoint.pathLength();
+        if ( d2 < d1 ){
+            var t = p2;
+            p2 = p1;
+            p1 = t;
+            c1 = c2;
+        }
+
+        var cut1 = c1;
+        var splineAfterPoint = cut1.afterPoint;
+
+        if ( ! splineAfterPoint )
+            console.log("error");
+
+        var cut2 = splineAfterPoint.cutAtPoint( p2 ).beforePoint;
+        return cut2;
+    }
+
+
+    //https://pomax.github.io/bezierinfo/chapters/decasteljau/decasteljau.js
+    getStrutPoints(t) {
+        return this.applyDecasteljau(t).strutPoints;
+    }
+
+    getPointForT(t) {
+        return this.applyDecasteljau(t).point;
+    }
+
+    //private
+    applyDecasteljau(t) {
+        //only valid where nodeData.length === 2
+        if ( this.nodeData.length !== 2 )
+            throw( "applyDecasteljau only valid for a segment" );
+
+        if ( ( this.nodeData[0] === undefined  ) || ( this.nodeData[1] === undefined  ) )
+            throw( "undefined node" );
+
+        var points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
+        var strutPoints = [];
+
+        for( var i=0; i<points.length; i++ )
+            strutPoints.push( points[i] );
+
+        while( points.length > 1 )
+        {
+            var newPoints = [];
+            for( var i=0; i<points.length-1; i++ )
+            {
+                if ( points[i+1] === undefined  )
+                    console.log("how?");
+
+                var newPoint = new GeoPoint( (1-t) * points[i].x + t * points[i+1].x,
+                                             (1-t) * points[i].y + t * points[i+1].y );
+                newPoints.push( newPoint );
+                strutPoints.push( newPoint );
+            }
+            points = newPoints;
+        }
+
+        return { strutPoints:strutPoints, point:points[0] };
+    }    
+
+
+    //Returns { beforePoint: a GeoSpline, afterPoint: a GeoSpline } //though either may be null
+    cutAtPoint( p ) { 
+        const nodeData = this.nodeData;
+
+        //The simplest spline with its two control points. 
+        if ( nodeData.length === 2 )
+        {
+            if ( ! nodeData[1].point )
+                console.log("no point?");
+
+            if ( nodeData[0].point.equals(p) ) 
+                return { beforePoint: null,
+                         afterPoint : this };
+            else if ( nodeData[1].point.equals(p) ) 
+                return { beforePoint: this,
+                         afterPoint : null };
+            else {
+                const t = this.findTForPoint(p);
+                if ( t === undefined )
+                    return undefined;
+                const struts = this.getStrutPoints( t );
+
+                function createNodeData( inControlPoint, point, outControlPoint ) {
+                    const c = {inControlPoint:  inControlPoint,
+                               point:           point,
+                               outControlPoint: outControlPoint };
+
+                    if ( inControlPoint )
+                    {
+                        var inControlPointLine = new GeoLine( point, inControlPoint );
+                        c.inAngle = inControlPointLine.angleDeg();
+                        c.inLength = inControlPointLine.getLength();
+                    }
+                    if ( outControlPoint )
+                    {
+                        var outControlPointLine = new GeoLine( point, outControlPoint );    
+                        c.outAngle = outControlPointLine.angleDeg();
+                        c.outLength = outControlPointLine.getLength();
+                    }
+
+                    return c;
+                }
+
+                const c1n1 = createNodeData( undefined, struts[0], struts[4] );
+                const c1n2 = createNodeData( struts[7], struts[9], undefined );
+                const c2n1 = createNodeData( undefined, struts[9], struts[8] );
+                const c2n2 = createNodeData( struts[6], struts[3], undefined );
+                            
+                return { beforePoint: new GeoSpline( [c1n1,c1n2] ),
+                         afterPoint : new GeoSpline( [c2n1,c2n2] ) };            
+            }
+        }
+
+        var nodesBeforeCut = [],
+            nodesAfterCut = [];
+
+        var cutMade = false;
+        for( var i=0; i<nodeData.length; i++ )
+        {
+            var n1 = nodeData[i];
+            var n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
+
+            if ( cutMade ) 
+            {
+                nodesAfterCut.push( n1 );
+            }
+            else if ( n1.point.equals(p) )  
+            {
+                cutMade = true;
+                nodesBeforeCut.push( n1 );
+                nodesAfterCut.push( n1 );
+            }
+            else if ( n2.point.equals(p) )
+            {
+                cutMade = true;
+                nodesBeforeCut.push( n1 );
+                nodesBeforeCut.push( n2 );
+            }
+            else
+            {
+                var segment = this.pathSegment( i+1 );
+                
+                var pointLiesInThisSegment = segment.findTForPoint(p) !== undefined;
+
+                if ( ! pointLiesInThisSegment )
+                {
+                    if ( ! cutMade )
+                        nodesBeforeCut.push(n1);
+
+                    if ( cutMade )
+                        nodesAfterCut.push(n1);
+                }
+                else //pointLiesInThisSegment
+                {
+                    var splits = segment.cutAtPoint( p );
+
+                    splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
+                    splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
+                    splits.beforePoint.nodeData[0].inLength = n1.inLength;
+                    nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
+                    nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
+
+                    splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
+                    splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
+                    splits.afterPoint.nodeData[1].outLength = n2.outLength;
+                    nodesAfterCut.push( splits.afterPoint.nodeData[0] );
+                    nodesAfterCut.push( splits.afterPoint.nodeData[1] );
+                    i++; //because we've done n2 effectively
+                    cutMade = true;
+                }
+            }
+        }
+
+        return { beforePoint: nodesBeforeCut.length < 2 ? null : new GeoSpline(nodesBeforeCut),
+                 afterPoint : nodesAfterCut.length < 2 ? null : new GeoSpline(nodesAfterCut) };
+    }
 }
 
 
@@ -1977,15 +2208,10 @@ class PointEndLine extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);
 
-        //if( this.length.value && this.angle.value )    
-        //try{    
-        //Convert degrees to radians
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
+        
         bounds.adjustForLine(this.line);
-        //} catch ( e ) {
-        //    console.log("Calc failed.");
-        //}
     }
 
 
@@ -5277,19 +5503,32 @@ class Expression {
                     //This shouldn't find an object, otherwise we'd have passed it as a single drawingObject.
                     this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
 
-                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
+                    //at least one of these will be an intersect on a curve, or position along a curve, otherwise they are end points of the curve. 
                     if ( ! this.drawingObject )
                     {
                         this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
                         this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
-                        //one of these will be a Spline, the other will be an intersection point on it. 
+                        //one of these will be a Spline, the other will be an intersection point on it, or distance along it. 
 
                         //We're not the whole spline, just a segment of it. 
-                        if  ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" ) //TODO or similar                
-                            this.splineDrawingObject = this.drawingObject1.curve ? curve = this.drawingObject1.curve : curve = this.drawingObject1.arc;
-                        else 
-                            this.splineDrawingObject = this.drawingObject2.curve ? curve = this.drawingObject2.curve : curve = this.drawingObject2.arc;
-        
+
+                        var drawingObjectDefiningSpline = (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
+                                                            || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
+                                                            || ( this.drawingObject1.data.objectType === "cutSpline" ) ) 
+                                                          ? this.drawingObject1
+                                                          : this.drawingObject2;
+
+                        if ( drawingObjectDefiningSpline.arc )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.arc;
+                        else if ( drawingObjectDefiningSpline.splinePath )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.splinePath;
+                        else if ( drawingObjectDefiningSpline.curve )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.curve;
+                        else
+                            console.log("didnt find path");
+
+                        //console.log("Function " + data.variableType + " this.drawingObject1.data.objectType:" + this.drawingObject1.data.objectType + " this.drawingObject2.data.objectType:" + this.drawingObject2.data.objectType + " splineDrawingObject:" + this.splineDrawingObject );
+
                         //The other drawing object will either be the start or end of this curve, OR another intersect on the same curve. 
                     }
                 }
@@ -5405,6 +5644,8 @@ class Expression {
                 //https://pomax.github.io/bezierinfo/#splitting
                 return    this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject2.p )
                         - this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject1.p );
+                //TODO. or we could use, though they amound to a similar thing. 
+               //     return this.splineDrawingObject.curve.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p ).pathLength();
             }
 
             if (    ( this.function === "lengthOfSplinePath" )
@@ -5416,10 +5657,25 @@ class Expression {
         else if (    ( this.function === "angle1OfSpline" )
                   || ( this.function === "angle2OfSpline" ) )
         {
-            if ( this.function === "angle1OfSpline" )
-                return this.drawingObject.curve.nodeData[0].outAngle;
+            var spline;
+            if ( this.drawingObject ) //the simple case, we are looking at the start/end of a path (not a point along the line, but could be a segment)
+            {
+                spline = this.drawingObject.curve;
+                if ( this.segment )
+                    spline = spline.pathSegment( this.segment );
+            }
             else
-                return this.drawingObject.curve.nodeData[1].inAngle;
+            {
+                //this.splineDrawingObject is our spl or splpath, and drawingObject1 and drawingObject2 are either its ends, or intersection/pointalong
+                //and we may also have a segment?
+                spline = this.splineDrawingObject.curve;
+                spline = spline.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p );
+            }
+
+            if ( this.function === "angle1OfSpline" )
+                return spline.nodeData[0].outAngle;
+            else //angle2OfSpline
+                return spline.nodeData[ spline.nodeData.length-1 ].inAngle;
         }
         else if ( this.function === "lengthOfArc" )
         {
@@ -5617,9 +5873,7 @@ class Expression {
                 || ( this.function === "lengthOfSplinePath" ) )
             {
                 if ( ! this.drawingObject )
-                {
                     return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", from:" + this.drawingObject1.ref() + ", to:" + this.drawingObject2.ref() + ")" );
-                }
                 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + (this.segment?", segment:" + this.segment:"") + ")" );
             };
@@ -5628,7 +5882,7 @@ class Expression {
                  || ( this.function === "angle2OfSpline" ))
             {
                 if ( ! this.drawingObject )
-                    return this.function + "( ??? )";
+                    return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", at:" + ( this.function === "angle1OfSpline"  ? this.drawingObject1.ref() : this.drawingObject2.ref() ) + ")" );
 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
             };            
@@ -5718,6 +5972,9 @@ class Expression {
 
         if ( typeof this.drawingObject2 !== "undefined" )
             dependencies.add( source, this.drawingObject2 );
+
+        if ( typeof this.splineDrawingObject !== "undefined" )
+            dependencies.add( source, this.splineDrawingObject );
 
         if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );

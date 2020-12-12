@@ -49,8 +49,11 @@ g.j-drawing path.dashDotDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25, 0.25, 0.25; 
 }
 
-g.j-drawing line.hair,
-g.j-drawing path.hair {
+g.j-drawing line.solidLine,
+g.j-drawing path.solidLine,
+g.j-drawing line.hair, /*deprecated*/
+g.j-drawing path.hair  /*deprecated*/
+{
     stroke:solid;
 }
 

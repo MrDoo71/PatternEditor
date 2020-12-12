@@ -12,13 +12,13 @@
             <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
             <point angle="0" basePoint="1" id="2" length="10" lineColor="black" mx="0.132292" my="0.264583" name="A1" type="endLine" typeLine="hair"/>
             <point angle="270" basePoint="1" id="3" length="10" lineColor="black" mx="-1.31698" my="-1.2882" name="A2" type="endLine" typeLine="hair"/>
-            <point firstPoint="3" id="4" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A3" secondPoint="1" type="alongLine" typeLine="none"/>
-            <point firstPoint="2" id="5" length="5" lineColor="black" mx="0.132292" my="0.264583" name="A4" secondPoint="1" type="alongLine" typeLine="none"/>
+            <point firstPoint="3" id="4" length="5" lineColor="black" mx="-0.945959" my="-0.583877" name="A3" secondPoint="1" type="alongLine" typeLine="none"/>
+            <point firstPoint="2" id="5" length="5" lineColor="black" mx="-0.769197" my="-0.902049" name="A4" secondPoint="1" type="alongLine" typeLine="none"/>
             <spline color="black" id="6" penStyle="hair" point1="3" point2="4" point3="5" point4="2" type="cubicBezier"/>
             <point angle="300" basePoint="1" curve="6" id="7" lineColor="black" mx="0.0592497" my="0.0892814" name="A5" type="curveIntersectAxis" typeLine="hair"/>
             <point angle="56" basePoint="3" id="10" length="Spl_A2_A5" lineColor="black" mx="0.0446412" my="0.191541" name="A2A5" type="endLine" typeLine="hair"/>
-            <point firstPoint="4" id="13" length="7" lineColor="black" mx="0.132292" my="0.264583" name="A8" secondPoint="3" type="alongLine" typeLine="none"/>
-            <point firstPoint="3" id="14" length="4" lineColor="black" mx="0.132292" my="0.264583" name="A9" secondPoint="13" type="alongLine" typeLine="none"/>
+            <point firstPoint="4" id="13" length="7" lineColor="black" mx="-0.486377" my="-0.84902" name="A8" secondPoint="3" type="alongLine" typeLine="none"/>
+            <point firstPoint="3" id="14" length="4" lineColor="darkRed" mx="0.132292" my="0.264583" name="A9" secondPoint="13" type="alongLine" typeLine="none"/>
             <spline color="black" id="15" penStyle="hair" type="pathInteractive">
                 <pathPoint angle1="330.365" angle2="150.365" length1="0" length2="2.81877" pSpline="14"/>
                 <pathPoint angle1="169.127" angle2="349.127" length1="2.80208" length2="2.80208" pSpline="13"/>
@@ -28,6 +28,19 @@
             <point firstPoint="16" id="17" length="- SplPath_A9_A2_Seg_2" lineColor="black" mx="0.106412" my="-1.57288" name="A8A9" secondPoint="3" type="alongLine" typeLine="hair"/>
             <point angle="270" basePoint="3" id="18" length="0.5" lineColor="black" mx="-2.40393" my="-0.61533" name="A10" type="endLine" typeLine="hair"/>
             <point angle="0" basePoint="18" id="19" length="SplPath_A9_A2" lineColor="black" mx="0.132292" my="0.264583" name="A2A9" type="endLine" typeLine="hair"/>
+            <point angle="Angle2Spl_A2_A5" basePoint="7" id="20" length="2" lineColor="cornflowerblue" mx="-0.652306" my="-0.929019" name="A6" type="endLine" typeLine="hair"/>
+            <point angle="Angle1Spl_A2_A5" basePoint="7" id="21" length="2" lineColor="cornflowerblue" mx="-0.451024" my="-0.884373" name="A7" type="endLine" typeLine="hair"/>
+            <point angle="Angle1Spl_A5_A1" basePoint="7" id="22" length="2" lineColor="darkBlue" mx="0.167644" my="-0.0182369" name="A11" type="endLine" typeLine="hair"/>
+            <point angle="Angle2Spl_A5_A1" basePoint="7" id="23" length="1.13314" lineColor="darkBlue" mx="-0.786873" my="-0.884373" name="A12" type="endLine" typeLine="hair"/>
+            <point id="24" length="SplPath_A9_A2 * 2 / 3" mx="0.114616" my="-0.0889417" name="A13" splinePath="15" type="cutSplinePath"/>
+            <point angle="Angle2SplPath_A9_A13" basePoint="24" id="25" length="1" lineColor="darkRed" mx="-0.592434" my="0.052468" name="A14" type="endLine" typeLine="hair"/>
+            <point angle="Angle1SplPath_A9_A13" basePoint="14" id="26" length="1" lineColor="black" mx="-1.12272" my="-0.283381" name="A15" type="endLine" typeLine="hair"/>
+            <point angle="Angle2SplPath_A13_A2" basePoint="3" id="27" length="2" lineColor="darkviolet" mx="0.0615873" my="-0.177323" name="A16" type="endLine" typeLine="hair"/>
+            <point angle="Angle1SplPath_A13_A2" basePoint="24" id="28" length="1" lineColor="darkviolet" mx="0.202997" my="-0.283381" name="A17" type="endLine" typeLine="hair"/>
+            <point id="29" length="Spl_A2_A1 * 3 / 4" mx="0.00855828" my="0.0701443" name="A18" spline="6" type="cutSpline"/>
+            <point angle="Angle1Spl_A18_A1" basePoint="29" id="30" length="1" lineColor="green" mx="0.0792633" my="0.052468" name="A19" type="endLine" typeLine="hair"/>
+            <point angle="Angle2Spl_A2_A18" basePoint="29" id="31" length="1" lineColor="darkGreen" mx="-0.0974992" my="0.176202" name="A20" type="endLine" typeLine="hair"/>
+            <point angle="Angle2SplPath_A9_A2_Seg_1" basePoint="13" id="32" length="1.38204" lineColor="violet" mx="-0.981311" my="-0.866697" name="A21" type="endLine" typeLine="hair"/>
         </calculation>
         <modeling/>
         <details/>

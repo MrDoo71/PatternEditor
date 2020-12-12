@@ -77,19 +77,32 @@ class Expression {
                     //This shouldn't find an object, otherwise we'd have passed it as a single drawingObject.
                     this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
 
-                    //at least one of these will be an intersect on a curve, otherwise they are end points of the curve. 
+                    //at least one of these will be an intersect on a curve, or position along a curve, otherwise they are end points of the curve. 
                     if ( ! this.drawingObject )
                     {
                         this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
                         this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
-                        //one of these will be a Spline, the other will be an intersection point on it. 
+                        //one of these will be a Spline, the other will be an intersection point on it, or distance along it. 
 
                         //We're not the whole spline, just a segment of it. 
-                        if  ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" ) //TODO or similar                
-                            this.splineDrawingObject = this.drawingObject1.curve ? curve = this.drawingObject1.curve : curve = this.drawingObject1.arc;
-                        else 
-                            this.splineDrawingObject = this.drawingObject2.curve ? curve = this.drawingObject2.curve : curve = this.drawingObject2.arc;
-        
+
+                        var drawingObjectDefiningSpline = (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
+                                                            || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
+                                                            || ( this.drawingObject1.data.objectType === "cutSpline" ) ) 
+                                                          ? this.drawingObject1
+                                                          : this.drawingObject2;
+
+                        if ( drawingObjectDefiningSpline.arc )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.arc;
+                        else if ( drawingObjectDefiningSpline.splinePath )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.splinePath;
+                        else if ( drawingObjectDefiningSpline.curve )                             
+                            this.splineDrawingObject = drawingObjectDefiningSpline.curve;
+                        else
+                            throw "Path not found.";
+
+                        //console.log("Function " + data.variableType + " this.drawingObject1.data.objectType:" + this.drawingObject1.data.objectType + " this.drawingObject2.data.objectType:" + this.drawingObject2.data.objectType + " splineDrawingObject:" + this.splineDrawingObject );
+
                         //The other drawing object will either be the start or end of this curve, OR another intersect on the same curve. 
                     }
                 }
@@ -200,11 +213,11 @@ class Expression {
             {
                 //how far along the spline is each drawingObject (one is likely at the start or end)
                 //create a copy of the spline with the intersection point added (where along the line if it has multiple nodes? the place where the line length doesn't grow).
-                //
-                //https://stackoverflow.com/questions/18655135/divide-bezier-curve-into-two-equal-halves
                 //https://pomax.github.io/bezierinfo/#splitting
                 return    this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject2.p )
                         - this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject1.p );
+                //TODO. or we could use, though they amound to a similar thing. 
+               //     return this.splineDrawingObject.curve.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p ).pathLength();
             }
 
             if (    ( this.function === "lengthOfSplinePath" )
@@ -216,10 +229,25 @@ class Expression {
         else if (    ( this.function === "angle1OfSpline" )
                   || ( this.function === "angle2OfSpline" ) )
         {
-            if ( this.function === "angle1OfSpline" )
-                return this.drawingObject.curve.nodeData[0].outAngle;
+            var spline;
+            if ( this.drawingObject ) //the simple case, we are looking at the start/end of a path (not a point along the line, but could be a segment)
+            {
+                spline = this.drawingObject.curve;
+                if ( this.segment )
+                    spline = spline.pathSegment( this.segment );
+            }
             else
-                return this.drawingObject.curve.nodeData[1].inAngle;
+            {
+                //this.splineDrawingObject is our spl or splpath, and drawingObject1 and drawingObject2 are either its ends, or intersection/pointalong
+                //and we may also have a segment?
+                spline = this.splineDrawingObject.curve;
+                spline = spline.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p );
+            }
+
+            if ( this.function === "angle1OfSpline" )
+                return spline.nodeData[0].outAngle;
+            else //angle2OfSpline
+                return spline.nodeData[ spline.nodeData.length-1 ].inAngle;
         }
         else if ( this.function === "lengthOfArc" )
         {
@@ -417,9 +445,7 @@ class Expression {
                 || ( this.function === "lengthOfSplinePath" ) )
             {
                 if ( ! this.drawingObject )
-                {
                     return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", from:" + this.drawingObject1.ref() + ", to:" + this.drawingObject2.ref() + ")" );
-                }
                 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + (this.segment?", segment:" + this.segment:"") + ")" );
             };
@@ -428,7 +454,7 @@ class Expression {
                  || ( this.function === "angle2OfSpline" ))
             {
                 if ( ! this.drawingObject )
-                    return this.function + "( ??? )";
+                    return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", at:" + ( this.function === "angle1OfSpline"  ? this.drawingObject1.ref() : this.drawingObject2.ref() ) + ")" );
 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
             };            
@@ -518,6 +544,9 @@ class Expression {
 
         if ( typeof this.drawingObject2 !== "undefined" )
             dependencies.add( source, this.drawingObject2 );
+
+        if ( typeof this.splineDrawingObject !== "undefined" )
+            dependencies.add( source, this.splineDrawingObject );
 
         if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );
