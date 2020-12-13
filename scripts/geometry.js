@@ -547,7 +547,14 @@ class GeoSpline {
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
         var p = path.getPointAtLength( l * fraction );
-        //console.log(p);      
+
+        //Note, we cannot, even if a single segment use this.getPointForT() because
+        //length is not linear with t.
+        //
+        //If we want to do the calculation ourselves it will by treating the curve
+        //as 50 or so little lines using this.getPointForT() and using the length of
+        //those lines. 
+
         return new GeoPoint( p.x, p.y );
     }       
 
@@ -555,9 +562,39 @@ class GeoSpline {
     pointAlongPath( length ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var p = path.getPointAtLength( length );
-        //console.log(p);      
-        return new GeoPoint( p.x, p.y );
+        var xy = path.getPointAtLength( length );    
+        var p = new GeoPoint( xy.x, xy.y );
+
+        //If we want to do the calculation ourselves: 
+        //iterate over the segments, adding their length to the total
+        //if a segment would blow the total, then instead guess a value 
+        //of t for the last bit of length required. Return the point appropriate to that t. 
+        //t = 0
+        //g = 0.01
+        //lastP = nodeData[0].point;
+        //for( var t=0.0; t<1.0; t+=g )
+        //   nextP = this.getPointForT( t + g );
+        //   lineLength = 
+        //   totalLength += lineLength
+        //   if ( totalLength > length )
+        //      return a point along this last line. 
+
+        //let's cross check!
+        if ( this.nodeData.length === 2 )
+        {
+            var t = this.findTForPoint( p );
+
+            if ( t === undefined )
+                console.log("ERROR: Result of pointAlongPath() is not on path?" );
+        }
+        else
+        {
+            var cut = this.cutAtPoint( p );
+            if ( cut === undefined )
+                console.log("ERROR: Result of pointAlongPath() is not on path?" );
+        }
+
+        return p;
     }
 
 
@@ -581,7 +618,11 @@ class GeoSpline {
 
     findTForPoint(p) {
         //only where nodeData.length == 2
-        //we could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
+
+        if ( this.nodeData.length !== 2 )
+            throw "findTForPoint() only supported for individual segments";
+
+        //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
         //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
 
         //TODO special handing for where p is either nodeData[0 or 1].point return 0 or 1
@@ -589,39 +630,39 @@ class GeoSpline {
 
         //TODO we can shortcut and return undefined if p is outside the binding box
 
-        var g1 = 0.0,
-            g2 = 1.0,
+
+        var minT = 0.0,
+            maxT = 1.0,
             iter = 0,
             threshold = this.pathLength() / 1000;
-            
-        while( iter < 14 ) { //limit to 14 as a fallback
+
+        while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
-
-            var pg1 = this.getPointForT( g1 );
-            var pg2 = this.getPointForT( g2 );
-
-            //which of these points is closest?
-            var d1 = Math.sqrt( Math.pow( pg1.x - p.x, 2) + Math.pow( pg1.y - p.y, 2) );
-            var d2 = Math.sqrt( Math.pow( pg2.x - p.x, 2) + Math.pow( pg2.y - p.y, 2) );
-
-            //console.log( "i:" + iter + " G1:" + g1 + " G2:" + g2 + "; d1: " + d1 + " d2:" + d2  );//+ " d1dx:" + ( pg1.x - p.x )+ " d1dy:" + ( pg1.y - p.y ) + " d2dx:" + ( pg2.x - p.x )+ " d2dy:" + ( pg2.y - p.y ) );
-
-            if (( d1 === 0 ) || ( d1 < threshold )) 
-                return g1;
-            if (( d2 === 0 ) || ( d2 < threshold ))
-                return g2;
-
-            if ( d1 < d2 )
-                g2 = g1 + (g2-g1)/2;
-            else
-                g1 = g1 + (g2-g1)/2;
-
-            if ( iter === 13 )
+            var closestT = null;
+            var closestDistance = undefined;
+            var interval = (maxT - minT)/4; //0.25 first time around.
+            for( var t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
-                threshold = threshold * 10; //settle for a 1% match once we've restricted ourselves 
-                console.log("Weakening threadhold to " + threshold );
+                var pt = this.getPointForT( t );
+                var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+                if (( closestDistance === undefined ) || ( d < closestDistance ))
+                {
+                    closestT = t;
+                    closestDistance = d;
+                }
+
+                if (( d === 0 ) || ( d < threshold )) 
+                {
+                    //console.log( "i:" + iter + " t:" + t + " d:" + d + " FOUND" );
+                    return t;
+                }
+
             }
+            minT = closestT - interval; //So at the end of iteration 1 we'll be setting up a span next time that is 0.5 wide, which we'll cut into five slots 
+            maxT = closestT + interval;
+            //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
+        console.log("Point not on curve. Distance:" + d1 );
         return undefined;
     }
 
