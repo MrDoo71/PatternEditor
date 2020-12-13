@@ -662,7 +662,7 @@ class GeoSpline {
             maxT = closestT + interval;
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
-        console.log("Point not on curve. Distance:" + d1 );
+        console.log("Point not on curve." );
         return undefined;
     }
 

@@ -662,7 +662,7 @@ class GeoSpline {
             maxT = closestT + interval;
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
-        console.log("Point not on curve. Distance:" + d1 );
+        console.log("Point not on curve." );
         return undefined;
     }
 
@@ -5362,15 +5362,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 }
 
 
-function drawLinks( pattern, linkScale )
-{
-    //var linkData = patternPiece.dependencies.dependencies;
-
+function drawLinks( pattern, linkScale ) {
     var linkData = [];
     for( var j=0; j< pattern.patternPieces.length; j++ )
-    {
         linkData = linkData.concat( pattern.patternPieces[j].dependencies.dependencies);
-    }
 
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
