@@ -1091,13 +1091,15 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     //Links area is width/4 by ypos.            
     var linkScale = (width/4) / Math.log( Math.abs( ypos /30 ) );   
-    drawLinks( patternPiece1, linkScale );
+
+    drawLinks( pattern, linkScale );
 }
 
 
-function drawLinks( patternPiece, linkScale )
-{
-    var linkData = patternPiece.dependencies.dependencies;
+function drawLinks( pattern, linkScale ) {
+    var linkData = [];
+    for( var j=0; j< pattern.patternPieces.length; j++ )
+        linkData = linkData.concat( pattern.patternPieces[j].dependencies.dependencies);
 
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
