@@ -11,7 +11,7 @@ This is a **ground-up implementation** and is **not** distributed under the GPL 
 
 Acknowledgement and thanks must go to all the contributors and leaders of the Seamly2D/Valentina projects, especially Susan Spencer and Roman Telezhinsky for the development of the Seamly2D/Valentina application. 
 
-Acknowledgement and thanks must also go to Kevin Lindsey (aka thelonious) for [kld-intersections](https://github.com/thelonious/kld-intersections) for the aforementioned geometric wizardry. 
+Acknowledgement and thanks must also go to Kevin Lindsey (aka thelonious) for [kld-intersections](https://github.com/thelonious/kld-intersections) for the aforementioned geometric wizardry.  Thanks also to Pomax for the fantastic online book [A Primer on Bézier Curves](https://pomax.github.io/BezierInfo-2/).
 
 The input to this library is a JSON representation (and simplification) of the XML format that Seamly2D/Valentina uses to save patterns. 
 
