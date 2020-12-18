@@ -5780,6 +5780,18 @@ class Expression {
             var p1 = this.params[0].value(currentLength);
             return -p1; 
         }
+        else if ( this.function === "min" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            var p2 = this.params[1].value(currentLength);
+            return Math.min( p1, p2 );
+        }
+        else if ( this.function === "max" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            var p2 = this.params[1].value(currentLength);
+            return Math.max( p1, p2 );
+        }
         else throw ("Unknown function: " + this.function );
     }
     
