@@ -137,7 +137,26 @@ class DrawingObject /*abstract*/ {
         if ( ( this.lineVisible() || isOutline ) && this.arc )
         {
                 if ( this.lineVisible() )
-                    this.drawPath( g, this.arc.svgPath(), isOutline );    
+                {
+                    if (    ( this.arc instanceof GeoEllipticalArc )
+                         && ( this.arc.useSvgEllipse() ) )
+                    {
+                        var p = g.append("ellipse")
+                        .attr("transform", "rotate(" + this.arc.rotationAngle + ")" )
+                        .attr("cx", this.arc.center.x )
+                        .attr("cy", this.arc.center.y )
+                        .attr("rx", this.arc.radius1 )
+                        .attr("ry", this.arc.radius2 )
+                        .attr("fill", "none")
+                        .attr("stroke-width", this.getStrokeWidth( isOutline) );
+    
+                        if ( ! isOutline )        
+                            p.attr("stroke", this.getColor() )
+                            .attr("class", this.getLineStyle() );    
+                    }
+                    else
+                        this.drawPath( g, this.arc.svgPath(), isOutline );    
+                }
 
                 this.drawLabel(g, isOutline);
         }            

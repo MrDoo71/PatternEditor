@@ -949,15 +949,29 @@ class GeoEllipticalArc {
     }    
 
 
+    useSvgEllipse() {
+        //we can use <ellipse> if it is a full ellipse, otherwise we need to use an elliptical arc path
+        if (    ( this.angle1 === 0 ) 
+             && ( this.angle2 === 360 ) )
+            return true;
+
+        return false;
+    }
+
+
     svgPath() {
         // 90->180   -90 -> -180     -90,-90
         // 0->90   -0 +-90
+
+
+
         var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
         var path = "M" + d2.x + "," + d2.y;
         path += " A" + d2.rx + " " + d2.ry;
         path += " " + d2.xAxisAngle;
         path += " " + d2.largeArc + ",0";// + d2.sweep;
-        path += " " + d2.x1 + "," + d2.y1 + " ";
+        path += " " + d2.x1 + "," + ( d2.y1 + (((d2.y===d2.y1)&&(d2.x===d2.x1))?0.001:0)  ) + " "; //we need to start/stop on a slightly different point
+        //The fudge above that allows the path to work even for a full ellipse should never be needed as if it is a full ellipse useSvgEllipse() should return true.
 
         //console.log( "GeoEllipticalArc: " + path );
 

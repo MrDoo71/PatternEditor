@@ -71,18 +71,18 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, isOutline ) {
         this.drawArc( g, isOutline );        
-        this.drawLabel( g, isOutline );
+        //this.drawLabel( g, isOutline );
     }
 
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'elliptical arc with center ' + this.refOf( this.center )
-                + " radius-x " + this.data.radius1.htmlLength( asFormula ) 
-                + " radius-y " + this.data.radius2.htmlLength( asFormula ) 
-                + " from angle " + this.data.angle1.htmlAngle( asFormula ) 
-                + " to " + this.data.angle2.htmlAngle( asFormula )
-                + " rotation angle " + this.data.rotationAngle.htmlAngle( asFormula ) ;
+                + " radius-x " + this.radius1.htmlLength( asFormula ) 
+                + " radius-y " + this.radius2.htmlLength( asFormula ) 
+                + " from angle " + this.angle1.htmlAngle( asFormula ) 
+                + " to " + this.angle2.htmlAngle( asFormula )
+                + " rotation angle " + this.rotationAngle.htmlAngle( asFormula ) ;
     }
 
     

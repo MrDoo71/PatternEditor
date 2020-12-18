@@ -949,15 +949,29 @@ class GeoEllipticalArc {
     }    
 
 
+    useSvgEllipse() {
+        //we can use <ellipse> if it is a full ellipse, otherwise we need to use an elliptical arc path
+        if (    ( this.angle1 === 0 ) 
+             && ( this.angle2 === 360 ) )
+            return true;
+
+        return false;
+    }
+
+
     svgPath() {
         // 90->180   -90 -> -180     -90,-90
         // 0->90   -0 +-90
+
+
+
         var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
         var path = "M" + d2.x + "," + d2.y;
         path += " A" + d2.rx + " " + d2.ry;
         path += " " + d2.xAxisAngle;
         path += " " + d2.largeArc + ",0";// + d2.sweep;
-        path += " " + d2.x1 + "," + d2.y1 + " ";
+        path += " " + d2.x1 + "," + ( d2.y1 + (((d2.y===d2.y1)&&(d2.x===d2.x1))?0.001:0)  ) + " "; //we need to start/stop on a slightly different point
+        //The fudge above that allows the path to work even for a full ellipse should never be needed as if it is a full ellipse useSvgEllipse() should return true.
 
         //console.log( "GeoEllipticalArc: " + path );
 
@@ -1181,7 +1195,31 @@ class DrawingObject /*abstract*/ {
         if ( ( this.lineVisible() || isOutline ) && this.arc )
         {
                 if ( this.lineVisible() )
-                    this.drawPath( g, this.arc.svgPath(), isOutline );    
+                {
+                    if (    ( this.arc instanceof GeoEllipticalArc )
+                         && ( this.arc.useSvgEllipse() ) )
+                    {
+                        //<ellipse cx="220" cy="50" rx="190" ry="20" style="fill:white" />
+                        //<ellipse transform="translate(900 200) rotate(-30)" 
+                        //rx="250" ry="100"
+                        //fill="none" stroke="blue" stroke-width="20"  />
+
+                        var p = g.append("ellipse")
+                        .attr("transform", "rotate(" + this.arc.rotationAngle + ")" )
+                        .attr("cx", this.arc.center.x )
+                        .attr("cy", this.arc.center.y )
+                        .attr("rx", this.arc.radius1 )
+                        .attr("ry", this.arc.radius2 )
+                        .attr("fill", "none")
+                        .attr("stroke-width", this.getStrokeWidth( isOutline) );
+    
+                        if ( ! isOutline )        
+                            p.attr("stroke", this.getColor() )
+                            .attr("class", this.getLineStyle() );    
+                    }
+                    else
+                        this.drawPath( g, this.arc.svgPath(), isOutline );    
+                }
 
                 this.drawLabel(g, isOutline);
         }            
@@ -1327,18 +1365,18 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, isOutline ) {
         this.drawArc( g, isOutline );        
-        this.drawLabel( g, isOutline );
+        //this.drawLabel( g, isOutline );
     }
 
 
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'elliptical arc with center ' + this.refOf( this.center )
-                + " radius-x " + this.data.radius1.htmlLength( asFormula ) 
-                + " radius-y " + this.data.radius2.htmlLength( asFormula ) 
-                + " from angle " + this.data.angle1.htmlAngle( asFormula ) 
-                + " to " + this.data.angle2.htmlAngle( asFormula )
-                + " rotation angle " + this.data.rotationAngle.htmlAngle( asFormula ) ;
+                + " radius-x " + this.radius1.htmlLength( asFormula ) 
+                + " radius-y " + this.radius2.htmlLength( asFormula ) 
+                + " from angle " + this.angle1.htmlAngle( asFormula ) 
+                + " to " + this.angle2.htmlAngle( asFormula )
+                + " rotation angle " + this.rotationAngle.htmlAngle( asFormula ) ;
     }
 
     
@@ -4481,9 +4519,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 if ( g )
                 {
                     var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
                     g.selectAll( "line" )
                      .attr("stroke-width", strokeWidth );
+
                     g.selectAll( "path" )
+                     .attr("stroke-width", strokeWidth );
+
+                    g.selectAll( "ellipse" )
                      .attr("stroke-width", strokeWidth );
                 }
                 else 
@@ -5039,6 +5082,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
 
                                     g.selectAll( "path" )
                                         .attr( "stroke-width", strokeWidth );            
+
+                                    g.selectAll( "ellipse" )
+                                        .attr( "stroke-width", strokeWidth );            
                                 }
                             }
 
@@ -5048,10 +5094,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                                 var strokeWidth = a.getStrokeWidth( true );
 
                                 g.selectAll( "line" )
-                                .attr( "stroke-width", strokeWidth );
+                                 .attr( "stroke-width", strokeWidth );
 
                                 g.selectAll( "path" )
-                                .attr( "stroke-width", strokeWidth );           
+                                 .attr( "stroke-width", strokeWidth );           
+
+                                g.selectAll( "ellipse" )
+                                 .attr( "stroke-width", strokeWidth );           
 
                                 g.selectAll( "circle" )
                                     .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );

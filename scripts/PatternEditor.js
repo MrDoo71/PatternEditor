@@ -215,9 +215,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 if ( g )
                 {
                     var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+
                     g.selectAll( "line" )
                      .attr("stroke-width", strokeWidth );
+
                     g.selectAll( "path" )
+                     .attr("stroke-width", strokeWidth );
+
+                    g.selectAll( "ellipse" )
                      .attr("stroke-width", strokeWidth );
                 }
                 else 
@@ -773,6 +778,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
 
                                     g.selectAll( "path" )
                                         .attr( "stroke-width", strokeWidth );            
+
+                                    g.selectAll( "ellipse" )
+                                        .attr( "stroke-width", strokeWidth );            
                                 }
                             }
 
@@ -782,10 +790,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                                 var strokeWidth = a.getStrokeWidth( true );
 
                                 g.selectAll( "line" )
-                                .attr( "stroke-width", strokeWidth );
+                                 .attr( "stroke-width", strokeWidth );
 
                                 g.selectAll( "path" )
-                                .attr( "stroke-width", strokeWidth );           
+                                 .attr( "stroke-width", strokeWidth );           
+
+                                g.selectAll( "ellipse" )
+                                 .attr( "stroke-width", strokeWidth );           
 
                                 g.selectAll( "circle" )
                                     .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
