@@ -60,6 +60,13 @@ class DrawingObject /*abstract*/ {
         var mx = (typeof d.mx === "undefined") ? 0 : d.mx;
         var my = (typeof d.my === "undefined") ? 0 : d.my;
 
+        //some odd data exists out there in operation results of splines e.g. 3 Button Sack rev.1
+        if (( mx >= 2147480000 ) || ( my >= 2147480000 ))
+        {
+            mx = 0;
+            my = 0;
+        }
+
         var pos = { labelX: this.p.x + fudge * mx,
                     labelY: this.p.y + fudge * ( my + fontSize ),
                     labelLineX: this.p.x + fudge * mx,  //line goes to left of label

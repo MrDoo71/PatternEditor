@@ -1133,6 +1133,13 @@ class DrawingObject /*abstract*/ {
         var mx = (typeof d.mx === "undefined") ? 0 : d.mx;
         var my = (typeof d.my === "undefined") ? 0 : d.my;
 
+        //some odd data exists out there in operation results of splines e.g. 3 Button Sack rev.1
+        if (( mx >= 2147480000 ) || ( my >= 2147480000 )) //in fact 1000 would be too much? Perhaps max these out to the limits of the drawing size?
+        {
+            mx = 0;
+            my = 0;
+        }
+
         var pos = { labelX: this.p.x + fudge * mx,
                     labelY: this.p.y + fudge * ( my + fontSize ),
                     labelLineX: this.p.x + fudge * mx,  //line goes to left of label
@@ -1804,7 +1811,6 @@ class OperationResult extends DrawingObject {
             return operation.applyOperationToPoint( p );
         };
 
-        //else if this.basePoint.curve is a GeoSpline...
         if ( this.basePoint.curve instanceof GeoSpline )
         {
             //so we get this captured and can just pass the function around
@@ -1823,6 +1829,7 @@ class OperationResult extends DrawingObject {
         }
 
         //TODO This line would be useful if the operation, or operation result is selected. 
+        //THOUGH, if the operation is a rotate then drawing an arc would be useful. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
         bounds.adjust( this.p );
@@ -1830,8 +1837,10 @@ class OperationResult extends DrawingObject {
 
     
     pointAlongPath( length ) {
+
         if ( this.arc )
             return this.arc.pointAlongPath( length );
+
         if ( this.curve )
             return this.curve.pointAlongPath( length );
             
@@ -2642,10 +2651,6 @@ class PointIntersectArcs extends DrawingObject {
         
         //intersections.points.forEach(console.log);    
 
-        if ( this.data.name == "D1b" )
-        console.log("log me");
-
-        
         if ( intersections.points.length === 0 )
         {
             throw "No intersections found. ";

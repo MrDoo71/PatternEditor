@@ -27,7 +27,6 @@ class OperationResult extends DrawingObject {
             return operation.applyOperationToPoint( p );
         };
 
-        //else if this.basePoint.curve is a GeoSpline...
         if ( this.basePoint.curve instanceof GeoSpline )
         {
             //so we get this captured and can just pass the function around
@@ -46,6 +45,7 @@ class OperationResult extends DrawingObject {
         }
 
         //TODO This line would be useful if the operation, or operation result is selected. 
+        //THOUGH, if the operation is a rotate then drawing an arc would be useful. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
         bounds.adjust( this.p );
@@ -53,8 +53,10 @@ class OperationResult extends DrawingObject {
 
     
     pointAlongPath( length ) {
+
         if ( this.arc )
             return this.arc.pointAlongPath( length );
+
         if ( this.curve )
             return this.curve.pointAlongPath( length );
             
