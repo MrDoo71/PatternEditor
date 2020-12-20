@@ -341,6 +341,9 @@ class GeoArc {
 
 
     svgPath() {
+
+        //TODO if this is a full circle we should really generate an svg circle rather than using a path
+
         var arcPath = d3.path();
 
         //arcPath.arc( this.center.x, this.center.y, 
@@ -410,14 +413,26 @@ class GeoArc {
             return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
 
         //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
-        var angle1 = 360 - this.angle2;
-        var angle2 = 360 - this.angle1;
+        var angle1 = 360-this.angle2;
+        var angle2 = 360-this.angle1;
 
-        if ( angle2 > 360 ) //the original angle1 was negative. 
+        if ( angle1 < 0 )
         {
-            angle1 -= 360;
-            angle2 -= 360;
+            angle1 += 360;
+            angle2 += 360;
         }
+
+        //if ( angle2 < 0 )
+        //    angle2 += 360;
+
+        if ( angle2 < angle1 )
+            angle2 += 360;
+
+        //if ( angle2 > 360 ) //the original angle1 was negative. 
+        //{
+        //    angle1 -= 360;
+        //    angle2 -= 360;
+        //}
 
         //if ( angle1 < 0 )
         //angle1 = 0;

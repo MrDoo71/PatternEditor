@@ -17,15 +17,13 @@ class PointIntersectArcs extends DrawingObject {
         if (typeof this.secondArc === "undefined")
             this.secondArc = this.patternPiece.getObject(d.secondArc);
 
-        //Also this.data.crossPoint    
-
         var arc1SI = this.firstArc.asShapeInfo();
         var arc2SI = this.secondArc.asShapeInfo();
 
         var intersections = Intersection.intersect(arc1SI, arc2SI);
         
         //intersections.points.forEach(console.log);    
-        
+
         if ( intersections.points.length === 0 )
         {
             throw "No intersections found. ";
