@@ -1134,7 +1134,7 @@ class DrawingObject /*abstract*/ {
         var my = (typeof d.my === "undefined") ? 0 : d.my;
 
         //some odd data exists out there in operation results of splines e.g. 3 Button Sack rev.1
-        if (( mx >= 2147480000 ) || ( my >= 2147480000 )) //in fact 1000 would be too much? Perhaps max these out to the limits of the drawing size?
+        if (( mx >= 2147480000 ) || ( my >= 2147480000 ))
         {
             mx = 0;
             my = 0;
@@ -1175,7 +1175,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawLine( g, isOutline ) {
-        if ( ( this.lineVisible() || isOutline ) && this.line ) //If there was an error, line may not be set. 
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
                      .attr("x1", this.line.p1.x)
@@ -1192,7 +1192,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawPath( g, path, isOutline ) {
-        if ( this.lineVisible() || isOutline )
+        if ( this.lineVisible() )//|| isOutline )
         {
             var p = g.append("path")
                     .attr("d", path )
@@ -1207,14 +1207,14 @@ class DrawingObject /*abstract*/ {
 
 
     drawCurve( g, isOutline ) {
-        if ( ( this.lineVisible() || isOutline ) && this.curve )
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), isOutline );
     }
 
 
     drawArc( g, isOutline ) {
         
-        if ( ( this.lineVisible() || isOutline ) && this.arc )
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.arc )
         {
                 if ( this.lineVisible() )
                 {
@@ -1831,6 +1831,15 @@ class OperationResult extends DrawingObject {
         //TODO This line would be useful if the operation, or operation result is selected. 
         //THOUGH, if the operation is a rotate then drawing an arc would be useful. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
+
+        if (( this.line ) || ( this.curve ) || ( this.arc ))
+        {
+            if ( ! this.data.lineStyle )
+                this.data.lineStyle = this.basePoint.data.lineStyle;
+
+            if ( ! this.data.color )    
+                this.data.color = this.basePoint.data.color;
+        }
 
         bounds.adjust( this.p );
     }

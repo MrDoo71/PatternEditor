@@ -48,6 +48,15 @@ class OperationResult extends DrawingObject {
         //THOUGH, if the operation is a rotate then drawing an arc would be useful. 
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
 
+        if (( this.line ) || ( this.curve ) || ( this.arc ))
+        {
+            if ( ! this.data.lineStyle )
+                this.data.lineStyle = this.basePoint.data.lineStyle;
+
+            if ( ! this.data.color )    
+                this.data.color = this.basePoint.data.color;
+        }
+
         bounds.adjust( this.p );
     }
 

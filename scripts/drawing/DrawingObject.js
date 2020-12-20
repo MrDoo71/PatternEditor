@@ -102,7 +102,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawLine( g, isOutline ) {
-        if ( ( this.lineVisible() || isOutline ) && this.line ) //If there was an error, line may not be set. 
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
                      .attr("x1", this.line.p1.x)
@@ -119,7 +119,7 @@ class DrawingObject /*abstract*/ {
 
 
     drawPath( g, path, isOutline ) {
-        if ( this.lineVisible() || isOutline )
+        if ( this.lineVisible() )//|| isOutline )
         {
             var p = g.append("path")
                     .attr("d", path )
@@ -134,14 +134,14 @@ class DrawingObject /*abstract*/ {
 
 
     drawCurve( g, isOutline ) {
-        if ( ( this.lineVisible() || isOutline ) && this.curve )
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), isOutline );
     }
 
 
     drawArc( g, isOutline ) {
         
-        if ( ( this.lineVisible() || isOutline ) && this.arc )
+        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.arc )
         {
                 if ( this.lineVisible() )
                 {
