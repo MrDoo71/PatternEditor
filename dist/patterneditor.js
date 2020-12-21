@@ -3966,7 +3966,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     inc.html = function(asFormula) {
-                        return this.name + ": " + this.expression.html( asFormula );
+                        return this.name + ": " + this.expression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) ;
                     };
                 }
                 this.increment[ inc.name ] = inc;
@@ -5456,17 +5456,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
 function drawLinks( pattern, linkScale ) {
     var linkData = pattern.dependencies.dependencies;
-/*
-    //TODO increments.
-    if ( pattern.increment )
-    {
-        for( var i in pattern.increment )
-            linkData.concat( pattern.increment[i].dependencies );
-    }    
-
-    for( var j=0; j< pattern.patternPieces.length; j++ )
-        linkData = linkData.concat( pattern.patternPieces[j].dependencies.dependencies);
-*/
+    
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
                     .enter().append("path")

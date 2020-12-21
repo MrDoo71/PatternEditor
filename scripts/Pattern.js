@@ -67,7 +67,7 @@ class Pattern {
                         return this.expression.value();
                     };
                     inc.html = function(asFormula) {
-                        return this.name + ": " + this.expression.html( asFormula );
+                        return this.name + ": " + this.expression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) ;
                     };
                 }
                 this.increment[ inc.name ] = inc;
