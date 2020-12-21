@@ -1108,10 +1108,8 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
 
 function drawLinks( pattern, linkScale ) {
-    var linkData = [];
-    for( var j=0; j< pattern.patternPieces.length; j++ )
-        linkData = linkData.concat( pattern.patternPieces[j].dependencies.dependencies);
-
+    var linkData = pattern.dependencies.dependencies;
+    
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
                     .enter().append("path")
@@ -1129,7 +1127,6 @@ function drawLinks( pattern, linkScale ) {
                         path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
                         return path;                      
                     } );
-                    //.attr("d", curve);
 }
 
 

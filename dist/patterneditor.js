@@ -3979,7 +3979,60 @@ class Pattern {
         {
             this.patternPieces.push( new PatternPiece( this.patternData.patternPiece[i], this ) );
         }   
+
+        this.analyseDependencies();
     }
+
+
+    analyseDependencies() {
+        //Now build up dependency links
+        this.dependencies = { 
+            dependencies: [], 
+            add: function ( source, target ) { 
+
+                if (( ! source ) || ( ! target ))
+                    return;
+
+                if (   ( target && typeof target.expression === "object" )
+                    && ( ! target.isMeasurement )
+                    && ( ! target.isIncrement ) )
+                {
+                    if ( target.expression.addDependencies )
+                        target.expression.addDependencies( source, this );
+                    else
+                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
+                }
+                else if (   ( target instanceof DrawingObject )
+                         || ( target.isMeasurement )
+                         || ( target.isIncrement ) )
+                    this.dependencies.push( { source: source, target: target } ); 
+            }  
+        };
+        
+        if ( this.increment )
+        {
+            for( var i in this.increment )
+            {
+                var inc = this.increment[i];
+                if ( inc.expression ) 
+                    inc.expression.addDependencies( inc, this.dependencies );
+                    //this.dependencies.add( inc, inc.expression );
+            }
+        }    
+    
+        for( var j=0; j< this.patternPieces.length; j++ )
+        {
+            var piece = this.patternPieces[j];
+            for (var a = 0; a < piece.drawingObjects.length; a++) 
+            {
+                var dObj = piece.drawingObjects[a];
+                dObj.setDependencies( this.dependencies );
+            }
+        }
+        //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
+        //so that we can remove duplicates.
+    }
+
 
     getIncrement(name) {
         if (typeof name === "object")
@@ -4094,42 +4147,6 @@ class PatternPiece {
             this.drawingObjects[a] = dObj; //these are now the objects with methods
             this.registerObj(dObj);
         }
-        this.analyseDependencies();
-    }
-
-    analyseDependencies()
-    {
-        //Now build up dependency links
-        this.dependencies = { 
-            dependencies: [], 
-            add: function ( source, target ) { 
-
-                if (( ! source ) || ( ! target ))
-                    return;
-
-                if (   ( target && typeof target.expression === "object" )
-                    && ( ! target.isMeasurement )
-                    && ( ! target.isIncrement ) )
-                {
-                    if ( target.expression.addDependencies )
-                        target.expression.addDependencies( source, this );
-                    else
-                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
-                }
-                else if (   ( target instanceof DrawingObject )
-                         || ( target.isMeasurement )
-                         || ( target.isIncrement ) )
-                    this.dependencies.push( { source: source, target: target } ); 
-            }  
-        };
-        
-        for (var a = 0; a < this.drawingObjects.length; a++) 
-        {
-            var dObj = this.drawingObjects[a];
-            dObj.setDependencies( this.dependencies );
-        }
-        //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
-        //so that we can remove duplicates.
     }
 
     
@@ -5438,10 +5455,18 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
 
 function drawLinks( pattern, linkScale ) {
-    var linkData = [];
+    var linkData = pattern.dependencies.dependencies;
+/*
+    //TODO increments.
+    if ( pattern.increment )
+    {
+        for( var i in pattern.increment )
+            linkData.concat( pattern.increment[i].dependencies );
+    }    
+
     for( var j=0; j< pattern.patternPieces.length; j++ )
         linkData = linkData.concat( pattern.patternPieces[j].dependencies.dependencies);
-
+*/
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
                     .enter().append("path")
@@ -5459,7 +5484,6 @@ function drawLinks( pattern, linkScale ) {
                         path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
                         return path;                      
                     } );
-                    //.attr("d", curve);
 }
 
 

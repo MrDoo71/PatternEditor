@@ -80,42 +80,6 @@ class PatternPiece {
             this.drawingObjects[a] = dObj; //these are now the objects with methods
             this.registerObj(dObj);
         }
-        this.analyseDependencies();
-    }
-
-    analyseDependencies()
-    {
-        //Now build up dependency links
-        this.dependencies = { 
-            dependencies: [], 
-            add: function ( source, target ) { 
-
-                if (( ! source ) || ( ! target ))
-                    return;
-
-                if (   ( target && typeof target.expression === "object" )
-                    && ( ! target.isMeasurement )
-                    && ( ! target.isIncrement ) )
-                {
-                    if ( target.expression.addDependencies )
-                        target.expression.addDependencies( source, this );
-                    else
-                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
-                }
-                else if (   ( target instanceof DrawingObject )
-                         || ( target.isMeasurement )
-                         || ( target.isIncrement ) )
-                    this.dependencies.push( { source: source, target: target } ); 
-            }  
-        };
-        
-        for (var a = 0; a < this.drawingObjects.length; a++) 
-        {
-            var dObj = this.drawingObjects[a];
-            dObj.setDependencies( this.dependencies );
-        }
-        //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
-        //so that we can remove duplicates.
     }
 
     

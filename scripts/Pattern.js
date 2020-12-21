@@ -80,7 +80,60 @@ class Pattern {
         {
             this.patternPieces.push( new PatternPiece( this.patternData.patternPiece[i], this ) );
         }   
+
+        this.analyseDependencies();
     }
+
+
+    analyseDependencies() {
+        //Now build up dependency links
+        this.dependencies = { 
+            dependencies: [], 
+            add: function ( source, target ) { 
+
+                if (( ! source ) || ( ! target ))
+                    return;
+
+                if (   ( target && typeof target.expression === "object" )
+                    && ( ! target.isMeasurement )
+                    && ( ! target.isIncrement ) )
+                {
+                    if ( target.expression.addDependencies )
+                        target.expression.addDependencies( source, this );
+                    else
+                        console.log("Failed to add dependency for expression. Presumably due to earlier errors. "); //nb. the expression is likely the original data, not our expression object
+                }
+                else if (   ( target instanceof DrawingObject )
+                         || ( target.isMeasurement )
+                         || ( target.isIncrement ) )
+                    this.dependencies.push( { source: source, target: target } ); 
+            }  
+        };
+        
+        if ( this.increment )
+        {
+            for( var i in this.increment )
+            {
+                var inc = this.increment[i];
+                if ( inc.expression ) 
+                    inc.expression.addDependencies( inc, this.dependencies );
+                    //this.dependencies.add( inc, inc.expression );
+            }
+        }    
+    
+        for( var j=0; j< this.patternPieces.length; j++ )
+        {
+            var piece = this.patternPieces[j];
+            for (var a = 0; a < piece.drawingObjects.length; a++) 
+            {
+                var dObj = piece.drawingObjects[a];
+                dObj.setDependencies( this.dependencies );
+            }
+        }
+        //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
+        //so that we can remove duplicates.
+    }
+
 
     getIncrement(name) {
         if (typeof name === "object")
