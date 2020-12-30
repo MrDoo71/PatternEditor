@@ -72,19 +72,29 @@ class SplinePathInteractive extends DrawingObject {
                     +'curved path:';
 
         var d = this.data;
+
+        html += "<table><tbody>";
         for( var i=0; i< d.pathNode.length; i++ )
         {
-            if ( i>0 )
-                html+= "; ";
-         
-            html += "<br />";    
-            html += this.refOf( d.pathNode[i].point ) + " " + 
-                    d.pathNode[i].angle1.htmlAngle( asFormula ) + " " + 
-                    d.pathNode[i].length1.htmlLength( asFormula ) + " " + 
-                    d.pathNode[i].angle2.htmlAngle( asFormula ) + " " + 
-                    d.pathNode[i].length2.htmlLength( asFormula );
-        }
+            html += "<tr><td>";
+            html += this.refOf( d.pathNode[i].point );
+            html += "</td>";
 
+            if ( i == 0 )
+                html += "<td></td><td></td>";
+            else
+                html +=    "<td>" + d.pathNode[i].angle1.htmlAngle( asFormula ) 
+                        + "</td><td>" + d.pathNode[i].length1.htmlLength( asFormula ) + "</td>";
+
+            if ( i == (d.pathNode.length -1) )
+                html += "<td></td><td></td>";
+            else
+                html +=    " <td>" + d.pathNode[i].angle2.htmlAngle( asFormula ) 
+                        + "</td><td>" + d.pathNode[i].length2.htmlLength( asFormula ) + "</td>";
+
+            html += "</tr>";         
+        }
+        html += "</tbody></table>";
         return html;
     }
 

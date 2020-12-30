@@ -105,6 +105,11 @@ g.j-item.error div.error {
     font-weight: bold;
 }
 
+
+g.j-item div.desc td { 
+    padding-right: 8px; 
+}
+
 path.link {
     fill:none;
     stroke: #ddd;
