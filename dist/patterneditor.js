@@ -3393,10 +3393,6 @@ class SplinePathInteractive extends DrawingObject {
         html += "<table><tbody>";
         for( var i=0; i< d.pathNode.length; i++ )
         {
-            //if ( i>0 )
-            //    html+= "; ";
-         
-            //html += "<br />";    
             html += "<tr><td>";
             html += this.refOf( d.pathNode[i].point );
             html += "</td>";
@@ -4705,25 +4701,28 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     }
 
     //if not focussing on an error then see if there is a recently edited item to focus on. 
-    if ( ( ! errorFound ) && ( options.focus ) )
+    if ( ! errorFound )
     {
-        var a = pattern.getObject( options.focus );
+        if ( options.focus ) 
+        {
+            var a = pattern.getObject( options.focus );
 
-        if ( ! a )
-        try {
-            a = pattern.getMeasurement( options.focus );
-        } catch (e){
+            if ( ! a )
+            try {
+                a = pattern.getMeasurement( options.focus );
+            } catch (e){
+            }
+
+            if ( ! a )
+                a = pattern.getIncrement( options.focus );
+
+            if ( a )
+                focusDrawingObject(a, true);
         }
-
-        if ( ! a )
-            a = pattern.getIncrement( options.focus );
-
-        if ( a )
-            focusDrawingObject(a, true);
-    }
-    else
-    {
-        focusDrawingObject(firstDrawingObject, true);
+        else
+        {
+            focusDrawingObject(firstDrawingObject, true);
+        }
     }
 }
 
