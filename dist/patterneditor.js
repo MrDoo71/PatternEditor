@@ -5403,16 +5403,11 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         var classes = "j-item";
 
-        if ( d.error )
-            classes += " error";
-
         if ( d.isMeasurement )
             classes += " j-measurement";
 
         if ( d.isIncrement )
             classes += " j-increment";
-
-        g.attr( "class", classes ) ;    
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
@@ -5432,7 +5427,15 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
                 html += '<div class="error">' + d.error + '</div>';
         } catch ( e ) {
             html = '<div class="error">Failed to generate description.</div>';
+
+            if ( ! d.error )
+                d.error = "Failed to generate description.";
         }
+
+        if ( d.error )
+            classes += " error";
+
+        g.attr( "class", classes ) ;    
 
          var div = fo.append( "xhtml:div" )
            .attr("class","outer")
@@ -5894,6 +5897,36 @@ class Expression {
             var p2 = this.params[1].value(currentLength);
             return Math.max( p1, p2 );
         }
+        else if ( this.function === "sin" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.sin( p1 * Math.PI / 180 );
+        }
+        else if ( this.function === "cos" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.cos( p1 * Math.PI / 180 );
+        }
+        else if ( this.function === "tan" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.tan( p1 * Math.PI / 180 );
+        }
+        else if ( this.function === "asin" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.asin( p1 ) * 180 / Math.PI;
+        }
+        else if ( this.function === "acos" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.acos( p1 ) * 180 / Math.PI;
+        }
+        else if ( this.function === "atan" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            return Math.atan( p1 ) * 180 / Math.PI;
+        }        
         else throw ("Unknown function: " + this.function );
     }
     
@@ -6048,17 +6081,22 @@ class Expression {
                 return this.nameWithPopupValue( "radiusOfArc(" + this.drawingObject.ref() + ( this.radiusSelection ? ", radius-" + this.radiusSelection : "" ) + ")" );
             };            
 
-            if ( this.function === "sqrt" )
-            {
-                return ( "sqrt(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
-            }
-
             if ( this.function === "-" )
             {
                 return ( "-(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
-            }            
+            }       
+            
+            if (    ( this.function === "sqrt" )
+                 || ( this.function === "sin" )
+                 || ( this.function === "cos" )
+                 || ( this.function === "tan" ) 
+                 || ( this.function === "asin" )
+                 || ( this.function === "acos" )
+                 || ( this.function === "atan" ) )
+            {
+                return ( this.function + "(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            }
 
-            //else
             return "UNKNOWN FUNCTION TYPE" + this.function;
         }
 

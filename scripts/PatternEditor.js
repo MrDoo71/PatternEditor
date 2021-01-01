@@ -1046,16 +1046,11 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         var classes = "j-item";
 
-        if ( d.error )
-            classes += " error";
-
         if ( d.isMeasurement )
             classes += " j-measurement";
 
         if ( d.isIncrement )
             classes += " j-increment";
-
-        g.attr( "class", classes ) ;    
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
@@ -1075,7 +1070,15 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
                 html += '<div class="error">' + d.error + '</div>';
         } catch ( e ) {
             html = '<div class="error">Failed to generate description.</div>';
+
+            if ( ! d.error )
+                d.error = "Failed to generate description.";
         }
+
+        if ( d.error )
+            classes += " error";
+
+        g.attr( "class", classes ) ;    
 
          var div = fo.append( "xhtml:div" )
            .attr("class","outer")
