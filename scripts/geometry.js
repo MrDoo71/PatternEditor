@@ -1051,11 +1051,21 @@ class GeoEllipticalArc {
         var f2line = new GeoLine( center2, f2 );
         var finishAngle2 = f2line.angleDeg();
 
+        //don't abritrarily convert 360 to 0. 
+        if (( finishAngle2 === 0 ) && ( this.angle2 === 360 ))
+            finishAngle2 = 360;
+
+        if (( startAngle2 === 0 ) && ( this.angle1 === 360 ))
+            startAngle2 = 360;
+
+        //Is this a good enough test?
+        var isFlip = ( this.angle1 < this.angle2 ) != ( startAngle2 < finishAngle2 );
+
         //This is an ellipse, so we also need to adjust the ellipse rotation. 
         var r = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.rotationAngle );
         var r2 = pointTransformer( r );
         var r2line = new GeoLine( center2, r2 );
-        var rotationAngle2 = r2line.angleDeg() +180;
+        var rotationAngle2 = r2line.angleDeg() + ( isFlip ? 180 : 0 );
 
         // + 180;
         if ( rotationAngle2 >= 360 )
@@ -1065,8 +1075,8 @@ class GeoEllipticalArc {
         startAngle2 -= rotationAngle2;
         finishAngle2 -= rotationAngle2;
 
-        //Because we've flipped the start angle becomes the finish angle and vice verasa.
-        return new GeoEllipticalArc( center2, this.radius1, this.radius2, finishAngle2 /*deg*/, startAngle2 /*deg*/, rotationAngle2 /*deg*/ )
+        //If we've flipped the start angle becomes the finish angle and vice versa.
+        return new GeoEllipticalArc( center2, this.radius1, this.radius2, isFlip ? finishAngle2 : startAngle2/*deg*/, isFlip ? startAngle2 : finishAngle2/*deg*/, rotationAngle2 /*deg*/ )
     }
 }
 
