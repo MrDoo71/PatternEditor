@@ -490,10 +490,10 @@ class GeoSpline {
         {
             var n = this.nodeData[i];
 
-            if (( ! n.outControlPoint ) && ( n.outAngle ) && ( n.outLength ))
+            if (( ! n.outControlPoint ) && ( typeof n.outAngle === "number" ) && ( typeof n.outLength === "number" ))
                 n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
 
-            if (( ! n.inControlPoint ) && ( n.inAngle ) && ( n.inLength ))
+            if (( ! n.inControlPoint ) && ( typeof n.inAngle === "number" ) && ( typeof n.inLength === "number" ))
                 n.inControlPoint = n.point.pointAtDistanceAndAngleDeg( n.inLength, n.inAngle );
         }
     }

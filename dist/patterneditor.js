@@ -490,10 +490,10 @@ class GeoSpline {
         {
             var n = this.nodeData[i];
 
-            if (( ! n.outControlPoint ) && ( n.outAngle ) && ( n.outLength ))
+            if (( ! n.outControlPoint ) && ( typeof n.outAngle === "number" ) && ( typeof n.outLength === "number" ))
                 n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
 
-            if (( ! n.inControlPoint ) && ( n.inAngle ) && ( n.inLength ))
+            if (( ! n.inControlPoint ) && ( typeof n.inAngle === "number" ) && ( typeof n.inLength === "number" ))
                 n.inControlPoint = n.point.pointAtDistanceAndAngleDeg( n.inLength, n.inAngle );
         }
     }
@@ -1058,6 +1058,7 @@ class GeoEllipticalArc {
         if (( startAngle2 === 0 ) && ( this.angle1 === 360 ))
             startAngle2 = 360;
 
+        //Is this a good enough test?
         var isFlip = ( this.angle1 < this.angle2 ) != ( startAngle2 < finishAngle2 );
 
         //This is an ellipse, so we also need to adjust the ellipse rotation. 
@@ -1074,7 +1075,7 @@ class GeoEllipticalArc {
         startAngle2 -= rotationAngle2;
         finishAngle2 -= rotationAngle2;
 
-        //Because we've flipped the start angle becomes the finish angle and vice versa.
+        //If we've flipped the start angle becomes the finish angle and vice versa.
         return new GeoEllipticalArc( center2, this.radius1, this.radius2, isFlip ? finishAngle2 : startAngle2/*deg*/, isFlip ? startAngle2 : finishAngle2/*deg*/, rotationAngle2 /*deg*/ )
     }
 }
