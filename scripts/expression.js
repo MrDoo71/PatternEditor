@@ -452,7 +452,7 @@ class Expression {
     }
 
 
-    html( asFormula, currentLength ) {
+    html( asFormula, currentLength, parentPrecedence ) {
 
         if ( ! asFormula )
         {
@@ -545,23 +545,40 @@ class Expression {
         else if ( this.operation ) 
         {
             var useOperatorNotation = false;
+            var precedence = 0;
 
-            if (this.operation === "+") 
-                useOperatorNotation = " + ";
+            if (    (this.operation === "+") 
+                 || (this.operation === "-") )
+            {
+                useOperatorNotation = " " + this.operation + " ";
+                precedence = 3;
+            }
+            else if (    (this.operation === "/") 
+                      || (this.operation === "*") ) 
+            {
+                useOperatorNotation = " " + this.operation + " ";
+                precedence = 4;
+            }
+            else if (    (this.operation === "==") 
+                      || (this.operation === "!=") 
+                      || (this.operation === ">=") 
+                      || (this.operation === "<=") 
+                      || (this.operation === ">") 
+                      || (this.operation === "<") )
+            {
+                useOperatorNotation = " " + this.operation + " ";
+                precedence = 2;
+            }
+            //power = 5
+            //ternary = 2
 
-            else if (this.operation === "-") 
-                useOperatorNotation = " - ";
+            var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
+            
+            var useParenthesis = ( ( this.operation === "()" ) || ( precedence < parentPrecedence ) || (!useOperatorNotation) );
 
-            else if (this.operation === "/") 
-                useOperatorNotation = " / ";
+            if ( useParenthesis )
+                t += "(";
 
-            else if (this.operation === "*") 
-                useOperatorNotation = " * ";
-                
-            else if (this.operation === "==") 
-                useOperatorNotation = " == ";
-
-            var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation ) + "(";
             var first = true;
             for ( var p in this.params )
             {
@@ -572,10 +589,13 @@ class Expression {
                     else
                         t += ",";
                 }
-                t += this.params[p].html( asFormula, currentLength );
+                t += this.params[p].html( asFormula, currentLength, precedence );
                 first = false;
             }
-            t += ")";
+
+            if ( useParenthesis )
+                t += ")";
+
             return t;
         }
 
