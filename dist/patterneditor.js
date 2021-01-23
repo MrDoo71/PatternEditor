@@ -4532,7 +4532,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };    
 
-    options.updateServer = graphOptions.interactionPrefix ? function( k, x, y ) {
+    options.updateServer = graphOptions.interactionPrefix && options.update ? function( k, x, y ) {
         if ( k )
         {
 //TODO shouldn't this be this. rather than options.  ???
@@ -6155,6 +6155,8 @@ class Expression {
                 useOperatorNotation = " " + this.operation + " ";
                 precedence = 2;
             }
+            //power = 5
+            //ternary = 2
 
             var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
             
@@ -6179,7 +6181,7 @@ class Expression {
 
             if ( useParenthesis )
                 t += ")";
-                
+
             return t;
         }
 

@@ -153,7 +153,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };    
 
-    options.updateServer = graphOptions.interactionPrefix ? function( k, x, y ) {
+    options.updateServer = graphOptions.interactionPrefix && options.update ? function( k, x, y ) {
         if ( k )
         {
 //TODO shouldn't this be this. rather than options.  ???
