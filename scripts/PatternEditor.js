@@ -117,7 +117,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( window.innerWidth - 30);//targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar
+        var availableWidth = Math.round( window.innerWidth - 30 -32 );//targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
         var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
         if ( this.fullWindow )
         {
