@@ -6083,7 +6083,9 @@ class Expression {
                  || ( this.function === "angle2OfSpline" ))
             {
                 if ( ! this.drawingObject )
-                    return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", at:" + ( this.function === "angle1OfSpline"  ? this.drawingObject1.ref() : this.drawingObject2.ref() ) + ")" );
+                    return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", at:" +
+                                            ((( this.splineDrawingObject.startPoint == this.drawingObject1 ) || ( this.splineDrawingObject.endPoint == this.drawingObject1 ))
+                                            ? this.drawingObject2.ref() : this.drawingObject1.ref() ) + ")" );
 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
             };            
