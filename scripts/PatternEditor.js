@@ -167,6 +167,13 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             options.translateY = y;
             options.scale = k;
         }
+
+        if ( $("div.popover").length )
+        {
+            console.log("Skipping server update as there is an overlay form. " );
+            return;
+        }
+
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
         var kvpSet = newkvpSet(true) ;
         kvpSet.add('fullWindow', options.fullWindow ) ;
