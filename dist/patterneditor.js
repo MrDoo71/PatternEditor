@@ -5207,7 +5207,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         var transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
         var zoom = d3.zoom()
                     .extent([[0, 0], [width, height]])
-                    .scaleExtent([0.5, 8])
+                    .scaleExtent([0.5, 16])
                     .on("zoom", zoomed);
         svg.call( zoom)
            .call(zoom.transform, transform);
