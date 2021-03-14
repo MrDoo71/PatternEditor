@@ -4873,8 +4873,10 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
 
-        var wallpaperControlsGroups = controls.append("table").attr("class","wallpapers");
-        wallpaperControlsGroups.selectAll("tr")
+        var wallpaperControlsGroupsDiv = controls.append("div").attr("class","wallpapers");
+        wallpaperControlsGroupsDiv.append("div").attr("class","fadeout")
+        var wallpaperControlsGroupsTable = wallpaperControlsGroupsDiv.append("table");
+        wallpaperControlsGroupsTable.selectAll("tr")
             .data( pattern.wallpapers )
             .enter()
             .append("tr")
