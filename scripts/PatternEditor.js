@@ -308,22 +308,26 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
 
-    doDrawingAndTable = function() {
+    doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
                                         doDrawing( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
-                                    drawingAndTableDiv.select("svg.pattern-drawing").remove();
+                                        drawingAndTableDiv.select("svg.pattern-drawing").remove();
                                                                             
                                     if (   ( options.layoutConfig.drawingWidth )
                                         && ( options.layoutConfig.tableWidth ) )
                                         doResizeBar( drawingAndTableDiv, options );    
                                     else
-                                    drawingAndTableDiv.select("div.pattern-editor-resize").remove();
+                                        drawingAndTableDiv.select("div.pattern-editor-resize").remove();
 
                                     if ( options.layoutConfig.tableWidth )
                                         doTable( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
                                     else
-                                    drawingAndTableDiv.select("div.pattern-table").remove();
+                                        drawingAndTableDiv.select("div.pattern-table").remove();
+
+                                    if ( retainFocus )
+                                        //e.g. if doing show/hide functions button
+                                        focusDrawingObject( selectedObject, true );
                                 };
 
     doDrawingAndTable();                   
@@ -480,7 +484,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.event.preventDefault();
             editorOptions.showFormulas = ! editorOptions.showFormulas;
             d3.select(this).text( editorOptions.showFormulas ? "hide formulas" : "show formulas" );
-            doDrawingAndTable();
+            doDrawingAndTable( true /*retain focus*/ );
         };
 
         var toggleShowFormulas = controls.append("button")
