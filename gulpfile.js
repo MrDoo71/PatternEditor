@@ -3,7 +3,7 @@
 const { src, dest, watch, series, parallel } = require('gulp');
 // Importing all the Gulp-related packages we want to use
 const sourcemaps = require('gulp-sourcemaps');
-const sass = require('gulp-sass');
+//const sass = require('gulp-sass');
 var order = require("gulp-order"); //JD
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
@@ -24,7 +24,7 @@ const files = {
 function scssTask(){    
     return src(files.scssPath)
         .pipe(sourcemaps.init()) // initialize sourcemaps first
-        .pipe(sass()) // compile SCSS to CSS
+        //.pipe(sass()) // compile SCSS to CSS
         .pipe(postcss([ autoprefixer(), cssnano() ])) // PostCSS plugins
         .pipe(sourcemaps.write('.')) // write sourcemaps file in current directory
         .pipe(dest('dist')
