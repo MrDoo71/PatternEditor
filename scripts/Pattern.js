@@ -47,9 +47,16 @@ class Pattern {
         
         if ( typeof this.patternData.increment !== "undefined" )
         {
+            //Register all increments before calculating their values in to deal with dependencies.
             for (var a = 0; a < this.patternData.increment.length; a++) {
                 var inc = this.patternData.increment[a];
+                this.increment[ inc.name ] = inc;
+                inc.isIncrement = true;
+            }
 
+            //Now the increments are all registered, calculate their values.
+            for (var a = 0; a < this.patternData.increment.length; a++) { 
+                var inc = this.patternData.increment[a];   
                 //TODO test this increment that is a simple value...            
                 if (typeof inc.constant !== "undefined") 
                 {
@@ -57,7 +64,7 @@ class Pattern {
                         return this.constant;
                     };
                     inc.html = function() {
-                        return this.name + ": " + this.constant;
+                        return this.name + ": " + this.constant + ( this.isOverridden ? " (custom)" : "" ) 
                     };
                 }
                 else
@@ -70,8 +77,6 @@ class Pattern {
                         return this.name + ": " + this.expression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) ;
                     };
                 }
-                this.increment[ inc.name ] = inc;
-                inc.isIncrement = true;
             }
         }        
 
