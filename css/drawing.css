@@ -16,12 +16,17 @@ a.ps-ref {
 
 g.j-item.j-active a.ps-ref {
     /*text-decoration: underline; try dotted */
-    color:#2b7cb3;/* #3378a7;*/
+    color:#2b7cb3; /*text hyperlink to other drawing objects in the table*/
     cursor: pointer;
 }
 
 g.j-item span.const {
-    color: #ae2eae;
+    color: #ae2eae; /*constant value in the table*/
+}
+
+.k-dark-mode
+g.j-item span.const {
+    color: #ee60ee; 
 }
 
 g.j-drawing line.dotLine,
@@ -58,8 +63,13 @@ g.j-drawing path.hair  /*deprecated*/
 }
 
 g.j-drawing circle {
-    fill:#999;
+    fill:#999; 
     stroke-width: 0px;
+}
+
+body.k-dark-mode
+g.j-drawing circle {
+    fill:#4992b6; 
 }
 
 g.j-drawing text {
@@ -67,8 +77,20 @@ g.j-drawing text {
     fill:#000;
 }
 
+body.k-dark-mode
+g.j-drawing text {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; /*TODO other font?*/
+    fill:#d8d8d8;
+}
+
+
 g.j-drawing g.j-active > circle {
     fill:#000;
+}
+
+body.k-dark-mode
+g.j-drawing g.j-active > circle {
+    fill:#67cdff;
 }
 
 g.j-item div.desc {
@@ -80,8 +102,18 @@ g.j-item.j-measurement div.desc {
     background-color: #ffe7ef;
 }
 
+body.k-dark-mode
+g.j-item.j-measurement div.desc {
+    color:#000;
+}
+
 g.j-item.j-increment div.desc {
     background-color:#e7faff;
+}
+
+body.k-dark-mode
+g.j-item.j-increment div.desc {
+    color:#000;
 }
 
 g.j-item.j-active div.desc {    
@@ -90,14 +122,29 @@ g.j-item.j-active div.desc {
     background-color: #ffc;
 }
 
+body.k-dark-mode
+g.j-item.j-active div.desc {
+    color:#000;
+}
+
 g.j-item.error div.desc {    
     padding: 3px 7px;
     border:2px solid #ff0000;
     background-color: #fcc;
 }
 
+body.k-dark-mode
+g.j-item.error div.desc {
+    color:#000;
+}
+
 g.j-item.error.j-active div.desc {    
-    background-color: #fcc;
+    background-color: #fcc; 
+}
+
+body.k-dark-mode
+g.j-item.error.j-active div.desc {    
+    color: #000;
 }
 
 g.j-item.error div.error {
@@ -116,13 +163,21 @@ path.link {
     stroke-width: 1px;    
 }
 
-path.link.source {
+body.k-dark-mode
+path.link {
+    stroke: #444;
+}
+
+path.link.source,
+body.k-dark-mode path.link.source {
     fill:none;
     stroke:#449fdc;
     stroke-width: 3px;    
 }
 
-path.link.target {
+path.link.target, 
+body.k-dark-mode path.link.target
+{
     fill:none;
     stroke:#4ddc44;
     stroke-width: 3px;    
@@ -182,7 +237,11 @@ g.j-outline g.j-active > circle {
     fill: #ff8;
     opacity: 1;
 }
-    
+
+body.k-dark-mode
+g.j-outline g.j-active > circle {
+    opacity: 0.5;
+}   
 
 g.j-outline g.j-active:not(.j-active-2s) > path,
 g.j-outline g.j-active:not(.j-active-2s) > line {
@@ -199,6 +258,11 @@ line.labelLine {
     stroke:#d0d0d0;
 }
 
+body.k-dark-mode
+line.labelLine {
+    stroke:#999;
+}
+
 div.pattern-editor-controls {    
     margin-bottom:15px;
 }
@@ -213,9 +277,19 @@ div.pattern-editor-resize {
     position: relative;
 }
 
+body.k-dark-mode
+div.pattern-editor-resize {
+    border:1px solid #666;
+}
+
 div.pattern-editor-resize:hover{
     border-color: black;
     cursor: ew-resize;
+}
+
+body.k-dark-mode
+div.pattern-editor-resize:hover{
+    border-color: #eee;
 }
 
 div.wallpapers { 
@@ -288,6 +362,22 @@ div.pattern-editor.full-page {
     background-color: white;
 }
 
+body.k-dark-mode
+div.pattern-editor.full-page {
+    background-color:#222222;
+}
+
+
 div.pattern-editor.full-page div.pattern-main {
         position: static;
 }
+
+/*TODO change the js to put the colour as a class, not directly set the stroke
+path.darkRed
+{
+    stroke: darkred;
+}
+Then we can tweak the colour for dark mode. 
+body.k-dark-mode 
+*/
+
