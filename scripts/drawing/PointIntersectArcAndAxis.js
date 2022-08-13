@@ -26,16 +26,19 @@ class PointIntersectArcAndAxis extends DrawingObject {
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-            //TODO replace 1000 with a calculation of the longest line that may be needed
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite*/, angleDeg );
+        var curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
+        
+        //TODO replace 1000 with a calculation of the longest line that may be needed
+        //var boundingBox = this.basePoint.p.getBoundingBox();
+        //boundingBox.extend( curveOrArc )
+        //var maxLineLength = boundingBox.diagonalLength() * 1.1;
+        //use this below instead of 500.
+        //Do the same elsewhere where 1000 is used as infinite
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 500/*infinite*/, angleDeg );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        if ( this.arc.arc )
-            this.p = longLine.intersectArc( this.arc.arc );
-        else
-            this.p = longLine.intersectArc( this.arc.curve );
-
+        this.p = longLine.intersectArc( curveOrArc );
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 

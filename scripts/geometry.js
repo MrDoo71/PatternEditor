@@ -184,7 +184,7 @@ class GeoLine {
                                               arc.angle2,
                                               0 );
             var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
-            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000, (this.angleDeg() - arc.rotationAngle) ) );
+            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( 1000/*infinite*/, (this.angleDeg() - arc.rotationAngle) ) );
 
             arcSI = nrArc.asShapeInfo();
             
@@ -195,7 +195,7 @@ class GeoLine {
         {
             arcSI = arc.asShapeInfo();
 
-            var extendedLine = new GeoLine( this.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, this.angle ), this.p2 );
+            var extendedLine = new GeoLine( this.p1.pointAtDistanceAndAngleRad( -500/*infinite*/, this.angle ), this.p2 );
             lineSI = extendedLine.asShapeInfo();    
         }
 
@@ -633,6 +633,7 @@ class GeoSpline {
 
     findTForPoint(p) {
         //only where nodeData.length == 2
+        //sometimes we're testing whether point p is on the arc. 
 
         if ( this.nodeData.length !== 2 )
             throw "findTForPoint() only supported for individual segments";
@@ -677,7 +678,7 @@ class GeoSpline {
             maxT = closestT + interval;
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
-        console.log("Point not on curve." );
+        //console.log("Point not on curve." );
         return undefined;
     }
 
