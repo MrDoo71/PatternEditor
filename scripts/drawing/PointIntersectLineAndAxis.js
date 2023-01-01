@@ -33,6 +33,12 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
         this.p = line1.intersect(line2);
         this.line = new GeoLine( this.basePoint.p, this.p );
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

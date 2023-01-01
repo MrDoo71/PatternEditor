@@ -27,14 +27,16 @@ class PointIntersectArcAndAxis extends DrawingObject {
             angleDeg += 360;
 
         var curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
+
+        //Rather than use an arbitrarily long line (which was causing issues)
+        //calculate the max length of line. The line cannot be longer than
+        //the bounding box encompassing the basePoint and the curve. 
+        var bounds = new Bounds();
+        bounds.adjust( this.basePoint.p );
+        this.arc.adjustBounds( bounds );
+        var maxLineLength = bounds.diagonaglLength() * 1.25;
         
-        //TODO replace 1000 with a calculation of the longest line that may be needed
-        //var boundingBox = this.basePoint.p.getBoundingBox();
-        //boundingBox.extend( curveOrArc )
-        //var maxLineLength = boundingBox.diagonalLength() * 1.1;
-        //use this below instead of 500.
-        //Do the same elsewhere where 1000 is used as infinite
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 500/*infinite*/, angleDeg );
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
         var longLine = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -42,6 +44,12 @@ class PointIntersectArcAndAxis extends DrawingObject {
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

@@ -45,6 +45,12 @@ class TrueDartResult extends DrawingObject {
         //this.operationLine = new GeoLine(this.basePoint.p, this.p);
         */
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust( this.p );
     }
 

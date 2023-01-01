@@ -26,7 +26,16 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1000/*infinite TODO*/, angleDeg );
+
+        //Rather than use an arbitrarily long line (which was causing issues)
+        //calculate the max length of line. The line cannot be longer than
+        //the bounding box encompassing the basePoint and the curve. 
+        var bounds = new Bounds();
+        bounds.adjust( this.basePoint.p );
+        this.curve.adjustBounds( bounds );
+        var maxLineLength = bounds.diagonaglLength() * 1.25;
+        
+        let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
         var line = new GeoLine( this.basePoint.p, otherPoint );
 
@@ -46,6 +55,12 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         }
         this.line = new GeoLine( this.basePoint.p, this.p );
 
+        this.adjustBounds( bounds );
+    }
+    
+        
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

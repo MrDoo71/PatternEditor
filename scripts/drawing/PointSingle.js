@@ -8,6 +8,12 @@ class PointSingle extends DrawingObject {
     calculate(bounds) {
         var d = this.data;
         this.p = new GeoPoint(d.x, d.y);
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

@@ -32,6 +32,12 @@ class PointAlongBisector extends DrawingObject {
         this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
         this.line = new GeoLine(this.secondPoint.p, this.p);
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjustForLine(this.line);
     }
 

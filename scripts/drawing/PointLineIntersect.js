@@ -26,6 +26,12 @@ class PointLineIntersect extends DrawingObject {
         this.line2 = new GeoLine(this.p1Line2.p, this.p2Line2.p);
         this.p = this.line1.intersect(this.line2);
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

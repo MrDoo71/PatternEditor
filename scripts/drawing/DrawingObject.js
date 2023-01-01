@@ -1,3 +1,14 @@
+//(c) Copyright 2019 Jason Dore
+//
+//This library collates the various geometric calclulation requirements
+//of the drawing objects into a small number of primitives. 
+//
+//This library then generally uses other libraries to perform those 
+//geometric calculations where they are non trivial
+//(e.g. intersection of lines with splines).
+//
+//Source maintained at: https://github.com/MrDoo71/PatternEditor
+
 class DrawingObject /*abstract*/ {
     
     constructor(data) {

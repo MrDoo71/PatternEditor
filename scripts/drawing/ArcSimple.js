@@ -29,12 +29,14 @@ class ArcSimple extends DrawingObject {
 
         this.p = this.arc.pointAlongPathFraction( 0.5 );
 
-        bounds.adjust( this.p );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.5 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.75 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
+        this.adjustBounds( bounds );
+    }
+
+    
+    adjustBounds( bounds )
+    {
+        bounds.adjust( this.p ); //not necessarily
+        this.arc.adjustBounds( bounds );
     }
 
 

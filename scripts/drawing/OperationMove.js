@@ -27,6 +27,14 @@ class OperationMove extends DrawingObject {
         //this.p = this.basePoint.p.pointAtDistanceAndAngleRad(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
         //this.line = new GeoLine(this.basePoint.p, this.p);
         //bounds.adjustForLine(this.line);
+        
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
+        //Done by OperationResult
     }
 
 

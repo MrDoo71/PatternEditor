@@ -41,9 +41,14 @@ class SplinePathInteractive extends DrawingObject {
 
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust( this.p );
-    
-        //Bounds will already have been adjusted for each node
+        this.curve.adjustBounds( bounds );
     }
 
     

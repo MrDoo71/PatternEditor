@@ -38,6 +38,12 @@ class PointOfTriangle extends DrawingObject {
         var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

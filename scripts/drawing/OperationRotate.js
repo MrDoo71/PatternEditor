@@ -19,6 +19,14 @@ class OperationRotate extends DrawingObject {
             
         if (typeof this.angle === "undefined")
             this.angle = this.patternPiece.newFormula(d.angle);            
+            
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
+        //Done by OperationResult
     }
 
 

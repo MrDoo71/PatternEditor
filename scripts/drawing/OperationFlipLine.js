@@ -23,6 +23,13 @@ class OperationFlipByLine extends DrawingObject {
             this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
 
         this.line = new GeoLine( this.p1Line1.p, this.p2Line1.p );
+
+        this.adjustBounds( bounds );
+    }
+
+    adjustBounds( bounds )
+    {
+        //Done by OperationResult
     }
 
 

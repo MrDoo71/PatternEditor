@@ -76,6 +76,12 @@ class TrueDart extends DrawingObject {
 
         //Nb. this.data.trueDartResult1 and trueDartResult2 give the names of the dart points generated.
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.td1);
         bounds.adjust(this.td3);
     }

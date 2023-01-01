@@ -24,6 +24,12 @@ class PointAlongLine extends DrawingObject {
         this.p = this.firstPoint.p.pointAtDistanceAndAngleRad(this.length.value(this.baseLine.length), this.baseLine.angle);
         this.line = new GeoLine(this.firstPoint.p, this.p);
         
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjustForLine(this.line);
     }
 

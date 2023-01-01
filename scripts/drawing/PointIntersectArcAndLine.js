@@ -29,6 +29,12 @@ class PointIntersectArcAndLine extends DrawingObject {
 
         this.p = line.intersectArc( arc );
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

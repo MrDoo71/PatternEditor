@@ -18,6 +18,12 @@ class PointCutArc extends DrawingObject {
 
         this.p = this.arc.pointAlongPath( this.length.value() );
         
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

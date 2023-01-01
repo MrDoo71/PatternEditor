@@ -19,7 +19,12 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
         //Note tha this.curve might be something like a SplineSimple, but it might also be an OperationResult
         this.p = this.curve.pointAlongPath( this.length.value() );
-        
+        this.adjustBounds( bounds );
+    }
+
+    
+    adjustBounds( bounds )
+    {        
         bounds.adjust(this.p);
     }
 

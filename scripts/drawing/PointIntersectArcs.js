@@ -63,6 +63,12 @@ class PointIntersectArcs extends DrawingObject {
             }
         }
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

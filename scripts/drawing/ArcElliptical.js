@@ -48,12 +48,14 @@ class ArcElliptical extends DrawingObject {
    
         this.p = this.arc.pointAlongPathFraction( 0.5 );
 
+        this.adjustBounds( bounds );
+    }
+
+    
+    adjustBounds( bounds )
+    {
         bounds.adjust( this.p );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.5 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.75 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
+        this.arc.adjustBounds( bounds );
     }
 
 

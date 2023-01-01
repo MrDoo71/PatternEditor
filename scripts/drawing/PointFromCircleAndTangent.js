@@ -35,6 +35,12 @@ class PointFromCircleAndTangent extends DrawingObject {
             
         this.line = new GeoLine( this.tangent.p, this.p );
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

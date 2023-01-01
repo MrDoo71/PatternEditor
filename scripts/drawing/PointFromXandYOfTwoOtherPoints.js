@@ -19,6 +19,12 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
         //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

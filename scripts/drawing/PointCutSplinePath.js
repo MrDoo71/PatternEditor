@@ -18,6 +18,12 @@ class PointCutSplinePath extends DrawingObject {
 
         this.p = this.splinePath.pointAlongPath( this.length.value() );
         
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust(this.p);
     }
 

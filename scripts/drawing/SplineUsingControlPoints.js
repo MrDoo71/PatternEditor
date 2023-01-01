@@ -34,9 +34,13 @@ class SplineUsingControlPoints extends DrawingObject {
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
 
-        bounds.adjust( this.startPoint );
-        bounds.adjust( this.endPoint );
-        bounds.adjust( this.midPoint ); 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
+        this.curve.adjustBounds( bounds );
     }
 
     

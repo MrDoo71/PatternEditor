@@ -57,6 +57,12 @@ class OperationResult extends DrawingObject {
                 this.data.color = this.basePoint.data.color;
         }
 
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjust( this.p );
     }
 

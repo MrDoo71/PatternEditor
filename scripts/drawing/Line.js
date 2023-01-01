@@ -18,6 +18,13 @@ class Line extends DrawingObject {
             this.secondPoint = this.patternPiece.getObject(d.secondPoint);
 
         this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
+
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjustForLine(this.line);
     }
 

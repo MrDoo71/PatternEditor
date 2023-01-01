@@ -27,6 +27,12 @@ class PointAlongPerpendicular extends DrawingObject {
         //Convert degrees to radians
         this.p = this.firstPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), totalAngle );
         this.line = new GeoLine(this.firstPoint.p, this.p);
+        this.adjustBounds( bounds );
+    }
+
+
+    adjustBounds( bounds )
+    {
         bounds.adjustForLine(this.line);
     }
 
