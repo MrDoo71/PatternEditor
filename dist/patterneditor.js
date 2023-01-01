@@ -385,12 +385,6 @@ class ArcSimple extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p ); //not necessarily
-        bounds.adjust( this.arc.pointAlongPathFraction( 0 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.25 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.5 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 0.75 ) );
-        bounds.adjust( this.arc.pointAlongPathFraction( 1 ) );
-
         this.arc.adjustBounds( bounds );
     }
 
@@ -512,7 +506,7 @@ class Line extends DrawingObject {
         this.adjustBounds( bounds );
     }
 
-    
+
     adjustBounds( bounds )
     {
         bounds.adjustForLine(this.line);
@@ -562,6 +556,7 @@ class OperationFlipByAxis extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
+
 
     adjustBounds( bounds )
     {
@@ -724,7 +719,7 @@ class OperationMove extends DrawingObject {
         this.adjustBounds( bounds );
     }
 
-    
+
     adjustBounds( bounds )
     {
         //Done by OperationResult
@@ -826,7 +821,7 @@ class OperationResult extends DrawingObject {
         this.adjustBounds( bounds );
     }
 
-    
+
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
@@ -915,8 +910,8 @@ class OperationRotate extends DrawingObject {
             
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         //Done by OperationResult
@@ -982,8 +977,8 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1049,8 +1044,8 @@ class PointAlongBisector extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjustForLine(this.line);
@@ -1112,8 +1107,8 @@ class PointAlongLine extends DrawingObject {
         
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjustForLine(this.line);
@@ -1175,8 +1170,8 @@ class PointAlongPerpendicular extends DrawingObject {
         this.line = new GeoLine(this.firstPoint.p, this.p);
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjustForLine(this.line);
@@ -1236,8 +1231,8 @@ class PointCutArc extends DrawingObject {
         
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1286,8 +1281,8 @@ class PointCutSplinePath extends DrawingObject {
         
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1342,8 +1337,8 @@ class PointEndLine extends DrawingObject {
         
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjustForLine(this.line);
@@ -1406,8 +1401,8 @@ class PointFromArcAndTangent extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1475,8 +1470,8 @@ class PointFromCircleAndTangent extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1530,8 +1525,8 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1671,8 +1666,8 @@ class PointIntersectArcAndLine extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1774,8 +1769,8 @@ class PointIntersectArcs extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -1907,8 +1902,8 @@ class PointIntersectCircles extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2103,8 +2098,8 @@ class PointIntersectCurves extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2169,8 +2164,8 @@ class PointIntersectLineAndAxis extends DrawingObject {
         this.line = new GeoLine( this.basePoint.p, this.p );
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2234,8 +2229,8 @@ class PointLineIntersect extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2309,8 +2304,8 @@ class PointOfTriangle extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2375,14 +2370,14 @@ class PointShoulder extends DrawingObject {
         var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
         var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
         var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( 1000/*infinite*/, axisLine.angle ) );
+        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
         this.p = extendedAxis.intersectArc( arc );
         this.line = new GeoLine( this.shoulderPoint.p, this.p );
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2427,8 +2422,8 @@ class PointSingle extends DrawingObject {
         this.p = new GeoPoint(d.x, d.y);
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.p);
@@ -2497,8 +2492,8 @@ class SplinePathInteractive extends DrawingObject {
         this.p = this.midPoint;
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
@@ -2615,8 +2610,8 @@ class SplinePathUsingPoints extends DrawingObject {
         this.p = this.midPoint;
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
@@ -2739,13 +2734,11 @@ class SplineSimple extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
-        bounds.adjust( this.startPoint );
-        bounds.adjust( this.endPoint );
-        bounds.adjust( this.midPoint ); 
+        this.curve.adjustBounds( bounds );
     }
 
     
@@ -2829,13 +2822,11 @@ class SplineUsingControlPoints extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
-        bounds.adjust( this.startPoint );
-        bounds.adjust( this.endPoint );
-        bounds.adjust( this.midPoint ); 
+        this.curve.adjustBounds( bounds );
     }
 
     
@@ -2958,8 +2949,8 @@ class TrueDart extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust(this.td1);
@@ -3045,8 +3036,8 @@ class TrueDartResult extends DrawingObject {
 
         this.adjustBounds( bounds );
     }
-    
-        
+
+
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
@@ -5618,6 +5609,11 @@ class GeoArc {
 
         //An arc, between 70, and 100 degrees would be bounded by the start and stop
         //points and the point at 90 degrees. 
+        var startPoint = this.pointAlongPathFraction(0);
+        var endPoint = this.pointAlongPathFraction(0);
+        bounds.adjust( startPoint );
+        bounds.adjust( endPoint );
+
         if (( this.angle1 < 90 ) && ( this.angle2 > 90 ))        
             bounds.adjustToIncludeXY( this.center.x, this.center.y + this.radius ); //add N
 
@@ -5835,8 +5831,11 @@ class GeoEllipticalArc {
         return new GeoEllipticalArc( center2, this.radius1, this.radius2, isFlip ? finishAngle2 : startAngle2/*deg*/, isFlip ? startAngle2 : finishAngle2/*deg*/, rotationAngle2 /*deg*/ )
     }
 
-    
+
     adjustBounds( bounds ) {
+        //TODO determine the bounds for a similar non-rotated ellipse
+        //and rotate
+
         bounds.adjust( this.pointAlongPathFraction( 0 ) );
         bounds.adjust( this.pointAlongPathFraction( 0.25 ) );
         bounds.adjust( this.pointAlongPathFraction( 0.5 ) );
@@ -6111,7 +6110,6 @@ class GeoLine {
         return this.length;
     }
 }
-
 
 
 //(c) Copyright 2019 Jason Dore
@@ -6625,6 +6623,9 @@ class GeoSpline {
 
     adjustBounds( bounds ) {
 
+        //It won't be a perfectly tight bounding box, but 
+        //it should be ample to encompass the spline loosely. 
+        
         for ( var i=0; i<this.nodeData.length; i++ )
         {
             var node = this.nodeData[i];
