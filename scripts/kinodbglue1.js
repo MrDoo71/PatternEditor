@@ -1,4 +1,4 @@
-console.log( "kinodbglue1.js loaded");
+console.log( "kinodbglue1.js?v=2 loaded");
 
 var moduleExports = {}; //we'll then set this reference in the module kinodbglue.mjs
 var params = null; //in case we get called before the module loads, or we could sleep?
