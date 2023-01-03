@@ -368,7 +368,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             }
 
             if ( ! a )
-                a = pattern.getIncrement( options.focus );
+                a = pattern.getVariable( options.focus );
 
             if ( a )
                 focusDrawingObject(a, true);
@@ -1008,17 +1008,17 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     var combinedObjects = [];
 
-    //TODO ? a mode where we don't include measurements and increments in the table.
+    //TODO ? a mode where we don't include measurements and variables in the table.
     if ( pattern.measurement )
     {
         for( var m in pattern.measurement )
             combinedObjects.push( pattern.measurement[m] );
     }
 
-    if ( pattern.increment )
+    if ( pattern.variable )
     {
-        for( var i in pattern.increment )
-            combinedObjects.push( pattern.increment[i] );
+        for( var i in pattern.variable )
+            combinedObjects.push( pattern.variable[i] );
     }
 
     for( var j=0; j< pattern.patternPieces.length; j++ )
@@ -1062,8 +1062,8 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         if ( d.isMeasurement )
             classes += " j-measurement";
 
-        if ( d.isIncrement )
-            classes += " j-increment";
+        if ( d.isVariable )
+            classes += " j-variable";
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;

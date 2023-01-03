@@ -50,7 +50,7 @@
                   "notes":
                     "Pattern contains some constants based on observation.",
                   "measurement": [{ "name": "leg_thigh_upper_circ", "value": 62, "units": "cm" }, { "name": "leg_thigh_mid_circ", "value": 55, "units": "cm" }, { "name": "leg_knee_circ", "value": 40.5, "units": "cm" }, { "name": "leg_knee_small_circ", "value": 38, "units": "cm" }, { "name": "leg_calf_circ", "value": 40.5, "units": "cm" }, { "name": "leg_ankle_high_circ", "value": 22.5, "units": "cm" }, { "name": "leg_ankle_diag_circ", "value": 31.5, "units": "cm" }, { "name": "height_gluteal_fold", "value": 80, "units": "cm" }, { "name": "height_knee", "value": 50, "units": "cm" }, { "name": "height_calf", "value": 35.5, "units": "cm" }, { "name": "height_ankle_high", "value": 10.5, "units": "cm" }, { "name": "foot_length", "value": 24.5, "units": "cm" }, { "name": "foot_circ", "value": 22, "units": "cm" }, { "name": "foot_instep_circ", "value": 25, "units": "cm" }],
-                  "increment":
+                  "variable":
                     [
                       { "name": "#EaseMultiplier", "constant": 0.85 },
                       { "name": "#EaseMultiplierThigh", "constant": 0.9 },
@@ -61,7 +61,7 @@
                         "expression":
                         {
                           "operation": "/",
-                          "parameter": [{ "increment": "#SeamOverlap" }, { "integerValue": 2 }]
+                          "parameter": [{ "variable": "#SeamOverlap" }, { "integerValue": 2 }]
                         }
                       },
                       { "name": "#StockingHeight", "constant": 0.95 },
@@ -73,7 +73,7 @@
                         "expression":
                         {
                           "operation": "-",
-                          "parameter": [{ "measurement": "height_gluteal_fold" }, { "increment": "#height_ankle_diagonal" }]
+                          "parameter": [{ "measurement": "height_gluteal_fold" }, { "variable": "#height_ankle_diagonal" }]
                         }
                       },
                       {
@@ -106,7 +106,7 @@
                                     }
                                   ]
                               },
-                              { "increment": "#height_ankle_diagonal" }
+                              { "variable": "#height_ankle_diagonal" }
                             ]
                         }
                       },
@@ -115,7 +115,7 @@
                         "expression":
                         {
                           "operation": "-",
-                          "parameter": [{ "measurement": "height_knee" }, { "increment": "#height_ankle_diagonal" }]
+                          "parameter": [{ "measurement": "height_knee" }, { "variable": "#height_ankle_diagonal" }]
                         }
                       },
                       {
@@ -123,7 +123,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "increment": "#ankle_to_knee" }, { "decimalValue": 0.9 }]
+                          "parameter": [{ "variable": "#ankle_to_knee" }, { "decimalValue": 0.9 }]
                         }
                       },
                       {
@@ -131,7 +131,7 @@
                         "expression":
                         {
                           "operation": "-",
-                          "parameter": [{ "measurement": "height_calf" }, { "increment": "#height_ankle_diagonal" }]
+                          "parameter": [{ "measurement": "height_calf" }, { "variable": "#height_ankle_diagonal" }]
                         }
                       },
                       {
@@ -139,7 +139,7 @@
                         "expression":
                         {
                           "operation": "-",
-                          "parameter": [{ "measurement": "height_ankle_high" }, { "increment": "#height_ankle_diagonal" }]
+                          "parameter": [{ "measurement": "height_ankle_high" }, { "variable": "#height_ankle_diagonal" }]
                         }
                       },
                       {
@@ -181,7 +181,7 @@
                             [
                               {
                                 "operation": "-",
-                                "parameter": [{ "measurement": "foot_length" }, { "increment": "#height_ankle_diagonal" }]
+                                "parameter": [{ "measurement": "foot_length" }, { "variable": "#height_ankle_diagonal" }]
                               },
                               { "integerValue": 1 }
                             ]
@@ -200,7 +200,7 @@
                                   [
                                     {
                                       "operation": "*",
-                                      "parameter": [{ "measurement": "leg_thigh_upper_circ" }, { "increment": "#EaseMultiplierThigh" }]
+                                      "parameter": [{ "measurement": "leg_thigh_upper_circ" }, { "variable": "#EaseMultiplierThigh" }]
                                     }
                                   ]
                               },
@@ -221,7 +221,7 @@
                                   [
                                     {
                                       "operation": "*",
-                                      "parameter": [{ "measurement": "leg_thigh_mid_circ" }, { "increment": "#EaseMultiplierThigh" }]
+                                      "parameter": [{ "measurement": "leg_thigh_mid_circ" }, { "variable": "#EaseMultiplierThigh" }]
                                     }
                                   ]
                               },
@@ -234,7 +234,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "leg_knee_circ" }, { "increment": "#EaseMultiplier" }]
+                          "parameter": [{ "measurement": "leg_knee_circ" }, { "variable": "#EaseMultiplier" }]
                         }
                       },
                       {
@@ -242,7 +242,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "leg_knee_small_circ" }, { "increment": "#EaseMultiplier" }]
+                          "parameter": [{ "measurement": "leg_knee_small_circ" }, { "variable": "#EaseMultiplier" }]
                         }
                       },
                       {
@@ -250,7 +250,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "leg_calf_circ" }, { "increment": "#EaseMultiplier" }]
+                          "parameter": [{ "measurement": "leg_calf_circ" }, { "variable": "#EaseMultiplier" }]
                         }
                       },
                       {
@@ -258,7 +258,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "leg_ankle_high_circ" }, { "increment": "#EaseMultiplierFoot" }]
+                          "parameter": [{ "measurement": "leg_ankle_high_circ" }, { "variable": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
@@ -266,7 +266,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "leg_ankle_diag_circ" }, { "increment": "#EaseMultiplierFoot" }]
+                          "parameter": [{ "measurement": "leg_ankle_diag_circ" }, { "variable": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
@@ -274,7 +274,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "foot_instep_circ" }, { "increment": "#EaseMultiplierFoot" }]
+                          "parameter": [{ "measurement": "foot_instep_circ" }, { "variable": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
@@ -282,7 +282,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "measurement": "foot_circ" }, { "increment": "#EaseMultiplierFoot" }]
+                          "parameter": [{ "measurement": "foot_circ" }, { "variable": "#EaseMultiplierFoot" }]
                         }
                       },
                       {
@@ -290,7 +290,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "increment": "#footWidestEased" }, { "decimalValue": 0.95 }]
+                          "parameter": [{ "variable": "#footWidestEased" }, { "decimalValue": 0.95 }]
                         }
                       },
                       { "name": "#___sole_shape_parameters____", "constant": 0 },
@@ -320,7 +320,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_glutealfold" }
+                                  { "variable": "#ankle_to_glutealfold" }
                               }
                             },
                             {
@@ -335,7 +335,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_above_ankle" }
+                                  { "variable": "#ankle_to_above_ankle" }
                               }
                             },
                             {
@@ -352,7 +352,7 @@
                                 "expression":
                                 {
                                   "operation": "-",
-                                  "parameter": [{ "increment": "#ankle_to_calf" }, { "increment": "#verticalEase" }]
+                                  "parameter": [{ "variable": "#ankle_to_calf" }, { "variable": "#verticalEase" }]
                                 }
                               }
                             },
@@ -370,7 +370,7 @@
                                 "expression":
                                 {
                                   "operation": "-",
-                                  "parameter": [{ "increment": "#ankle_to_knee_small" }, { "increment": "#verticalEase" }]
+                                  "parameter": [{ "variable": "#ankle_to_knee_small" }, { "variable": "#verticalEase" }]
                                 }
                               }
                             },
@@ -388,7 +388,7 @@
                                 "expression":
                                 {
                                   "operation": "-",
-                                  "parameter": [{ "increment": "#ankle_to_knee" }, { "increment": "#verticalEase" }]
+                                  "parameter": [{ "variable": "#ankle_to_knee" }, { "variable": "#verticalEase" }]
                                 }
                               }
                             },
@@ -404,7 +404,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_thigh" }
+                                  { "variable": "#ankle_to_thigh" }
                               }
                             },
                             {
@@ -420,7 +420,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ThighGF" }
+                                  { "variable": "#ThighGF" }
                               }
                             },
                             {
@@ -443,7 +443,7 @@
                                     [
                                       {
                                         "operation": "()",
-                                        "parameter": [{ "increment": "#CalfEased" }]
+                                        "parameter": [{ "variable": "#CalfEased" }]
                                       },
                                       { "integerValue": 2 }
                                     ]
@@ -470,7 +470,7 @@
                                     [
                                       {
                                         "operation": "()",
-                                        "parameter": [{ "increment": "#KneeSmallEased" }]
+                                        "parameter": [{ "variable": "#KneeSmallEased" }]
                                       },
                                       { "integerValue": 2 }
                                     ]
@@ -497,7 +497,7 @@
                                     [
                                       {
                                         "operation": "()",
-                                        "parameter": [{ "increment": "#KneeEased" }]
+                                        "parameter": [{ "variable": "#KneeEased" }]
                                       },
                                       { "integerValue": 2 }
                                     ]
@@ -517,7 +517,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ThighCircEased" }
+                                  { "variable": "#ThighCircEased" }
                               }
                             },
                             {
@@ -537,7 +537,7 @@
                                   "operation": "-",
                                   "parameter":
                                     [
-                                      { "increment": "#ankle_to_tip" },
+                                      { "variable": "#ankle_to_tip" },
                                       {
                                         "operation": "()",
                                         "parameter":
@@ -552,11 +552,11 @@
                                                       [
                                                         {
                                                           "operation": "-",
-                                                          "parameter": [{ "increment": "#ankle_to_tip" }, { "increment": "#ankle_to_widest_foot" }]
+                                                          "parameter": [{ "variable": "#ankle_to_tip" }, { "variable": "#ankle_to_widest_foot" }]
                                                         }
                                                       ]
                                                   },
-                                                  { "increment": "#proportionOfToeSection" }
+                                                  { "variable": "#proportionOfToeSection" }
                                                 ]
                                             }
                                           ]
@@ -608,7 +608,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 1.22 }]
+                                  "parameter": [{ "variable": "#ankle_to_tip" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -626,7 +626,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_instep" }, { "decimalValue": 1.22 }]
+                                  "parameter": [{ "variable": "#ankle_to_instep" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -652,7 +652,7 @@
                                           [
                                             {
                                               "operation": "*",
-                                              "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
+                                              "parameter": [{ "variable": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
                                             }
                                           ]
                                       },
@@ -675,7 +675,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_widest_foot" }, { "decimalValue": 1.22 }]
+                                  "parameter": [{ "variable": "#ankle_to_widest_foot" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -705,11 +705,11 @@
                                                 [
                                                   {
                                                     "operation": "-",
-                                                    "parameter": [{ "increment": "#ankle_to_tip" }, { "increment": "#ankle_to_widest_foot" }]
+                                                    "parameter": [{ "variable": "#ankle_to_tip" }, { "variable": "#ankle_to_widest_foot" }]
                                                   }
                                                 ]
                                             },
-                                            { "increment": "#proportionOfToeSection" }
+                                            { "variable": "#proportionOfToeSection" }
                                           ]
                                       }
                                     ]
@@ -744,11 +744,11 @@
                                                 [
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#AnkleDiagEased" }]
+                                                    "parameter": [{ "variable": "#AnkleDiagEased" }]
                                                   },
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#SolePrcntageHeel" }]
+                                                    "parameter": [{ "variable": "#SolePrcntageHeel" }]
                                                   }
                                                 ]
                                             }
@@ -783,9 +783,9 @@
                                           [
                                             {
                                               "operation": "*",
-                                              "parameter": [{ "increment": "#InstepEased" }, { "decimalValue": 0.87 }]
+                                              "parameter": [{ "variable": "#InstepEased" }, { "decimalValue": 0.87 }]
                                             },
-                                            { "increment": "#SolePanelMid" }
+                                            { "variable": "#SolePanelMid" }
                                           ]
                                       },
                                       { "integerValue": 2 }
@@ -821,11 +821,11 @@
                                                 [
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#ToeWidth" }]
+                                                    "parameter": [{ "variable": "#ToeWidth" }]
                                                   },
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#SolePanelToe" }]
+                                                    "parameter": [{ "variable": "#SolePanelToe" }]
                                                   }
                                                 ]
                                             }
@@ -852,7 +852,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 4 }]
+                                  "parameter": [{ "variable": "#ToeWidth" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -880,7 +880,7 @@
                                           [
                                             {
                                               "operation": "()",
-                                              "parameter": [{ "increment": "#ToeWidth" }]
+                                              "parameter": [{ "variable": "#ToeWidth" }]
                                             },
                                             {
                                               "operation": "()",
@@ -1039,7 +1039,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 2.11 }]
+                                  "parameter": [{ "variable": "#ankle_to_above_ankle" }, { "decimalValue": 2.11 }]
                                 }
                               }
                             },
@@ -1057,7 +1057,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 1.22 }]
+                                  "parameter": [{ "variable": "#ankle_to_above_ankle" }, { "decimalValue": 1.22 }]
                                 }
                               }
                             },
@@ -1076,7 +1076,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HeelPointWidth" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HeelPointWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1095,7 +1095,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#ankle_to_above_ankle" }, { "decimalValue": 0.25 }]
+                                  "parameter": [{ "variable": "#ankle_to_above_ankle" }, { "decimalValue": 0.25 }]
                                 }
                               }
                             },
@@ -1175,7 +1175,7 @@
                                                 [
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#AnkleDiagEased" }]
+                                                    "parameter": [{ "variable": "#AnkleDiagEased" }]
                                                   },
                                                   {
                                                     "operation": "()",
@@ -1183,7 +1183,7 @@
                                                       [
                                                         {
                                                           "operation": "-",
-                                                          "parameter": [{ "integerValue": 1 }, { "increment": "#SolePrcntageHeel" }]
+                                                          "parameter": [{ "integerValue": 1 }, { "variable": "#SolePrcntageHeel" }]
                                                         }
                                                       ]
                                                   }
@@ -1220,7 +1220,7 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#AboveAnkleEased" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#AboveAnkleEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
@@ -1241,7 +1241,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_instep" }
+                                  { "variable": "#ankle_to_instep" }
                               }
                             },
                             {
@@ -1262,7 +1262,7 @@
                                     [
                                       {
                                         "operation": "*",
-                                        "parameter": [{ "increment": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
+                                        "parameter": [{ "variable": "#ankle_to_tip" }, { "decimalValue": 0.33 }]
                                       }
                                     ]
                                 }
@@ -1280,7 +1280,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_widest_foot" }
+                                  { "variable": "#ankle_to_widest_foot" }
                               }
                             },
                             {
@@ -1296,7 +1296,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#ankle_to_tip" }
+                                  { "variable": "#ankle_to_tip" }
                               }
                             },
                             {
@@ -1322,7 +1322,7 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#InstepEased" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#InstepEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
@@ -1354,7 +1354,7 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#footWidestEased" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#footWidestEased" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
@@ -1386,7 +1386,7 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#ToeWidth" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
@@ -1423,7 +1423,7 @@
                                                 [
                                                   {
                                                     "operation": "/",
-                                                    "parameter": [{ "increment": "#InstepEased" }, { "integerValue": 2 }]
+                                                    "parameter": [{ "variable": "#InstepEased" }, { "integerValue": 2 }]
                                                   },
                                                   { "decimalValue": 0.87 }
                                                 ]
@@ -1436,7 +1436,7 @@
                                           [
                                             {
                                               "operation": "-",
-                                              "parameter": [{ "integerValue": 1 }, { "increment": "#SolePanelMid" }]
+                                              "parameter": [{ "integerValue": 1 }, { "variable": "#SolePanelMid" }]
                                             }
                                           ]
                                       }
@@ -1501,7 +1501,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "increment": "#StockingHeight" }, { "increment": "#ankle_to_glutealfold" }]
+                                  "parameter": [{ "variable": "#StockingHeight" }, { "variable": "#ankle_to_glutealfold" }]
                                 }
                               }
                             },
@@ -1517,7 +1517,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#TopPanelHeight" }
+                                  { "variable": "#TopPanelHeight" }
                               }
                             },
                             { "derivedName": "Line_S4B_S4B2", "objectType": "line", "firstPoint": "S4B", "secondPoint": "S4B2", "lineStyle": "hair", "color": "darkRed" },
@@ -1553,7 +1553,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#ToeWidth" }, { "integerValue": 4 }]
+                                  "parameter": [{ "variable": "#ToeWidth" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -1601,11 +1601,11 @@
                                                 [
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#ToeWidth" }]
+                                                    "parameter": [{ "variable": "#ToeWidth" }]
                                                   },
                                                   {
                                                     "operation": "()",
-                                                    "parameter": [{ "increment": "#SolePanelToe" }]
+                                                    "parameter": [{ "variable": "#SolePanelToe" }]
                                                   }
                                                 ]
                                             }

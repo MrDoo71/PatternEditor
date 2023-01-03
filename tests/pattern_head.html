@@ -50,7 +50,7 @@
                 {
                   "units": "cm",
                   "measurement": [{ "name": "head_depth", "value": 19.5, "units": "cm" }, { "name": "head_width", "value": 15.5, "units": "cm" }, { "name": "neck_mid_circ", "value": 37.5, "units": "cm" }, { "name": "neck_circ", "value": 47.5, "units": "cm" }],
-                  "increment":
+                  "variable":
                     [
                       { "name": "#top_half_circ", "constant": 32.3 },
                       { "name": "#seamOverlap", "constant": 0.5 },
@@ -59,7 +59,7 @@
                         "expression":
                         {
                           "operation": "/",
-                          "parameter": [{ "increment": "#seamOverlap" }, { "integerValue": 2 }]
+                          "parameter": [{ "variable": "#seamOverlap" }, { "integerValue": 2 }]
                         }
                       },
                       {
@@ -117,7 +117,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#top_half_circ" }, { "decimalValue": 3.1415 }]
+                                  "parameter": [{ "variable": "#top_half_circ" }, { "decimalValue": 3.1415 }]
                                 }
                               }
                             },
@@ -241,7 +241,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#top_side_to_side" }, { "decimalValue": 3.1415 }]
+                                  "parameter": [{ "variable": "#top_side_to_side" }, { "decimalValue": 3.1415 }]
                                 }
                               }
                             },
@@ -352,7 +352,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#top_side_to_side" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#top_side_to_side" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -551,7 +551,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#top_side_to_side" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#top_side_to_side" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2801,7 +2801,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 4 }]
+                                  "parameter": [{ "variable": "#neck" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -2819,7 +2819,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 8 }]
+                                  "parameter": [{ "variable": "#neck" }, { "integerValue": 8 }]
                                 }
                               }
                             },
@@ -2838,7 +2838,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 4 }]
+                                  "parameter": [{ "variable": "#neck" }, { "integerValue": 4 }]
                                 }
                               }
                             },
@@ -2856,7 +2856,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 8 }]
+                                  "parameter": [{ "variable": "#neck" }, { "integerValue": 8 }]
                                 }
                               }
                             },
@@ -3999,7 +3999,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#neck" }, { "integerValue": 16 }]
+                                  "parameter": [{ "variable": "#neck" }, { "integerValue": 16 }]
                                 }
                               }
                             },

@@ -49,7 +49,7 @@
                   "notes":
                     "Crotch length for standard size 12 is just a guess based on the illustrations in the book. ",
                   "measurement": [{ "name": "crotch_length_b", "value": 43, "units": "cm" }, { "name": "crotch_length_f", "value": 32.5, "units": "cm" }, { "name": "rise_length_side_sitting", "value": 29.5, "units": "cm" }, { "name": "waist_circ", "value": 73, "units": "cm" }, { "name": "highhip_circ", "value": 92, "units": "cm" }, { "name": "hip_circ", "value": 103, "units": "cm" }],
-                  "increment": [{ "name": "#CrotchWidth", "constant": 6.6 }],
+                  "variable": [{ "name": "#CrotchWidth", "constant": 6.6 }],
                   "patternPiece":
                     [
                       {
@@ -483,7 +483,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#CrotchWidth" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#CrotchWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -591,7 +591,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#CrotchWidth" }
+                                  { "variable": "#CrotchWidth" }
                               }
                             },
                             {
@@ -609,7 +609,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#CrotchWidth" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#CrotchWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },

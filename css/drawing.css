@@ -107,12 +107,12 @@ g.j-item.j-measurement div.desc {
     color:#000;
 }
 
-g.j-item.j-increment div.desc {
+g.j-item.j-variable div.desc {
     background-color:#e7faff;
 }
 
 body.k-dark-mode
-g.j-item.j-increment div.desc {
+g.j-item.j-variable div.desc {
     color:#000;
 }
 

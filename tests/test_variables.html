@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>Test Increments</title>
+  <title>Test Variables (Increments)</title>
 
   <link rel="stylesheet" href="../../dist/css/kinoBootstrapCSS_ultra.css" type="text/css" />
   <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
@@ -24,7 +24,7 @@
       <div class="row">
         <a class="col-sm-12" style="font-size:12px; font-weight: normal" href="test.html">back to test menu</a>
 <h1 class="col-sm-12 ">
-          Increments
+          Variables (increments)
         </h1>
       </div>
       <div id="REP1002132">
@@ -35,7 +35,7 @@
               {
                 "pattern":
                 {
-                  "increment":
+                  "variable":
                     [
                       {
                         "name": "#a",
@@ -50,7 +50,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "increment": "#a" }, { "decimalValue": 4.5 }]
+                          "parameter": [{ "variable": "#a" }, { "decimalValue": 4.5 }]
                         }
                       }
                     ],
@@ -72,12 +72,12 @@
                               "angle":
                               {
                                 "expression":
-                                  { "increment": "#b" }
+                                  { "variable": "#b" }
                               },
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#a" }
+                                  { "variable": "#a" }
                               }
                             }
                           ]

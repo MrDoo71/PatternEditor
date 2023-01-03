@@ -44,7 +44,7 @@
                   "notes":
                     "Some measurements use literals that are to be adjusted for different sizes.  This is based on the size 12 example from the book. \u000aThe bezier curve control points for the armscye are a guess, chosen to go through the points specified in the book.  ",
                   "measurement": [{ "name": "armscye_length", "value": 16, "units": "cm" }, { "name": "across_back_b", "value": 33, "units": "cm" }, { "name": "across_chest_f", "value": 36, "units": "cm" }, { "name": "shoulder_length", "value": 13, "units": "cm" }, { "name": "waist_to_hip_b", "value": 20.6, "units": "cm" }, { "name": "waist_to_hip_f", "value": 19.1, "units": "cm" }, { "name": "neck_back_to_waist_b", "value": 40.5, "units": "cm" }, { "name": "hip_circ", "value": 107, "units": "cm" }, { "name": "waist_circ", "value": 78, "units": "cm" }, { "name": "lowbust_circ", "value": 80, "units": "cm" }, { "name": "bust_circ", "value": 93, "units": "cm" }, { "name": "neck_circ", "value": 38, "units": "cm" }],
-                  "increment":
+                  "variable":
                     [
                       { "name": "#isCloseFittingSleevelessBlock", "constant": 2 },
                       { "name": "#isCloseWaistShaping", "constant": 1 },
@@ -60,7 +60,7 @@
                             [
                               {
                                 "operation": "==",
-                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
+                                "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
                               { "integerValue": 5 },
                               {
@@ -73,7 +73,7 @@
                                         [
                                           {
                                             "operation": "==",
-                                            "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
+                                            "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
                                           },
                                           { "integerValue": 2 },
                                           {
@@ -95,7 +95,7 @@
                                                             { "integerValue": 2 }
                                                           ]
                                                       },
-                                                      { "increment": "#NegativeBustEase" }
+                                                      { "variable": "#NegativeBustEase" }
                                                     ]
                                                 }
                                               ]
@@ -116,7 +116,7 @@
                             [
                               {
                                 "operation": "==",
-                                "parameter": [{ "increment": "#isCloseWaistShaping" }, { "integerValue": 1 }]
+                                "parameter": [{ "variable": "#isCloseWaistShaping" }, { "integerValue": 1 }]
                               },
                               {
                                 "operation": "?",
@@ -124,7 +124,7 @@
                                   [
                                     {
                                       "operation": "==",
-                                      "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
+                                      "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
                                     },
                                     {
                                       "operation": "()",
@@ -145,7 +145,7 @@
                                                       { "integerValue": 2 }
                                                     ]
                                                 },
-                                                { "increment": "#NegativeWaistEase" }
+                                                { "variable": "#NegativeWaistEase" }
                                               ]
                                           }
                                         ]
@@ -166,7 +166,7 @@
                             [
                               {
                                 "operation": "==",
-                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
+                                "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
                               { "integerValue": 2 },
                               {
@@ -175,7 +175,7 @@
                                   [
                                     {
                                       "operation": "==",
-                                      "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
+                                      "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 1 }]
                                     },
                                     { "integerValue": 0 },
                                     {
@@ -197,7 +197,7 @@
                                                       { "integerValue": 2 }
                                                     ]
                                                 },
-                                                { "increment": "#NegativeHipEase" }
+                                                { "variable": "#NegativeHipEase" }
                                               ]
                                           }
                                         ]
@@ -216,7 +216,7 @@
                             [
                               {
                                 "operation": "==",
-                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
+                                "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 0 }]
                               },
                               { "integerValue": 0 },
                               { "integerValue": 1 }
@@ -233,7 +233,7 @@
                             [
                               {
                                 "operation": "==",
-                                "parameter": [{ "increment": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
+                                "parameter": [{ "variable": "#isCloseFittingSleevelessBlock" }, { "integerValue": 2 }]
                               },
                               { "integerValue": 0 },
                               { "decimalValue": 0.5 }
@@ -263,7 +263,7 @@
                                           }
                                         ]
                                     },
-                                    { "increment": "#BustEase" }
+                                    { "variable": "#BustEase" }
                                   ]
                               },
                               {
@@ -284,7 +284,7 @@
                                                 }
                                               ]
                                           },
-                                          { "increment": "#WaistEase" }
+                                          { "variable": "#WaistEase" }
                                         ]
                                     }
                                   ]
@@ -325,7 +325,7 @@
                                                 }
                                               ]
                                           },
-                                          { "increment": "#BustEase" }
+                                          { "variable": "#BustEase" }
                                         ]
                                     }
                                   ]
@@ -348,7 +348,7 @@
                                                 }
                                               ]
                                           },
-                                          { "increment": "#WaistEase" }
+                                          { "variable": "#WaistEase" }
                                         ]
                                     }
                                   ]
@@ -371,7 +371,7 @@
                                       "operation": "/",
                                       "parameter": [{ "integerValue": 3 }, { "integerValue": 12 }]
                                     },
-                                    { "increment": "#LowBustWaistDifference" }
+                                    { "variable": "#LowBustWaistDifference" }
                                   ]
                               },
                               { "integerValue": 1 }
@@ -397,12 +397,12 @@
                                             "operation": "/",
                                             "parameter": [{ "integerValue": 3 }, { "integerValue": 12 }]
                                           },
-                                          { "increment": "#LowBustWaistDifference" }
+                                          { "variable": "#LowBustWaistDifference" }
                                         ]
                                     },
                                     {
                                       "operation": "*",
-                                      "parameter": [{ "decimalValue": 0.33 }, { "increment": "#BustLowBustDifference" }]
+                                      "parameter": [{ "decimalValue": 0.33 }, { "variable": "#BustLowBustDifference" }]
                                     }
                                   ]
                               },
@@ -429,12 +429,12 @@
                                             "operation": "/",
                                             "parameter": [{ "integerValue": 3 }, { "integerValue": 12 }]
                                           },
-                                          { "increment": "#LowBustWaistDifference" }
+                                          { "variable": "#LowBustWaistDifference" }
                                         ]
                                     },
                                     {
                                       "operation": "*",
-                                      "parameter": [{ "decimalValue": 0.33 }, { "increment": "#BustLowBustDifference" }]
+                                      "parameter": [{ "decimalValue": 0.33 }, { "variable": "#BustLowBustDifference" }]
                                     }
                                   ]
                               },
@@ -457,7 +457,7 @@
                                       "operation": "/",
                                       "parameter": [{ "integerValue": 3 }, { "integerValue": 12 }]
                                     },
-                                    { "increment": "#LowBustWaistDifference" }
+                                    { "variable": "#LowBustWaistDifference" }
                                   ]
                               },
                               { "integerValue": 1 }
@@ -491,7 +491,7 @@
                                                     [
                                                       {
                                                         "operation": "*",
-                                                        "parameter": [{ "integerValue": 2 }, { "increment": "#WaistEase" }]
+                                                        "parameter": [{ "integerValue": 2 }, { "variable": "#WaistEase" }]
                                                       }
                                                     ]
                                                 }
@@ -513,14 +513,14 @@
                           "operation": "+",
                           "parameter":
                             [
-                              { "increment": "#HCSWaistDiameter" },
+                              { "variable": "#HCSWaistDiameter" },
                               {
                                 "operation": "()",
                                 "parameter":
                                   [
                                     {
                                       "operation": "*",
-                                      "parameter": [{ "integerValue": 2 }, { "increment": "#WaistToHem" }]
+                                      "parameter": [{ "integerValue": 2 }, { "variable": "#WaistToHem" }]
                                     }
                                   ]
                               }
@@ -620,7 +620,7 @@
                                         "operation": "/",
                                         "parameter": [{ "measurement": "bust_circ" }, { "integerValue": 2 }]
                                       },
-                                      { "increment": "#BustEase" }
+                                      { "variable": "#BustEase" }
                                     ]
                                 }
                               }
@@ -637,7 +637,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#SleevelessBlock" }
+                                  { "variable": "#SleevelessBlock" }
                               }
                             },
                             { "name": "A3b", "objectType": "pointFromXandYOfTwoOtherPoints", "firstPoint": "A3", "secondPoint": "A2a", "mx": 0.420793, "my": -1.21398 },
@@ -723,7 +723,7 @@
                                         "operation": "+",
                                         "parameter": [{ "variableType": "lengthOfLine", "drawingObject1": "A0", "drawingObject2": "A1" }, { "variableType": "lengthOfLine", "drawingObject1": "A1", "drawingObject2": "A2" }]
                                       },
-                                      { "increment": "#Size14PlusTweak" }
+                                      { "variable": "#Size14PlusTweak" }
                                     ]
                                 }
                               }
@@ -795,7 +795,7 @@
                                 "expression":
                                 {
                                   "operation": "-",
-                                  "parameter": [{ "measurement": "shoulder_length" }, { "increment": "#SleevelessBlock" }]
+                                  "parameter": [{ "measurement": "shoulder_length" }, { "variable": "#SleevelessBlock" }]
                                 }
                               }
                             },
@@ -896,7 +896,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -914,7 +914,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#RearShoulderDartWidth" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -945,10 +945,10 @@
                                               "operation": "/",
                                               "parameter": [{ "measurement": "across_back_b" }, { "integerValue": 2 }]
                                             },
-                                            { "increment": "#AcrossBackEase" }
+                                            { "variable": "#AcrossBackEase" }
                                           ]
                                       },
-                                      { "increment": "#SleevelessBlock" }
+                                      { "variable": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -1109,11 +1109,11 @@
                                             },
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#FrontShoulderDart" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#FrontShoulderDart" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
-                                      { "increment": "#SleevelessBlock" }
+                                      { "variable": "#SleevelessBlock" }
                                     ]
                                 }
                               }
@@ -1210,7 +1210,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#FrontShoulderDart" }
+                                  { "variable": "#FrontShoulderDart" }
                               }
                             },
                             { "derivedName": "Line_A26_A27", "objectType": "line", "firstPoint": "A26", "secondPoint": "A27", "lineStyle": "hair", "color": "black" },
@@ -1297,7 +1297,7 @@
                                 "expression":
                                 {
                                   "operation": "-",
-                                  "parameter": [{ "measurement": "shoulder_length" }, { "increment": "#SleevelessBlock" }]
+                                  "parameter": [{ "measurement": "shoulder_length" }, { "variable": "#SleevelessBlock" }]
                                 }
                               }
                             },
@@ -1546,7 +1546,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#RearWaistDart" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#RearWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1564,7 +1564,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#RearWaistDart" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#RearWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1586,7 +1586,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#FrontWaistDart" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#FrontWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1604,7 +1604,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#FrontWaistDart" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#FrontWaistDart" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -1624,7 +1624,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#SideWaistDartFront" }
+                                  { "variable": "#SideWaistDartFront" }
                               }
                             },
                             {
@@ -1639,7 +1639,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#SideWaistDartRear" }
+                                  { "variable": "#SideWaistDartRear" }
                               }
                             },
                             { "derivedName": "Line_A32_C5", "objectType": "line", "firstPoint": "A32", "secondPoint": "C5", "lineStyle": "hair", "color": "mediumseagreen" },
@@ -1659,7 +1659,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#WaistToHem" }
+                                  { "variable": "#WaistToHem" }
                               }
                             },
                             {
@@ -1675,7 +1675,7 @@
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#WaistToHem" }
+                                  { "variable": "#WaistToHem" }
                               }
                             },
                             { "derivedName": "Line_D1_D2", "objectType": "line", "firstPoint": "D1", "secondPoint": "D2", "lineStyle": "hair", "color": "black" },
@@ -1712,7 +1712,7 @@
                                 "expression":
                                 {
                                   "operation": "*",
-                                  "parameter": [{ "keyword": "CurrentLength" }, { "increment": "#AboveBustLine" }]
+                                  "parameter": [{ "keyword": "CurrentLength" }, { "variable": "#AboveBustLine" }]
                                 }
                               }
                             },
@@ -1870,7 +1870,7 @@
                                                         }
                                                       ]
                                                   },
-                                                  { "increment": "#HipEase" }
+                                                  { "variable": "#HipEase" }
                                                 ]
                                             }
                                           ]
@@ -1914,7 +1914,7 @@
                                                         }
                                                       ]
                                                   },
-                                                  { "increment": "#HipEase" }
+                                                  { "variable": "#HipEase" }
                                                 ]
                                             }
                                           ]
@@ -2345,7 +2345,7 @@
                                                     "operation": "/",
                                                     "parameter": [{ "measurement": "waist_circ" }, { "integerValue": 2 }]
                                                   },
-                                                  { "increment": "#WaistEase" }
+                                                  { "variable": "#WaistEase" }
                                                 ]
                                             }
                                           ]
@@ -2401,7 +2401,7 @@
                                                     "operation": "/",
                                                     "parameter": [{ "measurement": "waist_circ" }, { "integerValue": 2 }]
                                                   },
-                                                  { "increment": "#WaistEase" }
+                                                  { "variable": "#WaistEase" }
                                                 ]
                                             }
                                           ]
@@ -2661,7 +2661,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSHemDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSHemDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2680,7 +2680,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSHemDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSHemDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2699,7 +2699,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSHemDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSHemDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2718,7 +2718,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2745,13 +2745,13 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
                                       {
                                         "operation": "*",
-                                        "parameter": [{ "decimalValue": 0.7 }, { "increment": "#WaistToHem" }]
+                                        "parameter": [{ "decimalValue": 0.7 }, { "variable": "#WaistToHem" }]
                                       }
                                     ]
                                 }
@@ -2772,7 +2772,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2811,7 +2811,7 @@
                                     [
                                       {
                                         "operation": "/",
-                                        "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                        "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                       },
                                       { "measurement": "waist_to_hip_f" }
                                     ]
@@ -2878,13 +2878,13 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
                                       {
                                         "operation": "*",
-                                        "parameter": [{ "decimalValue": 0.7 }, { "increment": "#WaistToHem" }]
+                                        "parameter": [{ "decimalValue": 0.7 }, { "variable": "#WaistToHem" }]
                                       }
                                     ]
                                 }
@@ -2912,13 +2912,13 @@
                                           [
                                             {
                                               "operation": "/",
-                                              "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                              "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                             }
                                           ]
                                       },
                                       {
                                         "operation": "*",
-                                        "parameter": [{ "decimalValue": 0.7 }, { "increment": "#WaistToHem" }]
+                                        "parameter": [{ "decimalValue": 0.7 }, { "variable": "#WaistToHem" }]
                                       }
                                     ]
                                 }
@@ -2938,7 +2938,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },
@@ -2956,7 +2956,7 @@
                                 "expression":
                                 {
                                   "operation": "/",
-                                  "parameter": [{ "increment": "#HCSWaistDiameter" }, { "integerValue": 2 }]
+                                  "parameter": [{ "variable": "#HCSWaistDiameter" }, { "integerValue": 2 }]
                                 }
                               }
                             },

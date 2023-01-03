@@ -7,7 +7,7 @@ class Pattern {
         this.data = data;
         this.options = options;
         this.patternData = data.pattern;
-        this.increment = {};
+        this.variable = {};
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
@@ -19,7 +19,7 @@ class Pattern {
                 var m = this.patternData.measurement[a];
                 var measurementUnits = this.units;
 
-                //TODO test this increment that is a simple value...            
+                //TODO test this variable that is a simple value...            
                 if (typeof m.value !== "undefined") 
                 {
                     m.constant = m.value;
@@ -45,19 +45,19 @@ class Pattern {
             }
         }        
         
-        if ( typeof this.patternData.increment !== "undefined" )
+        if ( typeof this.patternData.variable !== "undefined" )
         {
-            //Register all increments before calculating their values in to deal with dependencies.
-            for (var a = 0; a < this.patternData.increment.length; a++) {
-                var inc = this.patternData.increment[a];
-                this.increment[ inc.name ] = inc;
-                inc.isIncrement = true;
+            //Register all variable before calculating their values in to deal with dependencies.
+            for (var a = 0; a < this.patternData.variable.length; a++) {
+                var v = this.patternData.variable[a];
+                this.variable[ v.name ] = v;
+                v.isVariable = true;
             }
 
-            //Now the increments are all registered, calculate their values.
-            for (var a = 0; a < this.patternData.increment.length; a++) { 
-                var inc = this.patternData.increment[a];   
-                //TODO test this increment that is a simple value...            
+            //Now the variable are all registered, calculate their values.
+            for (var a = 0; a < this.patternData.variable.length; a++) { 
+                var inc = this.patternData.variable[a];   
+                //TODO test this variable that is a simple value...            
                 if (typeof inc.constant !== "undefined") 
                 {
                     inc.value = function () {
@@ -101,7 +101,7 @@ class Pattern {
 
                 if (   ( target && typeof target.expression === "object" )
                     && ( ! target.isMeasurement )
-                    && ( ! target.isIncrement ) )
+                    && ( ! target.isVariable ) )
                 {
                     if ( target.expression.addDependencies )
                         target.expression.addDependencies( source, this );
@@ -115,11 +115,11 @@ class Pattern {
             }  
         };
         
-        if ( this.increment )
+        if ( this.variable )
         {
-            for( var i in this.increment )
+            for( var i in this.variable )
             {
-                var inc = this.increment[i];
+                var inc = this.variable[i];
                 if ( inc.expression ) 
                     inc.expression.addDependencies( inc, this.dependencies );
                     //this.dependencies.add( inc, inc.expression );
@@ -140,10 +140,10 @@ class Pattern {
     }
 
 
-    getIncrement(name) {
+    getVariable(name) {
         if (typeof name === "object")
             return name;
-        return this.increment[name];
+        return this.variable[name];
     }
 
     getMeasurement(name) {

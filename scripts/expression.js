@@ -43,10 +43,10 @@ class Expression {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
             }
-            else if ( typeof data.increment !== "undefined")
+            else if ( typeof data.variable !== "undefined")
             {
-                this.variable = pattern.getIncrement( data.increment );
-                this.value = this.incrementValue;
+                this.variable = pattern.getVariable( data.variable );
+                this.value = this.variableValue;
             }
             else if ( data.measurement )
             {
@@ -157,7 +157,7 @@ class Expression {
     }
 
     
-    incrementValue() {
+    variableValue() {
         return this.variable.value();
     }    
 
@@ -620,10 +620,10 @@ class Expression {
         if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );
 
-        //increment or measurement
+        //variable or measurement
         if (    ( typeof this.variable !== "undefined")
              && (    ( this.variable.isMeasurement  )
-                  || ( this.variable.isIncrement  ) ) )
+                  || ( this.variable.isVariable  ) ) )
             dependencies.add( source, this.variable );
 
         //recurse into the expression parameters.

@@ -53,7 +53,7 @@
                 {
                   "units": "cm",
                   "measurement": [{ "name": "waist_circ", "value": 82, "units": "cm" }, { "name": "height", "value": 182, "units": "cm" }],
-                  "increment":
+                  "variable":
                     [
                       {
                         "name": "#a",
@@ -68,7 +68,7 @@
                         "expression":
                         {
                           "operation": "*",
-                          "parameter": [{ "increment": "#a" }, { "decimalValue": 4.5 }]
+                          "parameter": [{ "variable": "#a" }, { "decimalValue": 4.5 }]
                         }
                       }
                     ],
@@ -90,12 +90,12 @@
                               "angle":
                               {
                                 "expression":
-                                  { "increment": "#b" }
+                                  { "variable": "#b" }
                               },
                               "length":
                               {
                                 "expression":
-                                  { "increment": "#a" }
+                                  { "variable": "#a" }
                               }
                             },
                             {

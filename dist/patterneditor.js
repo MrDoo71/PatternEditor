@@ -3091,7 +3091,7 @@ class Pattern {
         this.data = data;
         this.options = options;
         this.patternData = data.pattern;
-        this.increment = {};
+        this.variable = {};
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
@@ -3103,7 +3103,7 @@ class Pattern {
                 var m = this.patternData.measurement[a];
                 var measurementUnits = this.units;
 
-                //TODO test this increment that is a simple value...            
+                //TODO test this variable that is a simple value...            
                 if (typeof m.value !== "undefined") 
                 {
                     m.constant = m.value;
@@ -3129,19 +3129,19 @@ class Pattern {
             }
         }        
         
-        if ( typeof this.patternData.increment !== "undefined" )
+        if ( typeof this.patternData.variable !== "undefined" )
         {
-            //Register all increments before calculating their values in to deal with dependencies.
-            for (var a = 0; a < this.patternData.increment.length; a++) {
-                var inc = this.patternData.increment[a];
-                this.increment[ inc.name ] = inc;
+            //Register all variable before calculating their values in to deal with dependencies.
+            for (var a = 0; a < this.patternData.variable.length; a++) {
+                var inc = this.patternData.variable[a];
+                this.variable[ inc.name ] = inc;
                 inc.isIncrement = true;
             }
 
-            //Now the increments are all registered, calculate their values.
-            for (var a = 0; a < this.patternData.increment.length; a++) { 
-                var inc = this.patternData.increment[a];   
-                //TODO test this increment that is a simple value...            
+            //Now the variable are all registered, calculate their values.
+            for (var a = 0; a < this.patternData.variable.length; a++) { 
+                var inc = this.patternData.variable[a];   
+                //TODO test this variable that is a simple value...            
                 if (typeof inc.constant !== "undefined") 
                 {
                     inc.value = function () {
@@ -3199,11 +3199,11 @@ class Pattern {
             }  
         };
         
-        if ( this.increment )
+        if ( this.variable )
         {
-            for( var i in this.increment )
+            for( var i in this.variable )
             {
-                var inc = this.increment[i];
+                var inc = this.variable[i];
                 if ( inc.expression ) 
                     inc.expression.addDependencies( inc, this.dependencies );
                     //this.dependencies.add( inc, inc.expression );
@@ -3227,7 +3227,7 @@ class Pattern {
     getIncrement(name) {
         if (typeof name === "object")
             return name;
-        return this.increment[name];
+        return this.variable[name];
     }
 
     getMeasurement(name) {
@@ -4504,17 +4504,17 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     var combinedObjects = [];
 
-    //TODO ? a mode where we don't include measurements and increments in the table.
+    //TODO ? a mode where we don't include measurements and variables in the table.
     if ( pattern.measurement )
     {
         for( var m in pattern.measurement )
             combinedObjects.push( pattern.measurement[m] );
     }
 
-    if ( pattern.increment )
+    if ( pattern.variable )
     {
-        for( var i in pattern.increment )
-            combinedObjects.push( pattern.increment[i] );
+        for( var i in pattern.variable )
+            combinedObjects.push( pattern.variable[i] );
     }
 
     for( var j=0; j< pattern.patternPieces.length; j++ )
@@ -4559,7 +4559,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             classes += " j-measurement";
 
         if ( d.isIncrement )
-            classes += " j-increment";
+            classes += " j-variable";
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
@@ -4759,10 +4759,10 @@ class Expression {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
             }
-            else if ( typeof data.increment !== "undefined")
+            else if ( typeof data.variable !== "undefined")
             {
-                this.variable = pattern.getIncrement( data.increment );
-                this.value = this.incrementValue;
+                this.variable = pattern.getIncrement( data.variable );
+                this.value = this.variableValue;
             }
             else if ( data.measurement )
             {
@@ -4873,7 +4873,7 @@ class Expression {
     }
 
     
-    incrementValue() {
+    variableValue() {
         return this.variable.value();
     }    
 
@@ -5336,7 +5336,7 @@ class Expression {
         if ( typeof this.drawingObject !== "undefined" ) //e.g. lengthOfArc
             dependencies.add( source, this.drawingObject );
 
-        //increment or measurement
+        //variable or measurement
         if (    ( typeof this.variable !== "undefined")
              && (    ( this.variable.isMeasurement  )
                   || ( this.variable.isIncrement  ) ) )
@@ -6017,7 +6017,7 @@ class GeoLine {
             if ( ! alreadyTweaked )
             {
                 console.log( "Failed for angle ", this.angle );
-                console.log( "PI:", this.angle/Math.PI );
+                //console.log( "PI:", this.angle/Math.PI );
                 var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.000000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
                 return lineTweaked.intersectArc( arc, true );
             }
