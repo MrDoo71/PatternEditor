@@ -3133,9 +3133,9 @@ class Pattern {
         {
             //Register all variable before calculating their values in to deal with dependencies.
             for (var a = 0; a < this.patternData.variable.length; a++) {
-                var inc = this.patternData.variable[a];
-                this.variable[ inc.name ] = inc;
-                inc.isIncrement = true;
+                var v = this.patternData.variable[a];
+                this.variable[ v.name ] = v;
+                v.isVariable = true;
             }
 
             //Now the variable are all registered, calculate their values.
@@ -3185,7 +3185,7 @@ class Pattern {
 
                 if (   ( target && typeof target.expression === "object" )
                     && ( ! target.isMeasurement )
-                    && ( ! target.isIncrement ) )
+                    && ( ! target.isVariable ) )
                 {
                     if ( target.expression.addDependencies )
                         target.expression.addDependencies( source, this );
@@ -3224,7 +3224,7 @@ class Pattern {
     }
 
 
-    getIncrement(name) {
+    getVariable(name) {
         if (typeof name === "object")
             return name;
         return this.variable[name];
@@ -3864,7 +3864,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             }
 
             if ( ! a )
-                a = pattern.getIncrement( options.focus );
+                a = pattern.getVariable( options.focus );
 
             if ( a )
                 focusDrawingObject(a, true);
@@ -4558,7 +4558,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         if ( d.isMeasurement )
             classes += " j-measurement";
 
-        if ( d.isIncrement )
+        if ( d.isVariable )
             classes += " j-variable";
 
         d.tableSvg = g;
@@ -4761,7 +4761,7 @@ class Expression {
             }
             else if ( typeof data.variable !== "undefined")
             {
-                this.variable = pattern.getIncrement( data.variable );
+                this.variable = pattern.getVariable( data.variable );
                 this.value = this.variableValue;
             }
             else if ( data.measurement )
@@ -5339,7 +5339,7 @@ class Expression {
         //variable or measurement
         if (    ( typeof this.variable !== "undefined")
              && (    ( this.variable.isMeasurement  )
-                  || ( this.variable.isIncrement  ) ) )
+                  || ( this.variable.isVariable  ) ) )
             dependencies.add( source, this.variable );
 
         //recurse into the expression parameters.
