@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pattern>
+    <version>0.6.3</version>
+    <unit>cm</unit>
+    <description/>
+    <notes/>
+    <patternLabel/>
+    <measurements/>
+    <increments/>
+    <draw name="GroupingTest">
+        <calculation>
+            <point id="1" mx="0.132292" my="0.264583" name="A" type="single" x="0.79375" y="1.05833"/>
+            <point angle="0" basePoint="1" id="2" length="9" lineColor="black" lineType="" mx="0.132292" my="0.264583" name="A1" type="endLine"/>
+            <point angle="90" basePoint="2" id="3" length="5" lineColor="black" lineType="" mx="0.132292" my="0.264583" name="A2" type="endLine"/>
+            <point angle="350" basePoint="1" id="4" length="1" lineColor="cornflowerblue" lineType="dotLine" mx="0.132292" my="0.264583" name="A3" type="endLine"/>
+            <point angle="45" basePoint="2" id="5" length="2" lineColor="cornflowerblue" lineType="dotLine" mx="0.132292" my="0.264583" name="A4" type="endLine"/>
+            <point firstPoint="5" id="6" length="4" lineColor="cornflowerblue" lineType="dotLine" mx="0.132292" my="0.264583" name="A5" secondPoint="2" type="alongLine"/>
+            <point angle="335" basePoint="3" id="7" length="1" lineColor="cornflowerblue" lineType="dotLine" mx="0.132292" my="0.264583" name="A6" type="endLine"/>
+            <spline color="deeppink" id="8" type="cubicBezierPath">
+                <pathPoint pSpline="1"/>
+                <pathPoint pSpline="4"/>
+                <pathPoint pSpline="6"/>
+                <pathPoint pSpline="2"/>
+                <pathPoint pSpline="5"/>
+                <pathPoint pSpline="7"/>
+                <pathPoint pSpline="3"/>
+            </spline>
+        </calculation>
+        <modeling/>
+        <details/>
+        <groups>
+            <group id="9" name="Curve control points" visible="true">
+                <item object="4" tool="4"/>
+                <item object="5" tool="5"/>
+                <item object="6" tool="6"/>
+                <item object="7" tool="7"/>
+            </group>
+            <group id="11" name="Curves" visible="true">
+                <item object="8" tool="8"/>
+            </group>
+            <group id="12" name="End points" visible="true">
+                <item object="4" tool="4"/>
+                <item object="7" tool="7"/>
+            </group>
+            <group id="14" name="Main points" visible="true">
+                <item object="1" tool="1"/>
+                <item object="2" tool="2"/>
+                <item object="3" tool="3"/>
+            </group>
+        </groups>
+    </draw>
+</pattern>

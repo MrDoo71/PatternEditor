@@ -245,6 +245,31 @@ class DrawingObject /*abstract*/ {
         data.p1Line1 = this;
         return this.patternPiece.add(data);
     }
+
+
+    setIsMemberOfGroup( group )
+    {
+        if ( ! this.memberOf )        
+            this.memberOf = [];
+
+        this.memberOf.push( group );
+    }
+
+
+    isVisible()
+    {
+        if ( ! this.memberOf )   
+            return true;
+        
+        var isVisible = false;
+        this.memberOf.forEach( 
+            function(g) { 
+                if ( g.visible ) 
+                    isVisible = true; 
+            } ); 
+
+        return isVisible; //We are in 1+ groups, but none were visible.
+    }
 }
 
 class ArcElliptical extends DrawingObject {
@@ -3272,9 +3297,10 @@ class PatternPiece {
             this.drawingObjects = data.drawingObject;
         }
         else {
-            this.drawingObjects = [];
+            this.drawingObjects = [];            
         }
         this.bounds = new Bounds();
+        this.groups = [];
 
         if ( pattern ) //always true, except in some test harnesses
             this.bounds.parent = pattern.bounds;
@@ -3296,6 +3322,11 @@ class PatternPiece {
             this.drawingObjects[a] = dObj; //these are now the objects with methods
             this.registerObj(dObj);
         }
+        //Take each group in the JSON and convert to an object
+        if ( this.data.group )
+            for (var a = 0; a < this.data.group.length; a++) {
+                this.groups[a] = new Group( this.data.group[a], this );
+            }
     }
 
     
@@ -3971,23 +4002,70 @@ function doControls( graphdiv, editorOptions, pattern )
         var fullPageButton = controls.append("button")
                                      .attr("class", "btn btn-default toggle-full-page")
                                      .html( '<i class="icon-fullscreen" />' )
+                                     .attr("title","Toggle full screen")
                                      .on("click", toggleFullScreen );
     }
 
-    //if ( editorOptions.includeFullPageOption )
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
             editorOptions.showFormulas = ! editorOptions.showFormulas;
-            d3.select(this).text( editorOptions.showFormulas ? "hide formulas" : "show formulas" );
+            $(this).children("i").attr("class",editorOptions.showFormulas ? "icon-check" : "icon-check-empty" );
             doDrawingAndTable( true /*retain focus*/ );
         };
 
-        var toggleShowFormulas = controls.append("button")
-                                     .attr("class", "btn btn-default toggle-show_formulas")
-                                     .text( editorOptions.showFormulas ? "hide formulas" : "show formulas" )
-                                     .on("click", toggleShowFormulas );
-    }    
+        var optionMenuToggle = function() {
+            d3.event.preventDefault();
+            var $optionMenu = $( "#optionMenu");
+            if ( $optionMenu.is(":visible")) $optionMenu.hide(); else $optionMenu.show();
+        }
+
+        var optionMenu = controls.append("div").attr("class","pattern-config")
+                                 .append("div").attr("id","optionMenu" ); //.css("display","visible")
+        optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
+
+        pattern.patternPieces.forEach( function(pp) {
+            if ( ! pp.groups.length )
+                return;
+            var groupOptionsForPiece = optionMenu.append("section");
+            groupOptionsForPiece.append("h2").text( pp.name );
+            pp.groups.forEach( function(g) {
+                var groupOption = groupOptionsForPiece.append("div").attr("class","group-option");
+                var toggleGroup = function() {
+                    g.visible = ! g.visible;  
+
+                    if(( typeof goGraph === "function" ) && ( g.update ))
+                    {
+                        var kvpSet = newkvpSet(true) ;
+                        kvpSet.add('visible', g.visible ) ;
+                        goGraph(editorOptions.interactionPrefix + ':' + g.update, fakeEvent(), kvpSet) ;    
+                    }
+
+                    return g.visible;
+                };
+                groupOption.append( "i" ).attr("class",  g.visible ? 'icon-eye-open' :'icon-eye-close' )
+                           .on( "click", function() { 
+                                            d3.event.preventDefault();
+                                            var visible = toggleGroup();
+                                            d3.select(this).attr("class",visible ? "icon-eye-open" : "icon-eye-close" );
+                                            doDrawingAndTable( true /*retain focus*/ );
+                                } );
+                groupOption.append( 'span' )
+                           .text(g.name );
+                if (( g.contextMenu ) && ( typeof goGraph === "function" ))
+                groupOption.append( "i" ).attr("class",  "icon-ellipsis-horizontal k-icon-button" )           
+                           .on( "click", function() { 
+                            d3.event.preventDefault();
+                            var v = newkvpSet(false) ;
+                            goGraph( editorOptions.interactionPrefix + ':' + g.contextMenu, d3.event, v );
+                            } );
+            });
+        });
+
+        optionMenu.append("div").attr("class","formula-option").html( '<i class="icon-check"></i>show formulas' ).on("click", toggleShowFormulas );
+
+        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-adjust"></i>' ).attr("title","Group/formula visibility").on("click", optionMenuToggle );
+    } //options menu to show/hide groups and show/hide formula
 
     if ( pattern.wallpapers )
     {
@@ -4189,7 +4267,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("click", onclick)
          .each( function(d,i) {
             var g = d3.select( this );                        
-            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            if (   ( typeof d.draw === "function" ) 
+                && ( ! d.error )
+                && ( d.isVisible() ) )
             try {
                 d.draw( g );
                 d.drawingSvg = g;                 
@@ -4207,7 +4287,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("click", onclick)
          .each( function(d,i) {
             var g = d3.select( this );
-            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            if (   ( typeof d.draw === "function" ) 
+                && ( ! d.error )
+                && ( d.isVisible() ) )
             {
                 d.draw( g, true );
                 d.outlineSvg = g;
@@ -5355,6 +5437,31 @@ class Expression {
 
 
 
+//(c) Copyright 2023 Jason Dore
+//https://github.com/MrDoo71/PatternEditor
+
+class Group {
+
+    constructor (data, patternPiece) {
+        this.data = data;
+        this.patternPiece = patternPiece;
+        this.name = data.name;
+        this.visible = data.visible;
+        this.update = data.update;
+        this.contextMenu = data.contextMenu;
+        this.members = [];
+
+        if ( this.data.member )
+            this.data.member.forEach( function(m){
+                var dObj = this.patternPiece.getObject( m, true );
+                if ( dObj )
+                {
+                    this.members.push( dObj );
+                    dObj.setIsMemberOfGroup( this );
+                }     
+            },this);
+    }
+}
 //(c) Copyright 2019 Jason Dore
 //https://github.com/MrDoo71/PatternEditor
 

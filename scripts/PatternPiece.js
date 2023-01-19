@@ -15,9 +15,10 @@ class PatternPiece {
             this.drawingObjects = data.drawingObject;
         }
         else {
-            this.drawingObjects = [];
+            this.drawingObjects = [];            
         }
         this.bounds = new Bounds();
+        this.groups = [];
 
         if ( pattern ) //always true, except in some test harnesses
             this.bounds.parent = pattern.bounds;
@@ -39,6 +40,11 @@ class PatternPiece {
             this.drawingObjects[a] = dObj; //these are now the objects with methods
             this.registerObj(dObj);
         }
+        //Take each group in the JSON and convert to an object
+        if ( this.data.group )
+            for (var a = 0; a < this.data.group.length; a++) {
+                this.groups[a] = new Group( this.data.group[a], this );
+            }
     }
 
     

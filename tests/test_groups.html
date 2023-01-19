@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Test Groups</title>
+
+  <link rel="stylesheet" href="../../dist/css/kinoBootstrapCSS_ultra.css" type="text/css" />
+  <link rel="stylesheet" href="../../themeresource/1000000/font-awesome.min.css?id=1000004" type="text/css" />
+  <link rel="stylesheet" href="../css/drawing.css" type="text/css" />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+
+  <!--
+  <script type="text/javascript" src="../../smartmenus1.1.0/jquery.smartmenus.js?version=2.30.8rc2" ></script>
+  <script type="text/javascript" src="../../smartmenus1.1.0/addons/keyboard/jquery.smartmenus.keyboard2.js?version=2.30.8rc2" ></script>
+  <script type="text/javascript" src="../../smartmenus1.1.0/addons/bootstrap/jquery.smartmenus.bootstrap.js?version=2.30.8rc2" ></script>
+
+  <script type="text/javascript">
+    function optionMenuToggle()
+    {
+      console.log("MenuToggle");
+      $optionMenu = $( "#optionMenu");
+      if ( $optionMenu.is(":visible")) $optionMenu.hide(); else $optionMenu.show();
+    }
+  </script>
+-->
+</head>
+
+<body>
+
+  
+  <div>
+    <div class="container">
+      <div class="row">
+        <a class="col-sm-12" style="font-size:12px; font-weight: normal" href="test.html">back to test menu</a>
+<h1 class="col-sm-12 ">
+          Test Groups
+        </h1>
+      </div>
+<!--
+<div class="pattern-config" >
+  <div id="optionMenu">
+    <button style="float:right" onclick="optionMenuToggle()"><i class="icon-remove"></i></button>
+    <section>
+      <h2>Main piece:</h2>
+      <div class="group-option"><i class="icon-check"></i> Curve control points</div>
+      <div class="group-option"><i class="icon-check-empty"></i> Main points</div>
+      <div class="group-option"><i class="icon-check"></i> Curves</div>
+    </section>
+    <div class="formula-option"><i class="icon-check"></i> Show formulas</div>
+  </div>
+</div>
+<button class="btn btn-default" onclick="optionMenuToggle()">...</button>
+-->
+      <div id="REP1002132">
+        <!--
+        <div style="position:absolute; z-index:1; opacity:0.3; padding-left:13px; padding-top:24px">
+          <img src="expectedResults/pattern_basicbrief.png" width="424" />
+        </div>
+      -->
+
+        <div id="v343110_graph1" style="z-index:2">
+          <script type="module">
+            import { drawPattern } from '../dist/patterneditor.js';
+            drawPattern(
+              {
+  "options": { "includeFullPageOption": true, "allowPanAndZoom": true, "scale": 1, "fullWindow": false },
+  "pattern": {
+      "units": "cm",
+      "patternPiece":
+      [
+        {
+          "name": "GroupingTest",
+          "drawingObject":
+          [
+            { "name": "A", "objectType": "pointSingle", "x": 0.79375, "y": 1.05833, "mx": 0.132292, "my": 0.264583 }, 
+            {
+              "name": "A1",
+              "objectType": "pointEndLine",
+              "basePoint": "A",
+              "color": "black",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "angle": { "constant": 0 },
+              "length": { "constant": 9 }
+            }, 
+            {
+              "name": "A2",
+              "objectType": "pointEndLine",
+              "basePoint": "A1",
+              "color": "black",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "angle": { "constant": 90 },
+              "length": { "constant": 5 }
+            }, 
+            {
+              "name": "A3",
+              "objectType": "pointEndLine",
+              "basePoint": "A",
+              "lineStyle": "dotLine",
+              "color": "cornflowerblue",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "angle": { "constant": 350 },
+              "length": { "constant": 1 }
+            }, 
+            {
+              "name": "A4",
+              "objectType": "pointEndLine",
+              "basePoint": "A1",
+              "lineStyle": "dotLine",
+              "color": "cornflowerblue",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "angle": { "constant": 45 },
+              "length": { "constant": 2 }
+            }, 
+            {
+              "name": "A5",
+              "objectType": "pointAlongLine",
+              "firstPoint": "A4",
+              "secondPoint": "A1",
+              "lineStyle": "dotLine",
+              "color": "cornflowerblue",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "length": { "constant": 4 }
+            }, 
+            {
+              "name": "A6",
+              "objectType": "pointEndLine",
+              "basePoint": "A2",
+              "lineStyle": "dotLine",
+              "color": "cornflowerblue",
+              "mx": 0.132292,
+              "my": 0.264583,
+              "angle": { "constant": 335 },
+              "length": { "constant": 1 }
+            }, 
+            {
+              "derivedName": "SplPath_A_A2",
+              "objectType": "splinePathUsingPoints",
+              "color": "deeppink",
+              "pathNode": [{ "point": "A" }, { "point": "A3" }, { "point": "A5" }, { "point": "A1" }, { "point": "A4" }, { "point": "A6" }, { "point": "A2" } ]
+            }
+          ],
+          "group":
+          [
+            {
+              "name": "Curve control points",
+              "visible": false,
+              //TODO add callback to bring back the form
+              //perhaps separately the default visibility when someone has pinned the pattern
+              //and a silent callback when we toggle visibility - so that it persists between refreshes
+              "member": [ "A3" ,  "A4" ,  "A5" ,  "A6"  ]
+            }, 
+            {
+              "name": "Curves",
+              "visible": true,
+              "member": [ "SplPath_A_A2"  ]
+            }, 
+            {
+              "name": "End points",
+              "visible": true,
+              "member": [ "A3" ,  "A6"  ]
+            }, 
+            {
+              "name": "Main points",
+              "visible": true,
+              "member": [ "A" ,  "A1" ,  "A2"  ]
+            }
+          ]
+        }
+      ]
+    }
+}
+
+              , 'v343110_graph1', { });
+          </script>
+        </div>
+      </div>
+    </div>
+
+</body>
+
+</html>

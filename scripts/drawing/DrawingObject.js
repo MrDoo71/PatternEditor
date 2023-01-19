@@ -245,4 +245,29 @@ class DrawingObject /*abstract*/ {
         data.p1Line1 = this;
         return this.patternPiece.add(data);
     }
+
+
+    setIsMemberOfGroup( group )
+    {
+        if ( ! this.memberOf )        
+            this.memberOf = [];
+
+        this.memberOf.push( group );
+    }
+
+
+    isVisible()
+    {
+        if ( ! this.memberOf )   
+            return true;
+        
+        var isVisible = false;
+        this.memberOf.forEach( 
+            function(g) { 
+                if ( g.visible ) 
+                    isVisible = true; 
+            } ); 
+
+        return isVisible; //We are in 1+ groups, but none were visible.
+    }
 }

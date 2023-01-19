@@ -63,7 +63,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-           "url": "http://localhost:8080/patternEditor/tests/test.html",
+           "url": "http://localhost:8080/patterneditor/tests/test_groups.html",
            "webRoot": "${workspaceFolder}"
         }        
 

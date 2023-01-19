@@ -475,23 +475,70 @@ function doControls( graphdiv, editorOptions, pattern )
         var fullPageButton = controls.append("button")
                                      .attr("class", "btn btn-default toggle-full-page")
                                      .html( '<i class="icon-fullscreen" />' )
+                                     .attr("title","Toggle full screen")
                                      .on("click", toggleFullScreen );
     }
 
-    //if ( editorOptions.includeFullPageOption )
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
             editorOptions.showFormulas = ! editorOptions.showFormulas;
-            d3.select(this).text( editorOptions.showFormulas ? "hide formulas" : "show formulas" );
+            $(this).children("i").attr("class",editorOptions.showFormulas ? "icon-check" : "icon-check-empty" );
             doDrawingAndTable( true /*retain focus*/ );
         };
 
-        var toggleShowFormulas = controls.append("button")
-                                     .attr("class", "btn btn-default toggle-show_formulas")
-                                     .text( editorOptions.showFormulas ? "hide formulas" : "show formulas" )
-                                     .on("click", toggleShowFormulas );
-    }    
+        var optionMenuToggle = function() {
+            d3.event.preventDefault();
+            var $optionMenu = $( "#optionMenu");
+            if ( $optionMenu.is(":visible")) $optionMenu.hide(); else $optionMenu.show();
+        }
+
+        var optionMenu = controls.append("div").attr("class","pattern-config")
+                                 .append("div").attr("id","optionMenu" ); //.css("display","visible")
+        optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
+
+        pattern.patternPieces.forEach( function(pp) {
+            if ( ! pp.groups.length )
+                return;
+            var groupOptionsForPiece = optionMenu.append("section");
+            groupOptionsForPiece.append("h2").text( pp.name );
+            pp.groups.forEach( function(g) {
+                var groupOption = groupOptionsForPiece.append("div").attr("class","group-option");
+                var toggleGroup = function() {
+                    g.visible = ! g.visible;  
+
+                    if(( typeof goGraph === "function" ) && ( g.update ))
+                    {
+                        var kvpSet = newkvpSet(true) ;
+                        kvpSet.add('visible', g.visible ) ;
+                        goGraph(editorOptions.interactionPrefix + ':' + g.update, fakeEvent(), kvpSet) ;    
+                    }
+
+                    return g.visible;
+                };
+                groupOption.append( "i" ).attr("class",  g.visible ? 'icon-eye-open' :'icon-eye-close' )
+                           .on( "click", function() { 
+                                            d3.event.preventDefault();
+                                            var visible = toggleGroup();
+                                            d3.select(this).attr("class",visible ? "icon-eye-open" : "icon-eye-close" );
+                                            doDrawingAndTable( true /*retain focus*/ );
+                                } );
+                groupOption.append( 'span' )
+                           .text(g.name );
+                if (( g.contextMenu ) && ( typeof goGraph === "function" ))
+                groupOption.append( "i" ).attr("class",  "icon-ellipsis-horizontal k-icon-button" )           
+                           .on( "click", function() { 
+                            d3.event.preventDefault();
+                            var v = newkvpSet(false) ;
+                            goGraph( editorOptions.interactionPrefix + ':' + g.contextMenu, d3.event, v );
+                            } );
+            });
+        });
+
+        optionMenu.append("div").attr("class","formula-option").html( '<i class="icon-check"></i>show formulas' ).on("click", toggleShowFormulas );
+
+        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-adjust"></i>' ).attr("title","Group/formula visibility").on("click", optionMenuToggle );
+    } //options menu to show/hide groups and show/hide formula
 
     if ( pattern.wallpapers )
     {
@@ -693,7 +740,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("click", onclick)
          .each( function(d,i) {
             var g = d3.select( this );                        
-            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            if (   ( typeof d.draw === "function" ) 
+                && ( ! d.error )
+                && ( d.isVisible() ) )
             try {
                 d.draw( g );
                 d.drawingSvg = g;                 
@@ -711,7 +760,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
          .on("click", onclick)
          .each( function(d,i) {
             var g = d3.select( this );
-            if (( typeof d.draw === "function" ) && ( ! d.error ))
+            if (   ( typeof d.draw === "function" ) 
+                && ( ! d.error )
+                && ( d.isVisible() ) )
             {
                 d.draw( g, true );
                 d.outlineSvg = g;
