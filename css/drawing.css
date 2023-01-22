@@ -157,6 +157,10 @@ g.j-item div.desc td {
     padding-right: 8px; 
 }
 
+g.j-item.group-hidden {
+    opacity: 0.5;
+}
+
 path.link {
     fill:none;
     stroke: #ddd;

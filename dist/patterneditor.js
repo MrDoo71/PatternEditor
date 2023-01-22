@@ -4622,15 +4622,12 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             //this - the dom svg element
             //that - the data object
 
-            //console.log( "divHeight() of this:" + this + " that:" + that );
-
-            //var div = $(this).find( "div.nodedesc" );
             var h = $(this).find( "div.outer" ).height();
             
             if ( h < minItemHeight )
                 return minItemHeight;
+
             return h;
-            
         };
 
         var g = d3.select( this );
@@ -4639,9 +4636,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         if ( d.isMeasurement )
             classes += " j-measurement";
-
-        if ( d.isVariable )
+        else if ( d.isVariable )
             classes += " j-variable";
+        else if ( ! d.isVisible() ) //is a drawing object
+            classes += " group-hidden"; //hidden because of groups
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
