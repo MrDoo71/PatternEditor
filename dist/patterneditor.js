@@ -2400,7 +2400,8 @@ class PointShoulder extends DrawingObject {
         try {
             this.p = extendedAxis.intersectArc( arc );
         } catch (e) {
-            //Maybe the line is going in the wrong direction, and therefore extending it didn't help.
+            //Maybe the axisLine is going in the wrong direction, and therefore extending it's length didn't help.
+            //Try reversing axisLine...
             var axisLine = new GeoLine( this.p2Line1.p, this.p1Line1.p );    
             var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
             var offset = new GeoLine( this.shoulderPoint.p, this.p2Line1.p );
@@ -6135,7 +6136,7 @@ class GeoLine {
             {
                 console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
-                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.000000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
+                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.0000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
                 return lineTweaked.intersectArc( arc, true );
             }
             throw "No intersection with arc. ";
