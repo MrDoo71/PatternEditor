@@ -110,7 +110,9 @@ class Pattern {
                 }
                 else if (   ( target instanceof DrawingObject )
                          || ( target.isMeasurement )
-                         || ( target.isIncrement ) )
+                         || ( target.isIncrement ) 
+                         || ( target.isVariable ) 
+                         )
                     this.dependencies.push( { source: source, target: target } ); 
             }  
         };
