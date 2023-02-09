@@ -3667,8 +3667,6 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             availableHeight -= 30;
         }
 
-        //TODO availableHeight remove height of wallpapers descriptions
-
         //console.log("setDrawingTableSplit availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         this.layoutConfig.drawingWidth = availableWidth * drawingTableSplit;
         this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
@@ -4035,7 +4033,7 @@ function doControls( graphdiv, editorOptions, pattern )
             if ( $optionMenu.is(":visible")) $optionMenu.hide(); else $optionMenu.show();
         }
 
-        var optionMenu = controls.append("div").attr("class","pattern-config")
+        var optionMenu = controls.append("div").attr("class","pattern-popup")
                                  .append("div").attr("id","optionMenu" ); //.css("display","visible")
         optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
 
@@ -4086,17 +4084,29 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
 
-        var wallpaperControlsGroupsDiv = controls.append("div").attr("class","wallpapers");
-        wallpaperControlsGroupsDiv.append("div").attr("class","fadeout")
-        var wallpaperControlsGroupsTable = wallpaperControlsGroupsDiv.append("table");
-        wallpaperControlsGroupsTable.selectAll("tr")
+        var wallpaperMenuToggle = function() {
+            d3.event.preventDefault();
+            var $wallpaperMenu = $( "#wallpapersMenu");
+            if ( $wallpaperMenu.is(":visible")) $wallpaperMenu.hide(); else $wallpaperMenu.show();
+        }
+
+        var wallpaperMenu = controls.append("div").attr("class","pattern-popup")
+                                    .append("div").attr("id","wallpapersMenu" ); 
+        wallpaperMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", wallpaperMenuToggle );
+            
+        var wallpaperListSection = wallpaperMenu.append("section");
+        wallpaperListSection.append("h2").text( "Wallpapers" );
+        wallpaperListSection = wallpaperListSection.append("ul");
+        wallpaperListSection.selectAll("li")
             .data( pattern.wallpapers )
             .enter()
-            .append("tr")
+            .append("li")
             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
             .each( function(wallpaper,i){                
                 var wallpaperDiv = d3.select(this);
-                wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
+
+                
+                wallpaperDiv.append( "span" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
                                                                       w.hide = ! w.hide; 
                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
@@ -4105,7 +4115,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
+                wallpaperDiv.append( "span" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
                                                                       if ( w.allowEdit )
                                                                       {
@@ -4115,10 +4125,51 @@ function doControls( graphdiv, editorOptions, pattern )
                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
                                                                       }
                                                                      } );
-                wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
+                wallpaperDiv.append( "span" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
-            });
-    }
+            });            
+
+        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-camera-retro"></i>' ).attr("title","Wallpapers").on("click", wallpaperMenuToggle );
+    } //wallpapers button    
+
+
+//     if ( pattern.wallpapers )
+//     {
+//         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
+// //HERE
+//         var wallpaperControlsGroupsDiv = controls.append("div").attr("class","wallpapers");
+//         wallpaperControlsGroupsDiv.append("div").attr("class","fadeout")
+//         var wallpaperControlsGroupsTable = wallpaperControlsGroupsDiv.append("table");
+//         wallpaperControlsGroupsTable.selectAll("tr")
+//             .data( pattern.wallpapers )
+//             .enter()
+//             .append("tr")
+//             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
+//             .each( function(wallpaper,i){                
+//                 var wallpaperDiv = d3.select(this);
+//                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
+//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
+//                                                                       w.hide = ! w.hide; 
+//                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
+//                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
+//                                                                       w.updateServer();
+//                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
+//                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
+//                                                                      } );
+//                 wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
+//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
+//                                                                       if ( w.allowEdit )
+//                                                                       {
+//                                                                         w.editable = ! w.editable; 
+//                                                                         d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
+//                                                                         var wallpaperGroups = graphdiv.select( "g.wallpapers");
+//                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
+//                                                                       }
+//                                                                      } );
+//                 wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
+//                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
+//             });
+//     }
 }
 
 

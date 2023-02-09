@@ -296,33 +296,6 @@ div.pattern-editor-resize:hover{
     border-color: #eee;
 }
 
-div.wallpapers { 
-    position: absolute; 
-    height: 85px;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    z-index: 1; 
-    margin-top:6px; 
-    padding:6px; border-radius:6px;
-    background: linear-gradient( rgb(255, 255, 255), rgba(255, 255, 255, 0)) }
-div.wallpapers > div.fadeout {
-    width: 100%;
-    bottom: 0px;
-    height: 15px;
-    position: absolute;
-    background: linear-gradient( rgba(255, 255, 255, 0), rgb(255, 255, 255))
-}
-div.wallpapers:hover { 
-    height: initial;
-    overflow-y: visible;
-    z-index: 1; 
-    background-color: white }
-div.wallpapers:hover > div.fadeout {
-    display:none;
-}
-div.wallpapers > table td { padding-left:6px; }
-div.wallpapers > table tr.wallpaper-hidden td { color:#ccc; }
-
 svg.pattern-drawing { 
     display: inline-block;
 }
@@ -385,12 +358,12 @@ Then we can tweak the colour for dark mode.
 body.k-dark-mode 
 */
 
-div.pattern-config {
+div.pattern-popup {
     position: relative;
     display: inline-block;
 }
 
-div.pattern-config > div {
+div.pattern-popup > div {
     display:none; 
     position: absolute; 
     z-index: 1; 
@@ -402,12 +375,12 @@ div.pattern-config > div {
     left: 8px;
 }
 
-.k-dark-mode div.pattern-config > div {
+.k-dark-mode div.pattern-popup > div {
     background-color: #222222;
     border-color: #00a379;
 }
 
-div.pattern-config button {
+div.pattern-popup button {
     float: right;
     padding: 4px;
     margin-left: 4px;
@@ -418,7 +391,7 @@ div.pattern-config button {
     background-color: inherit;
 }
 
-div.pattern-config > div h2 {
+div.pattern-popup > div h2 {
     font-size: 14px;
     font-style: italic;
     font-weight: normal;
@@ -426,26 +399,35 @@ div.pattern-config > div h2 {
     margin-bottom: 2px;
 }
 
-div.pattern-config div.group-option {
+div.pattern-popup div.group-option {
     white-space: nowrap;
 }
 
-div.pattern-config div.formula-option:nth-child(n+3){
+div.pattern-popup div.formula-option:nth-child(n+3){
     border-top: 1px solid silver;
     padding-top: 4px;
     margin-top: 4px;
 }
 
-.k-dark-mode div.pattern-config div.formula-option:nth-child(n+3) {
+.k-dark-mode div.pattern-popup div.formula-option:nth-child(n+3) {
     border-color: #00a379;
 }
 
-div.pattern-config i {
+div.pattern-popup i {
     min-width: 1.25em;
     display: inline-block;
 }
 
-div.pattern-config i.icon-ellipsis-horizontal {
+div.pattern-popup i.icon-ellipsis-horizontal {
     margin-left: 6px;
     display: inline-block;
+}
+
+div.pattern-popup #wallpapersMenu ul  {
+    padding-left: 0px;
+}
+
+div.pattern-popup #wallpapersMenu li  {
+    display: block;
+    white-space: nowrap;
 }
