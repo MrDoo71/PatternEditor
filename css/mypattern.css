@@ -1,0 +1,150 @@
+/* 
+    Created on : 11 Feb 2023, 16:41:34
+    Author     : jase
+*/
+
+div.mp-mini-pattern {
+    padding: 0px 8px 8px 0px;
+}
+
+div.mp-mini-pattern > button {    
+    border-width: 1px;
+    border-color: #c0c0c0;
+    border-style: solid;
+    border-radius: 6px;
+    padding: 8px;
+    background-color: transparent;
+    text-align: left;
+    width: 100%;
+    position: relative;
+    height: 90px;
+}
+
+div.mp-mini-pattern > button > div {
+    height: 100%;
+}
+
+div.mp-mini-pattern-notpinned {
+    opacity: 0.6;
+}
+
+div.mp-mini-pattern-pinned div.mp-mini-pattern > button {
+    border-color: #808080;
+}
+
+.k-dark-mode div.mp-mini-pattern-pinned div.mp-mini-pattern > button {
+    border-color: #e0e0e0;
+}
+
+div.mp-mini-pattern-notpinned:hover {
+    opacity: 1;
+}
+
+
+div.mp-mini-pattern > button:hover {
+    border-width: 2px;
+    padding: 7px;
+    border-color:#449fdc !important;
+}
+
+div.mp-mini-pattern > button > div {
+    position: absolute;
+    top: 8px;
+    width: 100%;
+}
+
+div.mp-mini-pattern > button:hover > div {
+    top: 7px;
+}
+
+div.mp-mini-pattern .mp-mini-pattern-designer {
+    font-size: 10px;
+}
+
+div.mp-mini-pattern .mp-mini-pattern-title {
+    font-weight: 500;
+    width: 100%;
+    padding-right: 6px;
+    clear:right;
+}
+
+div.mp-mini-pattern .mp-mini-pattern-rev {
+    float: right;
+    margin-right: 16px;
+}
+
+div.mp-mini-pattern button:hover .mp-mini-pattern-rev {
+    margin-right: 14px;
+}
+
+div.mp-mini-pattern-filename {
+    color: #c0c0c0;
+    font-size: 10px;
+}
+
+div.mp-mini-pattern-filename i.icon-circle {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 8px;
+}
+
+div.mp-mini-pattern-filename:hover {
+    color:inherit;
+}
+
+div.mp-mini-pattern-preview {
+    font-size: 10px;
+    margin-top: 8px;
+}
+
+div.mp-mini-pattern-tags {
+    position: absolute;
+    bottom: 11px;
+    right: 8px;
+}
+
+div.mp-mini-pattern > button:hover div.mp-mini-pattern-tags {
+    right: 6px;
+    bottom: 9px;
+}
+
+div.mp-mini-pattern-tags .badge {
+    font-size: 10px;
+}
+
+i.mp-mini-pattern-pinned {
+    color: rgb(2, 211, 2);
+    font-size: 14px;
+}
+
+i.mp-mini-pattern-notpinned {
+    color: #c0c0c0;
+    display: inline-block !important;
+    transform: rotate(45deg);
+    font-size: 14px;
+    margin-left:6px;
+}
+
+div.mp-mini-pattern-notpinned:hover
+i.mp-mini-pattern-notpinned {
+    color: #000;
+}
+
+.k-dark-mode div.mp-mini-pattern-notpinned:hover
+i.mp-mini-pattern-notpinned {
+    color: #fff;
+}
+
+.tag-filters > span {
+    opacity: 0.3;
+}
+
+.tag-filters > span > button {
+    border-style: none;
+    margin-right: 1px;
+}
+
+.tag-filters > span.tag-filter-active,
+.tag-filters > span:hover {
+    opacity: 1;
+}
