@@ -12,6 +12,7 @@ class Pattern {
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
         this.bounds = new Bounds();
+        this.visibleBounds = new Bounds();
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {

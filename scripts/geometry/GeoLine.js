@@ -169,7 +169,7 @@ class GeoLine {
         { 
             if ( ! alreadyTweaked )
             {
-                console.log( "Failed for angle ", this.angle );
+                //console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
                 var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.0000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
                 return lineTweaked.intersectArc( arc, true );

@@ -18,10 +18,14 @@ class PatternPiece {
             this.drawingObjects = [];            
         }
         this.bounds = new Bounds();
+        this.visibleBounds = new Bounds();
         this.groups = [];
 
         if ( pattern ) //always true, except in some test harnesses
+        {
             this.bounds.parent = pattern.bounds;
+            this.visibleBounds.parent = pattern.visibleBounds;
+        }
 
         this.init();
     }
@@ -38,13 +42,27 @@ class PatternPiece {
                 continue;
             //    throw( "Unknown objectType:" + dObj.objectType );
             this.drawingObjects[a] = dObj; //these are now the objects with methods
-            this.registerObj(dObj);
+
+
+            this.drawing[dObj.data.name] = dObj;
+            dObj.patternPiece = this;    
+            this.calculateObj(dObj);
         }
-        //Take each group in the JSON and convert to an object
+
+        //Take each group in the JSON and convert to an object. 
+        //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
             for (var a = 0; a < this.data.group.length; a++) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
+        
+        //Calculate the visible bounds
+        this.drawingObjects.forEach( function(dObj){
+            if (   ( dObj.isVisible() )
+                && ( dObj.data.lineStyle !== "none" ) )         
+                dObj.adjustBounds( this.visibleBounds );
+        }, this) ;
+
     }
 
     
@@ -200,9 +218,8 @@ class PatternPiece {
         return f;
     }
 
-    registerObj(dObj) {
-        this.drawing[dObj.data.name] = dObj;
-        dObj.patternPiece = this;
+    calculateObj(dObj) {
+
         if (typeof dObj.calculate !== "undefined") {
             
             try {
@@ -218,13 +235,12 @@ class PatternPiece {
     pointSingle(data) {
         data.objectType = "pointSingle";
         var dObj = this.add( data );
-        //var dObj = new PointSingle(data);
-        //this.drawingObjects.push(dObj);
-        //this.registerObj(dObj);
         return dObj;
     }
 
     add(data) {
+console.log("Add() is this used anywhere?");
+
         if (this.defaults) {
             for (var d in this.defaults) {
                 if (typeof data[d] === "undefined")
@@ -233,7 +249,9 @@ class PatternPiece {
         }
         var dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
-        this.registerObj(dObj);
+        this.drawing[dObj.data.name] = dObj;
+        dObj.patternPiece = this;
+        this.calculateObj(dObj);
         return dObj;
     }
 

@@ -31,10 +31,10 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var bounds = new Bounds();
-        bounds.adjust( this.basePoint.p );
-        this.arc.adjustBounds( bounds );
-        var maxLineLength = bounds.diagonaglLength() * 1.25;
+        var tempBounds = new Bounds();
+        tempBounds.adjust( this.basePoint.p );
+        this.arc.adjustBounds( tempBounds );
+        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
         
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
