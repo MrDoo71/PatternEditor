@@ -204,6 +204,13 @@ class DrawingObject /*abstract*/ {
 
 
     getColor() {
+
+        if (( this.data.color === "black" ) && ( iskDarkMode ) )
+            return "white";
+
+        if (( this.data.color === "white" ) && ( ! iskDarkMode ) )
+            return "black";
+          
         return this.data.color;
     }
 
@@ -3358,7 +3365,11 @@ class PatternPiece {
         this.drawingObjects.forEach( function(dObj){
             if (   ( dObj.isVisible() )
                 && ( dObj.data.lineStyle !== "none" ) )         
-                dObj.adjustBounds( this.visibleBounds );
+                try {
+                    dObj.adjustBounds( this.visibleBounds );
+                } catch ( e ) {
+                    console.log("Error adjusting bounds for " + dObj.name + " ", e );
+                }
         }, this) ;
 
     }

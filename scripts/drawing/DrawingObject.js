@@ -204,6 +204,13 @@ class DrawingObject /*abstract*/ {
 
 
     getColor() {
+
+        if (( this.data.color === "black" ) && ( iskDarkMode ) )
+            return "white";
+
+        if (( this.data.color === "white" ) && ( ! iskDarkMode ) )
+            return "black";
+          
         return this.data.color;
     }
 

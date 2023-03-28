@@ -2,12 +2,18 @@ console.log( "kinodbglue1.js?v=2 loaded");
 
 var moduleExports = {}; //we'll then set this reference in the module kinodbglue.mjs
 var params = null; //in case we get called before the module loads, or we could sleep?
+var iskDarkMode = false;
 
 function drawPattern( dataAndConfig, ptarget, options ) 
 {
     console.log( "Calling moduleExports.drawPattern");
 
     $( "div.k-bottom-main-buttons-wrapper" ).remove();
+
+    if ( $("body.k-dark-mode").length )
+    {
+        iskDarkMode = true;
+    }
 
     if ( moduleExports.drawPattern )
         moduleExports.drawPattern( dataAndConfig, ptarget, options );
