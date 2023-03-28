@@ -230,8 +230,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                     g.selectAll( "ellipse" )
                      .attr("stroke-width", strokeWidth );
                 }
-                else 
-                    console.log("No drawing object for " + a.data.name );
+                //else //this can happen e.g. because a group is hidden
+                //    console.log("No drawing object for " + a.data.name );
             }        
 
         var graphdiv = targetdiv;
@@ -302,13 +302,13 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
-    doControls( targetdiv, options, pattern );
+    var controls = doControls( targetdiv, options, pattern );
 
     var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
 
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
-                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
+                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, controls, focusDrawingObject );
                                     else
                                         drawingAndTableDiv.select("svg.pattern-drawing").remove();
                                                                             
@@ -477,6 +477,15 @@ function doControls( graphdiv, editorOptions, pattern )
                                      .on("click", toggleFullScreen );
     }
 
+    //Zoom to fit. 
+    {
+        var zoomToFitButton = controls.append("button")
+                                     .attr("class", "btn btn-default zoom-to-fit")
+                                     .html( '<i class="icon-move" />' )
+                                     .attr("title","Zoom to fit");
+                                     //.on("click", zoomToFit );
+    }    
+
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
@@ -628,6 +637,7 @@ function doControls( graphdiv, editorOptions, pattern )
 //                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
 //             });
 //     }
+    return controls;
 }
 
 
@@ -711,7 +721,7 @@ function scrollTopTween(scrollTop)
   
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
+function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
@@ -725,13 +735,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
-    //var transformGroup1 = svg.append("g")
-    //                        .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
-    var transformGroup1 = svg.append("g");
-                            //.attr("transform", "translate(" + ( editorOptions.translateX ) + "," + ( editorOptions.translateY ) + ") scale(" + editorOptions.scale + ")");
+    var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
 
-    var patternWidth = ( pattern.bounds.maxX - pattern.bounds.minX );
-    var patternHeight =( pattern.bounds.maxY - pattern.bounds.minY );
+    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
+    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
+
+    //console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
+    //console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
 
     var scaleX = width / patternWidth;                   
     var scaleY = height / patternHeight;           
@@ -751,20 +761,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         .attr("transform", "scale(" + scale + "," + scale + ")");
 
     //centralise horizontally                            
-    var boundsWidth = pattern.bounds.maxX - pattern.bounds.minX;
+    var boundsWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
     var availableWidth = width / scale;
     var offSetX = ( availableWidth - boundsWidth ) /2;
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")
                                .attr("class","pattern")
-                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")");    
+                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
 
     if ( pattern.wallpapers )
     {
         var wallpaperGroups = transformGroup2.append("g")
                                              .attr("class","wallpapers")
-                                             .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")")   
+                                             .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")")   
                                              .lower();
         doWallpapers( wallpaperGroups, pattern );
     }
@@ -935,12 +945,28 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         var transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
         var zoom = d3.zoom()
                     .extent([[0, 0], [width, height]])
-                    .scaleExtent([0.5, 16])
+                    .scaleExtent([0.5, 32])
                     .on("zoom", zoomed);
         svg.call( zoom)
            .call(zoom.transform, transform);
 
         fontsSizedForScale = editorOptions.scale;
+
+        if ( controls) 
+        controls.select( ".zoom-to-fit" ).on( "click", function() 
+        {
+            d3.event.preventDefault();
+
+            //Reset transformGroup1 to 0,0 and scale 1
+            svg.call(zoom)
+               .call(zoom.transform, d3.zoomIdentity);
+            
+            if ( editorOptions.updateServer )
+            {
+                var zt = d3.zoomTransform( transformGroup1.node() );
+                editorOptions.updateServer( zt.k, zt.x, zt.y );
+            }
+        } );        
     }
 }
 

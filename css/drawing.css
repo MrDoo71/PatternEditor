@@ -311,6 +311,7 @@ div.pattern-table:first-child {
 }
 
 button.toggle-full-page,
+button.zoom-to-fit,
 button.toggle-options {
     margin-left: 8px;
 }

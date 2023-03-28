@@ -1610,10 +1610,10 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var bounds = new Bounds();
-        bounds.adjust( this.basePoint.p );
-        this.arc.adjustBounds( bounds );
-        var maxLineLength = bounds.diagonaglLength() * 1.25;
+        var tempBounds = new Bounds();
+        tempBounds.adjust( this.basePoint.p );
+        this.arc.adjustBounds( tempBounds );
+        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
         
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
@@ -1993,10 +1993,10 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var bounds = new Bounds();
-        bounds.adjust( this.basePoint.p );
-        this.curve.adjustBounds( bounds );
-        var maxLineLength = bounds.diagonaglLength() * 1.25;
+        var tempBounds = new Bounds();
+        tempBounds.adjust( this.basePoint.p );
+        this.curve.adjustBounds( tempBounds );
+        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
         
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
@@ -3134,6 +3134,7 @@ class Pattern {
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
         this.bounds = new Bounds();
+        this.visibleBounds = new Bounds();
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
@@ -3315,10 +3316,14 @@ class PatternPiece {
             this.drawingObjects = [];            
         }
         this.bounds = new Bounds();
+        this.visibleBounds = new Bounds();
         this.groups = [];
 
         if ( pattern ) //always true, except in some test harnesses
+        {
             this.bounds.parent = pattern.bounds;
+            this.visibleBounds.parent = pattern.visibleBounds;
+        }
 
         this.init();
     }
@@ -3335,13 +3340,27 @@ class PatternPiece {
                 continue;
             //    throw( "Unknown objectType:" + dObj.objectType );
             this.drawingObjects[a] = dObj; //these are now the objects with methods
-            this.registerObj(dObj);
+
+
+            this.drawing[dObj.data.name] = dObj;
+            dObj.patternPiece = this;    
+            this.calculateObj(dObj);
         }
-        //Take each group in the JSON and convert to an object
+
+        //Take each group in the JSON and convert to an object. 
+        //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
             for (var a = 0; a < this.data.group.length; a++) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
+        
+        //Calculate the visible bounds
+        this.drawingObjects.forEach( function(dObj){
+            if (   ( dObj.isVisible() )
+                && ( dObj.data.lineStyle !== "none" ) )         
+                dObj.adjustBounds( this.visibleBounds );
+        }, this) ;
+
     }
 
     
@@ -3497,9 +3516,8 @@ class PatternPiece {
         return f;
     }
 
-    registerObj(dObj) {
-        this.drawing[dObj.data.name] = dObj;
-        dObj.patternPiece = this;
+    calculateObj(dObj) {
+
         if (typeof dObj.calculate !== "undefined") {
             
             try {
@@ -3515,13 +3533,12 @@ class PatternPiece {
     pointSingle(data) {
         data.objectType = "pointSingle";
         var dObj = this.add( data );
-        //var dObj = new PointSingle(data);
-        //this.drawingObjects.push(dObj);
-        //this.registerObj(dObj);
         return dObj;
     }
 
     add(data) {
+console.log("Add() is this used anywhere?");
+
         if (this.defaults) {
             for (var d in this.defaults) {
                 if (typeof data[d] === "undefined")
@@ -3530,7 +3547,9 @@ class PatternPiece {
         }
         var dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
-        this.registerObj(dObj);
+        this.drawing[dObj.data.name] = dObj;
+        dObj.patternPiece = this;
+        this.calculateObj(dObj);
         return dObj;
     }
 
@@ -3772,8 +3791,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                     g.selectAll( "ellipse" )
                      .attr("stroke-width", strokeWidth );
                 }
-                else 
-                    console.log("No drawing object for " + a.data.name );
+                //else //this can happen e.g. because a group is hidden
+                //    console.log("No drawing object for " + a.data.name );
             }        
 
         var graphdiv = targetdiv;
@@ -3844,13 +3863,13 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
-    doControls( targetdiv, options, pattern );
+    var controls = doControls( targetdiv, options, pattern );
 
     var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
 
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
-                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, focusDrawingObject );
+                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, controls, focusDrawingObject );
                                     else
                                         drawingAndTableDiv.select("svg.pattern-drawing").remove();
                                                                             
@@ -4019,6 +4038,15 @@ function doControls( graphdiv, editorOptions, pattern )
                                      .on("click", toggleFullScreen );
     }
 
+    //Zoom to fit. 
+    {
+        var zoomToFitButton = controls.append("button")
+                                     .attr("class", "btn btn-default zoom-to-fit")
+                                     .html( '<i class="icon-move" />' )
+                                     .attr("title","Zoom to fit");
+                                     //.on("click", zoomToFit );
+    }    
+
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
@@ -4170,6 +4198,7 @@ function doControls( graphdiv, editorOptions, pattern )
 //                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
 //             });
 //     }
+    return controls;
 }
 
 
@@ -4253,7 +4282,7 @@ function scrollTopTween(scrollTop)
   
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
+function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
@@ -4267,13 +4296,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
-    //var transformGroup1 = svg.append("g")
-    //                        .attr("transform", "translate(" + ( margin ) + "," + ( margin ) + ")");
-    var transformGroup1 = svg.append("g");
-                            //.attr("transform", "translate(" + ( editorOptions.translateX ) + "," + ( editorOptions.translateY ) + ") scale(" + editorOptions.scale + ")");
+    var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
 
-    var patternWidth = ( pattern.bounds.maxX - pattern.bounds.minX );
-    var patternHeight =( pattern.bounds.maxY - pattern.bounds.minY );
+    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
+    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
+
+    //console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
+    //console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
 
     var scaleX = width / patternWidth;                   
     var scaleY = height / patternHeight;           
@@ -4293,20 +4322,20 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         .attr("transform", "scale(" + scale + "," + scale + ")");
 
     //centralise horizontally                            
-    var boundsWidth = pattern.bounds.maxX - pattern.bounds.minX;
+    var boundsWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
     var availableWidth = width / scale;
     var offSetX = ( availableWidth - boundsWidth ) /2;
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")
                                .attr("class","pattern")
-                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")");    
+                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
 
     if ( pattern.wallpapers )
     {
         var wallpaperGroups = transformGroup2.append("g")
                                              .attr("class","wallpapers")
-                                             .attr("transform", "translate(" + ( ( -1.0 * ( pattern.bounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.bounds.minY ) ) + ")")   
+                                             .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")")   
                                              .lower();
         doWallpapers( wallpaperGroups, pattern );
     }
@@ -4477,12 +4506,28 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, focusDrawingO
         var transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
         var zoom = d3.zoom()
                     .extent([[0, 0], [width, height]])
-                    .scaleExtent([0.5, 16])
+                    .scaleExtent([0.5, 32])
                     .on("zoom", zoomed);
         svg.call( zoom)
            .call(zoom.transform, transform);
 
         fontsSizedForScale = editorOptions.scale;
+
+        if ( controls) 
+        controls.select( ".zoom-to-fit" ).on( "click", function() 
+        {
+            d3.event.preventDefault();
+
+            //Reset transformGroup1 to 0,0 and scale 1
+            svg.call(zoom)
+               .call(zoom.transform, d3.zoomIdentity);
+            
+            if ( editorOptions.updateServer )
+            {
+                var zt = d3.zoomTransform( transformGroup1.node() );
+                editorOptions.updateServer( zt.k, zt.x, zt.y );
+            }
+        } );        
     }
 }
 
@@ -5795,7 +5840,7 @@ class GeoArc {
             bounds.adjustToIncludeXY( this.center.x, this.center.y - this.radius ); //add S
 
         if (( this.angle1 < 360 ) && ( this.angle2 > 360 ))        
-            bounds.adjustToIncludeXY( this.center.x - this.radius, this.center.y ); //add E
+            bounds.adjustToIncludeXY( this.center.x + this.radius, this.center.y ); //add E
     }
 }
 
@@ -6187,7 +6232,7 @@ class GeoLine {
         { 
             if ( ! alreadyTweaked )
             {
-                console.log( "Failed for angle ", this.angle );
+                //console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
                 var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.0000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
                 return lineTweaked.intersectArc( arc, true );
