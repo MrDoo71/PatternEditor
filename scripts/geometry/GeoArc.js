@@ -207,7 +207,7 @@ class GeoArc {
             bounds.adjustToIncludeXY( this.center.x, this.center.y - this.radius ); //add S
 
         if (( this.angle1 < 360 ) && ( this.angle2 > 360 ))        
-            bounds.adjustToIncludeXY( this.center.x - this.radius, this.center.y ); //add E
+            bounds.adjustToIncludeXY( this.center.x + this.radius, this.center.y ); //add E
     }
 }
 
