@@ -198,13 +198,13 @@ class GeoArc {
         bounds.adjust( endPoint );
 
         if (( this.angle1 < 90 ) && ( this.angle2 > 90 ))        
-            bounds.adjustToIncludeXY( this.center.x, this.center.y + this.radius ); //add N
+            bounds.adjustToIncludeXY( this.center.x, this.center.y - this.radius ); //add N
 
         if (( this.angle1 < 180 ) && ( this.angle2 > 180 ))        
             bounds.adjustToIncludeXY( this.center.x - this.radius, this.center.y ); //add W
 
         if (( this.angle1 < 270 ) && ( this.angle2 > 270 ))        
-            bounds.adjustToIncludeXY( this.center.x, this.center.y - this.radius ); //add S
+            bounds.adjustToIncludeXY( this.center.x, this.center.y + this.radius ); //add S
 
         if (( this.angle1 < 360 ) && ( this.angle2 > 360 ))        
             bounds.adjustToIncludeXY( this.center.x + this.radius, this.center.y ); //add E
