@@ -263,18 +263,45 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    isVisible()
+    isVisible( options )
     {
-        if ( ! this.memberOf )   
-            return true;
-        
-        var isVisible = false;
-        this.memberOf.forEach( 
-            function(g) { 
+        if ( this.memberOf )   
+        {
+            var isVisible = false;
+
+            this.memberOf.forEach( 
+                function(g) { 
                 if ( g.visible ) 
                     isVisible = true; 
             } ); 
 
-        return isVisible; //We are in 1+ groups, but none were visible.
+            if ( ! isVisible )
+                return false; //We are in 1+ groups, but none were visible.
+        }
+
+        if ( options.targetPiece )
+        {
+            var isVisible = false;
+
+            //if this obj doesn't match a detailNode then return false
+            //if ( options.targetPiece.nodesByName[ this.data.name ] )
+            //    isVisible = true;
+
+            //TODO or if ! this.UsedByObjects
+            //return false
+            //if ( this.usedByPieces contains options.targetPiece )
+            //return true else return false
+
+            options.targetPiece.detailNode.forEach( 
+                function(n) { 
+                    if ( n.obj === this ) 
+                        isVisible = true; 
+            }, this ); 
+
+            if ( ! isVisible )
+                return false;
+        }
+
+        return true;
     }
 }

@@ -338,7 +338,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         {
             var a = pattern.patternPieces[j].drawingObjects[i];
 
-            if ( firstDrawingObject === undefined )
+            if (( firstDrawingObject === undefined ) && ( a.isVisible( options ) ))
                 firstDrawingObject = a;
 
             if ( a.error )
@@ -803,7 +803,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var g = d3.select( this );                        
             if (   ( typeof d.draw === "function" ) 
                 && ( ! d.error )
-                && ( d.isVisible() ) )
+                && ( d.isVisible( editorOptions ) ) )
             try {
                 d.draw( g );
                 d.drawingSvg = g;                 
@@ -823,7 +823,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var g = d3.select( this );
             if (   ( typeof d.draw === "function" ) 
                 && ( ! d.error )
-                && ( d.isVisible() ) )
+                && ( d.isVisible( editorOptions ) ) )
             {
                 d.draw( g, true );
                 d.outlineSvg = g;
@@ -1188,7 +1188,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             classes += " j-measurement";
         else if ( d.isVariable )
             classes += " j-variable";
-        else if ( ! d.isVisible() ) //is a drawing object
+        else if ( ! d.isVisible( editorOptions ) ) //is a drawing object
             classes += " group-hidden"; //hidden because of groups
 
         d.tableSvg = g;

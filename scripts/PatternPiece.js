@@ -56,9 +56,30 @@ class PatternPiece {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
+        if ( this.data.piece )
+            this.data.piece.forEach( function(p){
+                p.nodesByName = {};
+                p.detailNode.forEach( 
+                    function(n) { 
+                        var dObj = this.drawing[ n.obj ]; 
+                        if ( dObj ) 
+                        {
+                            p.nodesByName[ n.obj ] = n;
+                            n.obj = dObj;
+                        }
+                        //TODO also populate dObj.usedByPieces
+                    }, this ); 
+                
+                if ( p.name === this.pattern.data.options.targetPiece )
+                    this.pattern.data.options.targetPiece = p;
+            }, this) ;
+
+        //options.targetPiece )
+
         //Calculate the visible bounds
+        var options = this.pattern.data.options; 
         this.drawingObjects.forEach( function(dObj){
-            if (   ( dObj.isVisible() )
+            if (   ( dObj.isVisible( options ) )
                 && ( dObj.data.lineStyle !== "none" ) )         
                 try {
                     dObj.adjustBounds( this.visibleBounds );

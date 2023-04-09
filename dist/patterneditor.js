@@ -263,19 +263,41 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    isVisible()
+    isVisible( options )
     {
-        if ( ! this.memberOf )   
-            return true;
-        
-        var isVisible = false;
-        this.memberOf.forEach( 
-            function(g) { 
+        if ( this.memberOf )   
+        {
+            var isVisible = false;
+
+            this.memberOf.forEach( 
+                function(g) { 
                 if ( g.visible ) 
                     isVisible = true; 
             } ); 
 
-        return isVisible; //We are in 1+ groups, but none were visible.
+            if ( ! isVisible )
+                return false; //We are in 1+ groups, but none were visible.
+        }
+
+        if ( options.targetPiece )
+        {
+            var isVisible = false;
+
+            //if this obj doesn't match a detailNode then return false
+            //if ( options.targetPiece.nodesByName[ this.data.name ] )
+            //    isVisible = true;
+
+            options.targetPiece.detailNode.forEach( 
+                function(n) { 
+                    if ( n.obj === this ) 
+                        isVisible = true; 
+            }, this ); 
+
+            if ( ! isVisible )
+                return false;
+        }
+
+        return true;
     }
 }
 
@@ -3361,9 +3383,29 @@ class PatternPiece {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
+        if ( this.data.piece )
+            this.data.piece.forEach( function(p){
+                p.nodesByName = {};
+                p.detailNode.forEach( 
+                    function(n) { 
+                        var dObj = this.drawing[ n.obj ]; 
+                        if ( dObj ) 
+                        {
+                            p.nodesByName[ n.obj ] = n;
+                            n.obj = dObj;
+                        }
+                    }, this ); 
+                
+                if ( p.name === this.pattern.data.options.targetPiece )
+                    this.pattern.data.options.targetPiece = p;
+            }, this) ;
+
+        //options.targetPiece )
+
         //Calculate the visible bounds
+        var options = this.pattern.data.options; 
         this.drawingObjects.forEach( function(dObj){
-            if (   ( dObj.isVisible() )
+            if (   ( dObj.isVisible( options ) )
                 && ( dObj.data.lineStyle !== "none" ) )         
                 try {
                     dObj.adjustBounds( this.visibleBounds );
@@ -3910,7 +3952,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         {
             var a = pattern.patternPieces[j].drawingObjects[i];
 
-            if ( firstDrawingObject === undefined )
+            if (( firstDrawingObject === undefined ) && ( a.isVisible( options ) ))
                 firstDrawingObject = a;
 
             if ( a.error )
@@ -4312,8 +4354,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
     var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
 
-    console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
-    console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
+    //console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
+    //console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
 
     var scaleX = width / patternWidth;                   
     var scaleY = height / patternHeight;           
@@ -4375,7 +4417,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var g = d3.select( this );                        
             if (   ( typeof d.draw === "function" ) 
                 && ( ! d.error )
-                && ( d.isVisible() ) )
+                && ( d.isVisible( editorOptions ) ) )
             try {
                 d.draw( g );
                 d.drawingSvg = g;                 
@@ -4395,7 +4437,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var g = d3.select( this );
             if (   ( typeof d.draw === "function" ) 
                 && ( ! d.error )
-                && ( d.isVisible() ) )
+                && ( d.isVisible( editorOptions ) ) )
             {
                 d.draw( g, true );
                 d.outlineSvg = g;
@@ -4760,7 +4802,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             classes += " j-measurement";
         else if ( d.isVariable )
             classes += " j-variable";
-        else if ( ! d.isVisible() ) //is a drawing object
+        else if ( ! d.isVisible( editorOptions ) ) //is a drawing object
             classes += " group-hidden"; //hidden because of groups
 
         d.tableSvg = g;
@@ -5615,11 +5657,7 @@ class Bounds {
             if ((this.minY === undefined) || (y < this.minY))
                 this.minY = y;
             if ((this.maxY === undefined) || (y > this.maxY))
-            {
-                if ( y > 100 )
-                    console.log("y ", y);
                 this.maxY = y;
-            }
         }
 
         if ( this.parent )
