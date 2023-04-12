@@ -31,6 +31,8 @@ class Piece {
                 //dObj.setUsedByPiece( this );
             }, this ); 
                 
+        this.preparePiece();
+
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
         {
             this.patternPiece.pattern.data.options.targetPiece = this;
@@ -60,37 +62,29 @@ class Piece {
                  .attr("fill", "none")
                  .attr("stroke", "green")
                  .attr("stroke-width", 0.05 ); //TODO this has to be set according to scale
-    }    
+    } 
 
 
-    svgPath( withSeamAllowance )
+    preparePiece()
     {
-        var path = "";
-        var first = true; 
-
-        var d3Path = d3.path();
-
-        //d3Path.move();
-
-        var pObj;
+        console.log("*********");
+        console.log("Prepare piece: " + this.name );
         var nObj;
         var previousP; //not adjusted for seam allowance
-        var previousP_SA; //adjusted for seam allowance
         var previousDirectionDeg; //same for SA and not SA
-        var sa = 0.2;
 
+        //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
+        //which points don't lead to any progress around the curve. 
         for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
 
             var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
+            var dObj = n.dObj;
+            var nObj = nn.dObj;
          
             if ( a == this.detailNodes.length )
                 console.log("Closing path");
-
-            var dObj = n.dObj;
-            var pObj = pn.dObj;
-            var nObj = nn.dObj;
 
             if ( a === 0 )          
             {
@@ -113,7 +107,6 @@ class Piece {
 
                     var curveSegment = dObj.curve.splineBetweenPoints( previousP, nextP );
 
-                    //TODO it might be that we need to see whether node 0, or n-1 is closer
                     var correctDirection = curveSegment.nodeData[0].point.equals( previousP ); 
 
                     if ( ! correctDirection )
@@ -133,21 +126,102 @@ class Piece {
                         curveSegment = curveSegment.reverse();
                         console.log( "Spline reversed.");
                     }
+                    n.finishesAtPoint = curveSegment.pointAlongPathFraction(100);
+                    n.finishingDirection = curveSegment.exitAngleDeg(); //or curveSegmentToDraw?
+                    n.curveSegment = curveSegment;
+                    previousP = n.finishesAtPoint;
+                }
+                //TODO else if an ARC
+                else
+                {
+                    console.log( "Other node " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
-                    var curveSegmentToDraw = curveSegment;
+                    var thisP = dObj.p;
+
+                    var line = new GeoLine( previousP, thisP );
+                    //Is this the same point
+                    var samePoint = false;                    
+                    if ( thisP.equals( previousP ) )
+                        samePoint = true;
+                    else
+                    {
+                        //we could measure the distance and say its the same point if it is very very close
+                        console.log("Distance from previousP to thisP " + line.getLength() );
+                        if ( line.getLength() < 0.1 )
+                            samePoint = true;
+                    }
+
+                    if (( ! samePoint ) || ( a == this.detailNodes.length ))
+                    {
+                        console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
+                        n.finishesAtPoint = thisP;
+                        n.finishingDirection = (new GeoLine( previousP, thisP )).angleDeg();
+                        previousP = n.finishesAtPoint;
+                        n.skipPoint = false; 
+                    }
+                    else
+                    {
+                        console.log("Same point, no progress");
+                        n.skipPoint = true; 
+                    }
+                }
+                if ( n.skipPoint )
+                  console.log("Index:" + a + " skip" );
+                else
+                  console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(previousDirectionDeg) );
+            }                    
+        };        
+    }
+
+
+    svgPath( withSeamAllowance )
+    {
+        console.log("*********");
+        console.log("svgPath: " + this.name + " seamAllowance:" + withSeamAllowance );
+
+        var path = "";
+        var first = true; 
+        var previousP; //not adjusted for seam allowance
+        var sa = 0.2;
+
+        for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
+
+            var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
+            var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
+            var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
+         
+            if ( a == this.detailNodes.length )
+                console.log("Closing path");
+
+            var dObj = n.dObj;
+
+            if ( a === 0 )          
+            {
+                if ( dObj.curve instanceof GeoSpline )
+                    previousP = dObj.curve.pointAlongPathFraction(100);
+                else
+                    previousP = dObj.p;
+
+                console.log( "Start at " + n.obj + " delay drawing starting at " + previousP.toString() );
+            }
+            else 
+            {                
+                if ( n.curveSegment )
+                {
+                    console.log( "Curve " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
+
+                    var curveSegmentToDraw = n.curveSegment;
                     if ( withSeamAllowance ) 
                     {    
                         var nodeData = [];
-                        var len = curveSegment.nodeData.length;                    
+                        var len = n.curveSegment.nodeData.length;                    
                         for ( var i=0; i<len; i++ )
                         {
-                            var node = curveSegment.nodeData[i];
+                            var node = n.curveSegment.nodeData[i];
 
                             var newNode = {};
                             nodeData[i] = newNode;
-                            //var line = ( node.outControlPoint ) ? new GeoLine( node.point, node.outControlPoint ) : new GeoLine( node.inControlPoint, node.point );
-                            //var angle = line.angleDeg();
-                            var angle = curveSegment.angleLeavingNode(i);
+                            var angle = n.curveSegment.angleLeavingNode(i);
                             angle = angle + 90;
                             if ( angle > 360 )
                                 angle -= 360;     
@@ -166,67 +240,38 @@ class Piece {
                     }
 
                     path = curveSegmentToDraw.svgPath( path ) + " ";
-
-                    previousP = curveSegment.pointAlongPathFraction(100);
-                    previousDirectionDeg = curveSegment.exitAngleDeg(); //or curveSegmentToDraw?
+                    previousP = curveSegmentToDraw.pointAlongPathFraction(100);
                 }
                 //TODO else if an ARC
-                else
+                else if ( ! n.skipPoint )
                 {
                     console.log( "Other node " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
-                    //Imagine the line from pObj to dObj
-                    //if 0 deg, then create new points at 90deg. 
-                    //90deg then 180deg
-                    //180deg then 270deg
-                    //270deg then 360deg (aka 0deg)
-                    var prevP = previousP; //pObj.p;
+                    var prevP = previousP;
                     var thisP = dObj.p;
 
-                    var line = new GeoLine( previousP, thisP );
-                    //Is this the same point
-                    var samePoint = false;                    
-                    if ( thisP.equals( previousP ) )
-                        samePoint = true;
-                    else
-                    {
-                        //we could measure the distance and say its the same point if it is very very close
-                        console.log("Distance from previousP to thisP " + line.getLength() );
-                        if ( line.getLength() < 0.1 )
-                            samePoint = true;
+                    if ( withSeamAllowance )
+                    {       
+                        var angle = n.finishingDirection;
+                        angle = angle + 90;
+                        if ( angle > 360 )
+                            angle -= 360;     
+
+                        thisP = thisP.pointAtDistanceAndAngleDeg( sa, angle );
                     }
 
-                    if (( ! samePoint ) || ( a == this.detailNodes.length ))
+                    if ( first )
                     {
-                        if ( withSeamAllowance )
-                        {       
-                            var angle = line.angleDeg();
-                            angle = angle + 90;
-                            if ( angle > 360 )
-                                angle -= 360;     
-
-                            prevP = prevP.pointAtDistanceAndAngleDeg( sa, angle );
-                            thisP = thisP.pointAtDistanceAndAngleDeg( sa, angle );
-                        }
-
-                        if ( first )
-                        {
-                            path += "M " + prevP.x + " " + prevP.y + " ";
-                            first = false;
-                        }
-
-                        path += "L " + thisP.x + " " + thisP.y + " ";
-                        console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
-                        previousP = dObj.p;
-                        previousDirectionDeg = (new GeoLine( previousP, thisP )).angleDeg();
+                        path += "M " + prevP.x + " " + prevP.y + " ";
+                        first = false;
                     }
-                    else
-                        console.log("Same point, no progress");
+
+                    path += "L " + thisP.x + " " + thisP.y + " ";
+                    console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
+                    previousP = thisP;
                 }
-                console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(previousDirectionDeg) );
+                console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(n.finishingDirection) );
             }
-
-                    
         };
 
         //TODO actually close the SVG path? 
