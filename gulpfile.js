@@ -45,7 +45,9 @@ function jsTask(){
             "drawing/DrawingObject.js",
             "drawing/*.js",
             "Pattern.js",
-            "PatternPiece.js",
+            "Group.js",
+            "Piece.js",
+            "PatternDrawing.js",
             "PatternEditor.js",
             "*.js"
           ]))        

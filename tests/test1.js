@@ -1,9 +1,9 @@
 
-import  { PatternPiece, doDrawing, doTable } from '../dist/patterneditor.js';
+import  { PatternDrawing, doDrawing, doTable } from '../dist/patterneditor.js';
 
 function v343110_graph1_init()
 {
-    let patternPiece1 = new PatternPiece();
+    let patternPiece1 = new PatternDrawing();
 
     patternPiece1.setDefaults( { "mx": 0.132292, 
                                  "my": 0.264583,

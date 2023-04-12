@@ -67,5 +67,11 @@ class GeoPoint {
     {
         return this.x === p.x && this.y === p.y;
     }
+
+
+    toString()
+    {
+        return "(" + Math.round(this.x*100)/100 + "," + Math.round(this.y*100)/100 + ")";
+    }
 }
 

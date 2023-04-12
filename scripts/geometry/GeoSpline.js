@@ -70,14 +70,14 @@ class GeoSpline {
     }
 
 
-    svgPath() {
+    svgPath( continuePath ) {
         var nodeData = this.nodeData;
-        var path;
+        var path = continuePath ? continuePath : "";
         for ( var i=0; i<nodeData.length; i++ )
         {
             if ( i===0 )
             {
-                path = "M" + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
+                path+= ( continuePath ? "L" : "M" ) + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
             }
             else
             {
@@ -96,12 +96,35 @@ class GeoSpline {
     }
 
 
+    reverse()
+    {
+        var len = this.nodeData.length;
+        var revNodeData = [len];
+        for ( var i=0; i<len; i++ )
+        {
+            var node = this.nodeData[i];
+
+            revNodeData[len-i-1] =  { inControlPoint:   node.outControlPoint,
+                                      point:            node.point,
+                                      outControlPoint:  node.inControlPoint };
+        }
+        return new GeoSpline( revNodeData );
+    }
+
+
     asShapeInfo() {
         return ShapeInfo.path( this.svgPath() );
     }
     
 
     pointAlongPathFraction( fraction ) {
+
+        if ( fraction == 0 )
+            return this.nodeData[0].point;
+
+        if ( fraction == 100 )
+            return this.nodeData[ this.nodeData.length-1 ].point;
+
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();
@@ -452,6 +475,54 @@ class GeoSpline {
             if ( node.outControlPoint )
                 bounds.adjust( node.outControlPoint );
         }
+    }
+
+
+
+
+    //The direction we are travelling at the end of this spline
+    exitAngleDeg()
+    {
+        return this.angleLeavingNode( this.nodeData.length-1 );
+    }
+
+    angleLeavingNode( i )
+    {
+        var n = this.nodeData[ i ];
+        var inControlPoint = n.inControlPoint;
+        var outControlPoint = n.outControlPoint;
+        var directionLine;
+
+        //What if length2 == 0, the node's inControlPoint == point
+        if (( i == 0 ) && ( n.outControlPoint ))
+        {
+            if ( outControlPoint.equals( n.point ) )
+                outControlPoint = undefined;
+            else    
+                directionLine = new GeoLine( n.point, n.outControlPoint );
+        }
+        else if (( i == this.nodeData.length-1 ) && ( n.inControlPoint ))
+        {
+            if ( inControlPoint.equals( n.point ) )
+                inControlPoint = undefined;
+            else
+                directionLine = new GeoLine( n.inControlPoint, n.point );
+        }
+
+        if ( ! directionLine ) 
+        {
+            if (( ! outControlPoint )&&( i < this.nodeData.length-1 ))
+                outControlPoint = this.nodeData[ i+1 ].inControlPoint;  
+            else if (( ! inControlPoint ) && ( i > 0 ))
+                inControlPoint = this.nodeData[ i-1 ].outControlPoint; 
+
+            if ( outControlPoint )
+                directionLine = new GeoLine( n.point, outControlPoint );
+            else if ( inControlPoint )
+                directionLine = new GeoLine( inControlPoint, n.point );
+        }
+
+        return directionLine.angleDeg();
     }
 }
 

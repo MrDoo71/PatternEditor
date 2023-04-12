@@ -3,7 +3,7 @@
 
 
 
-class PatternPiece {
+class PatternDrawing {
 
     constructor (data, pattern) {
         this.data = data;
@@ -20,6 +20,7 @@ class PatternPiece {
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
         this.groups = [];
+        this.pieces = []; //aka details
 
         if ( pattern ) //always true, except in some test harnesses
         {
@@ -57,24 +58,9 @@ class PatternPiece {
             }
         
         if ( this.data.piece )
-            this.data.piece.forEach( function(p){
-                p.nodesByName = {};
-                p.detailNode.forEach( 
-                    function(n) { 
-                        var dObj = this.drawing[ n.obj ]; 
-                        if ( dObj ) 
-                        {
-                            p.nodesByName[ n.obj ] = n;
-                            n.obj = dObj;
-                        }
-                        //TODO also populate dObj.usedByPieces
-                    }, this ); 
-                
-                if ( p.name === this.pattern.data.options.targetPiece )
-                    this.pattern.data.options.targetPiece = p;
-            }, this) ;
-
-        //options.targetPiece )
+            for (var a = 0; a < this.data.piece.length; a++) {
+                this.pieces[a] = new Piece( this.data.piece[a], this );
+            }
 
         //Calculate the visible bounds
         var options = this.pattern.data.options; 

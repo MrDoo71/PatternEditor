@@ -84,7 +84,7 @@ class Pattern {
         this.patternPieces = [];
         for( var i=0; i<this.patternData.patternPiece.length; i++ )
         {
-            this.patternPieces.push( new PatternPiece( this.patternData.patternPiece[i], this ) );
+            this.patternPieces.push( new PatternDrawing( this.patternData.patternPiece[i], this ) );
         }   
 
         this.analyseDependencies();

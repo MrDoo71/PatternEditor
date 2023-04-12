@@ -292,9 +292,9 @@ class DrawingObject /*abstract*/ {
             //if ( this.usedByPieces contains options.targetPiece )
             //return true else return false
 
-            options.targetPiece.detailNode.forEach( 
+            options.targetPiece.detailNodes.forEach( 
                 function(n) { 
-                    if ( n.obj === this ) 
+                    if ( n.dObj === this ) 
                         isVisible = true; 
             }, this ); 
 

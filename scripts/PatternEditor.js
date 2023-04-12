@@ -258,7 +258,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
-        linksGroup.selectAll("path.link") //rename .link to .dependency
+        if ( linksGroup )
+            linksGroup.selectAll("path.link") //rename .link to .dependency
             .attr("class", function( d ) {                         
                 if ( d.source == selectedObject ) 
                 {
@@ -791,12 +792,12 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
         var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
         var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+        var pieceGroup   = transformGroup3.append("g").attr("class","j-pieces");
 
         var a = drawingGroup.selectAll("g");    
         a = a.data( patternPiece.drawingObjects );
         a.enter()
          .append("g")
-         //.attr("class", "j-point")
          .on("contextmenu", contextMenu)
          .on("click", onclick)
          .each( function(d,i) {
@@ -816,7 +817,6 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         a = a.data( patternPiece.drawingObjects );
         a.enter()
          .append("g")
-         //.attr("class", "j-outline")
          .on("contextmenu", contextMenu)
          .on("click", onclick)
          .each( function(d,i) {
@@ -828,7 +828,23 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 d.draw( g, true );
                 d.outlineSvg = g;
             }
-        });        
+        });
+
+        var pg = pieceGroup.selectAll("g");    
+        pg = pg.data( patternPiece.pieces );
+        pg.enter()
+         .append("g")
+         //.on("contextmenu", contextMenu)
+         //.on("click", onclick)
+         .each( function(p,i) {
+            var g = d3.select( this );
+            if (   ( typeof p.drawSeamLine === "function" ) )
+            {
+                p.drawSeamLine( g );
+                p.drawSeamAllowance( g );
+                p.svg = g;
+            }
+        });
     };
 
     var updateServerAfterDelay = function()
@@ -1343,4 +1359,4 @@ function fakeEvent(location, x, y)
 }
 
 
-export{ PatternPiece, doDrawing, doTable, drawPattern  };
+export{ PatternDrawing, doDrawing, doTable, drawPattern  };
