@@ -486,6 +486,39 @@ class GeoSpline {
         return this.angleLeavingNode( this.nodeData.length-1 );
     }
 
+
+    entryAngleDeg()
+    {
+        return this.angleEnteringNode( 0 );
+    }
+
+    angleEnteringNode( i )
+    {
+        var n = this.nodeData[ i ];
+        var inControlPoint = n.inControlPoint;
+        var outControlPoint = n.outControlPoint;
+        var directionLine;
+
+        if ( inControlPoint && inControlPoint.equals( n.point ) )
+            inControlPoint = undefined;
+
+        if ( outControlPoint && outControlPoint.equals( n.point ) )
+            outControlPoint = undefined;
+
+        if (( ! inControlPoint ) && ( i > 0 ))
+            inControlPoint = this.nodeData[ i-1 ].outControlPoint; 
+        else if (( ! outControlPoint )&&( i < this.nodeData.length-1 ))
+            outControlPoint = this.nodeData[ i+1 ].inControlPoint;  
+
+        if ( inControlPoint)
+            directionLine = new GeoLine( inControlPoint, n.point );
+        else if ( outControlPoint )
+            directionLine = new GeoLine( n.point, outControlPoint );
+
+        return directionLine.angleDeg();
+    }
+
+
     angleLeavingNode( i )
     {
         var n = this.nodeData[ i ];
@@ -494,14 +527,14 @@ class GeoSpline {
         var directionLine;
 
         //What if length2 == 0, the node's inControlPoint == point
-        if (( i == 0 ) && ( n.outControlPoint ))
+        if (( i == 0 ) && ( outControlPoint ))
         {
             if ( outControlPoint.equals( n.point ) )
                 outControlPoint = undefined;
             else    
                 directionLine = new GeoLine( n.point, n.outControlPoint );
         }
-        else if (( i == this.nodeData.length-1 ) && ( n.inControlPoint ))
+        else if (( i == this.nodeData.length-1 ) && ( inControlPoint ))
         {
             if ( inControlPoint.equals( n.point ) )
                 inControlPoint = undefined;

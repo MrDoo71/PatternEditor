@@ -31,7 +31,7 @@ class Piece {
                 //dObj.setUsedByPiece( this );
             }, this ); 
                 
-        this.preparePiece();
+        this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
         {
@@ -65,13 +65,14 @@ class Piece {
     } 
 
 
-    preparePiece()
+    calculate()
     {
         console.log("*********");
         console.log("Prepare piece: " + this.name );
         var nObj;
         var previousP; //not adjusted for seam allowance
         var previousDirectionDeg; //same for SA and not SA
+        var sa = 0.2;
 
         //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
         //which points don't lead to any progress around the curve. 
@@ -126,10 +127,17 @@ class Piece {
                         curveSegment = curveSegment.reverse();
                         console.log( "Spline reversed.");
                     }
-                    n.finishesAtPoint = curveSegment.pointAlongPathFraction(100);
-                    n.finishingDirection = curveSegment.exitAngleDeg(); //or curveSegmentToDraw?
+
+                    if ( previousP && previousP.equals( curveSegment.pointAlongPathFraction(0) ) )
+                    {
+                        if (( ! pn.dObj.curve ) || ( ! pn.dObj.curve instanceof GeoSpline ))
+                            pn.skipPoint = true;
+                    }
+
+                    previousP = curveSegment.pointAlongPathFraction(100);
+                    n.directionBeforeDeg = curveSegment.entryAngleDeg();
+                    n.directionAfterDeg = curveSegment.exitAngleDeg(); //or curveSegmentToDraw?
                     n.curveSegment = curveSegment;
-                    previousP = n.finishesAtPoint;
                 }
                 //TODO else if an ARC
                 else
@@ -151,12 +159,17 @@ class Piece {
                             samePoint = true;
                     }
 
-                    if (( ! samePoint ) || ( a == this.detailNodes.length ))
+                    if (( ! samePoint ) || ( a == this.detailNodes.length )) //not the same point, or the last point
                     {
                         console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
-                        n.finishesAtPoint = thisP;
-                        n.finishingDirection = (new GeoLine( previousP, thisP )).angleDeg();
-                        previousP = n.finishesAtPoint;
+                        n.point = thisP;
+                        previousP = thisP;
+                        var anglePreviousPThisP = (new GeoLine( previousP, thisP )).angleDeg();
+
+                        if ( ! pn.directionAfterDeg )
+                            pn.directionAfterDeg = anglePreviousPThisP;
+
+                        n.directionBeforeDeg = anglePreviousPThisP;
                         n.skipPoint = false; 
                     }
                     else
@@ -170,7 +183,74 @@ class Piece {
                 else
                   console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(previousDirectionDeg) );
             }                    
-        };        
+        };
+
+        console.log("**********************");
+        console.log("Calculations complete");
+        for (var a = 0; a < this.detailNodes.length; a++) {
+
+            var n = this.detailNodes[ a ];
+
+            n.tangentAfterDeg = n.directionAfterDeg + 90;
+            if ( n.tangentAfterDeg > 360 )
+                n.tangentAfterDeg -= 360;     
+
+            n.tangentBeforeDeg = n.directionBeforeDeg + 90;
+                if ( n.tangentBeforeDeg > 360 )
+                    n.tangentBeforeDeg -= 360;     
+
+            if ( n.skipPoint )
+            {
+                console.log( "Node:" + a + " " + n.obj + " skip");
+                continue;
+            }
+    
+            var debugSA = "";
+    
+            if ( n.curveSegment )
+            {    
+                var nodeData = [];
+                var len = n.curveSegment.nodeData.length;                    
+                for ( var i=0; i<len; i++ )
+                {
+                    var node = n.curveSegment.nodeData[i];
+
+                    var newNode = {};
+                    nodeData[i] = newNode;
+                    var angle = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+                    angle = angle + 90;
+                    if ( angle > 360 )
+                        angle -= 360;     
+
+                    newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, angle );
+                    if ( node.inControlPoint )
+                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, angle );
+                    if ( node.outControlPoint )
+                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, angle );
+                    //TODO
+                    //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
+                    //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
+                    //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
+                }
+                n.curveSegmentSA  = new GeoSpline( nodeData );
+                n.pointBeforeSA = n.curveSegmentSA.pointAlongPathFraction(0);
+                n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(100);
+
+                debugSA = " A:" + n.pointBeforeSA.toString() + " B:" + n.pointBeforeSA.toString()                 
+            }
+            else
+            {
+                n.pointBeforeSA = n.point.pointAtDistanceAndAngleDeg( sa, n.directionBeforeDeg );
+                n.pointAfterSA = n.point.pointAtDistanceAndAngleDeg( sa, n.directionAfterDeg );
+                //Note if directionBeforeDeg==directionAfterDeg then there is effectively 1 point, and no intersection is necessary
+
+                debugSA = " A:" + n.pointBeforeSA.toString() + " B:" + n.pointBeforeSA.toString() 
+            }
+
+            console.log( "Node:" + a + " " + n.obj + " directionBeforeDeg:" + Math.round(n.directionBeforeDeg) + " directionAfterDeg:" + Math.round(n.directionAfterDeg) +  ( n.curveSegment ? " curvesegment" : "" ) + " " + debugSA);
+
+        }
+        console.log("**********************");
     }
 
 
@@ -210,34 +290,7 @@ class Piece {
                 {
                     console.log( "Curve " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
-                    var curveSegmentToDraw = n.curveSegment;
-                    if ( withSeamAllowance ) 
-                    {    
-                        var nodeData = [];
-                        var len = n.curveSegment.nodeData.length;                    
-                        for ( var i=0; i<len; i++ )
-                        {
-                            var node = n.curveSegment.nodeData[i];
-
-                            var newNode = {};
-                            nodeData[i] = newNode;
-                            var angle = n.curveSegment.angleLeavingNode(i);
-                            angle = angle + 90;
-                            if ( angle > 360 )
-                                angle -= 360;     
-
-                            newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, angle );
-                            if ( node.inControlPoint )
-                                newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, angle );
-                            if ( node.outControlPoint )
-                                newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, angle );
-                            //TODO
-                            //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
-                            //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
-                            //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
-                        }
-                        curveSegmentToDraw = new GeoSpline( nodeData );
-                    }
+                    var curveSegmentToDraw = withSeamAllowance ? n.curveSegmentSA : n.curveSegment;
 
                     path = curveSegmentToDraw.svgPath( path ) + " ";
                     previousP = curveSegmentToDraw.pointAlongPathFraction(100);
@@ -248,17 +301,7 @@ class Piece {
                     console.log( "Other node " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
                     var prevP = previousP;
-                    var thisP = dObj.p;
-
-                    if ( withSeamAllowance )
-                    {       
-                        var angle = n.finishingDirection;
-                        angle = angle + 90;
-                        if ( angle > 360 )
-                            angle -= 360;     
-
-                        thisP = thisP.pointAtDistanceAndAngleDeg( sa, angle );
-                    }
+                    var thisP = withSeamAllowance ? n.pointAfterSA : dObj.p;
 
                     if ( first )
                     {
@@ -270,7 +313,7 @@ class Piece {
                     console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
                     previousP = thisP;
                 }
-                console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(n.finishingDirection) );
+                console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(n.directionAfterDeg) );
             }
         };
 
