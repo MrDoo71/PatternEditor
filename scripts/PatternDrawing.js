@@ -60,6 +60,7 @@ class PatternDrawing {
         if ( this.data.piece )
             for (var a = 0; a < this.data.piece.length; a++) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
+                this.pieces[a].adjustBounds( this.visibleBounds  );
             }
 
         //Calculate the visible bounds

@@ -205,10 +205,10 @@ class DrawingObject /*abstract*/ {
 
     getColor() {
 
-        if (( this.data.color === "black" ) && ( iskDarkMode ) )
+        if (( this.data.color === "black" ) && ( typeof iskDarkMode !== "undefined" ) && iskDarkMode )
             return "white";
 
-        if (( this.data.color === "white" ) && ( ! iskDarkMode ) )
+        if (( this.data.color === "white" ) && ( typeof iskDarkMode !== "undefined" )&& ( ! iskDarkMode ) )
             return "black";
           
         return this.data.color;
@@ -279,7 +279,7 @@ class DrawingObject /*abstract*/ {
                 return false; //We are in 1+ groups, but none were visible.
         }
 
-        if ( options.targetPiece )
+        if ( options && options.targetPiece )
         {
             var isVisible = false;
 
