@@ -9,6 +9,10 @@
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
+//If making improvements also research:
+//https://github.com/DmitryBaranovskiy/raphael/blob/v2.1.1/dev/raphael.core.js#L1837
+//https://github.com/jarek-foksa/path-data-polyfill/blob/master/path-data-polyfill.js
+
 //import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 
@@ -30,6 +34,54 @@ class GeoArc {
         //Correct 180-0 to 180-360
         if ( this.angle2 < this.angle1 )
             this.angle2+=360;
+    }
+
+    //https://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes F.6.4 Conversion from center to endpoint parameterization
+    //Hashed together from https://stackoverflow.com/questions/30277646/svg-convert-arcs-to-cubic-bezier and https://github.com/BigBadaboom/androidsvg/blob/5db71ef0007b41644258c1f139f941017aef7de3/androidsvg/src/main/java/com/caverock/androidsvg/utils/SVGAndroidRenderer.java#L2889
+    asGeoSpline() {
+
+        var angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
+        var angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
+        var angleExtentRad = angleEndRad - angleStartRad;
+        var numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
+        var angleIncrement = angleExtentRad / numSegments;
+
+        var controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
+
+        var nodeData = [];
+
+        var node = {};
+        nodeData.push( node );
+
+        for (var i=0; i<numSegments; i++)
+        {
+            var angle = angleStartRad + i * angleIncrement;
+
+            var dx = Math.cos(angle) * this.radius;
+            var dy = Math.sin(angle) * this.radius;
+
+            if ( ! node.point )
+                node.point = new GeoPoint( this.center.x + dx , this.center.y - dy );
+
+            node.outControlPoint = new GeoPoint( this.center.x + dx - controlLength * dy, this.center.y - dy - controlLength * dx );
+
+            angle += angleIncrement;
+            dx = Math.cos(angle) * this.radius;
+            dy = Math.sin(angle) * this.radius;
+
+            node = {};
+            nodeData.push( node );
+            node.inControlPoint = new GeoPoint( this.center.x + dx + controlLength * dy, this.center.y - dy + controlLength * dx );
+            node.point = new GeoPoint( this.center.x + dx, this.center.y - dy );
+        }
+
+        return new GeoSpline( nodeData );
+    }
+
+
+    splineBetweenPoints( previousP, nextP )
+    {
+        return this.asGeoSpline().splineBetweenPoints( previousP, nextP );
     }
 
 
@@ -109,6 +161,17 @@ class GeoArc {
 
     
     pointAlongPathFraction( fraction ) {
+
+        if ( fraction == 0 )
+        {
+            return this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle1 );
+        }
+
+        if ( fraction == 1 )
+        {
+            return this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
+        }
+
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         var l = path.getTotalLength();

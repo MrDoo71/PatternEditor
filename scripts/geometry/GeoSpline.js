@@ -294,7 +294,10 @@ class GeoSpline {
 
         var cut1 = c1;
         var splineAfterPoint = cut1.afterPoint;
-        var cut2 = splineAfterPoint.cutAtPoint( p2 ).beforePoint;
+        var c3 = splineAfterPoint.cutAtPoint( p2 );
+        if ( ! c3 )
+            console.log("c3 not found"); //this is odd because c1 and c2 were found
+        var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
         return cut2;
     }
 
@@ -308,6 +311,7 @@ class GeoSpline {
         return this.applyDecasteljau(t).point;
     }
 
+    
     //private
     applyDecasteljau(t) {
         //only valid where nodeData.length === 2
@@ -476,8 +480,6 @@ class GeoSpline {
                 bounds.adjust( node.outControlPoint );
         }
     }
-
-
 
 
     //The direction we are travelling at the end of this spline
