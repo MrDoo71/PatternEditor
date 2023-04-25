@@ -60,20 +60,32 @@ class PatternDrawing {
         if ( this.data.piece )
             for (var a = 0; a < this.data.piece.length; a++) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
-                this.pieces[a].adjustBounds( this.visibleBounds  );
             }
 
-        //Calculate the visible bounds
         var options = this.pattern.data.options; 
-        this.drawingObjects.forEach( function(dObj){
-            if (   ( dObj.isVisible( options ) )
-                && ( dObj.data.lineStyle !== "none" ) )         
-                try {
-                    dObj.adjustBounds( this.visibleBounds );
-                } catch ( e ) {
-                    console.log("Error adjusting bounds for " + dObj.name + " ", e );
+        if ( options && options.targetPiece )
+        {
+            options.targetPiece.adjustBounds( this.visibleBounds );
+        }
+        else
+        {
+            //This ensures the seam allowance is included in the bounds
+            if ( this.data.piece )
+                for (var a = 0; a < this.data.piece.length; a++) {
+                    this.pieces[a].adjustBounds( this.visibleBounds  );
                 }
-        }, this) ;
+
+            //Calculate the visible bounds            
+            this.drawingObjects.forEach( function(dObj){
+                if (   ( dObj.isVisible( options ) )
+                    && ( dObj.data.lineStyle !== "none" ) )         
+                    try {
+                        dObj.adjustBounds( this.visibleBounds );
+                    } catch ( e ) {
+                        console.log("Error adjusting bounds for " + dObj.name + " ", e );
+                    }
+            }, this) ;
+        }
 
     }
 

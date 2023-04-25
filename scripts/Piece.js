@@ -49,7 +49,7 @@ class Piece {
                  .attr("d", this.svgPath( false ) )
                  .attr("fill", "none")
                  .attr("stroke", "red")
-                 .attr("stroke-width", 0.05 ); //TODO this has to be set according to scale
+                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
     }
 
 
@@ -61,8 +61,14 @@ class Piece {
                  .attr("d", this.svgPath( true ) )
                  .attr("fill", "none")
                  .attr("stroke", "green")
-                 .attr("stroke-width", 0.05 ); //TODO this has to be set according to scale
+                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
     } 
+
+
+    getStrokeWidth( isOutline, isSelected )
+    {
+        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
+    }
 
 
     calculate()
@@ -324,6 +330,10 @@ class Piece {
             try {
                 console.log("Need to do an intersection, n.obj:" + n.obj + " withPrevious:" + pn.obj );
 
+                //Our intersect could be external, in which case it will be a small, straight extension to each existing path, OR
+                //our intersect could be internal, in which case each path needs to be shortened slightly.  It is this latter type
+                //that requires us to care about where curves intersection. 
+
                 var trailingPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg )
                 var leadingPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg )
                 var trailingPath = pn.lineSA ? pn.lineSA : pn.curveSegmentSA;
@@ -350,29 +360,35 @@ class Piece {
                 var intersect = trailingLine.intersect( leadingLine );
 
                 var trailingPathSI = trailingPath.asShapeInfo();
-                var leadingPathSI = leadingPath.asShapeInfo();
-        
-                var intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
+                var leadingPathSI = leadingPath.asShapeInfo();        
                 
-                //intersections.points.forEach(console.log);    
-                if ( intersections.points.length === 0 )
-                {
-                    console.log( "No intersections found. PointIntersectCurves: " + n.obj );
-                }        
-                else if ( intersections.points.length === 1 )
-                {
+                try {
+                    var intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
                     intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-                }            
-
-                var distanceToIntersect = (new GeoLine( intersect, n.pointBeforeSA )).getLength();
-                if ( distanceToIntersect > 10 )
-                    throw "Bad intersect";
+                    if ( intersections.length > 1 )
+                        console.log( "Intersections found (A). " + intersections.length );
+                } catch ( e ) {
+                    console.log( "No intersections found (A). " + pn.obj + " and " + n.obj );
+                    try { 
+                        var intersections = Intersection.intersect(leadingPathSI, leadingPathSI );
+                        intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+                        if ( intersections.length > 1 )
+                            console.log( "Intersections found (B). " + intersections.length );
+                    } catch ( e ) {
+                        console.log( "No intersections found (B). " + pn.obj + " and " + n.obj );
+                    }
+                }
+                
+                //var distanceToIntersect = (new GeoLine( intersect, n.pointBeforeSA )).getLength();
+                //if ( distanceToIntersect > 10 ) 
+                //    throw "Bad intersect";
 
                 pn.pointAfterSA = intersect;    
                 n.pointBeforeSA = intersect;
 
                 if ( trailingPath instanceof GeoSpline )
                 {
+                    //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
                     pn.curveSegmentSA = trailingPath.cutAtPoint( intersect ).beforePoint;
                     
                     console.log( "Node: " + (a-1) + " trail out adjusted. ");
@@ -382,12 +398,9 @@ class Piece {
                     pn.lineSA = new GeoLine( pn.pointBeforeSA, pn.pointAfterSA );
                 }
 
-                //TODO stuck here, having extended this curve a==33 we do this cut, and we still have the original point in the curve
-                if ( a==21 )
-                    console.log("Node 21");
-
                 if ( leadingPath instanceof GeoSpline )
                 {
+                    //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
                     var split = leadingPath.cutAtPoint( intersect );
                     n.curveSegmentSA = split.afterPoint ? split.afterPoint : split.beforePoint;
                     console.log( "Node: " + a + " lead in adjusted.");

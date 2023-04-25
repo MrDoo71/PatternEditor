@@ -946,6 +946,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                     .attr("r", Math.round( 1200 / scale / fontsSizedForScale )/100 );
                             }
                         }        
+
+                        //TODO for each piece also scale their stroke width
+
+                        
                     }
                 }, 50);         
             }
