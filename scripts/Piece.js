@@ -77,9 +77,9 @@ class Piece {
         console.log("Prepare piece: " + this.name );
         var nObj;
         var previousP; //not adjusted for seam allowance
-        var previousDirectionDeg; //same for SA and not SA
-        var sa = 0.2;
+        var previousDirectionDeg; //same for SA and not SA        
 
+        console.log("Pass 1 - direction and skipped nodes" );
         //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
         //which points don't lead to any progress around the curve. 
         for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
@@ -89,6 +89,10 @@ class Piece {
             var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
             var dObj = n.dObj;
             var nObj = nn.dObj;
+
+            var r = 1;//Math.floor(Math.random() * 3);
+
+            n.sa = r * 0.2;
          
             if ( a == this.detailNodes.length )
                 console.log("Closing path");
@@ -229,7 +233,7 @@ class Piece {
         };
 
         console.log("**********************");
-        console.log("Calculations complete");
+        console.log("Pass 2 - add seam allowance");
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
@@ -267,11 +271,11 @@ class Piece {
 
                     n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
 
-                    newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                    newNode.point = node.point.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
                     if ( node.inControlPoint )
-                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
+                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( n.sa, n.tangentBeforeDeg );
                     if ( node.outControlPoint )
-                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
                     //TODO
                     //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
                     //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
@@ -287,10 +291,10 @@ class Piece {
             }
             else
             {
-                n.pointBeforeSA = n.line.p1.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
+                n.pointBeforeSA = n.line.p1.pointAtDistanceAndAngleDeg( n.sa, n.tangentBeforeDeg );
 
                 if ( n.tangentAfterDeg )
-                    n.pointAfterSA = n.line.p2.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                    n.pointAfterSA = n.line.p2.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
                 //Note if directionBeforeDeg==directionAfterDeg then there is effectively 1 point, and no intersection is necessary
 
                 n.lineSA = new GeoLine( n.pointBeforeSA, n.pointAfterSA );
@@ -305,12 +309,13 @@ class Piece {
             pn = n;
         }
         console.log("**********************");
-
         console.log("**********************");
-        console.log("Calculating intersects");
+        console.log("Pass 3 - intersects");
+
         var pn = this.detailNodes[ this.detailNodes.length-1 ];
         if ( pn.skipPoint )
             pn = this.detailNodes[ this.detailNodes.length-2 ]; 
+
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
@@ -318,106 +323,254 @@ class Piece {
             if ( n.skipPoint )
                 continue;
 
+            if ( a == 67 )
+                console.log("debug this one ");
+
             //Now extend or trim lines and curves so that they intersect at the required points. 
 
             //TODO we need to replace n.pointBeforeSA and pn.pointAfterSA with this intersection point? 
             //and if n.curveSegmentSA then cut the curve at each of those above. Though, if it doesn't cut the curve, then that's fine
             //it just means we didn't need to back track. 
 
-            if (   ( ! pn.pointAfterSA.equals( n.pointBeforeSA ) ) 
-                && ( Math.abs( pn.directionAfterDeg - n.directionBeforeDeg ) > 0.1 ) //must be at least 0.1 deg, though 1 deg would be fine too
-                && ( pn.dObj != n.dObj ) )//if we are consecutive cut segments of the same curve then we don't need this. 
-            try {
-                console.log("Need to do an intersection, n.obj:" + n.obj + " withPrevious:" + pn.obj );
+            var sa1 = pn.sa;
+            var sa2 = n.sa;
 
+            var angleChange = n.directionBeforeDeg - pn.directionAfterDeg;
+            if ( angleChange < -180 )
+                angleChange += 360;
+            else if ( angleChange > 180 )
+                angleChange -= 360;
+
+            if ( Math.abs( angleChange ) > 179.99 )
+            {
+                console.log("Complete change of direction? n.obj:" + n.obj + " withPrevious:" + pn.obj  );
+            }
+
+            if (    ( ( Math.abs( angleChange ) > 0.1 ) || ( sa2 != sa1 ) ) //must be at an angle change, or an sa change
+                 && ( Math.abs( angleChange ) < 179.99 )
+                )
+            try {                
                 //Our intersect could be external, in which case it will be a small, straight extension to each existing path, OR
                 //our intersect could be internal, in which case each path needs to be shortened slightly.  It is this latter type
                 //that requires us to care about where curves intersection. 
 
-                var trailingPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg )
-                var leadingPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg )
+                //+ve a left hand bend, the SAs collapse into each other
+                //-ve a right hand bend, the SAs need some filler 
+
+                console.log("Need to do an intersection, n.obj:" + n.obj + " withPrevious:" + pn.obj + " directionChange:" + angleChange + " sa1:" + sa1 + " sa2:" + sa2 ) ;
+
+
+                //matingAngle - the angle at which the change in SA perfectly tallies with the change in direction
+                var matingAngle = 0; //if sa2==sa1 then matingAngle == 0
+                
+                if (sa1 > sa2)
+                    matingAngle = Math.acos( sa2/sa1 ) * 360 / 2 / Math.PI;
+
+                if (sa2 > sa1)
+                    matingAngle = Math.acos( sa1/sa2 ) * 360 / 2 / Math.PI;
+
+                //Nb. if the smaller sa is zero, then the matingAngle is 90. 
+
+                var matingAngle2 = - matingAngle; //for where angleChange < 0, i.e. right hand bend
+
+                //If moving from sa1 > sa2
+                //   then for angleChange >= matingAngle (60deg) then we just intersect the lines, neither needs extending
+                //        for matingAngle2 < angleChange < matingAngle then we need to add a bend to sa1
+                //        for angleChange <= matingAngle2 we extend both lines and intersect, or can determine the intesection point through trig.  
+                //
+                //If moving from sa1 < sa2 
+                //  then for angleChange >= matingAngle then we just intersect the lines, neither needs extending
+                //           -matingAngle < angleChange < matingAngle then we need to add a bend to sa2
+                //           angleChange <=  matingAngle we extend both lines and intersect, or can determine the intesection point through trig.  
+                //
+                //Therefore the only difference between these cases is which we add the bend to. 
+
                 var trailingPath = pn.lineSA ? pn.lineSA : pn.curveSegmentSA;
                 var leadingPath = n.lineSA ? n.lineSA : n.curveSegmentSA;
 
-                if ( trailingPath instanceof GeoSpline )
+                if ( angleChange >= matingAngle )
                 {
-                    trailingPath.nodeData.push( {inControlPoint:   trailingPoint,
-                                                    point:            trailingPoint,
-                                                    outControlPoint:  undefined } );
-                    trailingPath.nodeData[ trailingPath.nodeData.length-2 ].outControlPoint = trailingPoint;
+                    console.log( "Angle change > " + matingAngle + " therefore just do intersects" );
+                    //then we just intersect the lines/curves, neither needs extending, both need clipping
+                    var intersect = this.intersect( trailingPath,  leadingPath );
+                    trailingPath = this.clipEnd( trailingPath, intersect );
+                    leadingPath = this.clipStart( leadingPath, intersect );
+                    pn.pointAfterSA = intersect;    
+                    n.pointBeforeSA = intersect;            
                 }
-
-                if ( leadingPath instanceof GeoSpline )
+                else if ( angleChange > matingAngle2 ) //&& angleChange < matingAngle (as we've just done that)
                 {
-                    leadingPath.nodeData.unshift( {inControlPoint:   undefined,
-                                                    point:            leadingPoint,
-                                                    outControlPoint:  leadingPoint } );
-                    leadingPath.nodeData[1].inControlPoint = leadingPoint;
-                }
+                    console.log( "Angle change between " + matingAngle2 + " and " + matingAngle + " need to cater for special cases" );
 
-                var trailingLine = new GeoLine( pn.pointAfterSA, trailingPoint );
-                var leadingLine = new GeoLine( n.pointBeforeSA, leadingPoint );                    
-                var intersect = trailingLine.intersect( leadingLine );
-
-                var trailingPathSI = trailingPath.asShapeInfo();
-                var leadingPathSI = leadingPath.asShapeInfo();        
-                
-                try {
-                    var intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
-                    intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-                    if ( intersections.length > 1 )
-                        console.log( "Intersections found (A). " + intersections.length );
-                } catch ( e ) {
-                    console.log( "No intersections found (A). " + pn.obj + " and " + n.obj );
-                    try { 
-                        var intersections = Intersection.intersect(leadingPathSI, leadingPathSI );
-                        intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-                        if ( intersections.length > 1 )
-                            console.log( "Intersections found (B). " + intersections.length );
-                    } catch ( e ) {
-                        console.log( "No intersections found (B). " + pn.obj + " and " + n.obj );
+                    //add a bend if there is a change in sa
+                    if ( sa1 > sa2 )
+                    {
+                        //add the bend to the trailling piece, at least to the difference (sa1-sa2)
+                        if ( angleChange > 0 ) //left-hand
+                        {
+                            //add the bend, length=(sa1-sa2), and then intersect
+                            var reducedSAPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( (sa1-sa2), pn.directionAfterDeg-90 );
+                            var saChangeLine = new GeoLine( pn.pointAfterSA, reducedSAPoint );
+                            var intersect = this.intersect( saChangeLine, leadingPath );
+                            leadingPath = this.clipStart( leadingPath, intersect );
+                            pn.reducedSAPoint = intersect;
+                            n.pointBeforeSA = intersect;
+                        }
+                        else //right-hand
+                        {
+                            //add the bend, with a calculated length and then just join to the leading piece. 
+                            //a = acos( sa2/sa1 )
+                            var sa1Overlap = sa2 / Math.cos( angleChange / 360 * 2 * Math.PI );
+                            var reducedSAPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( sa1-sa1Overlap, pn.directionAfterDeg-90 );
+                            pn.reducedSAPoint = reducedSAPoint;
+                            //leadingPath - nothing to do, we'll just join with a line from reducedSAPoint to its start.
+                            //pn.pointAfterSA unchanged;    
+                            //n.pointBeforeSA unchanged
+                        }
+                        
+                    }
+                    else if ( sa2 > sa1 )
+                    {
+                        //add the bend to the leading piece, at least (sa2-sa1)
+                        if ( angleChange > 0 ) //left hand
+                        {
+                            //use sa2-sa1 and intersect with the trailing line
+                            var increasingSAPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( (sa2-sa1), n.directionBeforeDeg-90 );
+                            var saChangeLine = new GeoLine( n.pointBeforeSA, increasingSAPoint );
+                            var intersect = this.intersect( saChangeLine, trailingPath );
+                            trailingPath = this.clipEnd( trailingPath, intersect );
+                            pn.pointAfterSA = intersect;
+                            n.increasingSAPoint = intersect;
+                            //n.pointBeforeSA = intersect;
+                        }
+                        else //right hand
+                        {
+                            //add a calculated length bend to the leading piece and just join the path to it. 
+                            var sa2overlap = sa1 / Math.cos( angleChange / 360 * 2 * Math.PI );
+                            var increasingSAPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( sa2-sa2overlap, n.directionBeforeDeg-90 );
+                            //trailingPath - nothing to do
+                            //pn.pointAfterSA no change
+                            //n.pointBeforeSA no change
+                            n.increasingSAPoint = increasingSAPoint;
+                        }
                     }
                 }
-                
-                //var distanceToIntersect = (new GeoLine( intersect, n.pointBeforeSA )).getLength();
-                //if ( distanceToIntersect > 10 ) 
-                //    throw "Bad intersect";
+                else
+                {
+                    console.log( "Angle change less than " + matingAngle2 + " need to intersect extensions" );
 
-                pn.pointAfterSA = intersect;    
-                n.pointBeforeSA = intersect;
+                    //we extend both lines and intersect
+                    var trailExtensionLine = new GeoLine( pn.pointAfterSA, pn.pointAfterSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg ) );
+                    var leadingExtensionLine = new GeoLine( n.pointBeforeSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg ), n.pointBeforeSA );
+                    var intersect = trailExtensionLine.intersect( leadingExtensionLine );
+
+                    console.log( "Intersect at " + intersect.toString() );
+
+                    if ( trailingPath instanceof GeoSpline )
+                    {
+                        trailingPath.nodeData.push(  {  inControlPoint:   intersect,
+                                                        point:            intersect,
+                                                        outControlPoint:  undefined } );
+                        trailingPath.nodeData[ trailingPath.nodeData.length-2 ].outControlPoint = intersect;
+                    }
+                    else
+                    {
+                        trailingPath = new GeoLine( pn.pointBeforeSA, intersect ); //this is still just a straight line as we extended it straight
+                    }
+
+                    if ( leadingPath instanceof GeoSpline )
+                    {
+                        leadingPath.nodeData.unshift( { inControlPoint:   undefined,
+                                                        point:            intersect,
+                                                        outControlPoint:  intersect } );
+                        leadingPath.nodeData[1].inControlPoint = intersect;
+                    }
+                    else
+                    {
+                        leadingPath = new GeoLine( intersect, n.pointAfterSA );                    
+                    }
+
+                    pn.pointAfterSA = intersect;
+                    n.pointBeforeSA = intersect;
+                }        
 
                 if ( trailingPath instanceof GeoSpline )
-                {
-                    //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
-                    pn.curveSegmentSA = trailingPath.cutAtPoint( intersect ).beforePoint;
-                    
-                    console.log( "Node: " + (a-1) + " trail out adjusted. ");
-                }
+                    pn.curveSegmentSA = trailingPath;
                 else
-                {
-                    pn.lineSA = new GeoLine( pn.pointBeforeSA, pn.pointAfterSA );
-                }
+                    pn.lineSA = trailingPath;
 
                 if ( leadingPath instanceof GeoSpline )
-                {
-                    //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
-                    var split = leadingPath.cutAtPoint( intersect );
-                    n.curveSegmentSA = split.afterPoint ? split.afterPoint : split.beforePoint;
-                    console.log( "Node: " + a + " lead in adjusted.");
-                    //assert n.pointBeforeSA == n.curveSegmentSA.pointAlongPathFraction(0);
-                }
+                    n.curveSegmentSA = leadingPath;
                 else
-                {
-                    n.lineSA = new GeoLine( n.pointBeforeSA, n.pointAfterSA );
-                }
+                    n.lineSA = leadingPath;
+                
 
             } catch ( e ) {
                 console.log("No intersect pn:" + pn.obj + " n:" + n.obj );
             } 
+
+
             pn = n;                     
         }
         console.log("**********************");
 
+    }
+
+
+    intersect( trailingPath, leadingPath )
+    {
+        var trailingPathSI = trailingPath.asShapeInfo();
+        var leadingPathSI = leadingPath.asShapeInfo();        
+        var intersect;
+        try {
+            var intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
+            intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+            if ( intersections.length > 1 )
+                console.log( "Intersections found (A). " + intersections.length );
+
+        } catch ( e ) {
+            console.log( "No intersections found (A). " + pn.obj + " and " + n.obj );
+
+            try { 
+                var intersections = Intersection.intersect( leadingPathSI, leadingPathSI );
+                intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+                if ( intersections.length > 1 )
+                    console.log( "Intersections found (B). " + intersections.length );
+            } catch ( e ) {
+                console.log( "No intersections found (B). " + pn.obj + " and " + n.obj );
+            }
+        }
+        return intersect; //OR THROW? 
+    }
+
+
+    clipEnd( trailingPath, intersect )
+    {
+        if ( trailingPath instanceof GeoSpline )
+        {
+            //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
+            return trailingPath.cutAtPoint( intersect ).beforePoint;
+        }
+        else
+        {
+            return new GeoLine( trailingPath.p1, intersect );
+        }
+    }
+
+
+    clipStart( leadingPath, intersect ) 
+    {
+        if ( leadingPath instanceof GeoSpline )
+        {
+            //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
+            var split = leadingPath.cutAtPoint( intersect );
+            return split.afterPoint ? split.afterPoint : split.beforePoint;
+        }
+        else
+        {
+            return new GeoLine( intersect, leadingPath.p2 );
+        }
     }
 
 
@@ -427,7 +580,6 @@ class Piece {
         console.log("svgPath: " + this.name + " seamAllowance:" + withSeamAllowance );
 
         var path = undefined;
-        var sa = 0.2;
         var pn = this.detailNodes[ this.detailNodes.length -1 ];
 
         for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
@@ -441,6 +593,12 @@ class Piece {
 
             if ( n.skipPoint )
                 continue;
+
+            if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
+                path = ( ! path  ?  "M " : path + "L " ) + pn.reducedSAPoint.x + " " + pn.reducedSAPoint.y + " ";
+
+            if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
+                path = ( ! path ? "M " : path + "L " ) + n.increasingSAPoint.x + " " + n.increasingSAPoint.y + " ";
 
             if ( n.curveSegment )
             {
