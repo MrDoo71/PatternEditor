@@ -243,18 +243,21 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
-        if ( selectedObject.tableSvg ) //should always be set unless there has been a problem
-            selectedObject.tableSvg.node().classList.add("j-active");
-
-        if ( selectedObject.drawingSvg )
-            selectedObject.drawingSvg.node().classList.add("j-active");
-
-        if ( selectedObject.outlineSvg )
+        if ( selectedObject )
         {
-            selectedObject.outlineSvg.node().classList.add("j-active");
-            var selectedObjectToAdjustAfter2Secs = selectedObject; //The user may have clicked on something else within 2 seconds
-            //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
-            setTimeout( function(){ selectedObjectToAdjustAfter2Secs.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
+            if ( selectedObject.tableSvg ) //should always be set unless there has been a problem
+                selectedObject.tableSvg.node().classList.add("j-active");
+
+            if ( selectedObject.drawingSvg )
+                selectedObject.drawingSvg.node().classList.add("j-active");
+
+            if ( selectedObject.outlineSvg )
+            {
+                selectedObject.outlineSvg.node().classList.add("j-active");
+                var selectedObjectToAdjustAfter2Secs = selectedObject; //The user may have clicked on something else within 2 seconds
+                //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
+                setTimeout( function(){ selectedObjectToAdjustAfter2Secs.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
+            }
         }
 
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
@@ -289,7 +292,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
              } );
 
         //Scroll the table to ensure that d.tableSvg is in view.    
-        if ( scrollTable )
+        if (( scrollTable ) && ( selectedObject ))
         {
             if ( selectedObject.tableSvg )
             {
@@ -428,6 +431,7 @@ function doControls( graphdiv, editorOptions, pattern )
     var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
 
     if (    ( editorOptions.viewOption )
+         && ( typeof editorOptions.viewOption === "object" ) //allow viewOption="drawing" to prevent display if these buttons
          && ( editorOptions.viewOption.length > 1 ) )
     {
         editorOptions.sizeButtons = controls.append("div").attr("class", "btn-group view-options");
@@ -479,12 +483,33 @@ function doControls( graphdiv, editorOptions, pattern )
     }
 
     //Zoom to fit. 
+    if ( editorOptions.allowPanAndZoom )
     {
         var zoomToFitButton = controls.append("button")
                                      .attr("class", "btn btn-default zoom-to-fit")
                                      .html( '<i class="icon-move" />' )
                                      .attr("title","Zoom to fit");
                                      //.on("click", zoomToFit );
+    }    
+
+    if ( editorOptions.downloadOption )
+    {
+        var downloadFunction = function() {
+            var serializer = new XMLSerializer();
+            var xmlString = serializer.serializeToString(d3.select('svg').node());
+            var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
+
+            d3.select(this)
+                          .attr( "href-lang", "image/svg+xml" )
+                          .attr( "href", imgData )
+                          .attr( "download", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name + " - " + editorOptions.targetPiece.name + ".svg" );
+        };
+
+        var downloadLink = controls.append("a")
+                                     .attr("class", "btn btn-default download")
+                                     .html( '<i class="icon-download"></i> Download' )
+                                     .attr("title","Download")
+                                     .on("click", downloadFunction );
     }    
 
     {
@@ -545,7 +570,10 @@ function doControls( graphdiv, editorOptions, pattern )
 
         optionMenu.append("div").attr("class","formula-option").html( '<i class="icon-check"></i>show formulas' ).on("click", toggleShowFormulas );
 
-        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-adjust"></i>' ).attr("title","Group/formula visibility").on("click", optionMenuToggle );
+        if ( ! ( editorOptions.targetPiece && editorOptions.lifeSize ) ) //&& ! downloadOption ? 
+            controls.append("button")
+                    .attr("class","btn btn-default toggle-options").html( '<i class="icon-adjust"></i>' )
+                    .attr("title","Group/formula visibility").on("click", optionMenuToggle );
     } //options menu to show/hide groups and show/hide formula
 
     if ( pattern.wallpapers )
@@ -728,38 +756,61 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
+    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
+    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
 
     graphdiv.select("svg.pattern-drawing").remove();
 
-    var svg = graphdiv.append("svg")
+    var svg;
+    
+    if ( editorOptions.lifeSize )
+    {
+        //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
+        var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        svg = graphdiv.append("svg")
+                      .attr("class", "pattern-drawing" )
+                      .attr("width", ( Math.round( (patternWidth + (2*margin)) * 10 )/10 + Number.EPSILON ) + pattern.units )
+                      .attr("height", ( Math.round( (patternHeight + (2*margin)) * 10 )/10 + Number.EPSILON )+ pattern.units )
+                      .attr("viewBox", (pattern.visibleBounds.minX - margin)+ " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
+    }
+    else
+    {
+        svg = graphdiv.append("svg")
                        .attr("class", "pattern-drawing" )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
+    }
 
     var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
-
-    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
-    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
 
     //console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
     //console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
 
-    var scaleX = width / patternWidth;                   
-    var scaleY = height / patternHeight;           
-    
-    if ( ( isFinite( scaleX ) ) && ( isFinite( scaleY ) ) )
-        scale = scaleX > scaleY ? scaleY : scaleX;
-    else if ( isFinite( scaleX ) )
-        scale = scaleX;
-    else
-        scale = 1;
-
-    //console.log( "scale:" + scale + " patternWidth:" + patternWidth + " width:" + width );
-
     //transformGroup2 scales from calculated positions in pattern-space (e.g. 10 representing 10cm) to
     //pixels available. So 10cm in a 500px drawing has a scale of 50. 
-    var transformGroup2 = transformGroup1.append("g")
-        .attr("transform", "scale(" + scale + "," + scale + ")");
+    var transformGroup2;
+
+    if ( editorOptions.lifeSize )
+    {
+        scale = 1;
+        transformGroup2 = transformGroup1; //we don't need another group
+    }
+    else
+    {
+        var scaleX = width / patternWidth;                   
+        var scaleY = height / patternHeight;           
+        
+        if ( ( isFinite( scaleX ) ) && ( isFinite( scaleY ) ) )
+            scale = scaleX > scaleY ? scaleY : scaleX;
+        else if ( isFinite( scaleX ) )
+            scale = scaleX;
+        else
+            scale = 1;
+
+        transformGroup2 = transformGroup2 = transformGroup1.append("g").attr("transform", "scale(" + scale + "," + scale + ")");
+    }
+
+    //console.log( "scale:" + scale + " patternWidth:" + patternWidth + " width:" + width );
 
     //centralise horizontally                            
     var boundsWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
@@ -767,9 +818,14 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     var offSetX = ( availableWidth - boundsWidth ) /2;
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
-    var transformGroup3 = transformGroup2.append("g")
-                               .attr("class","pattern")
-                               .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
+    var transformGroup3 = transformGroup2.append("g")                               
+                                         .attr("class","pattern");                           
+
+    if ( editorOptions.downloadOption )  
+        transformGroup3.attr("id", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name )
+        
+    if ( ! editorOptions.lifeSize )
+        transformGroup3.attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
 
     if ( pattern.wallpapers )
     {
@@ -842,6 +898,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             {
                 p.drawSeamLine( g );
                 p.drawSeamAllowance( g );
+                p.drawNotches( g );
                 p.svg = g;
             }
         });

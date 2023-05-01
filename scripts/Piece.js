@@ -31,6 +31,7 @@ class Piece {
                 //dObj.setUsedByPiece( this );
             }, this ); 
                 
+        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth ).value();
         this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
@@ -46,6 +47,7 @@ class Piece {
         console.log("Time to draw seam line: ", this.name );
 
         var p = g.append("path")
+                 .attr("id","seam line - " + this.name )
                  .attr("d", this.svgPath( false ) )
                  .attr("fill", "none")
                  .attr("stroke", "red")
@@ -58,6 +60,7 @@ class Piece {
         console.log("Time to draw seam allowance: ", this.name );
 
         var p = g.append("path")
+                 .attr("id","seam allowance - " + this.name )
                  .attr("d", this.svgPath( true ) )
                  .attr("fill", "none")
                  .attr("stroke", "green")
@@ -67,6 +70,16 @@ class Piece {
 
     getStrokeWidth( isOutline, isSelected )
     {
+        if ( this.patternPiece.pattern.data.options.lifeSize ) 
+        {
+            if ( this.patternPiece.pattern.units = "cm" )
+                return 0.05; //0.5mm
+            else if ( this.patternPiece.pattern.units = "mm" )
+                return 0.5; //0.5mm
+            else //inches
+                return 0.02; //approx 0.5mm
+        }
+            
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
 
@@ -82,17 +95,27 @@ class Piece {
         console.log("Pass 1 - direction and skipped nodes" );
         //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
         //which points don't lead to any progress around the curve. 
-        for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
-
+        for (var a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
+        {  
             var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
             var dObj = n.dObj;
             var nObj = nn.dObj;
 
-            var r = 1;//Math.floor(Math.random() * 3);
+            if ( typeof n.before !== "undefined" )
+            {
+                n.sa1 = 1.0 * n.before; //TODO what about beforeSA? what about formulas.
+                if ( typeof pn.sa2 === "undefined"  )
+                    pn.sa2 = n.sa1;
+            }
 
-            n.sa = r * 0.2;
+            if ( typeof n.after !== "undefined" ) //string
+            {
+                n.sa2 = 1.0 * n.after; //TODO what about beforeSA? what about formulas.
+                if ( typeof nn.sa1 === "undefined"  )
+                    nn.sa1 = n.sa2; 
+            }
          
             if ( a == this.detailNodes.length )
                 console.log("Closing path");
@@ -155,12 +178,12 @@ class Piece {
                     //        pn.skipPoint = true;
                     //}
 
-                    previousP = curveSegment.pointAlongPathFraction(100);
+                    previousP = curveSegment.pointAlongPathFraction(1);
                     n.directionBeforeDeg = curveSegment.entryAngleDeg();
                     n.directionAfterDeg = curveSegment.exitAngleDeg(); //or curveSegmentToDraw?
                     n.curveSegment = curveSegment;
                 }
-                else
+                else if ( dObj.p )
                 {
                     console.log( "Other node " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
@@ -213,9 +236,21 @@ class Piece {
                     {
                         console.log("Same point, no progress");
                         n.directionBeforeDeg = pn.directionAfterDeg;
+                        n.point = thisP; //even if skipping, we may need this for notches
                         n.skipPoint = true; 
                     }
                 }
+                else if ( dObj.line instanceof GeoLine )
+                {
+                    //TODO! this needs testing, is this even allowed? 
+                    console.log("Line! " + n.obj );
+                    n.line = dObj.line;
+                    n.point = dObj.line.p2;
+                    n.directionBeforeDeg = n.line.angleDeg();
+                    n.directionAfterDeg = n.directionBeforeDeg
+                    n.skipPoint = false; 
+                }
+
 
                 if ( pn.directionAfterDeg === undefined )
                 {
@@ -228,7 +263,7 @@ class Piece {
                 if ( n.skipPoint )
                   console.log("Index:" + a + " skip" );
                 else
-                  console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(previousDirectionDeg) );
+                  console.log("Index:" + a + " ends at " + previousP.toString() + ", direction " + Math.round(n.directionAfterDeg) );
             }                    
         };
 
@@ -237,6 +272,9 @@ class Piece {
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
+
+            var sa1 = ( typeof n.sa1 !== "undefined" ) ? n.sa1 : this.defaultSeamAllowance;
+            var sa2 = ( typeof n.sa2 !== "undefined" ) ? n.sa2 : this.defaultSeamAllowance;
 
             n.tangentAfterDeg = n.directionAfterDeg + 90;
             if ( n.tangentAfterDeg > 360 )
@@ -249,6 +287,7 @@ class Piece {
             if ( n.skipPoint )
             {
                 console.log( "Node:" + a + " " + n.obj + " skip");
+                n.pointBeforeSA = n.point.pointAtDistanceAndAngleDeg( sa1, n.tangentBeforeDeg );
                 continue;
             }
     
@@ -271,11 +310,13 @@ class Piece {
 
                     n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
 
-                    newNode.point = node.point.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
+                    var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
+
+                    newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
                     if ( node.inControlPoint )
-                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( n.sa, n.tangentBeforeDeg );
+                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
                     if ( node.outControlPoint )
-                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
+                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
                     //TODO
                     //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
                     //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
@@ -285,16 +326,16 @@ class Piece {
                 }
                 n.curveSegmentSA  = new GeoSpline( nodeData );
                 n.pointBeforeSA = n.curveSegmentSA.pointAlongPathFraction(0);
-                n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(100);
+                n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(1);
 
                 debugSA = " A:" + n.pointBeforeSA.toString() + " B:" + n.pointBeforeSA.toString()                 
             }
             else
             {
-                n.pointBeforeSA = n.line.p1.pointAtDistanceAndAngleDeg( n.sa, n.tangentBeforeDeg );
+                n.pointBeforeSA = n.line.p1.pointAtDistanceAndAngleDeg( sa1, n.tangentBeforeDeg );
 
                 if ( n.tangentAfterDeg )
-                    n.pointAfterSA = n.line.p2.pointAtDistanceAndAngleDeg( n.sa, n.tangentAfterDeg );
+                    n.pointAfterSA = n.line.p2.pointAtDistanceAndAngleDeg( sa1, n.tangentAfterDeg ); //SA1 seems more compatible? 
                 //Note if directionBeforeDeg==directionAfterDeg then there is effectively 1 point, and no intersection is necessary
 
                 n.lineSA = new GeoLine( n.pointBeforeSA, n.pointAfterSA );
@@ -305,6 +346,7 @@ class Piece {
             console.log( "Node:" + a + " " + n.obj + 
                          " directionBeforeDeg:" + ( n.directionBeforeDeg === undefined ? "undefined" : Math.round(n.directionBeforeDeg) ) + 
                          " directionAfterDeg:" + ( n.directionAfterDeg === undefined ? "undefined" : Math.round(n.directionAfterDeg) ) +
+                         " sa1:" + ( sa1 ) + " sa2:" + ( sa2 ) +
                          ( n.curveSegment ? " curvesegment" : n.line ? " line" : " UNKNOWN" ) + " " + debugSA);
             pn = n;
         }
@@ -323,17 +365,14 @@ class Piece {
             if ( n.skipPoint )
                 continue;
 
-            if ( a == 67 )
-                console.log("debug this one ");
-
             //Now extend or trim lines and curves so that they intersect at the required points. 
 
             //TODO we need to replace n.pointBeforeSA and pn.pointAfterSA with this intersection point? 
             //and if n.curveSegmentSA then cut the curve at each of those above. Though, if it doesn't cut the curve, then that's fine
             //it just means we didn't need to back track. 
 
-            var sa1 = pn.sa;
-            var sa2 = n.sa;
+            var sa1 = n.sa1;
+            var sa2 = n.sa2;
 
             var angleChange = n.directionBeforeDeg - pn.directionAfterDeg;
             if ( angleChange < -180 )
@@ -594,11 +633,14 @@ class Piece {
             if ( n.skipPoint )
                 continue;
 
-            if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
-                path = ( ! path  ?  "M " : path + "L " ) + pn.reducedSAPoint.x + " " + pn.reducedSAPoint.y + " ";
+            if ( withSeamAllowance )
+            {
+                if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
+                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + " " + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
 
-            if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
-                path = ( ! path ? "M " : path + "L " ) + n.increasingSAPoint.x + " " + n.increasingSAPoint.y + " ";
+                if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
+                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + " " + this.roundForSVG( n.increasingSAPoint.y ) + " ";
+            }
 
             if ( n.curveSegment )
             {
@@ -612,12 +654,12 @@ class Piece {
 
                 if ( ! path )
                 {
-                    path = "M " + thisP.x + " " + thisP.y + " ";
+                    path = "M" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Move to " + n.obj );
                 }
                 else
                 {
-                    path += "L " + thisP.x + " " + thisP.y + " ";
+                    path += "L" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Line to " + n.obj );
                 }
             }
@@ -645,4 +687,39 @@ class Piece {
             bounds.adjust( n.pointBeforeSA );
         }
     }
+
+
+    roundForSVG( n )
+    {
+        return Math.round( n * 1000 ) / 1000;
+    }
+
+
+    drawNotches( g )
+    {
+        var notches = g.append("g").attr("id","notches");
+        console.log("*********");
+        console.log("notches: " + this.name );
+
+        var pn = this.detailNodes[ this.detailNodes.length -1 ];
+
+        for (var a = 0; a < this.detailNodes.length; a++) 
+        {
+            var n = this.detailNodes[ a ];
+
+            if ( typeof n.notch === "undefined" )
+                continue;
+         
+            //TODO if no SA, then create a point at an internal tangent
+            var path = "M" + this.roundForSVG( n.point.x ) + " " + this.roundForSVG( n.point.y ) + "L" + this.roundForSVG( n.pointBeforeSA.x ) + " " + this.roundForSVG( n.pointBeforeSA.y );
+
+            //TODO should we connect these D3 data-wise to the notches
+            var p = notches.append("path")
+                .attr("d", path )
+                .attr("fill", "none")
+                .attr("stroke", "purple")
+                .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
+
+        };
+    }    
 }

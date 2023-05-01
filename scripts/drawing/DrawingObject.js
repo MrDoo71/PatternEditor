@@ -281,6 +281,9 @@ class DrawingObject /*abstract*/ {
 
         if ( options && options.targetPiece )
         {
+            if ( options.downloadOption )
+                return false; //Should targetPiece mean we don't display any drawing objects? 
+
             var isVisible = false;
 
             //if this obj doesn't match a detailNode then return false

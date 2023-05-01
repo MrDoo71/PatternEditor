@@ -77,7 +77,7 @@ class GeoSpline {
         {
             if ( i===0 )
             {
-                path+= ( continuePath ? "L" : "M" ) + nodeData[i].point.x + "," + this.nodeData[i].point.y ;
+                path+= ( continuePath ? "L" : "M" ) + Math.round( nodeData[i].point.x *1000 )/1000 + " " + Math.round( this.nodeData[i].point.y *1000)/1000 ;
             }
             else
             {
@@ -86,9 +86,9 @@ class GeoSpline {
 
                 var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
                                                                                           : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
-                path += "C" + controlPoint1.x + " " + controlPoint1.y +
-                        " " + controlPoint2.x + " " + controlPoint2.y +
-                        " " + nodeData[i].point.x + " " + nodeData[i].point.y;
+                path += "C" + Math.round( controlPoint1.x * 1000 ) / 1000 + " " + Math.round( controlPoint1.y * 1000 ) / 1000 +
+                        " " + Math.round( controlPoint2.x * 1000 ) / 1000 + " " + Math.round( controlPoint2.y * 1000 ) / 1000 +
+                        " " + Math.round( nodeData[i].point.x * 1000 ) / 1000 + " " + Math.round( nodeData[i].point.y * 1000 ) / 1000;
             }
         }
         //console.log( "GeoSpline: " + path );
@@ -237,6 +237,9 @@ class GeoSpline {
                 if (( d === 0 ) || ( d < threshold )) 
                 {
                     //console.log( "i:" + iter + " t:" + t + " d:" + d + " FOUND" );
+                    if (( t > 1 ) || ( t < 0 ))
+                        return undefined; //they are probably on another segment
+
                     return t;
                 }
 
@@ -283,9 +286,27 @@ class GeoSpline {
         if ( c2 === undefined )
             throw "p2 is not on spline;"
 
-        var d1 = c1.beforePoint == null ? 0 : c1.beforePoint.pathLength();
-        var d2 = c2.beforePoint == null ? 0 : c2.beforePoint.pathLength();
-        if ( d2 < d1 ){
+        //For each segment, determine t for each of p1 and p2
+        //the first one we find is the first point. 
+        
+        //TODO this can be optimised here. 
+
+        //We can avoid the more expensive pathLength() if we can see that one of 
+        //the points is in an earlier segment. 
+        var s1 = c1.beforePoint == null ? 0 : c1.beforePoint.nodeData.length;
+        var s2 = c2.beforePoint == null ? 0 : c2.beforePoint.nodeData.length;
+        var swap = s1 > s2;
+
+        if ( s1 == s2 )
+        {
+            //nb we have seen the pathLength() not produce a correct result.  Returns >3000 when this.pathLength = 60.  
+            var d1 = c1.beforePoint == null ? 0 : c1.beforePoint.pathLength();
+            var d2 = c2.beforePoint == null ? 0 : c2.beforePoint.pathLength();
+            swap = d1 > d2;
+        }
+
+        if ( swap )
+        {
             var t = p2;
             p2 = p1;
             p1 = t;
@@ -558,6 +579,38 @@ class GeoSpline {
         }
 
         return directionLine.angleDeg();
+    }
+
+
+    toString()
+    {
+        var s = "GeoSpline[ ";
+        for ( var i=0; i<this.nodeData.length; i++ )
+        {
+            var node = this.nodeData[i];
+
+            if ( node.inControlPoint )
+                s += " in:" + node.inControlPoint.toString();
+
+            if ( node.inAngle )
+                s += " inAng:" + node.inAngle;
+
+            if ( node.inLength )
+                s += " inLen:" + node.inLength;
+
+            s += " p:" + node.point.toString();
+
+            if ( node.outControlPoint )
+                s += " out:" + node.outControlPoint.toString();
+
+            if ( node.outAngle )
+                s += " outAng:" + node.outAngle;
+
+            if ( node.outLength )
+                s += " outLen:" + node.outLength;
+        }
+        s += "]";
+        return s;
     }
 }
 
