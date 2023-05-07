@@ -11,6 +11,7 @@ class Pattern {
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
+        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber : "" ) + this.patternData.patternName;
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
 

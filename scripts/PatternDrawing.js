@@ -63,9 +63,15 @@ class PatternDrawing {
             }
 
         var options = this.pattern.data.options; 
-        if ( options && options.targetPiece )
+        if ( options && ( typeof options.targetPiece === "object" ) )
         {
             options.targetPiece.adjustBounds( this.visibleBounds );
+        }
+        else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
+        {
+            for (var a = 0; a < this.data.piece.length; a++) {
+                this.pieces[a].adjustBounds( this.visibleBounds, true );
+            }
         }
         else
         {

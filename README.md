@@ -17,7 +17,7 @@ The input to this library is a JSON representation (and simplification) of the X
 
 The pattern sharing website [https://my-pattern.cloud/](https://my-pattern.cloud/) can import Seamly2D/Valentina .val and .vit files and uses this library to display a representation of the pattern in the browser.
 
-Static test files: [https://my-pattern.cloud/patternEditor/tests/test.html](https://my-pattern.cloud/patternEditor/tests/test.html)
+Static test files: [https://my-pattern.cloud/patternEditor/tests/test.html](https://my-pattern.cloud/patterneditor/tests/test.html)
 
 
 

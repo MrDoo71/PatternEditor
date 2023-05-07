@@ -502,7 +502,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name + " - " + editorOptions.targetPiece.name + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName + " - " + editorOptions.targetPiece.name + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -753,11 +753,11 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
+    var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
-    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
-    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
+    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX ) + ( 2 * margin );
+    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY ) + ( 2 * margin );
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -769,9 +769,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", ( Math.round( (patternWidth + (2*margin)) * 10 )/10 + Number.EPSILON ) + pattern.units )
-                      .attr("height", ( Math.round( (patternHeight + (2*margin)) * 10 )/10 + Number.EPSILON )+ pattern.units )
-                      .attr("viewBox", (pattern.visibleBounds.minX - margin)+ " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
+                      .attr("width", ( Math.round( (patternWidth * 10 )/10 + Number.EPSILON )) + pattern.units )
+                      .attr("height", ( Math.round( (patternHeight * 10 )/10 + Number.EPSILON )) + pattern.units )
+                      .attr("viewBox", (pattern.visibleBounds.minX - margin) + " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
     }
     else
     {
@@ -822,7 +822,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          .attr("class","pattern");                           
 
     if ( editorOptions.downloadOption )  
-        transformGroup3.attr("id", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name )
+        transformGroup3.attr("id", pattern.patternNumberAndName )
         
     if ( ! editorOptions.lifeSize )
         transformGroup3.attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
@@ -889,11 +889,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );
         pg.enter()
-         .append("g")
+         .append("g")        
          //.on("contextmenu", contextMenu)
          //.on("click", onclick)
          .each( function(p,i) {
             var g = d3.select( this );
+            g.attr("id", p.name );
+
+            //if doing an export of multiple pieces then take the piece.mx/my into account
+            if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
+            {
+                g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+            }
+
             if (   ( typeof p.drawSeamLine === "function" ) )
             {
                 p.drawSeamLine( g );

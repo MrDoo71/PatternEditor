@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="2834.646" height="3401.575" viewBox="0, 0, 2834.646, 3401.575">
+  <g id="Layer_1">
+    <g>
+      <path d="M244.824,1081.234 L334.017,1081.234 L334.017,1422.532 L244.824,1422.532 z" fill="#FFFFFF"/>
+      <path d="M244.824,1081.234 L334.017,1081.234 L334.017,1422.532 L244.824,1422.532 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M479.374,759.816 L548.708,815.924 L334.009,1081.233 L264.675,1025.124 z" fill="#FFFFFF"/>
+      <path d="M479.374,759.816 L548.708,815.924 L334.009,1081.233 L264.675,1025.124 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+  </g>
+  <g id="Layer_2">
+    <g>
+      <path d="M334.017,1081.232 L334.017,1422.53" fill="#FFFFFF"/>
+      <path d="M334.017,1081.232 L334.017,1422.53" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M244.825,1422.531 L244.825,1004.214" fill="#FFFFFF"/>
+      <path d="M244.825,1422.531 L244.825,1004.214" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g display="none">
+      <path d="M479.374,759.816 L548.708,815.924" fill="#FFFFFF"/>
+      <path d="M479.374,759.816 L548.708,815.924" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M548.708,815.924 L334.009,1081.233" fill="#FFFFFF"/>
+      <path d="M548.708,815.924 L334.009,1081.233" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M206,1099 L479.374,759.816" fill="#FFFFFF"/>
+      <path d="M206,1099 L479.374,759.816" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M644.187,1081.234 L733.379,1081.234 L733.379,1422.532 L644.187,1422.532 z" fill="#FFFFFF"/>
+      <path d="M644.187,1081.234 L733.379,1081.234 L733.379,1422.532 L644.187,1422.532 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M915.977,788.092 L948.981,814.8 L733.371,1081.234 L700.367,1054.525 z" fill="#FFFFFF"/>
+      <path d="M915.977,788.092 L948.981,814.8 L733.371,1081.234 L700.367,1054.525 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M733.379,1081.232 L733.379,1422.53" fill="#FFFFFF"/>
+      <path d="M733.379,1081.232 L733.379,1422.53" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M644.187,1422.531 L644.187,1081.233" fill="#FFFFFF"/>
+      <path d="M644.187,1422.531 L644.187,1081.233" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M948.071,815.924 L733.371,1081.233" fill="#FFFFFF"/>
+      <path d="M948.071,815.924 L733.371,1081.233" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M678.904,1081.233 L952.279,742.049" fill="#00F91C"/>
+      <path d="M678.904,1081.233 L952.279,742.049" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1050.363,1081.234 L1139.556,1081.234 L1139.556,1422.532 L1050.363,1422.532 z" fill="#FFFFFF"/>
+      <path d="M1050.363,1081.234 L1139.556,1081.234 L1139.556,1422.532 L1050.363,1422.532 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M1322.154,788.092 L1355.157,814.8 L1139.547,1081.233 L1106.544,1054.525 z" fill="#FFFFFF"/>
+      <path d="M1322.154,788.092 L1355.157,814.8 L1139.547,1081.233 L1106.544,1054.525 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M1139.556,1081.232 L1139.556,1422.53" fill="#FFFFFF"/>
+      <path d="M1139.556,1081.232 L1139.556,1422.53" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1050.363,1422.531 L1050.355,1050.858" fill="#FFFFFF"/>
+      <path d="M1050.363,1422.531 L1050.355,1050.858" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1354.247,815.924 L1139.547,1081.232" fill="#FFFFFF"/>
+      <path d="M1354.247,815.924 L1139.547,1081.232" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1096.587,1067.022 L1358.456,742.049" fill="#FFFFFF"/>
+      <path d="M1096.587,1067.022 L1358.456,742.049" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1050.355,1050.858 L1096.587,1066.073" fill="#FFFFFF"/>
+      <path d="M1050.355,1050.858 L1096.587,1066.073" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1139.547,1081.233 L1050.355,1050.858" fill="#FFFFFF"/>
+      <path d="M1139.547,1081.233 L1050.355,1050.858" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M644.187,1081.233 L678.904,1081.233" fill="#FFFFFF"/>
+      <path d="M644.187,1081.233 L678.904,1081.233" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M244.825,1081.233 L264.675,1025.124" fill="#FFFFFF"/>
+      <path d="M244.825,1081.233 L264.675,1025.124" fill-opacity="0" stroke="#FF2600" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1397.659,1079.335 L1480.744,1039.121" fill="#FFFFFF"/>
+      <path d="M1397.659,1079.335 L1480.744,1039.121" fill-opacity="0" stroke="#FF2600" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1050.363,1081.233 L1106.544,1054.524" fill="#FFFFFF"/>
+      <path d="M1050.363,1081.233 L1106.544,1054.524" fill-opacity="0" stroke="#FF2600" stroke-width="1"/>
+    </g>
+  </g>
+  <g id="Layer_3">
+    <g>
+      <path d="M244.825,309.263 L567.156,309.263 L567.156,632.154 L244.825,632.154 z" fill="#FFFFFF"/>
+      <path d="M244.825,309.263 L567.156,309.263 L567.156,632.154 L244.825,632.154 z" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <path d="M206,641.312 L207.754,337.009 L262.004,296.527 L567.156,297.943" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    <g>
+      <path d="M1397.659,1081.233 L1486.852,1081.233 L1486.852,1422.531 L1397.659,1422.531 z" fill="#FFFFFF"/>
+      <path d="M1397.659,1081.233 L1486.852,1081.233 L1486.852,1422.531 L1397.659,1422.531 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M1820.697,995.466 L1826.105,1037.577 L1486.151,1081.232 L1480.744,1039.121 z" fill="#FFFFFF"/>
+      <path d="M1820.697,995.466 L1826.105,1037.577 L1486.151,1081.232 L1480.744,1039.121 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <g>
+      <path d="M1486.852,1081.231 L1486.852,1422.529" fill="#FFFFFF"/>
+      <path d="M1486.852,1081.231 L1486.852,1422.529" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1397.659,1422.53 L1397.659,1040.584" fill="#FFFFFF"/>
+      <path d="M1397.659,1422.53 L1397.659,1040.584" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1826.105,1037.577 L1486.843,1081.232" fill="#FFFFFF"/>
+      <path d="M1826.105,1037.577 L1486.843,1081.232" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1390.987,1050.858 L1820.697,995.466" fill="#FFFFFF"/>
+      <path d="M1390.987,1050.858 L1820.697,995.466" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    </g>
+    <text transform="matrix(1, 0, 0, 1, 1505.361, 980.893)">
+      <tspan x="-113.44" y="1.679" font-family="ChalkboardSE-Bold" font-size="22" fill="#FF2600">Red - chamfer option</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 611.202, 1031.204)">
+      <tspan x="-87.745" y="1.679" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BF00">Green - option 2</tspan>
+    </text>
+  </g>
+  <g id="Layer_4">
+    <g>
+      <path d="M801.705,1805.214 L890.897,1805.214 L890.897,2146.513 L801.705,2146.513 z" fill="#FFFFFF"/>
+      <path d="M801.705,1805.214 L890.897,1805.214 L890.897,2146.513 L801.705,2146.513 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M757.045,1486.034 L797.914,1474.532 L890.763,1804.462 L849.894,1815.963 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M890.897,1805.213 L890.897,2146.511" fill="#FFFFFF"/>
+      <path d="M890.897,1805.213 L890.897,2146.511" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M801.705,2146.512 L801.705,1805.214" fill="#FFFFFF"/>
+      <path d="M801.705,2146.512 L801.705,1805.214" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M797.914,1474.532 L890.889,1805.214" fill="#FFFFFF"/>
+      <path d="M797.914,1474.532 L890.889,1805.214" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M757.045,1486.034 L846.724,1805.214" fill="#00F91C"/>
+      <path d="M757.045,1486.034 L846.724,1805.214" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M801.705,1805.214 L846.724,1805.214" fill="#FFFFFF"/>
+      <path d="M801.705,1805.214 L846.724,1805.214" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M158.722,1800.641 L247.915,1800.641 L247.915,2141.939 L158.722,2141.939 z" fill="#FFFFFF"/>
+      <path d="M158.722,1800.641 L247.915,1800.641 L247.915,2141.939 L158.722,2141.939 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M59.768,1793.529 L70.992,1752.583 L247.906,1801.078 L236.682,1842.024 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M247.915,1800.639 L247.915,2141.938" fill="#FFFFFF"/>
+      <path d="M247.915,1800.639 L247.915,2141.938" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M158.722,2141.938 L158.722,1820.848" fill="#FFFFFF"/>
+      <path d="M158.722,2141.938 L158.722,1820.848" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M70.992,1752.583 L247.906,1800.64" fill="#FFFFFF"/>
+      <path d="M70.992,1752.583 L247.906,1800.64" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M59.768,1793.529 L158.722,1820.848" fill="#00F91C"/>
+      <path d="M59.768,1793.529 L158.722,1820.848" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M801.705,1805.214 L849.102,1805.213" fill="#FFFFFF"/>
+      <path d="M801.705,1805.214 L849.102,1805.213" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M889.933,1846.596 C867.383,1846.596 849.102,1827.815 849.102,1804.646" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <g>
+      <path d="M159.678,1801.208 L207.075,1801.208" fill="#FFFFFF"/>
+      <path d="M159.678,1801.208 L207.075,1801.208" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M247.906,1842.591 C225.356,1842.591 207.075,1823.809 207.075,1800.641" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 223.137, 2221.81)">
+      <tspan x="-122.398" y="-38.201" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Just intersect, if &lt; -a</tspan>
+    </text>
+    <g>
+      <path d="M1033.558,1805.215 L1122.751,1805.215 L1122.751,2146.514 L1033.558,2146.514 z" fill="#FFFFFF"/>
+      <path d="M1033.558,1805.215 L1122.751,1805.215 L1122.751,2146.514 L1033.558,2146.514 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M1169.386,1622.721 L1207.119,1642.182 L1123.032,1805.215 L1085.299,1785.753 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M1122.751,1805.214 L1122.751,2146.512" fill="#FFFFFF"/>
+      <path d="M1122.751,1805.214 L1122.751,2146.512" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1033.558,2146.513 L1033.558,1804.647" fill="#FFFFFF"/>
+      <path d="M1033.558,2146.513 L1033.558,1804.647" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1207.119,1642.182 L1122.742,1805.214" fill="#FFFFFF"/>
+      <path d="M1207.119,1642.182 L1122.742,1805.214" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1169.386,1622.721 L1075.141,1805.782" fill="#00F91C"/>
+      <path d="M1169.386,1622.721 L1075.141,1805.782" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1033.558,1805.782 L1081.911,1805.782" fill="#FFFFFF"/>
+      <path d="M1033.558,1805.782 L1081.911,1805.782" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M1122.742,1847.165 C1100.192,1847.165 1081.911,1828.384 1081.911,1805.215" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 1102.327, 2234.195)">
+      <tspan x="-195.085" y="-34.202" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">If right hand bend, a&gt;0, also extend </tspan>
+      <tspan x="-195.085" y="-3.202" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">leading line.</tspan>
+      <tspan x="-195.085" y="27.798" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">We could do this in all cases</tspan>
+    </text>
+    <g>
+      <path d="M1075.141,1805.782 L1085.299,1785.753" fill="#B139FF"/>
+      <path d="M1075.141,1805.782 L1085.299,1785.753" fill-opacity="0" stroke="#00BAFF" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1648.103,1805.215 L1737.296,1805.215 L1737.296,2146.514 L1648.103,2146.514 z" fill="#FFFFFF"/>
+      <path d="M1648.103,1805.215 L1737.296,1805.215 L1737.296,2146.514 L1648.103,2146.514 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M1910.015,1730.777 L1917.574,1772.555 L1737.065,1805.215 L1729.506,1763.437 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M1737.296,1805.214 L1737.296,2146.512" fill="#FFFFFF"/>
+      <path d="M1737.296,1805.214 L1737.296,2146.512" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1648.103,2146.513 L1648.103,1765.636" fill="#FFFFFF"/>
+      <path d="M1648.103,2146.513 L1648.103,1765.636" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1917.574,1772.555 L1737.287,1805.214" fill="#FFFFFF"/>
+      <path d="M1917.574,1772.555 L1737.287,1805.214" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1910.015,1730.777 L1630.337,1781.447" fill="#00F91C"/>
+      <path d="M1910.015,1730.777 L1630.337,1781.447" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1338.253,1805.215 L1427.446,1805.215 L1427.446,2146.514 L1338.253,2146.514 z" fill="#FFFFFF"/>
+      <path d="M1338.253,1805.215 L1427.446,1805.215 L1427.446,2146.514 L1338.253,2146.514 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M1594.33,1709.63 L1605.333,1739.107 L1427.391,1805.531 L1416.387,1776.054 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M1427.446,1805.214 L1427.446,2146.512" fill="#FFFFFF"/>
+      <path d="M1427.446,1805.214 L1427.446,2146.512" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1338.253,2146.513 L1338.253,1805.215" fill="#FFFFFF"/>
+      <path d="M1338.253,2146.513 L1338.253,1805.215" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1633.948,1728.97 L1427.437,1805.214" fill="#FFFFFF"/>
+      <path d="M1633.948,1728.97 L1427.437,1805.214" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1603.149,1705.622 L1338.254,1805.215" fill="#00F91C"/>
+      <path d="M1603.149,1705.622 L1338.254,1805.215" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1406.064,1780.531 L1416.084,1776.785 L1419.505,1785.938 L1409.485,1789.683 z" fill="#FFFFFF"/>
+      <path d="M1406.064,1780.531 L1416.084,1776.785 L1419.505,1785.938 L1409.485,1789.683 z" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1427.446,1839.964 L1427.446,1736.313" fill="#FFFFFF"/>
+      <path d="M1427.446,1839.964 L1427.446,1736.313" fill-opacity="0" stroke="#000000" stroke-width="2" stroke-dasharray="12,10"/>
+    </g>
+    <path d="M1427.446,1783.558 C1435.811,1783.121 1442.951,1789.633 1443.392,1798.103" fill-opacity="0" stroke="#BF3AFF" stroke-width="2"/>
+    <text transform="matrix(1, 0, 0, 1, 1470.701, 1781.929)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <path d="M1414.858,1804.647 C1413.128,1800.171 1416.124,1794.843 1421.549,1792.747" fill-opacity="0" stroke="#BF3AFF" stroke-width="1"/>
+    <text transform="matrix(1, 0, 0, 1, 1431.748, 1814.06)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1380.306, 1814.431)">
+      <tspan x="-28.43" y="8.5" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA1</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1627.865, 1714.251)">
+      <tspan x="-28.43" y="8.871" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA2</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1448.254, 1713.246)">
+      <tspan x="-127.085" y="-6.906" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a= arccos( SA2/SA1)</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1843.188, 2204.069)">
+      <tspan x="-195.085" y="-20.46" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">If corner &gt; a just extend and </tspan>
+      <tspan x="-195.085" y="10.54" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">intersect lines</tspan>
+    </text>
+    <g>
+      <path d="M477.678,1805.215 L566.871,1805.215 L566.871,2146.514 L477.678,2146.514 z" fill="#FFFFFF"/>
+      <path d="M477.678,1805.215 L566.871,1805.215 L566.871,2146.514 L477.678,2146.514 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M384.717,1760.774 L401.035,1726.429 L566.862,1805.214 L550.545,1839.559 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M566.871,1805.214 L566.871,2146.512" fill="#FFFFFF"/>
+      <path d="M566.871,1805.214 L566.871,2146.512" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M477.678,2146.514 L477.678,1805.215" fill="#FFFFFF"/>
+      <path d="M477.678,2146.514 L477.678,1805.215" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M401.034,1726.429 L566.862,1805.214" fill="#FFFFFF"/>
+      <path d="M401.034,1726.429 L566.862,1805.214" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M384.717,1760.774 L477.678,1805.215" fill="#00F91C"/>
+      <path d="M384.717,1760.774 L477.678,1805.215" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <path d="M511.844,1779.012 C519.691,1757.871 543.661,1747.269 565.381,1755.332" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 869.518, 1709.377)">
+      <tspan x="-195.085" y="-61.656" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Extend around corner to change in </tspan>
+      <tspan x="-195.085" y="-30.656" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">SA, then intersect</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 522.275, 2125.438)">
+      <tspan x="-28.43" y="8.5" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA1</tspan>
+    </text>
+    <text transform="matrix(0.911, 0.413, -0.413, 0.911, 423.545, 1757.581)">
+      <tspan x="-28.43" y="6.879" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA2</tspan>
+    </text>
+    <path d="M566.871,1805.215 L566.862,1762.239" fill-opacity="0" stroke="#B139FF" stroke-width="1" stroke-dasharray="3,2"/>
+    <text transform="matrix(1, 0, 0, 1, 563.046, 1773.057)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 576.073, 1812.437)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <g>
+      <path d="M544.967,1825.519 L554.663,1830.037 L550.536,1838.894 L540.84,1834.376 z" fill="#FFFFFF"/>
+      <path d="M544.967,1825.519 L554.663,1830.037 L550.536,1838.894 L540.84,1834.376 z" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <text transform="matrix(1, 0, 0, 1, 533.02, 2216.493)">
+      <tspan x="-131.986" y="-20.46" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">a = arcos( sa2/sa1 )</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1013.194, 2339.158)">
+      <tspan x="-156.191" y="-11.649" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Between -a and +a</tspan>
+    </text>
+    <g>
+      <path d="M857.816,2768.291 L899.611,2768.291 L899.611,3113.44 L857.816,3113.44 z" fill="#FFFFFF"/>
+      <path d="M857.816,2768.291 L899.611,2768.291 L899.611,3113.44 L857.816,3113.44 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M723.712,2460.944 L806.628,2437.609 L900.359,2770.673 L817.444,2794.008 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M899.611,2768.29 L899.611,3109.588" fill="#FFFFFF"/>
+      <path d="M899.611,2768.29 L899.611,3109.588" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M857.003,3115.248 L857.003,2784.398" fill="#FFFFFF"/>
+      <path d="M857.003,3115.248 L857.003,2784.398" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M806.628,2437.609 L899.603,2768.291" fill="#FFFFFF"/>
+      <path d="M806.628,2437.609 L899.603,2768.291" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M723.712,2460.944 L817.444,2794.008" fill="#00F91C"/>
+      <path d="M723.712,2460.944 L817.444,2794.008" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M817.444,2795.455 L859.924,2782.924" fill="#FFFFFF"/>
+      <path d="M817.444,2795.455 L859.924,2782.924" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M215.789,2763.718 L256.628,2763.718 L256.628,3105.015 L215.789,3105.015 z" fill="#FFFFFF"/>
+      <path d="M215.789,2763.718 L256.628,2763.718 L256.628,3105.015 L215.789,3105.015 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M56.971,2798.601 L79.706,2715.66 L257.304,2764.342 L234.568,2847.283 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M256.628,2763.716 L256.628,3105.014" fill="#FFFFFF"/>
+      <path d="M256.628,2763.716 L256.628,3105.014" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M215.789,3105.015 L215.789,2842.067" fill="#FFFFFF"/>
+      <path d="M215.789,3105.015 L215.789,2842.067" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M79.706,2715.66 L256.62,2763.717" fill="#FFFFFF"/>
+      <path d="M79.706,2715.66 L256.62,2763.717" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M56.971,2798.601 L215.789,2842.067" fill="#00F91C"/>
+      <path d="M56.971,2798.601 L215.789,2842.067" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M817.444,2794.008 L859.924,2782.924" fill="#FFFFFF"/>
+      <path d="M817.444,2794.008 L859.924,2782.924" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M898.647,2809.674 C876.097,2809.674 857.816,2790.892 857.816,2767.723" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <g>
+      <path d="M234.568,2847.284 L247.915,2803.042" fill="#FFFFFF"/>
+      <path d="M234.568,2847.284 L247.915,2803.042" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M256.62,2805.668 C234.07,2805.668 215.789,2786.886 215.789,2763.718" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 231.851, 3184.887)">
+      <tspan x="-122.398" y="-38.201" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Just intersect, if &lt; -a</tspan>
+    </text>
+    <g>
+      <path d="M1090.625,2768.292 L1131.464,2768.292 L1131.464,3113.44 L1090.625,3113.44 z" fill="#FFFFFF"/>
+      <path d="M1090.625,2768.292 L1131.464,2768.292 L1131.464,3113.44 L1090.625,3113.44 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M1136.916,2566.017 L1215.238,2606.413 L1131.746,2768.292 L1053.424,2727.896 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M1131.464,2768.291 L1131.464,3109.589" fill="#FFFFFF"/>
+      <path d="M1131.464,2768.291 L1131.464,3109.589" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1090.625,3113.44 L1090.625,2746.614" fill="#FFFFFF"/>
+      <path d="M1090.625,3113.44 L1090.625,2746.614" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M1215.833,2605.26 L1131.456,2768.291" fill="#FFFFFF"/>
+      <path d="M1215.833,2605.26 L1131.456,2768.291" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M1136.916,2566.017 L1053.424,2727.896" fill="#00F91C"/>
+      <path d="M1136.916,2566.017 L1053.424,2727.896" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <g>
+      <path d="M1053.424,2727.896 L1096.587,2750.451" fill="#FFFFFF"/>
+      <path d="M1053.424,2727.896 L1096.587,2750.451" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+    </g>
+    <path d="M1131.456,2810.242 C1108.906,2810.242 1090.625,2791.46 1090.625,2768.292" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 1111.04, 3197.272)">
+      <tspan x="-195.085" y="-34.202" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">If right hand bend, a&gt;0, also extend </tspan>
+      <tspan x="-195.085" y="-3.202" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">trailing line.</tspan>
+      <tspan x="-195.085" y="27.798" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">We could do this in all cases</tspan>
+    </text>
+    <g>
+      <path d="M1090.625,2768.292 L1090.625,2747.888" fill="#B139FF"/>
+      <path d="M1090.625,2768.292 L1090.625,2747.888" fill-opacity="0" stroke="#00BAFF" stroke-width="2"/>
+    </g>
+    <g>
+      <g>
+        <path d="M1770.35,2780.39 L1792.141,2780.39 L1792.141,3117.113 L1770.35,3117.113 z" fill="#FFFFFF"/>
+        <path d="M1770.35,2780.39 L1792.141,2780.39 L1792.141,3117.113 L1770.35,3117.113 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      </g>
+      <path d="M1940.034,2656.514 L1962.629,2717.044 L1792.086,2780.706 L1769.491,2720.176 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      <g>
+        <path d="M1792.141,2780.388 L1792.141,3121.686" fill="#FFFFFF"/>
+        <path d="M1792.141,2780.388 L1792.141,3121.686" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M1770.35,3117.113 L1770.35,2690.976" fill="#FFFFFF"/>
+        <path d="M1770.35,3117.113 L1770.35,2690.976" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+      </g>
+      <g id="Shape">
+        <path d="M1998.643,2704.144 L1792.132,2780.388" fill="#FFFFFF"/>
+        <path d="M1998.643,2704.144 L1792.132,2780.388" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M1940.035,2656.514 L1746.968,2728.541" fill="#00F91C"/>
+        <path d="M1940.035,2656.514 L1746.968,2728.541" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+      </g>
+      <g>
+        <path d="M1769.491,2773.666 L1774.892,2773.662 L1774.896,2779.817 L1769.495,2779.821 z" fill="#FFFFFF"/>
+        <path d="M1769.491,2773.666 L1774.892,2773.662 L1774.896,2779.817 L1769.495,2779.821 z" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M1792.141,2815.139 L1792.141,2711.488" fill="#FFFFFF"/>
+        <path d="M1792.141,2815.139 L1792.141,2711.488" fill-opacity="0" stroke="#000000" stroke-width="2" stroke-dasharray="12,10"/>
+      </g>
+      <path d="M1792.141,2758.732 C1800.507,2758.296 1807.646,2764.808 1808.088,2773.277" fill-opacity="0" stroke="#BF3AFF" stroke-width="2"/>
+      <text transform="matrix(1, 0, 0, 1, 1835.396, 2757.104)">
+        <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+      </text>
+      <path d="M1779.553,2779.822 C1777.824,2775.346 1780.82,2770.018 1786.245,2767.922" fill-opacity="0" stroke="#BF3AFF" stroke-width="1"/>
+      <text transform="matrix(1, 0, 0, 1, 1796.443, 2789.235)">
+        <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+      </text>
+      <text transform="matrix(1, 0, 0, 1, 1775.398, 3076.155)">
+        <tspan x="-28.43" y="8.5" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA1</tspan>
+      </text>
+      <text transform="matrix(1, 0, 0, 1, 1970.214, 2673.745)">
+        <tspan x="-28.43" y="7.769" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA2</tspan>
+      </text>
+      <text transform="matrix(1, 0, 0, 1, 1814.818, 2644.143)">
+        <tspan x="-127.085" y="-6.906" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a= arccos( SA1/SA2)</tspan>
+      </text>
+    </g>
+    <g>
+      <g>
+        <path d="M2169.145,2745.255 L2213.576,2745.255 L2213.576,3076.02 L2169.145,3076.02 z" fill="#FFFFFF"/>
+        <path d="M2169.145,2745.255 L2213.576,2745.255 L2213.576,3076.02 L2169.145,3076.02 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      </g>
+      <path d="M2377.582,2632.806 L2392.077,2712.917 L2213.345,2745.255 L2198.851,2665.144 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      <g>
+        <path d="M2213.576,2745.254 L2213.576,3086.552" fill="#FFFFFF"/>
+        <path d="M2213.576,2745.254 L2213.576,3086.552" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M2169.146,3076.019 L2169.146,2649.67" fill="#FFFFFF"/>
+        <path d="M2169.146,3076.019 L2169.146,2649.67" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+      </g>
+      <g id="Shape">
+        <path d="M2393.855,2712.595 L2213.568,2745.254" fill="#FFFFFF"/>
+        <path d="M2393.855,2712.595 L2213.568,2745.254" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M2377.582,2632.806 L2087.302,2685.193" fill="#00F91C"/>
+        <path d="M2377.582,2632.806 L2087.302,2685.193" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+      </g>
+      <text transform="matrix(1, 0, 0, 1, 2319.469, 3144.109)">
+        <tspan x="-195.085" y="-20.46" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">If corner &gt; a just extend and </tspan>
+        <tspan x="-195.085" y="10.54" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">intersect lines</tspan>
+      </text>
+    </g>
+    <g>
+      <path d="M535.681,2768.292 L575.585,2768.292 L575.585,3109.59 L535.681,3109.59 z" fill="#FFFFFF"/>
+      <path d="M535.681,2768.292 L575.585,2768.292 L575.585,3109.59 L535.681,3109.59 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    </g>
+    <path d="M371.784,2769.415 L409.748,2689.506 L573.645,2767.374 L535.681,2847.283 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+    <g>
+      <path d="M575.585,2768.291 L575.585,3109.589" fill="#FFFFFF"/>
+      <path d="M575.585,2768.291 L575.585,3109.589" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M538.686,3109.59 L535.681,2847.282" fill="#FFFFFF"/>
+      <path d="M538.686,3109.59 L535.681,2847.282" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+    </g>
+    <g id="Shape">
+      <path d="M409.748,2689.506 L575.576,2768.292" fill="#FFFFFF"/>
+      <path d="M409.748,2689.506 L575.576,2768.292" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <g>
+      <path d="M371.784,2769.415 L535.681,2847.282" fill="#00F91C"/>
+      <path d="M371.784,2769.415 L535.681,2847.282" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+    </g>
+    <path d="M520.557,2742.089 C528.405,2720.948 552.374,2710.346 574.095,2718.409" fill-opacity="0" stroke="#B139FF" stroke-width="2" stroke-dasharray="6,4"/>
+    <text transform="matrix(1, 0, 0, 1, 878.232, 2672.454)">
+      <tspan x="-195.085" y="-61.656" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Extend around corner to change in </tspan>
+      <tspan x="-195.085" y="-30.656" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">SA, then intersect</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 566.871, 3082.557)">
+      <tspan x="-28.43" y="8.5" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA1</tspan>
+    </text>
+    <text transform="matrix(0.911, 0.413, -0.413, 0.911, 423.545, 2741.173)">
+      <tspan x="-28.43" y="6.879" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">SA2</tspan>
+    </text>
+    <path d="M575.585,2768.292 L575.576,2725.316" fill-opacity="0" stroke="#B139FF" stroke-width="1" stroke-dasharray="3,2"/>
+    <text transform="matrix(1, 0, 0, 1, 571.759, 2736.134)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 579.571, 2777.508)">
+      <tspan x="-27.365" y="5.31" font-family="ChalkboardSE-Bold" font-size="22" fill="#BF3AFF">a</tspan>
+    </text>
+    <g>
+      <path d="M593.742,2807.426 L603.438,2811.943 L599.311,2820.801 L589.615,2816.283 z" fill="#FFFFFF"/>
+      <path d="M593.742,2807.426 L603.438,2811.943 L599.311,2820.801 L589.615,2816.283 z" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+    </g>
+    <text transform="matrix(1, 0, 0, 1, 541.734, 3179.57)">
+      <tspan x="-131.986" y="-20.46" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">a = arcos( sa1/sa2 )</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 1021.908, 3302.235)">
+      <tspan x="-156.191" y="-11.649" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">Between, or equal to  -a and </tspan>
+      <tspan x="-156.191" y="19.351" font-family="ChalkboardSE-Bold" font-size="22" fill="#B139FF">+a</tspan>
+    </text>
+    <g>
+      <g>
+        <path d="M1403.36,2796.773 L1408.321,2796.773 L1408.321,3127.537 L1403.36,3127.537 z" fill="#FFFFFF"/>
+        <path d="M1403.36,2796.773 L1408.321,2796.773 L1408.321,3127.537 L1403.36,3127.537 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      </g>
+      <path d="M1572.327,2684.324 L1586.821,2764.435 L1408.09,2796.773 L1393.595,2716.662 z" fill-opacity="0" stroke="#000000" stroke-width="1" stroke-dasharray="6,5"/>
+      <g>
+        <path d="M1408.321,2796.772 L1408.321,3138.07" fill="#FFFFFF"/>
+        <path d="M1408.321,2796.772 L1408.321,3138.07" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M1403.361,3127.538 L1403.36,2692.432" fill="#FFFFFF"/>
+        <path d="M1403.361,3127.538 L1403.36,2692.432" fill-opacity="0" stroke="#00BF00" stroke-width="1"/>
+      </g>
+      <g id="Shape">
+        <path d="M1588.599,2764.114 L1408.312,2796.772" fill="#FFFFFF"/>
+        <path d="M1588.599,2764.114 L1408.312,2796.772" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      </g>
+      <g>
+        <path d="M1572.327,2684.324 L1282.046,2736.711" fill="#00F91C"/>
+        <path d="M1572.327,2684.324 L1282.046,2736.711" fill-opacity="0" stroke="#00C000" stroke-width="1"/>
+      </g>
+      <g>
+        <path d="M1393.596,2716.661 L1403.36,2770.569" fill="#FFFFFF"/>
+        <path d="M1393.596,2716.661 L1403.36,2770.569" fill-opacity="0" stroke="#B139FF" stroke-width="2"/>
+      </g>
+      <text transform="matrix(1, 0, 0, 1, 1544.589, 2627.436)">
+        <tspan x="-195.085" y="-20.46" font-family="ChalkboardSE-Bold" font-size="22" fill="#00BAFF">If sa1 is 0, then a =90</tspan>
+      </text>
+    </g>
+    <text transform="matrix(1, 0, 0, 1, 785.445, 254.633)">
+      <tspan x="-211.8" y="-162" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">Angle 1		angle2		delta angl2-angl1</tspan>
+      <tspan x="-211.8" y="-131" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">90				45				-45</tspan>
+      <tspan x="-211.8" y="-69" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">90 			180			90			</tspan>
+      <tspan x="-211.8" y="-38" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">					</tspan>
+      <tspan x="-211.8" y="-7" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">0				45				45		</tspan>
+      <tspan x="-211.8" y="55" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">355 			40				-315 -&gt; 45</tspan>
+      <tspan x="-211.8" y="86" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">		</tspan>
+      <tspan x="-211.8" y="117" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">0				270			270 -&gt; -90</tspan>
+      <tspan x="-211.8" y="179" font-family="ChalkboardSE-Bold" font-size="22" fill="#000000">30				330			300 -&gt; -60</tspan>
+    </text>
+    <g>
+      <g>
+        <path d="M1037.097,405.254 L1078.148,429.329" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1076.63,431.916 L1085.049,433.376 L1079.666,426.741 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M988.74,433.882 L1029.792,409.807" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1031.309,412.394 L1036.693,405.76 L1028.274,407.219 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <path d="M1028.583,134.417 L1028.756,113.964" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1031.756,113.99 L1028.823,105.965 L1025.756,113.939 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M1028.583,104.965 L1039.537,94.581" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1041.601,96.758 L1045.343,89.077 L1037.473,92.404 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <path d="M1048.027,191.433 L1048.027,173.29" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1051.027,173.29 L1048.027,165.29 L1045.027,173.29 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M1047.483,164.574 L1019.036,164.358" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1019.059,161.358 L1011.036,164.298 L1019.013,167.358 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <path d="M1040.354,251.984 L1058.345,233.384" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1060.502,235.47 L1063.907,227.634 L1056.189,231.299 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M997.245,250.524 L1031.359,251.68" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1031.257,254.678 L1039.354,251.95 L1031.46,248.681 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <path d="M1049.816,354.063 L1050.188,374.187" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1047.189,374.242 L1050.336,382.185 L1053.188,374.131 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M1018.499,354.22 L1041.355,354.108" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1041.37,357.108 L1049.355,354.068 L1041.34,351.108 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+    <g>
+      <g>
+        <path d="M1042.988,309.263 L1060.98,290.663" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1063.136,292.748 L1066.542,284.913 L1058.824,288.577 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+      <g>
+        <path d="M999.879,307.803 L1033.993,308.958" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+        <path d="M1033.892,311.956 L1041.989,309.229 L1034.095,305.96 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="1" stroke-opacity="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -12,6 +12,12 @@ class Piece {
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
 
+        if (( ! this.detailNodes ) || ( this.detailNodes.length === 0))
+        {
+            console.log("Piece " + this.name + " has no nodes." );
+            return;
+        }
+
         this.detailNodes.forEach( 
             function(n) { 
                 var dObj =  this.patternPiece.getObject( n.obj, true );//this.drawing[ n.obj ]; 
@@ -31,7 +37,10 @@ class Piece {
                 //dObj.setUsedByPiece( this );
             }, this ); 
                 
-        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth ).value();
+        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
+        if ( typeof this.defaultSeamAllowance === "object" )
+            this.defaultSeamAllowance = this.defaultSeamAllowance.value();
+
         this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
@@ -39,48 +48,6 @@ class Piece {
             this.patternPiece.pattern.data.options.targetPiece = this;
             //this.highlight = true;
         }
-    }
-
-    
-    drawSeamLine( g ) 
-    {
-        console.log("Time to draw seam line: ", this.name );
-
-        var p = g.append("path")
-                 .attr("id","seam line - " + this.name )
-                 .attr("d", this.svgPath( false ) )
-                 .attr("fill", "none")
-                 .attr("stroke", "red")
-                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-    }
-
-
-    drawSeamAllowance( g ) 
-    {
-        console.log("Time to draw seam allowance: ", this.name );
-
-        var p = g.append("path")
-                 .attr("id","seam allowance - " + this.name )
-                 .attr("d", this.svgPath( true ) )
-                 .attr("fill", "none")
-                 .attr("stroke", "green")
-                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-    } 
-
-
-    getStrokeWidth( isOutline, isSelected )
-    {
-        if ( this.patternPiece.pattern.data.options.lifeSize ) 
-        {
-            if ( this.patternPiece.pattern.units = "cm" )
-                return 0.05; //0.5mm
-            else if ( this.patternPiece.pattern.units = "mm" )
-                return 0.5; //0.5mm
-            else //inches
-                return 0.02; //approx 0.5mm
-        }
-            
-        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
 
 
@@ -144,8 +111,14 @@ class Piece {
                     var dObjCurve = dObj.curve instanceof GeoSpline ? dObj.curve
                                                                     : dObj.arc instanceof GeoArc ? dObj.arc.asGeoSpline() : undefined;
                  
-                    //TODO what if previousP isn't on the spline?, cater for either or both not being on the curve segment
-                    var curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
+                    //TODO what if previousP isn't on the spline? e.g. SockTop, cater for either or both not being on the curve segment
+                    var curveSegment;
+                    try {
+                        curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
+                    } catch ( e ) {
+                        console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + dObj.name );
+                        curveSegment = dObjCurve;
+                    }
 
                     //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
                     var correctDirection = curveSegment.nodeData[0].point.equals( previousP ); 
@@ -295,36 +268,39 @@ class Piece {
     
             if ( n.curveSegment )
             {    
-                var nodeData = [];
-                var len = n.curveSegment.nodeData.length;                    
-                for ( var i=0; i<len; i++ )
-                {
-                    var node = n.curveSegment.nodeData[i];
+                // var nodeData = [];
+                // var len = n.curveSegment.nodeData.length;                    
+                // for ( var i=0; i<len; i++ )
+                // {
+                //     var node = n.curveSegment.nodeData[i];
 
-                    var newNode = {};
-                    nodeData[i] = newNode;
-                    n.tangentAfterDeg = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
-                    n.tangentAfterDeg += 90;
-                    if ( n.tangentAfterDeg > 360 )
-                        n.tangentAfterDeg -= 360;     
+                //     var newNode = {};
+                //     nodeData[i] = newNode;
+                //     n.tangentAfterDeg = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+                //     n.tangentAfterDeg += 90;
+                //     if ( n.tangentAfterDeg > 360 )
+                //         n.tangentAfterDeg -= 360;     
 
-                    n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
+                //     n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
 
-                    var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
+                //     var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
 
-                    newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                    if ( node.inControlPoint )
-                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
-                    if ( node.outControlPoint )
-                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                    //TODO
-                    //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
-                    //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
-                    //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
-                    //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
-                    //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
-                }
-                n.curveSegmentSA  = new GeoSpline( nodeData );
+                //     newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                //     if ( node.inControlPoint )
+                //         newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
+                //     if ( node.outControlPoint )
+                //         newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                //     //TODO
+                //     //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
+                //     //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
+                //     //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
+                //     //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
+                //     //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
+                // }
+                // n.curveSegmentSA  = new GeoSpline( nodeData );
+                var parallelCurves = n.curveSegment.parallelCurve( sa1 ); //or sa2? 
+                //n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
+                n.curveSegmentSA = parallelCurves.offsetCurve;
                 n.pointBeforeSA = n.curveSegmentSA.pointAlongPathFraction(0);
                 n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(1);
 
@@ -613,8 +589,88 @@ class Piece {
     }
 
 
+    drawSeamLine( g ) 
+    {
+        console.log("Time to draw seam line: ", this.name );
+
+        var p = g.append("path")
+                 .attr("id","seam line - " + this.name )
+                 .attr("d", this.svgPath( false ) )
+                 .attr("fill", "none")
+                 .attr("stroke", "#929292") //stroke="#929292" stroke-width="1.421" stroke-dasharray="28.426,2.843"
+                 .attr("stroke-dasharray", "2,0.2" )
+                 .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale
+    }
+
+
+    drawSeamAllowance( g ) 
+    {
+        console.log("Time to draw seam allowance: ", this.name );
+
+        var p = g.append("path")
+                 .attr("id","seam allowance - " + this.name )
+                 .attr("d", this.svgPath( true ) )
+                 .attr("fill", "none")
+                 .attr("stroke", "black")
+                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
+    } 
+
+
+    drawNotches( g )
+    {
+        if ( ! this.detailNodes )
+            return;
+
+        var notches = g.append("g").attr("id","notches");
+        console.log("*********");
+        console.log("notches: " + this.name );
+
+        var pn = this.detailNodes[ this.detailNodes.length -1 ];
+
+        var strokeWidth = this.getStrokeWidth();
+
+        for (var a = 0; a < this.detailNodes.length; a++) 
+        {
+            var n = this.detailNodes[ a ];
+
+            if ( typeof n.notch === "undefined" )
+                continue;
+         
+            //TODO if no SA, then create a point at an internal tangent
+            var path = "M" + this.roundForSVG( n.point.x ) + "," + this.roundForSVG( n.point.y ) + " L" + this.roundForSVG( n.pointBeforeSA.x ) + "," + this.roundForSVG( n.pointBeforeSA.y );
+
+            //TODO should we connect these D3 data-wise to the notches
+            var p = notches.append("path")
+                .attr("d", path )
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+        };
+    }    
+
+
+    getStrokeWidth( isOutline, isSelected )
+    {
+        if ( this.patternPiece.pattern.data.options.lifeSize ) 
+        {
+            if ( this.patternPiece.pattern.units = "cm" )
+                return 0.07; //0.7mm
+            else if ( this.patternPiece.pattern.units = "mm" )
+                return 0.7; //0.7mm
+            else //inches
+                return 0.03; //approx 0.7mm
+        }
+            
+        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
+    }
+
+
     svgPath( withSeamAllowance )
     {
+        if ( ! this.detailNodes )
+            return;
+
         console.log("*********");
         console.log("svgPath: " + this.name + " seamAllowance:" + withSeamAllowance );
 
@@ -636,10 +692,10 @@ class Piece {
             if ( withSeamAllowance )
             {
                 if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + " " + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
+                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + "," + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
 
                 if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + " " + this.roundForSVG( n.increasingSAPoint.y ) + " ";
+                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + "," + this.roundForSVG( n.increasingSAPoint.y ) + " ";
             }
 
             if ( n.curveSegment )
@@ -654,12 +710,12 @@ class Piece {
 
                 if ( ! path )
                 {
-                    path = "M" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
+                    path = "M" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Move to " + n.obj );
                 }
                 else
                 {
-                    path += "L" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
+                    path += "L" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Line to " + n.obj );
                 }
             }
@@ -677,14 +733,23 @@ class Piece {
     }
 
 
-    adjustBounds( bounds  )
+    adjustBounds( bounds, includeOffset )
     {
+        if ( ! this.detailNodes )
+            return;
+
+        var mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
+        var my = includeOffset && this.data.my ? this.data.my : 0.0;
+
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[a];
 
-            bounds.adjust( n.pointAfterSA );
-            bounds.adjust( n.pointBeforeSA );
+            if ( n.pointAfterSA )
+                bounds.adjustToIncludeXY( n.pointAfterSA.x + mx, n.pointAfterSA.y + my );
+
+            if ( n.pointBeforeSA )
+                bounds.adjustToIncludeXY( n.pointBeforeSA.x + mx, n.pointBeforeSA.y + my );
         }
     }
 
@@ -694,32 +759,4 @@ class Piece {
         return Math.round( n * 1000 ) / 1000;
     }
 
-
-    drawNotches( g )
-    {
-        var notches = g.append("g").attr("id","notches");
-        console.log("*********");
-        console.log("notches: " + this.name );
-
-        var pn = this.detailNodes[ this.detailNodes.length -1 ];
-
-        for (var a = 0; a < this.detailNodes.length; a++) 
-        {
-            var n = this.detailNodes[ a ];
-
-            if ( typeof n.notch === "undefined" )
-                continue;
-         
-            //TODO if no SA, then create a point at an internal tangent
-            var path = "M" + this.roundForSVG( n.point.x ) + " " + this.roundForSVG( n.point.y ) + "L" + this.roundForSVG( n.pointBeforeSA.x ) + " " + this.roundForSVG( n.pointBeforeSA.y );
-
-            //TODO should we connect these D3 data-wise to the notches
-            var p = notches.append("path")
-                .attr("d", path )
-                .attr("fill", "none")
-                .attr("stroke", "purple")
-                .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-
-        };
-    }    
 }

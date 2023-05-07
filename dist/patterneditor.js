@@ -3372,6 +3372,12 @@ class Piece {
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
 
+        if (( ! this.detailNodes ) || ( this.detailNodes.length === 0))
+        {
+            console.log("Piece " + this.name + " has no nodes." );
+            return;
+        }
+
         this.detailNodes.forEach( 
             function(n) { 
                 var dObj =  this.patternPiece.getObject( n.obj, true );//this.drawing[ n.obj ]; 
@@ -3391,7 +3397,10 @@ class Piece {
                 //dObj.setUsedByPiece( this );
             }, this ); 
                 
-        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth ).value();
+        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
+        if ( typeof this.defaultSeamAllowance === "object" )
+            this.defaultSeamAllowance = this.defaultSeamAllowance.value();
+
         this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
@@ -3399,48 +3408,6 @@ class Piece {
             this.patternPiece.pattern.data.options.targetPiece = this;
             //this.highlight = true;
         }
-    }
-
-    
-    drawSeamLine( g ) 
-    {
-        console.log("Time to draw seam line: ", this.name );
-
-        var p = g.append("path")
-                 .attr("id","seam line - " + this.name )
-                 .attr("d", this.svgPath( false ) )
-                 .attr("fill", "none")
-                 .attr("stroke", "red")
-                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-    }
-
-
-    drawSeamAllowance( g ) 
-    {
-        console.log("Time to draw seam allowance: ", this.name );
-
-        var p = g.append("path")
-                 .attr("id","seam allowance - " + this.name )
-                 .attr("d", this.svgPath( true ) )
-                 .attr("fill", "none")
-                 .attr("stroke", "green")
-                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-    } 
-
-
-    getStrokeWidth( isOutline, isSelected )
-    {
-        if ( this.patternPiece.pattern.data.options.lifeSize ) 
-        {
-            if ( this.patternPiece.pattern.units = "cm" )
-                return 0.05; //0.5mm
-            else if ( this.patternPiece.pattern.units = "mm" )
-                return 0.5; //0.5mm
-            else //inches
-                return 0.02; //approx 0.5mm
-        }
-            
-        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
 
 
@@ -3504,8 +3471,14 @@ class Piece {
                     var dObjCurve = dObj.curve instanceof GeoSpline ? dObj.curve
                                                                     : dObj.arc instanceof GeoArc ? dObj.arc.asGeoSpline() : undefined;
                  
-                    //TODO what if previousP isn't on the spline?, cater for either or both not being on the curve segment
-                    var curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
+                    //TODO what if previousP isn't on the spline? e.g. SockTop, cater for either or both not being on the curve segment
+                    var curveSegment;
+                    try {
+                        curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
+                    } catch ( e ) {
+                        console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + dObj.name );
+                        curveSegment = dObjCurve;
+                    }
 
                     //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
                     var correctDirection = curveSegment.nodeData[0].point.equals( previousP ); 
@@ -3655,36 +3628,39 @@ class Piece {
     
             if ( n.curveSegment )
             {    
-                var nodeData = [];
-                var len = n.curveSegment.nodeData.length;                    
-                for ( var i=0; i<len; i++ )
-                {
-                    var node = n.curveSegment.nodeData[i];
+                // var nodeData = [];
+                // var len = n.curveSegment.nodeData.length;                    
+                // for ( var i=0; i<len; i++ )
+                // {
+                //     var node = n.curveSegment.nodeData[i];
 
-                    var newNode = {};
-                    nodeData[i] = newNode;
-                    n.tangentAfterDeg = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
-                    n.tangentAfterDeg += 90;
-                    if ( n.tangentAfterDeg > 360 )
-                        n.tangentAfterDeg -= 360;     
+                //     var newNode = {};
+                //     nodeData[i] = newNode;
+                //     n.tangentAfterDeg = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+                //     n.tangentAfterDeg += 90;
+                //     if ( n.tangentAfterDeg > 360 )
+                //         n.tangentAfterDeg -= 360;     
 
-                    n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
+                //     n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
 
-                    var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
+                //     var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
 
-                    newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                    if ( node.inControlPoint )
-                        newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
-                    if ( node.outControlPoint )
-                        newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                    //TODO
-                    //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
-                    //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
-                    //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
-                    //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
-                    //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
-                }
-                n.curveSegmentSA  = new GeoSpline( nodeData );
+                //     newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                //     if ( node.inControlPoint )
+                //         newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
+                //     if ( node.outControlPoint )
+                //         newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
+                //     //TODO
+                //     //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
+                //     //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
+                //     //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
+                //     //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
+                //     //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
+                // }
+                // n.curveSegmentSA  = new GeoSpline( nodeData );
+                var parallelCurves = n.curveSegment.parallelCurve( sa1 ); //or sa2? 
+                //n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
+                n.curveSegmentSA = parallelCurves.offsetCurve;
                 n.pointBeforeSA = n.curveSegmentSA.pointAlongPathFraction(0);
                 n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(1);
 
@@ -3973,8 +3949,88 @@ class Piece {
     }
 
 
+    drawSeamLine( g ) 
+    {
+        console.log("Time to draw seam line: ", this.name );
+
+        var p = g.append("path")
+                 .attr("id","seam line - " + this.name )
+                 .attr("d", this.svgPath( false ) )
+                 .attr("fill", "none")
+                 .attr("stroke", "#929292") //stroke="#929292" stroke-width="1.421" stroke-dasharray="28.426,2.843"
+                 .attr("stroke-dasharray", "2,0.2" )
+                 .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale
+    }
+
+
+    drawSeamAllowance( g ) 
+    {
+        console.log("Time to draw seam allowance: ", this.name );
+
+        var p = g.append("path")
+                 .attr("id","seam allowance - " + this.name )
+                 .attr("d", this.svgPath( true ) )
+                 .attr("fill", "none")
+                 .attr("stroke", "black")
+                 .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
+    } 
+
+
+    drawNotches( g )
+    {
+        if ( ! this.detailNodes )
+            return;
+
+        var notches = g.append("g").attr("id","notches");
+        console.log("*********");
+        console.log("notches: " + this.name );
+
+        var pn = this.detailNodes[ this.detailNodes.length -1 ];
+
+        var strokeWidth = this.getStrokeWidth();
+
+        for (var a = 0; a < this.detailNodes.length; a++) 
+        {
+            var n = this.detailNodes[ a ];
+
+            if ( typeof n.notch === "undefined" )
+                continue;
+         
+            //TODO if no SA, then create a point at an internal tangent
+            var path = "M" + this.roundForSVG( n.point.x ) + "," + this.roundForSVG( n.point.y ) + " L" + this.roundForSVG( n.pointBeforeSA.x ) + "," + this.roundForSVG( n.pointBeforeSA.y );
+
+            //TODO should we connect these D3 data-wise to the notches
+            var p = notches.append("path")
+                .attr("d", path )
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+        };
+    }    
+
+
+    getStrokeWidth( isOutline, isSelected )
+    {
+        if ( this.patternPiece.pattern.data.options.lifeSize ) 
+        {
+            if ( this.patternPiece.pattern.units = "cm" )
+                return 0.07; //0.7mm
+            else if ( this.patternPiece.pattern.units = "mm" )
+                return 0.7; //0.7mm
+            else //inches
+                return 0.03; //approx 0.7mm
+        }
+            
+        return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
+    }
+
+
     svgPath( withSeamAllowance )
     {
+        if ( ! this.detailNodes )
+            return;
+
         console.log("*********");
         console.log("svgPath: " + this.name + " seamAllowance:" + withSeamAllowance );
 
@@ -3996,10 +4052,10 @@ class Piece {
             if ( withSeamAllowance )
             {
                 if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + " " + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
+                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + "," + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
 
                 if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + " " + this.roundForSVG( n.increasingSAPoint.y ) + " ";
+                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + "," + this.roundForSVG( n.increasingSAPoint.y ) + " ";
             }
 
             if ( n.curveSegment )
@@ -4014,12 +4070,12 @@ class Piece {
 
                 if ( ! path )
                 {
-                    path = "M" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
+                    path = "M" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Move to " + n.obj );
                 }
                 else
                 {
-                    path += "L" + this.roundForSVG( thisP.x ) + " " + this.roundForSVG( thisP.y ) + " ";
+                    path += "L" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
                     console.log( "Line to " + n.obj );
                 }
             }
@@ -4037,14 +4093,23 @@ class Piece {
     }
 
 
-    adjustBounds( bounds  )
+    adjustBounds( bounds, includeOffset )
     {
+        if ( ! this.detailNodes )
+            return;
+
+        var mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
+        var my = includeOffset && this.data.my ? this.data.my : 0.0;
+
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[a];
 
-            bounds.adjust( n.pointAfterSA );
-            bounds.adjust( n.pointBeforeSA );
+            if ( n.pointAfterSA )
+                bounds.adjustToIncludeXY( n.pointAfterSA.x + mx, n.pointAfterSA.y + my );
+
+            if ( n.pointBeforeSA )
+                bounds.adjustToIncludeXY( n.pointBeforeSA.x + mx, n.pointBeforeSA.y + my );
         }
     }
 
@@ -4054,34 +4119,6 @@ class Piece {
         return Math.round( n * 1000 ) / 1000;
     }
 
-
-    drawNotches( g )
-    {
-        var notches = g.append("g").attr("id","notches");
-        console.log("*********");
-        console.log("notches: " + this.name );
-
-        var pn = this.detailNodes[ this.detailNodes.length -1 ];
-
-        for (var a = 0; a < this.detailNodes.length; a++) 
-        {
-            var n = this.detailNodes[ a ];
-
-            if ( typeof n.notch === "undefined" )
-                continue;
-         
-            //TODO if no SA, then create a point at an internal tangent
-            var path = "M" + this.roundForSVG( n.point.x ) + " " + this.roundForSVG( n.point.y ) + "L" + this.roundForSVG( n.pointBeforeSA.x ) + " " + this.roundForSVG( n.pointBeforeSA.y );
-
-            //TODO should we connect these D3 data-wise to the notches
-            var p = notches.append("path")
-                .attr("d", path )
-                .attr("fill", "none")
-                .attr("stroke", "purple")
-                .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
-
-        };
-    }    
 }
 //(c) Copyright 2019 Jason Dore
 //https://github.com/MrDoo71/PatternEditor
@@ -4148,9 +4185,15 @@ class PatternDrawing {
             }
 
         var options = this.pattern.data.options; 
-        if ( options && options.targetPiece )
+        if ( options && ( typeof options.targetPiece === "object" ) )
         {
             options.targetPiece.adjustBounds( this.visibleBounds );
+        }
+        else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
+        {
+            for (var a = 0; a < this.data.piece.length; a++) {
+                this.pieces[a].adjustBounds( this.visibleBounds, true );
+            }
         }
         else
         {
@@ -4874,7 +4917,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name + " - " + editorOptions.targetPiece.name + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName + " - " + editorOptions.targetPiece.name + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -5124,12 +5167,12 @@ function scrollTopTween(scrollTop)
 //Do the drawing... (we've added draw() to each drawing object.
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
-    var layoutConfig = editorOptions.layoutConfig;
-    var margin = 0;//layoutConfig.drawingMargin;//25;    ///XXX why a margin at all?
+    var layoutConfig = editorOptions ? editorOptions.layoutConfig : undefined;
+    var margin = editorOptions ? ( editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0 ) : 0;
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
-    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX );
-    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY );
+    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX ) + ( 2 * margin );
+    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY ) + ( 2 * margin );
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -5141,9 +5184,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", ( Math.round( (patternWidth + (2*margin)) * 10 )/10 + Number.EPSILON ) + pattern.units )
-                      .attr("height", ( Math.round( (patternHeight + (2*margin)) * 10 )/10 + Number.EPSILON )+ pattern.units )
-                      .attr("viewBox", (pattern.visibleBounds.minX - margin)+ " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
+                      .attr("width", ( Math.round( (patternWidth * 10 )/10 + Number.EPSILON )) + pattern.units )
+                      .attr("height", ( Math.round( (patternHeight * 10 )/10 + Number.EPSILON )) + pattern.units )
+                      .attr("viewBox", (pattern.visibleBounds.minX - margin) + " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
     }
     else
     {
@@ -5194,7 +5237,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          .attr("class","pattern");                           
 
     if ( editorOptions.downloadOption )  
-        transformGroup3.attr("id", pattern.data.pattern.patternNumber + " " + pattern.data.pattern.name )
+        transformGroup3.attr("id", pattern.patternNumberAndName )
         
     if ( ! editorOptions.lifeSize )
         transformGroup3.attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")");    
@@ -5261,11 +5304,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );
         pg.enter()
-         .append("g")
+         .append("g")        
          //.on("contextmenu", contextMenu)
          //.on("click", onclick)
          .each( function(p,i) {
             var g = d3.select( this );
+            g.attr("id", p.name );
+
+            //if doing an export of multiple pieces then take the piece.mx/my into account
+            if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
+            {
+                g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+            }
+
             if (   ( typeof p.drawSeamLine === "function" ) )
             {
                 p.drawSeamLine( g );
@@ -7411,7 +7462,7 @@ class GeoSpline {
         {
             if ( i===0 )
             {
-                path+= ( continuePath ? "L" : "M" ) + Math.round( nodeData[i].point.x *1000 )/1000 + " " + Math.round( this.nodeData[i].point.y *1000)/1000 ;
+                path+= ( continuePath ? "L" : "M" ) + Math.round( nodeData[i].point.x *1000 )/1000 + "," + Math.round( this.nodeData[i].point.y *1000)/1000 ;
             }
             else
             {
@@ -7420,9 +7471,10 @@ class GeoSpline {
 
                 var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
                                                                                           : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
-                path += "C" + Math.round( controlPoint1.x * 1000 ) / 1000 + " " + Math.round( controlPoint1.y * 1000 ) / 1000 +
-                        " " + Math.round( controlPoint2.x * 1000 ) / 1000 + " " + Math.round( controlPoint2.y * 1000 ) / 1000 +
-                        " " + Math.round( nodeData[i].point.x * 1000 ) / 1000 + " " + Math.round( nodeData[i].point.y * 1000 ) / 1000;
+
+                path += "C" + Math.round( controlPoint1.x * 1000 ) / 1000 + "," + Math.round( controlPoint1.y * 1000 ) / 1000 +
+                        " " + Math.round( controlPoint2.x * 1000 ) / 1000 + "," + Math.round( controlPoint2.y * 1000 ) / 1000 +
+                        " " + Math.round( nodeData[i].point.x * 1000 ) / 1000 + "," + Math.round( nodeData[i].point.y * 1000 ) / 1000 + " ";
             }
         }
         //console.log( "GeoSpline: " + path );
@@ -7720,36 +7772,8 @@ class GeoSpline {
                 const t = this.findTForPoint(p);
                 if ( t === undefined )
                     return undefined;
-                const struts = this.getStrutPoints( t );
 
-                function createNodeData( inControlPoint, point, outControlPoint ) {
-                    const c = {inControlPoint:  inControlPoint,
-                               point:           point,
-                               outControlPoint: outControlPoint };
-
-                    if ( inControlPoint )
-                    {
-                        var inControlPointLine = new GeoLine( point, inControlPoint );
-                        c.inAngle = inControlPointLine.angleDeg();
-                        c.inLength = inControlPointLine.getLength();
-                    }
-                    if ( outControlPoint )
-                    {
-                        var outControlPointLine = new GeoLine( point, outControlPoint );    
-                        c.outAngle = outControlPointLine.angleDeg();
-                        c.outLength = outControlPointLine.getLength();
-                    }
-
-                    return c;
-                }
-
-                const c1n1 = createNodeData( undefined, struts[0], struts[4] );
-                const c1n2 = createNodeData( struts[7], struts[9], undefined );
-                const c2n1 = createNodeData( undefined, struts[9], struts[8] );
-                const c2n2 = createNodeData( struts[6], struts[3], undefined );
-                            
-                return { beforePoint: new GeoSpline( [c1n1,c1n2] ),
-                         afterPoint : new GeoSpline( [c2n1,c2n2] ) };            
+                return this.cutAtT( t );
             }
         }
 
@@ -7780,34 +7804,64 @@ class GeoSpline {
             }
             else
             {
-                var segment = this.pathSegment( i+1 );                
-                var pointLiesInThisSegment = segment.findTForPoint(p) !== undefined;
-
-                if ( ! pointLiesInThisSegment )
+                var segment = this.pathSegment( i+1 );
+                var tWithinSegment = segment.findTForPoint(p);           
+                if ( tWithinSegment === 0 ) //effectively ( n1.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
                 {
-                    if ( ! cutMade )
-                        nodesBeforeCut.push(n1);
-
-                    if ( cutMade )
-                        nodesAfterCut.push(n1);
-                }
-                else //pointLiesInThisSegment
-                {
-                    var splits = segment.cutAtPoint( p );
-
-                    splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
-                    splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
-                    splits.beforePoint.nodeData[0].inLength = n1.inLength;
-                    nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
-                    nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
-
-                    splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
-                    splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
-                    splits.afterPoint.nodeData[1].outLength = n2.outLength;
-                    nodesAfterCut.push( splits.afterPoint.nodeData[0] );
-                    nodesAfterCut.push( splits.afterPoint.nodeData[1] );
-                    i++; //because we've done n2 effectively
                     cutMade = true;
+                    nodesBeforeCut.push( n1 );
+                    nodesAfterCut.push( n1 );    
+                }
+                else if ( tWithinSegment === 1) //effectively ( n2.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
+                {
+                    cutMade = true;
+                    nodesBeforeCut.push( n1 );
+                    nodesBeforeCut.push( n2 );
+                }
+                else 
+                {
+                    var pointLiesInThisSegment = tWithinSegment !== undefined;
+
+                    if ( ! pointLiesInThisSegment )
+                    {
+                        if ( ! cutMade )
+                            nodesBeforeCut.push(n1);
+
+                        if ( cutMade )
+                            nodesAfterCut.push(n1);
+                    }
+                    else //pointLiesInThisSegment
+                    {
+                        var splits = segment.cutAtPoint( p );
+
+                        if ( splits.beforePoint )
+                        {
+                            splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
+                            splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
+                            splits.beforePoint.nodeData[0].inLength = n1.inLength;
+                            nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
+                            nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
+                        }
+                        else
+                        {
+                            console.log( "Splits has no beforePoint");
+                        }
+
+                        if ( splits.afterPoint )
+                        {
+                            splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
+                            splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
+                            splits.afterPoint.nodeData[1].outLength = n2.outLength;
+                            nodesAfterCut.push( splits.afterPoint.nodeData[0] );
+                            nodesAfterCut.push( splits.afterPoint.nodeData[1] );
+                            i++; //because we've done n2 effectively
+                        }
+                        else 
+                        {
+                            console.log( "Splits has no afterPoint");
+                        }
+                        cutMade = true;
+                    }
                 }
             }
         }
@@ -7815,6 +7869,50 @@ class GeoSpline {
         return { beforePoint: nodesBeforeCut.length < 2 ? null : new GeoSpline(nodesBeforeCut),
                  afterPoint : nodesAfterCut.length < 2 ? null : new GeoSpline(nodesAfterCut) };
     }
+
+
+    cutAtT( t )
+    {    
+        if ( t === 0 ) 
+            return { beforePoint: null,
+                     afterPoint : this };
+        else if ( t === 1 ) 
+            return { beforePoint: this,
+                     afterPoint : null };
+
+        const struts = this.getStrutPoints( t );
+
+        const c1n1 = this.createNodeData( undefined, struts[0], struts[4] );
+        const c1n2 = this.createNodeData( struts[7], struts[9], undefined );
+        const c2n1 = this.createNodeData( undefined, struts[9], struts[8] );
+        const c2n2 = this.createNodeData( struts[6], struts[3], undefined );
+                    
+        return { beforePoint: new GeoSpline( [c1n1,c1n2] ),
+                 afterPoint : new GeoSpline( [c2n1,c2n2] ) };            
+    }    
+
+
+    createNodeData( inControlPoint, point, outControlPoint ) 
+    {
+        const c = { inControlPoint:  inControlPoint,
+                    point:           point,
+                    outControlPoint: outControlPoint };
+
+        if ( inControlPoint )
+        {
+            var inControlPointLine = new GeoLine( point, inControlPoint );
+            c.inAngle = inControlPointLine.angleDeg();
+            c.inLength = inControlPointLine.getLength();
+        }
+        if ( outControlPoint )
+        {
+            var outControlPointLine = new GeoLine( point, outControlPoint );    
+            c.outAngle = outControlPointLine.angleDeg();
+            c.outLength = outControlPointLine.getLength();
+        }
+
+        return c;
+    }    
 
 
     adjustBounds( bounds ) {
@@ -7946,7 +8044,182 @@ class GeoSpline {
         s += "]";
         return s;
     }
+
+
+    parallelCurve( sa )
+    {
+        if ( sa === 0 )
+        {
+            return { baseCurve: this, offsetCurve: this }; 
+        }
+
+        var newNodeData = [];
+        var len = this.nodeData.length;
+        var prevNode;
+        var prevNewNode;
+        for ( var i=0; i<len; i++ )
+        {
+            var node = this.nodeData[i];
+
+            var newNode = {};
+            newNodeData[i] = newNode;
+            var tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+            if ( tangentAfterDeg > 360 )
+                tangentAfterDeg -= 360;
+
+            var tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately
+
+            //var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
+
+            newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, tangentAfterDeg );
+            if ( node.inControlPoint )
+                newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, tangentBeforeDeg );
+            if ( node.outControlPoint )
+                newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, tangentAfterDeg );
+
+            if ( prevNode )
+            {
+                //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), 
+                //and scale the length of the control points accordingly. 
+                var distance = (new GeoLine( prevNode.point, node.point )).getLength();
+                var offsetDistance = (new GeoLine( prevNewNode.point, newNode.point )).getLength();
+                if ( ( distance > 0 ) && ( offsetDistance > 0) && ( distance != offsetDistance ) )
+                {
+                    var extension = offsetDistance / distance; //nb this could be <0 or >0.
+                    if ( Math.abs(extension) > 0.001 )
+                    {
+                        //console.log( (extension>1 ? "Extending" : "Reducing" ) + " the control point lengths to " + (Math.round( extension * 1000)/10) + "%" );
+                        var outControlPointLine = new GeoLine( prevNewNode.point, prevNewNode.outControlPoint );
+                        prevNewNode.outAngle = outControlPointLine.angleDeg();
+                        prevNewNode.outLength = outControlPointLine.getLength() * extension;
+                        prevNewNode.outControlPoint = prevNewNode.point.pointAtDistanceAndAngleDeg( prevNewNode.outLength, prevNewNode.outAngle );
+                        var inControlPointLine = new GeoLine( newNode.point, newNode.inControlPoint );
+                        newNode.inAngle = inControlPointLine.angleDeg();
+                        newNode.inLength = inControlPointLine.getLength() * extension;                        
+                        newNode.inControlPoint = newNode.point.pointAtDistanceAndAngleDeg( newNode.inLength, newNode.inAngle );
+                    }
+                }
+            }
+
+            prevNode = node;
+            prevNewNode = newNode;
+        }
+        var offsetCurve = new GeoSpline( newNodeData );
+
+        var newNodeData = [];
+        var c1, c2, c3;
+        for ( var i=1; i<len; i++ )
+        {
+            var prevNode = this.nodeData[i-1];
+            var node = this.nodeData[i];
+            var thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
+            var offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
+            var worstError = 0.0;
+            var errorAtHalfway;
+
+            //var testPositions = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ];
+            // for ( var j in testPositions )
+            // {
+            //     var t = testPositions[j];
+            //     var toffset = thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, t, sa );
+            //     var error = Math.abs( toffset - sa );
+            //     //console.log( " Error at t:" + Math.round(t*100)/100 + " is " + Math.round( error/sa1*100 ) + "% actualError:" + error  );
+            //     if ( error > worstError )
+            //         worstError = error;
+            // }
+            errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
+            //console.log( "Worst:" + worstError + " Halfway:" + errorAtHalfway );
+
+            //depending upon worstError decide if we're splitting this segment, if we're we can just copy it to the one we're creating
+            //if we split any, then recurse. 
+            console.log( "Node " + i + " offset variance at t=0.5 " + Math.round( errorAtHalfway/sa*1000 )/10 + "%" );
+            if ( ( isNaN( errorAtHalfway ) ) || ( (errorAtHalfway/sa) > 0.005 ) ) //0.01 would be plenty accurate enough for our purposes. 
+            {
+                //var splineWithAddedNodes = 
+                const struts = thisSegmentAsGeoSpline.getStrutPoints( 0.5 );
+
+                if ( c3 )
+                {
+                    c1 = null;
+                    c3.outControlPoint = struts[4];
+                    //nb c3.point should equal struts[0]
+                }
+                else
+                    c1 = this.createNodeData( undefined, struts[0], struts[4] );
+
+                c2 = this.createNodeData( struts[7], struts[9], struts[8] );
+                c3 = this.createNodeData( struts[6], struts[3], undefined );
+                            
+                if ( c1 )
+                    newNodeData.push( c1 );
+
+                c3.outControlPoint = node.outControlPoint;
+
+                newNodeData.push( c2 );
+                newNodeData.push( c3 );
+            }
+            else
+            {
+                if ( i == 1 )
+                    newNodeData.push( prevNode );
+
+                newNodeData.push( node );
+                c3 = node;
+            }
+        }
+
+        if ( newNodeData.length > this.nodeData.length )
+        {
+            for ( var i=0; i<newNodeData.length; i++ )
+            {
+                var node = newNodeData[i];
+
+                if (( ! node.inControlPoint ) && ( i>0 ))
+                    console.log("Error, node should have inControlPoint");
+
+                if (( ! node.outControlPoint ) && ( i<(newNodeData.length-1) ))
+                    console.log("Error, node should have outControlPoint");
+
+            }
+    
+            var thisWithMoreControlPoints = new GeoSpline( newNodeData );
+            console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
+            return thisWithMoreControlPoints.parallelCurve( sa );
+        }
+
+        //Also see
+        //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
+        //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
+
+        return { baseCurve: this, offsetCurve: offsetCurve }; 
+    }   
+
+
+    getOffsetBetweenCurves( otherCurve, t, targetOffset )
+    {
+        var pointOnThisCurve = this.getPointForT( t );
+
+        //NOTE: we cannot simply do  otherCurve.getPointForT( t ) as the two points won't necessarily be tangential.
+
+        //So, calculate a tangent from this curve to intersect the other. 
+        var anotherPointATinyBitFurtherOn = this.getPointForT( t + 0.0001 );
+        var angleAtThisPoint = (new GeoLine(pointOnThisCurve,anotherPointATinyBitFurtherOn )).angleDeg();
+        var tangentAngle = angleAtThisPoint + 90;
+        if ( tangentAngle >= 360 ) 
+            tangentAngle -= 360;
+        var tangentLineAtThisPoint = new GeoLine(pointOnThisCurve, pointOnThisCurve.pointAtDistanceAndAngleDeg( 10 * targetOffset, tangentAngle ) );
+
+        var otherCurveSI = otherCurve.asShapeInfo();
+        var tangentLineSI = tangentLineAtThisPoint.asShapeInfo();        
+
+        var intersections = Intersection.intersect(otherCurveSI, tangentLineSI);
+        if ( intersections.points.length === 0 )
+            return undefined;
+
+        var pointOnOtherCurve = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+
+        var line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
+        return line.getLength();
+    }
 }
-
-
 //# sourceMappingURL=patterneditor.js.map
