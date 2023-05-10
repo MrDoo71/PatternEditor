@@ -3425,7 +3425,6 @@ class Piece {
         //which points don't lead to any progress around the curve. 
         for (var a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
         {  
-
             var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
@@ -3448,8 +3447,8 @@ class Piece {
                     n.sa2 = this.defaultSeamAllowance;
             }
          
-            if ( a == this.detailNodes.length )
-                console.log("Closing path");
+            //if ( a == this.detailNodes.length )
+            //    console.log("Closing path");
 
             if ( a === 0 ) //Note if first node is curve, then it could be done at the start. 
             {
@@ -3481,7 +3480,7 @@ class Piece {
                     var curveSegment;
                     try {
                         curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
-                        //TODO we found both points, and so we can work out the forward/reverse automatically
+                        //We found both points, and so we can work out the forward/reverse automatically
 
                         //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
                         var correctDirection = curveSegment.nodeData[0].point.equals( previousP );
@@ -3583,8 +3582,6 @@ class Piece {
 
                     if ( ( samePoint ) && ( a == this.detailNodes.length ) ) //we've cycled back to the first node. 
                     {
-                        //why?
-
                         n.point = thisP;
                         n.line = line;
 
@@ -3657,10 +3654,8 @@ class Piece {
 
             if ( typeof n.sa1 != "undefined" )
                 currentSeamAllowance = n.sa1;
-            //else
-            //    currentSeamAllowance = this.defaultSeamAllowance;
 
-            console.log("Node " + a + " n.sa1:" + n.sa1 + " currentSeamAllowance:" + currentSeamAllowance );                
+            //console.log("Node " + a + " n.sa1:" + n.sa1 + " currentSeamAllowance:" + currentSeamAllowance );                
 
             n.tangentAfterDeg = n.directionAfterDeg + 90;
             if ( n.tangentAfterDeg >= 360 ) //TODO >= ?
@@ -3685,7 +3680,7 @@ class Piece {
             {    
 
                 var parallelCurves = n.curveSegment.parallelCurve( currentSeamAllowance );
-//ON TEST for the stocking leg issue - this does look better!!!              
+
                 n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
                 n.curveSegmentSA = parallelCurves.offsetCurve;
                 if ( n.curveSegmentSA === n.curveSegment )
@@ -3928,7 +3923,6 @@ class Piece {
                 console.log("No intersect pn:" + pn.obj + " n:" + n.obj );
             } 
 
-
             pn = n;                     
         }
         console.log("**********************");
@@ -4101,11 +4095,9 @@ class Piece {
             {
                 if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
                     path = this.lineTo( path, pn.reducedSAPoint );
-                    //path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + "," + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
 
                 if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
                     path = this.lineTo( path, n.increasingSAPoint );
-                    //path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + "," + this.roundForSVG( n.increasingSAPoint.y ) + " ";
             }
 
             if ( n.curveSegment )
@@ -4124,16 +4116,6 @@ class Piece {
                 }
 
                 path = this.lineTo( path, thisP );
-                // if ( ! path )
-                // {
-                //     path = "M" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
-                //     console.log( "Move to " + n.obj );
-                // }
-                // else
-                // {
-                //     path += "L" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
-                //     console.log( "Line to " + n.obj );
-                // }
             }
 
             pn = n;
