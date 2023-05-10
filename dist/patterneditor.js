@@ -281,7 +281,7 @@ class DrawingObject /*abstract*/ {
 
         if ( options && options.targetPiece )
         {
-            if ( options.downloadOption )
+            if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 
             var isVisible = false;
@@ -3170,6 +3170,7 @@ class Pattern {
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
+        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber : "" ) + this.patternData.name;
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
 
@@ -3424,24 +3425,27 @@ class Piece {
         //which points don't lead to any progress around the curve. 
         for (var a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
         {  
+
             var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
             var dObj = n.dObj;
             var nObj = nn.dObj;
 
-            if ( typeof n.before !== "undefined" )
-            {
-                n.sa1 = 1.0 * n.before; //TODO what about beforeSA? what about formulas.
-                if ( typeof pn.sa2 === "undefined"  )
-                    pn.sa2 = n.sa1;
-            }
+            //A point can specify before and after SA. The point will have a line drawn to it from the previous position.
+            //This line should have a sa of n.before. 
 
-            if ( typeof n.after !== "undefined" ) //string
+            if ( ! (( dObj.curve instanceof GeoSpline ) || ( dObj.arc instanceof GeoArc )) )
             {
-                n.sa2 = 1.0 * n.after; //TODO what about beforeSA? what about formulas.
-                if ( typeof nn.sa1 === "undefined"  )
-                    nn.sa1 = n.sa2; 
+                if ( typeof n.before !== "undefined" )
+                    n.sa1 = 1.0 * n.before; //TODO formulas?
+                else 
+                    n.sa1 = this.defaultSeamAllowance;
+
+                if ( typeof n.after !== "undefined" ) //string
+                    n.sa2 = 1.0 * n.after; //TODO formulas?
+                else
+                    n.sa2 = this.defaultSeamAllowance;
             }
          
             if ( a == this.detailNodes.length )
@@ -3450,7 +3454,7 @@ class Piece {
             if ( a === 0 ) //Note if first node is curve, then it could be done at the start. 
             {
                 if ( dObj.curve instanceof GeoSpline )
-                    previousP = dObj.curve.pointAlongPathFraction(100);
+                    previousP = dObj.curve.pointAlongPathFraction(100); //this wouldn't be correct if the curve needed splitting, i.e. if this is a node on a curve
                 else
                     previousP = dObj.p;
 
@@ -3458,58 +3462,100 @@ class Piece {
             }
             else 
             {                
-                if (( dObj.curve instanceof GeoSpline ) || ( dObj.arc instanceof GeoArc ))
+                if (    ( dObj.curve instanceof GeoSpline ) 
+                     || ( dObj.arc instanceof GeoArc )
+                     || ( dObj.arc instanceof GeoEllipticalArc ) )
                 {
                     console.log( "Curve " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
                     var nObjCurveOrArc = nObj.curve instanceof GeoSpline ? nObj.curve
-                                                                         : nObj.arc instanceof GeoArc ? nObj.arc : undefined;
+                                                                         : ( nObj.arc instanceof GeoArc || nObj.arc instanceof GeoEllipticalArc ) ? nObj.arc : undefined; //instanceof GeoArc
 
                     var nextP = nObjCurveOrArc ? nObjCurveOrArc.pointAlongPathFraction( nn.reverse?100:0 ) 
                                                : nObj.p;
 
                     var dObjCurve = dObj.curve instanceof GeoSpline ? dObj.curve
-                                                                    : dObj.arc instanceof GeoArc ? dObj.arc.asGeoSpline() : undefined;
-                 
-                    //TODO what if previousP isn't on the spline? e.g. SockTop, cater for either or both not being on the curve segment
+                                                                    : ( dObj.arc instanceof GeoArc || dObj.arc instanceof GeoEllipticalArc ) ? dObj.arc.asGeoSpline() : undefined; 
+
+                    //What if previousP and/or nextP isn't on the spline? TODO allow for one of them to be, and one not to be
                     var curveSegment;
                     try {
                         curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
+                        //TODO we found both points, and so we can work out the forward/reverse automatically
+
+                        //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
+                        var correctDirection = curveSegment.nodeData[0].point.equals( previousP );
+
+                        if ( ! correctDirection )
+                        {
+                            //maybe it doesn't match completely? 
+                            //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(
+                            var lineToStart = new GeoLine( previousP, curveSegment.nodeData[0].point );
+                            var lineToEnd = new GeoLine( previousP, curveSegment.nodeData[ curveSegment.nodeData.length-1 ].point );
+                            if ( lineToStart.getLength() < lineToEnd.getLength() )
+                                correctDirection = true;
+                        }
+
+                        if ( (! correctDirection) != n.reverse )
+                            console.log("ERROR: Correct direction:" + correctDirection + " reverse?" + n.reverse );
+
+                        if ( ! correctDirection )  //or we could use n.reverse
+                        {
+                            curveSegment = curveSegment.reverse();
+                            console.log( "Spline reversed.");
+                        }
+
+                        //If we find 0 or 1 points, then we have to trust the forward/reverse flag. 
+
                     } catch ( e ) {
-                        console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + dObj.name );
-                        curveSegment = dObjCurve;
-                    }
+                        console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + n.obj );
+                        //This is not an issue, it just means we're not clipping the start/end of the curve
 
-                    //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
-                    var correctDirection = curveSegment.nodeData[0].point.equals( previousP ); 
+                        var curveSegment;
+                        
+                        if ( n.reverse )
+                            curveSegment = (new GeoSpline( [...dObjCurve.nodeData] )).reverse();
+                        else 
+                            curveSegment = dObjCurve;
 
-                    if ( ! correctDirection )
-                    {
-                        //maybe it doesn't match completely? 
-                        //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(
-                        var lineToStart = new GeoLine( previousP, curveSegment.nodeData[0].point );
-                        var lineToEnd = new GeoLine( previousP, curveSegment.nodeData[ curveSegment.nodeData.length-1 ].point );
-                        if ( lineToStart.getLength() < lineToEnd.getLength() )
-                            correctDirection = true;
-                    }
+                        //NOW INTERSECT WITH start and end separately. 
+                        try {
+                            var cut = curveSegment.cutAtPoint( previousP );
+                            if ( cut && cut.afterPoint )
+                            {
+                                curveSegment = cut.afterPoint;
+                            }
+                            else 
+                            {
+                                //insert an explicit point for the implicit one, otherwise we'll be confused about direction
+                                console.log("Adding explit node for an implict start of curve");
+                                var curveStartPoint = curveSegment.nodeData[0].point;
+                                var line = new GeoLine( previousP, curveStartPoint );
+                                var anglePreviousPThisP = line.angleDeg();
+                                var newNode = { obj: n.obj + "_implicit_start",
+                                                point: curveStartPoint,
+                                                line: line,
+                                                directionBeforeDeg: anglePreviousPThisP,
+                                                directionAfterDeg: anglePreviousPThisP,
+                                                skipPoint: false, 
+                                                dObj: { p: curveStartPoint }};
+                                this.detailNodes.splice( a, 0, newNode );        
+                                a++;
+                            }
+                        } catch ( e2 ) {
+                        }
 
-                    if ( (! correctDirection) != n.reverse )
-                        console.log("ERROR: Correct direction:" + correctDirection + " reverse?" + n.reverse );
-
-                    if ( ! correctDirection )  //or we could use n.reverse
-                    {
-                        curveSegment = curveSegment.reverse();
-                        console.log( "Spline reversed.");
+                        try {
+                            var cut = curveSegment.cutAtPoint( nextP );
+                            if ( cut && cut.beforePoint )
+                                curveSegment = cut.beforePoint;
+                        } catch ( e2 ) {
+                        }
                     }
 
                     //Note, don't skip a point just because it is co-incident with the start of a curve
                     //because the start of a curve has its own directionBeforeDeg, and yet the point in relation
                     //to the previous point may be a different angle. 
-                    //if ( previousP && previousP.equals( curveSegment.pointAlongPathFraction(0) ) )
-                    //{
-                    //    if (( ! pn.dObj.curve ) || ( ! pn.dObj.curve instanceof GeoSpline ))
-                    //        pn.skipPoint = true;
-                    //}
 
                     previousP = curveSegment.pointAlongPathFraction(1);
                     n.directionBeforeDeg = curveSegment.entryAngleDeg();
@@ -3531,7 +3577,7 @@ class Piece {
                     {
                         //we could measure the distance and say its the same point if it is very very close
                         console.log("Distance from previousP to thisP " + line.getLength() );
-                        if ( line.getLength() < 0.1 )
+                        if ( line.getLength() < 0.05 )
                             samePoint = true;
                     }
 
@@ -3542,15 +3588,16 @@ class Piece {
                         n.point = thisP;
                         n.line = line;
 
-                        if ( n.directionBeforeDeg === undefined )
-                            n.directionBeforeDeg = n.directionAfterDeg;
+                        //if ( n.directionBeforeDeg === undefined )
+                        //    n.directionBeforeDeg = n.directionAfterDeg;
 
-                        if ( n.directionBeforeDeg === undefined )
+                        //if ( n.directionBeforeDeg === undefined )
                             n.directionBeforeDeg = pn.directionAfterDeg;     
+                            n.directionAfterDeg = n.directionBeforeDeg;
 
                         n.skipPoint = false; 
                     }
-                    else if ( ! samePoint ) //not the same point, or the last point
+                    else if ( ! samePoint ) //not the same point
                     {
                         console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
                         n.point = thisP;
@@ -3565,8 +3612,9 @@ class Piece {
                         n.directionAfterDeg = anglePreviousPThisP;
                         n.skipPoint = false; 
                     }
-                    else
+                    else //same point
                     {
+                        //A point on a spline is a way of controlling the before/after seam allowance
                         console.log("Same point, no progress");
                         n.directionBeforeDeg = pn.directionAfterDeg;
                         n.point = thisP; //even if skipping, we may need this for notches
@@ -3576,7 +3624,7 @@ class Piece {
                 else if ( dObj.line instanceof GeoLine )
                 {
                     //TODO! this needs testing, is this even allowed? 
-                    console.log("Line! " + n.obj );
+                    console.log("Line in piece, not allowed! " + n.obj );
                     n.line = dObj.line;
                     n.point = dObj.line.p2;
                     n.directionBeforeDeg = n.line.angleDeg();
@@ -3602,25 +3650,32 @@ class Piece {
 
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
+        var currentSeamAllowance = this.defaultSeamAllowance;
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
 
-            var sa1 = ( typeof n.sa1 !== "undefined" ) ? n.sa1 : this.defaultSeamAllowance;
-            var sa2 = ( typeof n.sa2 !== "undefined" ) ? n.sa2 : this.defaultSeamAllowance;
+            if ( typeof n.sa1 != "undefined" )
+                currentSeamAllowance = n.sa1;
+            //else
+            //    currentSeamAllowance = this.defaultSeamAllowance;
+
+            console.log("Node " + a + " n.sa1:" + n.sa1 + " currentSeamAllowance:" + currentSeamAllowance );                
 
             n.tangentAfterDeg = n.directionAfterDeg + 90;
-            if ( n.tangentAfterDeg > 360 )
+            if ( n.tangentAfterDeg >= 360 ) //TODO >= ?
                 n.tangentAfterDeg -= 360;     
 
             n.tangentBeforeDeg = n.directionBeforeDeg + 90;
-                if ( n.tangentBeforeDeg > 360 )
+                if ( n.tangentBeforeDeg >= 360 ) //TODO >= ?
                     n.tangentBeforeDeg -= 360;     
 
             if ( n.skipPoint )
             {
                 console.log( "Node:" + a + " " + n.obj + " skip");
-                n.pointBeforeSA = n.point.pointAtDistanceAndAngleDeg( sa1, n.tangentBeforeDeg );
+                n.pointEndSA = n.point.pointAtDistanceAndAngleDeg( currentSeamAllowance, n.tangentBeforeDeg );
+                if ( typeof n.sa2 !== "undefined" )
+                    currentSeamAllowance = n.sa2;
                 continue;
             }
     
@@ -3628,63 +3683,54 @@ class Piece {
     
             if ( n.curveSegment )
             {    
-                // var nodeData = [];
-                // var len = n.curveSegment.nodeData.length;                    
-                // for ( var i=0; i<len; i++ )
-                // {
-                //     var node = n.curveSegment.nodeData[i];
 
-                //     var newNode = {};
-                //     nodeData[i] = newNode;
-                //     n.tangentAfterDeg = n.curveSegment.angleLeavingNode(i); //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
-                //     n.tangentAfterDeg += 90;
-                //     if ( n.tangentAfterDeg > 360 )
-                //         n.tangentAfterDeg -= 360;     
-
-                //     n.tangentBeforeDeg = n.tangentAfterDeg; //TODO determine this separately
-
-                //     var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
-
-                //     newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                //     if ( node.inControlPoint )
-                //         newNode.inControlPoint = node.inControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentBeforeDeg );
-                //     if ( node.outControlPoint )
-                //         newNode.outControlPoint = node.outControlPoint.pointAtDistanceAndAngleDeg( sa, n.tangentAfterDeg );
-                //     //TODO
-                //     //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), and scale the length of the control points accordingly. 
-                //     //Now, for each step/simplespline chose points 0.1 0.5 and 0.9 along the old and new curve and measure the distance.  If the distance is
-                //     //not in tolerance, then split the spline by adding a new control point, and remember to cycle around. 
-                //     //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
-                //     //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
-                // }
-                // n.curveSegmentSA  = new GeoSpline( nodeData );
-                var parallelCurves = n.curveSegment.parallelCurve( sa1 ); //or sa2? 
-                //n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
+                var parallelCurves = n.curveSegment.parallelCurve( currentSeamAllowance );
+//ON TEST for the stocking leg issue - this does look better!!!              
+                n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
                 n.curveSegmentSA = parallelCurves.offsetCurve;
-                n.pointBeforeSA = n.curveSegmentSA.pointAlongPathFraction(0);
-                n.pointAfterSA = n.curveSegmentSA.pointAlongPathFraction(1);
+                if ( n.curveSegmentSA === n.curveSegment )
+                {
+                    //we copied the reference to the curve, but we'll might be meddling with the in/out points, so we need a copy
+                    n.curveSegmentSA = new GeoSpline( [...n.curveSegmentSA.nodeData]  );
+                }
+                n.pointStartSA = n.curveSegmentSA.pointAlongPathFraction(0);
+                n.pointEndSA = n.curveSegmentSA.pointAlongPathFraction(1);
 
-                debugSA = " A:" + n.pointBeforeSA.toString() + " B:" + n.pointBeforeSA.toString()                 
+                debugSA = " A:" + n.pointStartSA.toString() + " B:" + n.pointStartSA.toString()                 
             }
             else
             {
-                n.pointBeforeSA = n.line.p1.pointAtDistanceAndAngleDeg( sa1, n.tangentBeforeDeg );
+                if ( currentSeamAllowance === 0 )
+                    n.pointStartSA = n.line.p1;
+                else
+                    n.pointStartSA = n.line.p1.pointAtDistanceAndAngleDeg( currentSeamAllowance, n.tangentBeforeDeg );
 
-                if ( n.tangentAfterDeg )
-                    n.pointAfterSA = n.line.p2.pointAtDistanceAndAngleDeg( sa1, n.tangentAfterDeg ); //SA1 seems more compatible? 
+                if ( typeof n.tangentAfterDeg !== "undefined" )
+                {
+                    if ( currentSeamAllowance === 0 )
+                        n.pointEndSA = n.line.p2;
+                    else
+                        n.pointEndSA = n.line.p2.pointAtDistanceAndAngleDeg( currentSeamAllowance, n.tangentAfterDeg ); //SA1 seems more compatible? 
+                }
                 //Note if directionBeforeDeg==directionAfterDeg then there is effectively 1 point, and no intersection is necessary
 
-                n.lineSA = new GeoLine( n.pointBeforeSA, n.pointAfterSA );
+                n.lineSA = new GeoLine( n.pointStartSA, n.pointEndSA );
 
-                debugSA = " A:" + n.pointBeforeSA.toString() + " B:" + n.pointAfterSA.toString() 
+                debugSA = " A:" + n.pointStartSA.toString() + " B:" + n.pointEndSA.toString() 
             }
 
             console.log( "Node:" + a + " " + n.obj + 
                          " directionBeforeDeg:" + ( n.directionBeforeDeg === undefined ? "undefined" : Math.round(n.directionBeforeDeg) ) + 
                          " directionAfterDeg:" + ( n.directionAfterDeg === undefined ? "undefined" : Math.round(n.directionAfterDeg) ) +
-                         " sa1:" + ( sa1 ) + " sa2:" + ( sa2 ) +
+                         " sa:" + ( currentSeamAllowance ) +
                          ( n.curveSegment ? " curvesegment" : n.line ? " line" : " UNKNOWN" ) + " " + debugSA);
             pn = n;
+
+            if ( typeof n.sa1 === "undefined" )
+                n.sa1 = currentSeamAllowance;
+
+            if ( typeof n.sa2 !== "undefined" )
+                currentSeamAllowance = n.sa2;
         }
         console.log("**********************");
         console.log("**********************");
@@ -3697,18 +3743,16 @@ class Piece {
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
+            var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
 
             if ( n.skipPoint )
                 continue;
 
             //Now extend or trim lines and curves so that they intersect at the required points. 
+            //See docs/intersectionsWithChangingSeamAllowance.svg
 
-            //TODO we need to replace n.pointBeforeSA and pn.pointAfterSA with this intersection point? 
-            //and if n.curveSegmentSA then cut the curve at each of those above. Though, if it doesn't cut the curve, then that's fine
-            //it just means we didn't need to back track. 
-
-            var sa1 = n.sa1;
-            var sa2 = n.sa2;
+            var sa1 = pn.sa1;
+            var sa2 = n.sa1;
 
             var angleChange = n.directionBeforeDeg - pn.directionAfterDeg;
             if ( angleChange < -180 )
@@ -3721,7 +3765,7 @@ class Piece {
                 console.log("Complete change of direction? n.obj:" + n.obj + " withPrevious:" + pn.obj  );
             }
 
-            if (    ( ( Math.abs( angleChange ) > 0.1 ) || ( sa2 != sa1 ) ) //must be at an angle change, or an sa change
+            if (    ( ( Math.abs( angleChange ) > 0.1 ) || ( sa2 != sa1 ) ) //must be at an angle change, or an sa change //TODO 0.01 ? 
                  && ( Math.abs( angleChange ) < 179.99 )
                 )
             try {                
@@ -3770,8 +3814,8 @@ class Piece {
                     var intersect = this.intersect( trailingPath,  leadingPath );
                     trailingPath = this.clipEnd( trailingPath, intersect );
                     leadingPath = this.clipStart( leadingPath, intersect );
-                    pn.pointAfterSA = intersect;    
-                    n.pointBeforeSA = intersect;            
+                    pn.pointEndSA = intersect;    
+                    n.pointStartSA = intersect;            
                 }
                 else if ( angleChange > matingAngle2 ) //&& angleChange < matingAngle (as we've just done that)
                 {
@@ -3784,23 +3828,23 @@ class Piece {
                         if ( angleChange > 0 ) //left-hand
                         {
                             //add the bend, length=(sa1-sa2), and then intersect
-                            var reducedSAPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( (sa1-sa2), pn.directionAfterDeg-90 );
-                            var saChangeLine = new GeoLine( pn.pointAfterSA, reducedSAPoint );
+                            var reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( (sa1-sa2), pn.directionAfterDeg-90 );
+                            var saChangeLine = new GeoLine( pn.pointEndSA, reducedSAPoint );
                             var intersect = this.intersect( saChangeLine, leadingPath );
                             leadingPath = this.clipStart( leadingPath, intersect );
                             pn.reducedSAPoint = intersect;
-                            n.pointBeforeSA = intersect;
+                            n.pointStartSA = intersect;
                         }
                         else //right-hand
                         {
                             //add the bend, with a calculated length and then just join to the leading piece. 
                             //a = acos( sa2/sa1 )
                             var sa1Overlap = sa2 / Math.cos( angleChange / 360 * 2 * Math.PI );
-                            var reducedSAPoint = pn.pointAfterSA.pointAtDistanceAndAngleDeg( sa1-sa1Overlap, pn.directionAfterDeg-90 );
+                            var reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( sa1-sa1Overlap, pn.directionAfterDeg-90 );
                             pn.reducedSAPoint = reducedSAPoint;
                             //leadingPath - nothing to do, we'll just join with a line from reducedSAPoint to its start.
-                            //pn.pointAfterSA unchanged;    
-                            //n.pointBeforeSA unchanged
+                            //pn.pointEndSA unchanged;    
+                            //n.pointStartSA unchanged
                         }
                         
                     }
@@ -3810,22 +3854,22 @@ class Piece {
                         if ( angleChange > 0 ) //left hand
                         {
                             //use sa2-sa1 and intersect with the trailing line
-                            var increasingSAPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( (sa2-sa1), n.directionBeforeDeg-90 );
-                            var saChangeLine = new GeoLine( n.pointBeforeSA, increasingSAPoint );
+                            var increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( (sa2-sa1), n.directionBeforeDeg-90 );
+                            var saChangeLine = new GeoLine( n.pointStartSA, increasingSAPoint );
                             var intersect = this.intersect( saChangeLine, trailingPath );
                             trailingPath = this.clipEnd( trailingPath, intersect );
-                            pn.pointAfterSA = intersect;
+                            pn.pointEndSA = intersect;
                             n.increasingSAPoint = intersect;
-                            //n.pointBeforeSA = intersect;
+                            //n.pointStartSA = intersect;
                         }
                         else //right hand
                         {
                             //add a calculated length bend to the leading piece and just join the path to it. 
                             var sa2overlap = sa1 / Math.cos( angleChange / 360 * 2 * Math.PI );
-                            var increasingSAPoint = n.pointBeforeSA.pointAtDistanceAndAngleDeg( sa2-sa2overlap, n.directionBeforeDeg-90 );
+                            var increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( sa2-sa2overlap, n.directionBeforeDeg-90 );
                             //trailingPath - nothing to do
-                            //pn.pointAfterSA no change
-                            //n.pointBeforeSA no change
+                            //pn.pointEndSA no change
+                            //n.pointStartSA no change
                             n.increasingSAPoint = increasingSAPoint;
                         }
                     }
@@ -3835,8 +3879,8 @@ class Piece {
                     console.log( "Angle change less than " + matingAngle2 + " need to intersect extensions" );
 
                     //we extend both lines and intersect
-                    var trailExtensionLine = new GeoLine( pn.pointAfterSA, pn.pointAfterSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg ) );
-                    var leadingExtensionLine = new GeoLine( n.pointBeforeSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg ), n.pointBeforeSA );
+                    var trailExtensionLine = new GeoLine( pn.pointEndSA, pn.pointEndSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg ) );
+                    var leadingExtensionLine = new GeoLine( n.pointStartSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg ), n.pointStartSA );
                     var intersect = trailExtensionLine.intersect( leadingExtensionLine );
 
                     console.log( "Intersect at " + intersect.toString() );
@@ -3850,7 +3894,7 @@ class Piece {
                     }
                     else
                     {
-                        trailingPath = new GeoLine( pn.pointBeforeSA, intersect ); //this is still just a straight line as we extended it straight
+                        trailingPath = new GeoLine( pn.pointStartSA, intersect ); //this is still just a straight line as we extended it straight
                     }
 
                     if ( leadingPath instanceof GeoSpline )
@@ -3862,11 +3906,11 @@ class Piece {
                     }
                     else
                     {
-                        leadingPath = new GeoLine( intersect, n.pointAfterSA );                    
+                        leadingPath = new GeoLine( intersect, n.pointEndSA );                    
                     }
 
-                    pn.pointAfterSA = intersect;
-                    n.pointBeforeSA = intersect;
+                    pn.pointEndSA = intersect;
+                    n.pointStartSA = intersect;
                 }        
 
                 if ( trailingPath instanceof GeoSpline )
@@ -3997,15 +4041,19 @@ class Piece {
                 continue;
          
             //TODO if no SA, then create a point at an internal tangent
-            var path = "M" + this.roundForSVG( n.point.x ) + "," + this.roundForSVG( n.point.y ) + " L" + this.roundForSVG( n.pointBeforeSA.x ) + "," + this.roundForSVG( n.pointBeforeSA.y );
+            if ( n.pointEndSA )
+            {
+                var path = "M" + this.roundForSVG( n.point.x ) + "," + this.roundForSVG( n.point.y ) + " L" + this.roundForSVG( n.pointEndSA.x ) + "," + this.roundForSVG( n.pointEndSA.y );
 
-            //TODO should we connect these D3 data-wise to the notches
-            var p = notches.append("path")
-                .attr("d", path )
-                .attr("fill", "none")
-                .attr("stroke", "black")
-                .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
-
+                //TODO should we connect these D3 data-wise to the notches
+                var p = notches.append("path")
+                    .attr("d", path )
+                    .attr("fill", "none")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+            }
+            else
+                console.log("******** Node " + n.obj + " has no pointEndSA");
         };
     }    
 
@@ -4052,10 +4100,12 @@ class Piece {
             if ( withSeamAllowance )
             {
                 if ( pn.reducedSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + "," + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
+                    path = this.lineTo( path, pn.reducedSAPoint );
+                    //path = ( ! path  ?  "M" : path + "L" ) + this.roundForSVG( pn.reducedSAPoint.x ) + "," + this.roundForSVG( pn.reducedSAPoint.y ) + " ";
 
                 if ( n.increasingSAPoint ) //nb if !path then M rather than L as below? 
-                    path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + "," + this.roundForSVG( n.increasingSAPoint.y ) + " ";
+                    path = this.lineTo( path, n.increasingSAPoint );
+                    //path = ( ! path ? "M" : path + "L" ) + this.roundForSVG( n.increasingSAPoint.x ) + "," + this.roundForSVG( n.increasingSAPoint.y ) + " ";
             }
 
             if ( n.curveSegment )
@@ -4066,18 +4116,24 @@ class Piece {
             }
             else
             {
-                var thisP = withSeamAllowance ? n.pointAfterSA : n.point;
+                var thisP = withSeamAllowance ? n.pointEndSA : n.point;
 
-                if ( ! path )
+                if ( withSeamAllowance && n.pointStartSA )
                 {
-                    path = "M" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
-                    console.log( "Move to " + n.obj );
+                    path = this.lineTo( path, n.pointStartSA );
                 }
-                else
-                {
-                    path += "L" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
-                    console.log( "Line to " + n.obj );
-                }
+
+                path = this.lineTo( path, thisP );
+                // if ( ! path )
+                // {
+                //     path = "M" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
+                //     console.log( "Move to " + n.obj );
+                // }
+                // else
+                // {
+                //     path += "L" + this.roundForSVG( thisP.x ) + "," + this.roundForSVG( thisP.y ) + " ";
+                //     console.log( "Line to " + n.obj );
+                // }
             }
 
             pn = n;
@@ -4085,11 +4141,20 @@ class Piece {
 
         //TODO actually close the SVG path? 
 
-        //TODO expand the zoomed/scaled area to take into account the border thickness! and/or the seam allowance line
-
         console.log( "Path: " + path );
 
         return path;        
+    }
+
+
+    lineTo( path, p )
+    {
+        if ( ! path )
+            path = "M" + this.roundForSVG( p.x ) + "," + this.roundForSVG( p.y ) + " ";
+        else
+            path += "L" + this.roundForSVG( p.x ) + "," + this.roundForSVG( p.y ) + " ";
+
+        return path;
     }
 
 
@@ -4105,11 +4170,11 @@ class Piece {
 
             var n = this.detailNodes[a];
 
-            if ( n.pointAfterSA )
-                bounds.adjustToIncludeXY( n.pointAfterSA.x + mx, n.pointAfterSA.y + my );
+            if ( n.pointEndSA )
+                bounds.adjustToIncludeXY( n.pointEndSA.x + mx, n.pointEndSA.y + my );
 
-            if ( n.pointBeforeSA )
-                bounds.adjustToIncludeXY( n.pointBeforeSA.x + mx, n.pointBeforeSA.y + my );
+            if ( n.pointStartSA )
+                bounds.adjustToIncludeXY( n.pointStartSA.x + mx, n.pointStartSA.y + my );
         }
     }
 
@@ -4917,7 +4982,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.patternNumberAndName + " - " + editorOptions.targetPiece.name + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -5167,12 +5232,19 @@ function scrollTopTween(scrollTop)
 //Do the drawing... (we've added draw() to each drawing object.
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
-    var layoutConfig = editorOptions ? editorOptions.layoutConfig : undefined;
-    var margin = editorOptions ? ( editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0 ) : 0;
+    var layoutConfig = editorOptions.layoutConfig;
+    var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    if ( margin )
+    {
+        pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.minY = Math.round( ( pattern.visibleBounds.minY - margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.maxX = Math.round( ( pattern.visibleBounds.maxX + margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.maxY = Math.round( ( pattern.visibleBounds.maxY + margin ) * 1000 ) / 1000;
+    }
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
-    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX ) + ( 2 * margin );
-    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY ) + ( 2 * margin );
+    var patternWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
+    var patternHeight = pattern.visibleBounds.maxY - pattern.visibleBounds.minY;
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -5184,9 +5256,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", ( Math.round( (patternWidth * 10 )/10 + Number.EPSILON )) + pattern.units )
-                      .attr("height", ( Math.round( (patternHeight * 10 )/10 + Number.EPSILON )) + pattern.units )
-                      .attr("viewBox", (pattern.visibleBounds.minX - margin) + " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
+                      .attr("width", patternWidth + pattern.units )
+                      .attr("height", patternHeight + pattern.units )
+                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
     }
     else
     {
@@ -5261,45 +5333,51 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         var patternPiece = pattern.patternPieces[j];
 
-        var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
-        var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+        var skipDrawing = editorOptions.downloadOption;
+
+        if ( ! skipDrawing )
+        {
+            var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
+            var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+
+            var a = drawingGroup.selectAll("g");    
+            a = a.data( patternPiece.drawingObjects );
+            a.enter()
+            .append("g")
+            .on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .each( function(d,i) {
+                var g = d3.select( this );                        
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                try {
+                    d.draw( g );
+                    d.drawingSvg = g;                 
+                } catch ( e ) {
+                    d.error = "Drawing failed. " + e;
+                }
+            });
+
+            var a = outlineGroup.selectAll("g");    
+            a = a.data( patternPiece.drawingObjects );
+            a.enter()
+            .append("g")
+            .on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .each( function(d,i) {
+                var g = d3.select( this );
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                {
+                    d.draw( g, true );
+                    d.outlineSvg = g;
+                }
+            });
+        }
+
         var pieceGroup   = transformGroup3.append("g").attr("class","j-pieces");
-
-        var a = drawingGroup.selectAll("g");    
-        a = a.data( patternPiece.drawingObjects );
-        a.enter()
-         .append("g")
-         .on("contextmenu", contextMenu)
-         .on("click", onclick)
-         .each( function(d,i) {
-            var g = d3.select( this );                        
-            if (   ( typeof d.draw === "function" ) 
-                && ( ! d.error )
-                && ( d.isVisible( editorOptions ) ) )
-            try {
-                d.draw( g );
-                d.drawingSvg = g;                 
-            } catch ( e ) {
-                d.error = "Drawing failed. " + e;
-            }
-        });
-
-        var a = outlineGroup.selectAll("g");    
-        a = a.data( patternPiece.drawingObjects );
-        a.enter()
-         .append("g")
-         .on("contextmenu", contextMenu)
-         .on("click", onclick)
-         .each( function(d,i) {
-            var g = d3.select( this );
-            if (   ( typeof d.draw === "function" ) 
-                && ( ! d.error )
-                && ( d.isVisible( editorOptions ) ) )
-            {
-                d.draw( g, true );
-                d.outlineSvg = g;
-            }
-        });
 
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );
@@ -6951,6 +7029,72 @@ class GeoEllipticalArc {
     }
     
 
+    asGeoSpline() {
+
+        //Un-rotate this if it is rotated
+        if ( this.rotationAngle !== 0 )
+        {
+            var center = this.center;
+            var rotationAngle = this.rotationAngle;
+            var unrotator = function( p ) {
+                return p.rotate( center, -rotationAngle );
+            };
+            var unrotatedArc = this.applyOperation( unrotator );
+
+            var unrotatedSplines = unrotatedArc.asGeoSpline();
+
+            var rerotator = function( p ) {
+                return p.rotate( center, rotationAngle );
+            };
+
+            return unrotatedSplines.applyOperation( rerotator );
+        }
+
+        //We won't be a rotated elipse. 
+
+        var angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
+        var angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
+        var angleExtentRad = angleEndRad - angleStartRad;
+        var numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
+        var angleIncrement = angleExtentRad / numSegments;
+
+        var controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
+
+        var nodeData = [];
+
+        var node = {};
+        nodeData.push( node );
+
+        for (var i=0; i<numSegments; i++)
+        {
+            var angle = angleStartRad + i * angleIncrement;
+
+            var dxr1 = Math.cos(angle) * this.radius1;
+            var dxr2 = Math.cos(angle) * this.radius2;
+            var dyr1 = Math.sin(angle) * this.radius1;
+            var dyr2 = Math.sin(angle) * this.radius2;
+
+            if ( ! node.point )
+                node.point = new GeoPoint( this.center.x + dxr1 , this.center.y - dyr2 );
+
+            node.outControlPoint = new GeoPoint( this.center.x + dxr1 - controlLength * dyr1, this.center.y - dyr2 - controlLength * dxr2 );
+
+            angle += angleIncrement;
+            dxr1 = Math.cos(angle) * this.radius1;
+            dxr2 = Math.cos(angle) * this.radius2;
+            dyr1 = Math.sin(angle) * this.radius1;
+            dyr2 = Math.sin(angle) * this.radius2;
+
+            node = {};
+            nodeData.push( node );
+            node.inControlPoint = new GeoPoint( this.center.x + dxr1 + controlLength * dyr1, this.center.y - dyr2 + controlLength * dxr2 );
+            node.point = new GeoPoint( this.center.x + dxr1, this.center.y - dyr2 );
+        }
+
+        return new GeoSpline( nodeData );        
+    }
+
+
     pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
@@ -7834,32 +7978,18 @@ class GeoSpline {
                     {
                         var splits = segment.cutAtPoint( p );
 
-                        if ( splits.beforePoint )
-                        {
-                            splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
-                            splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
-                            splits.beforePoint.nodeData[0].inLength = n1.inLength;
-                            nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
-                            nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
-                        }
-                        else
-                        {
-                            console.log( "Splits has no beforePoint");
-                        }
+                        splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
+                        splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
+                        splits.beforePoint.nodeData[0].inLength = n1.inLength;
+                        nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
+                        nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
 
-                        if ( splits.afterPoint )
-                        {
-                            splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
-                            splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
-                            splits.afterPoint.nodeData[1].outLength = n2.outLength;
-                            nodesAfterCut.push( splits.afterPoint.nodeData[0] );
-                            nodesAfterCut.push( splits.afterPoint.nodeData[1] );
-                            i++; //because we've done n2 effectively
-                        }
-                        else 
-                        {
-                            console.log( "Splits has no afterPoint");
-                        }
+                        splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
+                        splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
+                        splits.afterPoint.nodeData[1].outLength = n2.outLength;
+                        nodesAfterCut.push( splits.afterPoint.nodeData[0] );
+                        nodesAfterCut.push( splits.afterPoint.nodeData[1] );
+                        i++; //because we've done n2 effectively
                         cutMade = true;
                     }
                 }
@@ -8067,9 +8197,7 @@ class GeoSpline {
             if ( tangentAfterDeg > 360 )
                 tangentAfterDeg -= 360;
 
-            var tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately
-
-            //var sa = sa1 + ( ( sa2-sa1 ) * i/len); //TODO check compatibility
+            var tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately?
 
             newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, tangentAfterDeg );
             if ( node.inControlPoint )
@@ -8187,14 +8315,15 @@ class GeoSpline {
             return thisWithMoreControlPoints.parallelCurve( sa );
         }
 
-        //Also see
+        //Also see:
         //https://raphlinus.github.io/curves/2022/09/09/parallel-beziers.html
         //http://brunoimbrizi.com/unbox/2015/03/offset-curve/
 
         return { baseCurve: this, offsetCurve: offsetCurve }; 
     }   
 
-
+    //For two curves that are supposed to be paralled, 
+    //what offset has actually been achieved at t?    
     getOffsetBetweenCurves( otherCurve, t, targetOffset )
     {
         var pointOnThisCurve = this.getPointForT( t );

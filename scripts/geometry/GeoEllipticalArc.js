@@ -126,6 +126,72 @@ class GeoEllipticalArc {
     }
     
 
+    asGeoSpline() {
+
+        //Un-rotate this if it is rotated
+        if ( this.rotationAngle !== 0 )
+        {
+            var center = this.center;
+            var rotationAngle = this.rotationAngle;
+            var unrotator = function( p ) {
+                return p.rotate( center, -rotationAngle );
+            };
+            var unrotatedArc = this.applyOperation( unrotator );
+
+            var unrotatedSplines = unrotatedArc.asGeoSpline();
+
+            var rerotator = function( p ) {
+                return p.rotate( center, rotationAngle );
+            };
+
+            return unrotatedSplines.applyOperation( rerotator );
+        }
+
+        //We won't be a rotated elipse. 
+
+        var angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
+        var angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
+        var angleExtentRad = angleEndRad - angleStartRad;
+        var numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
+        var angleIncrement = angleExtentRad / numSegments;
+
+        var controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
+
+        var nodeData = [];
+
+        var node = {};
+        nodeData.push( node );
+
+        for (var i=0; i<numSegments; i++)
+        {
+            var angle = angleStartRad + i * angleIncrement;
+
+            var dxr1 = Math.cos(angle) * this.radius1;
+            var dxr2 = Math.cos(angle) * this.radius2;
+            var dyr1 = Math.sin(angle) * this.radius1;
+            var dyr2 = Math.sin(angle) * this.radius2;
+
+            if ( ! node.point )
+                node.point = new GeoPoint( this.center.x + dxr1 , this.center.y - dyr2 );
+
+            node.outControlPoint = new GeoPoint( this.center.x + dxr1 - controlLength * dyr1, this.center.y - dyr2 - controlLength * dxr2 );
+
+            angle += angleIncrement;
+            dxr1 = Math.cos(angle) * this.radius1;
+            dxr2 = Math.cos(angle) * this.radius2;
+            dyr1 = Math.sin(angle) * this.radius1;
+            dyr2 = Math.sin(angle) * this.radius2;
+
+            node = {};
+            nodeData.push( node );
+            node.inControlPoint = new GeoPoint( this.center.x + dxr1 + controlLength * dyr1, this.center.y - dyr2 + controlLength * dxr2 );
+            node.point = new GeoPoint( this.center.x + dxr1, this.center.y - dyr2 );
+        }
+
+        return new GeoSpline( nodeData );        
+    }
+
+
     pointAlongPathFraction( fraction ) {
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );

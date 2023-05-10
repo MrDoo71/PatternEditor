@@ -502,7 +502,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.patternNumberAndName + " - " + editorOptions.targetPiece.name + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -754,10 +754,17 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 {
     var layoutConfig = editorOptions.layoutConfig;
     var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    if ( margin )
+    {
+        pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.minY = Math.round( ( pattern.visibleBounds.minY - margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.maxX = Math.round( ( pattern.visibleBounds.maxX + margin ) * 1000 ) / 1000;
+        pattern.visibleBounds.maxY = Math.round( ( pattern.visibleBounds.maxY + margin ) * 1000 ) / 1000;
+    }
     var width =  layoutConfig.drawingWidth;
     var height = layoutConfig.drawingHeight;
-    var patternWidth = ( pattern.visibleBounds.maxX - pattern.visibleBounds.minX ) + ( 2 * margin );
-    var patternHeight =( pattern.visibleBounds.maxY - pattern.visibleBounds.minY ) + ( 2 * margin );
+    var patternWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
+    var patternHeight = pattern.visibleBounds.maxY - pattern.visibleBounds.minY;
 
     graphdiv.select("svg.pattern-drawing").remove();
 
@@ -769,9 +776,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", ( Math.round( (patternWidth * 10 )/10 + Number.EPSILON )) + pattern.units )
-                      .attr("height", ( Math.round( (patternHeight * 10 )/10 + Number.EPSILON )) + pattern.units )
-                      .attr("viewBox", (pattern.visibleBounds.minX - margin) + " " + (pattern.visibleBounds.minY-margin) + " " + (patternWidth+margin) + " " + (patternHeight+margin) );
+                      .attr("width", patternWidth + pattern.units )
+                      .attr("height", patternHeight + pattern.units )
+                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
     }
     else
     {
@@ -846,45 +853,51 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         var patternPiece = pattern.patternPieces[j];
 
-        var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
-        var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+        var skipDrawing = editorOptions.downloadOption;
+
+        if ( ! skipDrawing )
+        {
+            var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
+            var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+
+            var a = drawingGroup.selectAll("g");    
+            a = a.data( patternPiece.drawingObjects );
+            a.enter()
+            .append("g")
+            .on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .each( function(d,i) {
+                var g = d3.select( this );                        
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                try {
+                    d.draw( g );
+                    d.drawingSvg = g;                 
+                } catch ( e ) {
+                    d.error = "Drawing failed. " + e;
+                }
+            });
+
+            var a = outlineGroup.selectAll("g");    
+            a = a.data( patternPiece.drawingObjects );
+            a.enter()
+            .append("g")
+            .on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .each( function(d,i) {
+                var g = d3.select( this );
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                {
+                    d.draw( g, true );
+                    d.outlineSvg = g;
+                }
+            });
+        }
+
         var pieceGroup   = transformGroup3.append("g").attr("class","j-pieces");
-
-        var a = drawingGroup.selectAll("g");    
-        a = a.data( patternPiece.drawingObjects );
-        a.enter()
-         .append("g")
-         .on("contextmenu", contextMenu)
-         .on("click", onclick)
-         .each( function(d,i) {
-            var g = d3.select( this );                        
-            if (   ( typeof d.draw === "function" ) 
-                && ( ! d.error )
-                && ( d.isVisible( editorOptions ) ) )
-            try {
-                d.draw( g );
-                d.drawingSvg = g;                 
-            } catch ( e ) {
-                d.error = "Drawing failed. " + e;
-            }
-        });
-
-        var a = outlineGroup.selectAll("g");    
-        a = a.data( patternPiece.drawingObjects );
-        a.enter()
-         .append("g")
-         .on("contextmenu", contextMenu)
-         .on("click", onclick)
-         .each( function(d,i) {
-            var g = d3.select( this );
-            if (   ( typeof d.draw === "function" ) 
-                && ( ! d.error )
-                && ( d.isVisible( editorOptions ) ) )
-            {
-                d.draw( g, true );
-                d.outlineSvg = g;
-            }
-        });
 
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );

@@ -281,7 +281,7 @@ class DrawingObject /*abstract*/ {
 
         if ( options && options.targetPiece )
         {
-            if ( options.downloadOption )
+            if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 
             var isVisible = false;
