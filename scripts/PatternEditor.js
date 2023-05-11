@@ -920,6 +920,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 p.drawSeamLine( g );
                 p.drawSeamAllowance( g );
                 p.drawNotches( g );
+                p.drawInternalPaths( g );
                 p.svg = g;
             }
         });

@@ -8,6 +8,7 @@ class Piece {
         this.patternPiece = patternPiece;
         this.name = data.name;
         this.detailNodes = data.detailNode;
+        this.internalPaths = data.internalPath;
         //this.update = data.update;
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
@@ -36,6 +37,28 @@ class Piece {
                 //TODO also populate dObj.usedByPieces
                 //dObj.setUsedByPiece( this );
             }, this ); 
+
+        var resolve = function( objName, b ) {
+            return patternPiece.getObject( objName, b );
+        };
+
+        if ( this.internalPaths )
+            this.internalPaths.forEach( 
+                function(ip) { 
+
+                    if ( ! ip.node )
+                        return; 
+
+                    ip.nodes = [];
+                    ip.node.forEach(
+                        function(n) {
+                            var dObj = resolve( n, true );
+                            if ( dObj ) 
+                                this.nodes.push( dObj );
+                            else
+                                console.log("Couldn't match internal path node to drawing object: ", n );
+                        }, ip );
+                }, this );             
                 
         this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
@@ -689,6 +712,43 @@ class Piece {
                 console.log("******** Node " + n.obj + " has no pointEndSA");
         };
     }    
+
+
+    drawInternalPaths( g )
+    {
+        var internalPathsGroup = g.append("g").attr("id","internal paths");        
+        var strokeWidth = this.getStrokeWidth()/2;
+        if ( this.internalPaths )
+            this.internalPaths.forEach( 
+                function(ip) { 
+                    if ( ip.nodes )
+                        this.drawInternalPath( internalPathsGroup, ip, strokeWidth );
+                }, this );   
+    }
+
+
+    drawInternalPath( internalPathsGroup, internalPath, strokeWidth )
+    {
+        var path = undefined;
+        for  (var a in internalPath.nodes )
+        {
+            var n = internalPath.nodes[ a ];
+
+            if (( n.arc instanceof GeoArc ) || ( n.arc instanceof GeoEllipticalArc ))
+                path = n.arc.asGeoSpline().svgPath( path );
+            else if ( n.curve instanceof GeoSpline )
+                path = n.curve.svgPath( path );
+            else
+                path = this.lineTo( path, n.p );
+        }
+
+        var p = internalPathsGroup.append("path")
+            .attr("d", path )
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("class", internalPath.lineStyle )
+            .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+    }
 
 
     getStrokeWidth( isOutline, isSelected )

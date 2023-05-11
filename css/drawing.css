@@ -30,27 +30,32 @@ g.j-item span.const {
 }
 
 g.j-drawing line.dotLine,
-g.j-drawing path.dotLine {
+g.j-drawing path.dotLine,
+g.j-pieces path.dotLine {
     stroke-dasharray: 0.25, 0.25; 
 }
 
 g.j-drawing line.dashLine,
+g.j-drawing path.dashLine,
 g.j-drawing path.dashLine {
     stroke-dasharray: 1, 0.25; 
 }
 
 g.j-drawing line.dashDotLine,
-g.j-drawing path.dashDotLine {
+g.j-drawing path.dashDotLine,
+g.j-pieces path.dashDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25; 
 }
 
 g.j-drawing line.dashDotLine,
-g.j-drawing path.dashDotLine {
+g.j-drawing path.dashDotLine,
+g.j-pieces path.dashDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25; 
 }
 
 g.j-drawing line.dashDotDotLine,
-g.j-drawing path.dashDotDotLine {
+g.j-drawing path.dashDotDotLine,
+g.j-pieces path.dashDotDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25, 0.25, 0.25; 
 }
 
