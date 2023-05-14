@@ -199,6 +199,7 @@ class GeoSpline {
         return cutSpline.pathLength();
     }
 
+
     findTForPoint(p) {
         //only where nodeData.length == 2
         //sometimes we're testing whether point p is on the arc. 
@@ -220,12 +221,13 @@ class GeoSpline {
             iter = 0,
             threshold = this.pathLength() / 1000;
 
+        var t;
         while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
             var closestT = null;
             var closestDistance = undefined;
             var interval = (maxT - minT)/4; //0.25 first time around.
-            for( var t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
+            for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
                 var pt = this.getPointForT( t );
                 var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
@@ -250,6 +252,9 @@ class GeoSpline {
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
         //console.log("Point not on curve." );
+        if (( t > 0 ) && ( t < 1 ))
+            return t; 
+
         return undefined;
     }
 
@@ -396,7 +401,7 @@ class GeoSpline {
             nodesAfterCut = [];
 
         var cutMade = false;
-        for( var i=0; i<nodeData.length; i++ )
+        for( var i=0; i<(nodeData.length-1); i++ )
         {
             var n1 = nodeData[i];
             var n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
@@ -419,8 +424,9 @@ class GeoSpline {
             }
             else
             {
-                var segment = this.pathSegment( i+1 );
-                var tWithinSegment = segment.findTForPoint(p);           
+                var segment = this.pathSegment( i+1 ); //so from i to i+1
+                var tWithinSegment = segment.findTForPoint(p);                    
+
                 if ( tWithinSegment === 0 ) //effectively ( n1.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
                 {
                     cutMade = true;
@@ -445,9 +451,9 @@ class GeoSpline {
                         if ( cutMade )
                             nodesAfterCut.push(n1);
                     }
-                    else //pointLiesInThisSegment
+                    else //point lies in this segment
                     {
-                        var splits = segment.cutAtPoint( p );
+                        var splits = segment.cutAtT( tWithinSegment );
 
                         splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
                         splits.beforePoint.nodeData[0].inAngle = n1.inAngle;

@@ -73,6 +73,14 @@ class Piece {
                     panel.bottomRight = resolve( panel.bottomRight, true );
                 if ( panel.orientation === undefined )
                     panel.orientation = "";
+                if ( panel.quantity === undefined )
+                    panel.quantity = "";
+                if ( panel.annotation === undefined )
+                    panel.quantity = "";
+                if ( panel.onFold === undefined )
+                    panel.onFold = false;
+                if ( panel.foldPosition === undefined )
+                    panel.foldPosition = "";
             }
 
         this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
@@ -773,7 +781,8 @@ class Piece {
     drawMarkings( g )
     {
         var lineSpacing = 1.2;
-        var fontSize = 1; //cm
+        var fontSize = this.convertMMtoPatternUnits( 8 ); //8mm equiv
+        var align = "start";
 
         if ( this.dataPanels )
         for( var i in this.dataPanels )
@@ -795,10 +804,21 @@ class Piece {
                 //TODO we need to center it!!
                 x = panel.center.p.x;
                 y = panel.center.p.y;
+                align = "middle";
+            }
+            if ( typeof panel.bottomRight === "object" )
+            {
+                x = panel.bottomRight.p.x;
+                y = panel.bottomRight.p.y;
+                align = "end";
             }
             if ( x === undefined ) 
             {
-                //determine the center of this piece, and use that!
+                var bounds = new Bounds();
+                this.adjustBounds( bounds );
+                x = ( bounds.minX + bounds.maxX ) / 2;
+                y = ( bounds.minY + bounds.maxY ) / 2;
+                align = "middle";
             }
 
 
@@ -829,6 +849,18 @@ class Piece {
                 if ( text.includes( "%pOrientation%" ) )
                     text=text.replace( "%pOrientation%", panel.orientation );
 
+                if ( text.includes( "%pQuantity%" ) )
+                    text=text.replace( "%pQuantity%", panel.quantity );
+
+                if ( text.includes( "%pAnnotation%" ) )
+                    text=text.replace( "%pAnnotation%", panel.annotation );
+
+                if ( text.includes( "%wOnFold%" ) )
+                    text=text.replace( "%wOnFold%", panel.onFold ? "on fold" : "" );
+
+                if ( text.includes( "%pFoldPosition%" ) )
+                    text=text.replace( "%pFoldPosition%", panel.foldPosition );
+
                 if ( text.includes( "%patternNumber%" ) )
                 {
                     var patternNumber = this.patternPiece.pattern.patternData.patternNumber;
@@ -843,6 +875,7 @@ class Piece {
                 dataPanelGroup.append("text")
                               .attr("x", 0 )
                               .attr("y", j*lineSpacing*fontSize )
+                              .attr("text-anchor", align ) //dominant-baseline="middle"
                               .attr("font-size", fontSize )
                               .text( text );
                 ;
@@ -851,17 +884,21 @@ class Piece {
     }
 
 
+    convertMMtoPatternUnits( mm )
+    {
+        if ( this.patternPiece.pattern.units = "cm" )
+            return mm/10;
+        else if ( this.patternPiece.pattern.units = "mm" )
+            return mm;
+        else //inches
+            return mm/25.4;
+    }
+
+
     getStrokeWidth( isOutline, isSelected )
     {
         if ( this.patternPiece.pattern.data.options.lifeSize ) 
-        {
-            if ( this.patternPiece.pattern.units = "cm" )
-                return 0.07; //0.7mm
-            else if ( this.patternPiece.pattern.units = "mm" )
-                return 0.7; //0.7mm
-            else //inches
-                return 0.03; //approx 0.7mm
-        }
+            return this.convertMMtoPatternUnits(0.7); //0.7mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
