@@ -9,6 +9,7 @@ class Piece {
         this.name = data.name;
         this.detailNodes = data.detailNode;
         this.internalPaths = data.internalPath;
+        this.dataPanels = data.dataPanel;
         //this.update = data.update;
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
@@ -60,6 +61,20 @@ class Piece {
                         }, ip );
                 }, this );             
                 
+        if ( this.dataPanels )
+            for( var i in this.dataPanels )
+            {
+                var panel = this.dataPanels[i];
+                if ( panel.center ) 
+                    panel.center = resolve( panel.center, true );
+                if ( panel.topLeft ) 
+                    panel.topLeft = resolve( panel.topLeft, true );
+                if ( panel.bottomRight ) 
+                    panel.bottomRight = resolve( panel.bottomRight, true );
+                if ( panel.orientation === undefined )
+                    panel.orientation = "";
+            }
+
         this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value();
@@ -730,9 +745,13 @@ class Piece {
     drawInternalPath( internalPathsGroup, internalPath, strokeWidth )
     {
         var path = undefined;
+
         for  (var a in internalPath.nodes )
         {
             var n = internalPath.nodes[ a ];
+
+            //TODO if a curve or arc then we need to look at previous/next like we do for the seam line. 
+
 
             if (( n.arc instanceof GeoArc ) || ( n.arc instanceof GeoEllipticalArc ))
                 path = n.arc.asGeoSpline().svgPath( path );
@@ -748,6 +767,87 @@ class Piece {
             .attr("stroke", "black")
             .attr("class", internalPath.lineStyle )
             .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+    }
+
+
+    drawMarkings( g )
+    {
+        var lineSpacing = 1.2;
+        var fontSize = 1; //cm
+
+        if ( this.dataPanels )
+        for( var i in this.dataPanels )
+        {
+            var panel = this.dataPanels[i];
+
+            if ( ! panel.dataItem )
+                continue;
+
+            var x = undefined;
+            var y = undefined;
+            if ( typeof panel.topLeft === "object" )
+            {
+                x = panel.topLeft.p.x;
+                y = panel.topLeft.p.y;
+            }
+            if ( typeof panel.center === "object" )
+            {
+                //TODO we need to center it!!
+                x = panel.center.p.x;
+                y = panel.center.p.y;
+            }
+            if ( x === undefined ) 
+            {
+                //determine the center of this piece, and use that!
+            }
+
+
+            var dataPanelGroup = g.append("g")
+                                  .attr("id","data panel:" + panel.letter )
+                                  .attr("transform", "translate(" + x + "," + y + ")" );
+
+            for( var j in panel.dataItem )
+            {
+                var dataItem = panel.dataItem[ j ];
+                var text = dataItem.text;
+
+                if ( text.includes( "%date%" ) )
+                {
+                    const t = new Date();
+                    const date = ('0' + t.getDate()).slice(-2);
+                    const month = ('0' + (t.getMonth() + 1)).slice(-2);
+                    const year = t.getFullYear();
+                    text = text.replace("%date%", `${year}-${month}-${date}` );
+                }
+
+                if ( text.includes( "%pLetter%" ) )
+                    text=text.replace( "%pLetter%", panel.letter );
+                
+                if ( text.includes( "%pName%" ) )
+                    text=text.replace( "%pName%", this.name );
+
+                if ( text.includes( "%pOrientation%" ) )
+                    text=text.replace( "%pOrientation%", panel.orientation );
+
+                if ( text.includes( "%patternNumber%" ) )
+                {
+                    var patternNumber = this.patternPiece.pattern.patternData.patternNumber;
+                    if ( patternNumber === undefined )
+                        patternNumber = "";
+                    text=text.replace( "%patternNumber%", patternNumber );
+                }
+
+                if ( text.includes( "%patternName%" ) )
+                    text=text.replace( "%patternName%", this.patternPiece.pattern.patternData.name );
+
+                dataPanelGroup.append("text")
+                              .attr("x", 0 )
+                              .attr("y", j*lineSpacing*fontSize )
+                              .attr("font-size", fontSize )
+                              .text( text );
+                ;
+            }
+        }
     }
 
 

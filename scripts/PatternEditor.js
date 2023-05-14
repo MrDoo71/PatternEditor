@@ -774,6 +774,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
+        patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
                       .attr("width", patternWidth + pattern.units )
@@ -921,6 +923,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 p.drawSeamAllowance( g );
                 p.drawNotches( g );
                 p.drawInternalPaths( g );
+                p.drawMarkings( g );
                 p.svg = g;
             }
         });
