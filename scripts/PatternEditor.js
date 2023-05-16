@@ -496,11 +496,13 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         var downloadFunction = function() {
             var serializer = new XMLSerializer();
-            var xmlString = serializer.serializeToString(d3.select('svg').node());
-            var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
+            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString(d3.select('svg').node());
+            //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
+            var imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
+            
 
             d3.select(this)
-                          .attr( "href-lang", "image/svg+xml" )
+                          .attr( "href-lang", "image/svg+xml; charset=utf-8" )
                           .attr( "href", imgData )
                           .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
         };

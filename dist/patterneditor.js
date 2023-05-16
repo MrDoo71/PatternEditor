@@ -3664,16 +3664,16 @@ class Piece {
                         n.skipPoint = true; 
                     }
                 }
-                else if ( dObj.line instanceof GeoLine )
-                {
-                    //TODO! this needs testing, is this even allowed? 
-                    console.log("Line in piece, not allowed! " + n.obj );
-                    n.line = dObj.line;
-                    n.point = dObj.line.p2;
-                    n.directionBeforeDeg = n.line.angleDeg();
-                    n.directionAfterDeg = n.directionBeforeDeg
-                    n.skipPoint = false; 
-                }
+                // else if ( dObj.line instanceof GeoLine )
+                // {
+                //     //TODO! this needs testing, is this even allowed? 
+                //     console.log("Line in piece, not allowed! " + n.obj );
+                //     n.line = dObj.line;
+                //     n.point = dObj.line.p2;
+                //     n.directionBeforeDeg = n.line.angleDeg();
+                //     n.directionAfterDeg = n.directionBeforeDeg
+                //     n.skipPoint = false; 
+                // }
 
 
                 if ( pn.directionAfterDeg === undefined )
@@ -4101,7 +4101,7 @@ class Piece {
     drawInternalPaths( g )
     {
         var internalPathsGroup = g.append("g").attr("id","internal paths");        
-        var strokeWidth = this.getStrokeWidth()/2;
+        var strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
         if ( this.internalPaths )
             this.internalPaths.forEach( 
                 function(ip) { 
@@ -4115,27 +4115,64 @@ class Piece {
     {
         var path = undefined;
 
-        for  (var a in internalPath.nodes )
+        var previousP;
+        for  (var a=0; a<internalPath.nodes.length; a++ )
         {
             var n = internalPath.nodes[ a ];
-
-            //TODO if a curve or arc then we need to look at previous/next like we do for the seam line. 
-
+            
+            var curve = undefined;
 
             if (( n.arc instanceof GeoArc ) || ( n.arc instanceof GeoEllipticalArc ))
-                path = n.arc.asGeoSpline().svgPath( path );
+                curve = n.arc.asGeoSpline();
             else if ( n.curve instanceof GeoSpline )
-                path = n.curve.svgPath( path );
+                curve = n.curve;
+
+            if ( curve )
+            {
+                if ( previousP )
+                {
+                    const cut = curve.cutAtPoint( previousP );
+                    curve = cut.afterPoint ? cut.afterPoint : cut.beforePoint;
+                }
+
+                var nextNode = a+1 < internalPath.nodes.length ? internalPath.nodes[ a+1 ] : undefined;
+                if (( nextNode ) && ( nextNode.p ))
+                {
+                    const cut = curve.cutAtPoint( nextNode.p );
+                    curve = cut.beforePoint;
+                }
+
+                path = curve.svgPath( path );
+                previousP = curve.pointAlongPathFraction(1);
+            }
             else
+            {
                 path = this.lineTo( path, n.p );
+                previousP = n.p;
+            }
         }
 
         var p = internalPathsGroup.append("path")
             .attr("d", path )
             .attr("fill", "none")
             .attr("stroke", "black")
-            .attr("class", internalPath.lineStyle )
+            //.attr("class", internalPath.lineStyle )
             .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+        if ( internalPath.lineStyle ) 
+        {
+            var dasharray = undefined;
+            switch( internalPath.lineStyle )
+            {
+                case "dotLine":        dasharray = "0.25 0.25"; break;
+                case "dashLine":       dasharray = "1 0.25"; break;
+                case "dashDotLine":    dasharray = "1 0.25 0.25 0.25"; break;
+                case "dashDotDotLine": dasharray = "1 0.25 0.25 0.25 0.25 0.25"; break;
+            }
+        
+            if ( dasharray )
+                p.attr("stroke-dasharray", dasharray );  
+        }
     }
 
 
@@ -4180,12 +4217,19 @@ class Piece {
                 x = ( bounds.minX + bounds.maxX ) / 2;
                 y = ( bounds.minY + bounds.maxY ) / 2;
                 align = "middle";
+                y = y + (panel.dataItem.length * fontSize * lineSpacing / 2)
             }
 
+            if ( align === "middle" )
+                y -= panel.dataItem.length * fontSize * lineSpacing / 2;
+            else if ( align === "bottom" )
+                y -= panel.dataItem.length * fontSize * lineSpacing;
 
-            var dataPanelGroup = g.append("g")
+            var dataPanelGroup = g.append("text")
                                   .attr("id","data panel:" + panel.letter )
-                                  .attr("transform", "translate(" + x + "," + y + ")" );
+                                  .attr("transform", "translate(" + x + "," + y + ")" )
+                                  //.attr("text-anchor", align ) //dominant-baseline="middle"
+                                  .attr("font-size", fontSize );
 
             for( var j in panel.dataItem )
             {
@@ -4233,11 +4277,12 @@ class Piece {
                 if ( text.includes( "%patternName%" ) )
                     text=text.replace( "%patternName%", this.patternPiece.pattern.patternData.name );
 
-                dataPanelGroup.append("text")
-                              .attr("x", 0 )
-                              .attr("y", j*lineSpacing*fontSize )
-                              .attr("text-anchor", align ) //dominant-baseline="middle"
-                              .attr("font-size", fontSize )
+                dataPanelGroup.append("tspan")
+                              .attr("x", "0" )
+                              .attr("dy", lineSpacing*fontSize )
+                              .attr("text-anchor", align )
+                              //textLength - specify a size and the text will scale? 
+                              //style="font-weight: bold;"
                               .text( text );
                 ;
             }
@@ -5155,11 +5200,13 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         var downloadFunction = function() {
             var serializer = new XMLSerializer();
-            var xmlString = serializer.serializeToString(d3.select('svg').node());
-            var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
+            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString(d3.select('svg').node());
+            //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
+            var imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
+            
 
             d3.select(this)
-                          .attr( "href-lang", "image/svg+xml" )
+                          .attr( "href-lang", "image/svg+xml; charset=utf-8" )
                           .attr( "href", imgData )
                           .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
         };

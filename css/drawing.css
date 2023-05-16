@@ -47,12 +47,6 @@ g.j-pieces path.dashDotLine {
     stroke-dasharray: 1, 0.25, 0.25, 0.25; 
 }
 
-g.j-drawing line.dashDotLine,
-g.j-drawing path.dashDotLine,
-g.j-pieces path.dashDotLine {
-    stroke-dasharray: 1, 0.25, 0.25, 0.25; 
-}
-
 g.j-drawing line.dashDotDotLine,
 g.j-drawing path.dashDotDotLine,
 g.j-pieces path.dashDotDotLine {
