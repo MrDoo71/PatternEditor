@@ -189,10 +189,10 @@ class DrawingObject /*abstract*/ {
                             .attr("class", this.getLineStyle() );    
                     }
                     else
-                        this.drawPath( g, this.arc.svgPath(), drawOptions );    
+                        this.drawPath( g, this.arc.svgPath(), drawingOptions );    
                 }
 
-                this.drawLabel(g, drawOptions);
+                this.drawLabel(g, drawingOptions);
         }            
     }
 
