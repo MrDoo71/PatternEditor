@@ -29,21 +29,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     //This is a graph initialisation
 
     var pattern = new Pattern( dataAndConfig, graphOptions );            
-    
-    // show menu on right-click.
-    var contextMenu = typeof goGraph === "function" ? function(d) {
-        if ( d.contextMenu )
-        {
-            d3.event.preventDefault() ;
-            var v = newkvpSet(false) ;
-            v.add("x", d.x) ;   
-            v.add("y", d.y) ;    
-            goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
-                    d3.event, 
-                    v ) ;
-        }
-    } : function(d){};     
-    
+        
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
@@ -62,6 +48,15 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( options.drawingTableSplit === undefined )
         options.drawingTableSplit = 0.66;
 
+    if ( options.skipDrawing === undefined )
+        options.skipDrawing = false;
+
+    if ( options.thumbnail === undefined )
+        options.thumbnail = false;
+
+    if ( options.interactive === undefined )
+        options.interactive = ! options.thumbnail;
+
     if ( options.lastMixedSplit === undefined )
         options.lastMixedSplit = options.drawingTableSplit > 0.0 && options.drawingTableSplit < 1.0 ? options.drawingTableSplit : 0.66;
 
@@ -71,6 +66,20 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                                 { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
 
     options.interactionPrefix = graphOptions.interactionPrefix;
+
+    // show menu on right-click.
+    var contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
+        if ( d.contextMenu )
+        {
+            d3.event.preventDefault() ;
+            var v = newkvpSet(false) ;
+            v.add("x", d.x) ;   
+            v.add("y", d.y) ;    
+            goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
+                    d3.event, 
+                    v ) ;
+        }
+    } : undefined; //function(d){};     
 
     options.layoutConfig = { drawingWidth: 400,
                              drawingHeight: 600,
@@ -117,8 +126,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( window.innerWidth - 30 -32 );//targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
-        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
+        var availableWidth = ( options.maxWidth ) ? options.maxWidth : Math.round( window.innerWidth - 30 -32 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
+        var availableHeight = ( options.maxHeight ) ? options.maxHeight : Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
         if ( this.fullWindow )
         {
             availableWidth -= 32; //left & right padding 
@@ -187,7 +196,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
-    var focusDrawingObject = function( d, scrollTable )
+    var focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
     {
         if (    ( d3.event) 
              && ( d3.event.originalTarget )
@@ -306,9 +315,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
-    var controls = doControls( targetdiv, options, pattern );
+    var controls;
+    if (( ! options.hideControls ) && ( options.interactive ))
+        controls = doControls( targetdiv, options, pattern );
 
-    var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
+    var drawingAndTableDiv = targetdiv.append("div");
+    
+    if ( ! options.thumbnail ) 
+        drawingAndTableDiv.attr("class", "pattern-main")
 
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
@@ -334,6 +348,27 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     doDrawingAndTable();                   
     
+    if ( options.returnSVG !== undefined )
+    {
+        var serializer = new XMLSerializer();
+        var xmlString = serializer.serializeToString(d3.select('svg').node());        
+        //console.log( xmlString );
+        var thisHash = CryptoJS.MD5( xmlString ).toString();
+        if ( options.currentSVGhash !== thisHash )
+        {
+            var kvpSet = newkvpSet(true) ;
+            kvpSet.add('svg', xmlString ) ;
+            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet) ;    
+        }
+        else
+        {
+            console.log("Current thumbnail is still valid.");
+        }
+    }
+
+    if ( ! options.interactive )
+        return;
+
     var errorFound = false;
     var firstDrawingObject;
     for( var j=0; j< pattern.patternPieces.length; j++ )
@@ -514,6 +549,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                      .on("click", downloadFunction );
     }    
 
+    if ( editorOptions.interactive )
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
@@ -630,44 +666,6 @@ function doControls( graphdiv, editorOptions, pattern )
         controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-camera-retro"></i>' ).attr("title","Wallpapers").on("click", wallpaperMenuToggle );
     } //wallpapers button    
 
-
-//     if ( pattern.wallpapers )
-//     {
-//         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
-// //HERE
-//         var wallpaperControlsGroupsDiv = controls.append("div").attr("class","wallpapers");
-//         wallpaperControlsGroupsDiv.append("div").attr("class","fadeout")
-//         var wallpaperControlsGroupsTable = wallpaperControlsGroupsDiv.append("table");
-//         wallpaperControlsGroupsTable.selectAll("tr")
-//             .data( pattern.wallpapers )
-//             .enter()
-//             .append("tr")
-//             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
-//             .each( function(wallpaper,i){                
-//                 var wallpaperDiv = d3.select(this);
-//                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
-//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-//                                                                       w.hide = ! w.hide; 
-//                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
-//                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
-//                                                                       w.updateServer();
-//                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
-//                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
-//                                                                      } );
-//                 wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
-//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-//                                                                       if ( w.allowEdit )
-//                                                                       {
-//                                                                         w.editable = ! w.editable; 
-//                                                                         d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
-//                                                                         var wallpaperGroups = graphdiv.select( "g.wallpapers");
-//                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
-//                                                                       }
-//                                                                      } );
-//                 wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
-//                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
-//             });
-//     }
     return controls;
 }
 
@@ -848,7 +846,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     }
      
     //Clicking on an object in the drawing should highlight it in the table.
-    var onclick = function(d) {
+    var onclick = ! editorOptions.interactive ? undefined : function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,true);
     };
@@ -857,51 +855,77 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         var patternPiece = pattern.patternPieces[j];
 
-        var skipDrawing = editorOptions.downloadOption;
+        var skipDrawing = editorOptions.skipDrawing;
 
         if ( ! skipDrawing )
         {
-            var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
+            var outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
             var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
-            var a = drawingGroup.selectAll("g");    
-            a = a.data( patternPiece.drawingObjects );
-            a.enter()
-            .append("g")
-            .on("contextmenu", contextMenu)
-            .on("click", onclick)
-            .each( function(d,i) {
-                var g = d3.select( this );                        
-                if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
-                try {
-                    d.draw( g );
-                    d.drawingSvg = g;                 
-                } catch ( e ) {
-                    d.error = "Drawing failed. " + e;
-                }
-            });
+            if ( editorOptions.interactive )
+            {
+                var a = drawingGroup.selectAll("g");    
+                a = a.data( patternPiece.drawingObjects );
+                a.enter()
+                .append("g")
+                .on("contextmenu", contextMenu)
+                .on("click", onclick)
+                .each( function(d,i) {
+                    var g = d3.select( this );                        
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    try {
+                        d.draw( g, { "outline": false, "label": (! editorOptions.hideLabels) } );
+                        d.drawingSvg = g;                 
+                    } catch ( e ) {
+                        d.error = "Drawing failed. " + e;
+                    }
+                });
+            }
+            else
+            {
+                //In order to have the minimum SVG then don't create a group for each drawing object. 
+                const drawingOptions = { "outline": false, 
+                                         "label": (! editorOptions.hideLabels) };
+                drawingGroup.selectAll("g")
+                    .data( patternPiece.drawingObjects )
+                    .enter()
+                    .each( function(d,i) {
+                    var g = d3.select( this );                        
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    try {
+                        d.draw( g, drawingOptions );
+                    } catch ( e ) {
+                        d.error = "Drawing failed. " + e;
+                    }
+                });
+            }
 
-            var a = outlineGroup.selectAll("g");    
-            a = a.data( patternPiece.drawingObjects );
-            a.enter()
-            .append("g")
-            .on("contextmenu", contextMenu)
-            .on("click", onclick)
-            .each( function(d,i) {
-                var g = d3.select( this );
-                if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
-                {
-                    d.draw( g, true );
-                    d.outlineSvg = g;
-                }
-            });
+            if ( outlineGroup )
+            {
+                var a = outlineGroup.selectAll("g");    
+                a = a.data( patternPiece.drawingObjects );
+                a.enter()
+                .append("g")
+                .on("contextmenu", contextMenu)
+                .on("click", onclick)
+                .each( function(d,i) {
+                    var g = d3.select( this );
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    {
+                        d.draw( g, { "outline": true, "label": false } );
+                        d.outlineSvg = g;
+                    }
+                });
+            }
         }
 
-        var pieceGroup   = transformGroup3.append("g").attr("class","j-pieces");
+        var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
 
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );

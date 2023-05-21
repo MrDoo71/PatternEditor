@@ -71,9 +71,9 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawArc( g, isOutline );        
-        //this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawArc( g, drawOptions );        
+        //this.drawLabel( g, drawOptions );
     }
 
 

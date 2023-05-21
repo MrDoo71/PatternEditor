@@ -16,10 +16,10 @@ class DrawingObject /*abstract*/ {
         this.contextMenu = data.contextMenu;
     }
 
-    drawLabel( g, isOutline ) {
+    drawLabel( g, drawingOptions ) {
 
-        if ( isOutline )
-            return; //it would be confusing to be able to click on text that you can't see to select something. 
+        if ( ! drawingOptions.label )
+            return;
 
         //g - the svg group we want to add the text to
         //o - the drawing object
@@ -104,7 +104,12 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawDot( g, isOutline ) {
+    drawDot( g, drawingOptions ) {
+
+        if ( ! drawingOptions.label )
+            return; 
+
+        const isOutline = drawingOptions.outline;
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
@@ -112,7 +117,10 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawLine( g, isOutline ) {
+    drawLine( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+        
         if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
@@ -129,8 +137,11 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawPath( g, path, isOutline ) {
-        if ( this.lineVisible() )//|| isOutline )
+    drawPath( g, path, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+
+        if ( this.lineVisible() )
         {
             var p = g.append("path")
                     .attr("d", path )
@@ -144,13 +155,18 @@ class DrawingObject /*abstract*/ {
     }    
 
 
-    drawCurve( g, isOutline ) {
-        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.curve )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+    drawCurve( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+
+        if ( ( this.lineVisible() ) && this.curve )
+            this.drawPath( g, this.curve.svgPath(), drawingOptions );
     }
 
 
-    drawArc( g, isOutline ) {
+    drawArc( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
         
         if ( ( this.lineVisible() /*|| isOutline*/ ) && this.arc )
         {
@@ -173,10 +189,10 @@ class DrawingObject /*abstract*/ {
                             .attr("class", this.getLineStyle() );    
                     }
                     else
-                        this.drawPath( g, this.arc.svgPath(), isOutline );    
+                        this.drawPath( g, this.arc.svgPath(), drawOptions );    
                 }
 
-                this.drawLabel(g, isOutline);
+                this.drawLabel(g, drawOptions);
         }            
     }
 
@@ -281,6 +297,7 @@ class DrawingObject /*abstract*/ {
 
         if ( options && options.targetPiece )
         {
+            //TODO get rid of this now that we have skipDrawing
             if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 
@@ -382,9 +399,9 @@ class ArcElliptical extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawArc( g, isOutline );        
-        //this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawArc( g, drawOptions );        
+        //this.drawLabel( g, drawOptions );
     }
 
 
@@ -461,10 +478,10 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
-        this.drawArc( g, isOutline );
-        this.drawLabel(g, isOutline);
+        this.drawArc( g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -516,10 +533,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //this.drawLine( g );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -575,9 +592,9 @@ class Line extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         
-        this.drawLine( g, isOutline );
+        this.drawLine( g, drawOptions );
         
         //TODO we could display the derived name Line_A1_A2 at the mid-point along the line?       
 
@@ -626,7 +643,7 @@ class OperationFlipByAxis extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -702,13 +719,13 @@ class OperationFlipByLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
         //this.drawLabel( g );
 
-        this.drawLine( g, isOutline );
+        this.drawLine( g, drawOptions );
     }
 
 
@@ -788,7 +805,7 @@ class OperationMove extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -912,25 +929,25 @@ class OperationResult extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
 
         //We might have operated on a point, spline (or presumably line)
 
         if (( this.p ) && ( ! this.curve ) && ( ! this.arc ))
-            this.drawDot( g, isOutline );
+            this.drawDot( g, drawOptions );
 
         if ( this.curve )
-            this.drawCurve( g, isOutline ); 
+            this.drawCurve( g, drawOptions ); 
 
         if ( this.arc )
-            this.drawArc( g, isOutline );             
+            this.drawArc( g, drawOptions );             
 
         if ( this.line )
-            this.drawLine( g, isOutline ); 
+            this.drawLine( g, drawOptions ); 
             
         if ( this.p )
-            this.drawLabel( g, isOutline );
+            this.drawLabel( g, drawOptions );
     }
 
 
@@ -980,7 +997,7 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );
@@ -1047,11 +1064,11 @@ class PerpendicularPointAlongLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1114,11 +1131,11 @@ class PointAlongBisector extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1177,10 +1194,10 @@ class PointAlongLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1240,11 +1257,11 @@ class PointAlongPerpendicular extends DrawingObject {
     }
 
 
-    draw( g , isOutline ) {
+    draw( g , drawOptions ) {
         //g is the svg group
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1301,9 +1318,9 @@ class PointCutArc extends DrawingObject {
     }
 
     
-    draw( g, isOutline ) {
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1351,9 +1368,9 @@ class PointCutSplinePath extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1407,10 +1424,10 @@ class PointEndLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1471,10 +1488,10 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
 
-    draw(g, isOutline ) {
-        this.drawLine(g, isOutline);
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawLine(g, drawOptions );
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -1540,10 +1557,10 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawLine(g, isOutline);
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawLine(g, drawOptions );
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -1595,10 +1612,10 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //TODO check that there is no option to draw a line as part of this tool. 
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1670,11 +1687,11 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
+    draw(g, drawOptions ) {
         //g is the svg group
-        this.drawLine(g, isOutline);
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+        this.drawLine(g, drawOptions );
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -1736,11 +1753,11 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         //TODO draw the line between basePoint and p
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -1839,9 +1856,9 @@ class PointIntersectArcs extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -1972,9 +1989,9 @@ class PointIntersectCircles extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2065,11 +2082,11 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
     
-    draw(g, isOutline) {
+    draw(g, drawOptions ) {
         //g is the svg group
-        this.drawLine(g, isOutline); 
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+        this.drawLine(g, drawOptions ); 
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2168,9 +2185,9 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2234,10 +2251,10 @@ class PointIntersectLineAndAxis extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw(g, drawOptions ) {
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -2299,9 +2316,9 @@ class PointLineIntersect extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2374,9 +2391,9 @@ class PointOfTriangle extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -2459,10 +2476,10 @@ class PointShoulder extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawLine( g, isOutline );
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+    draw( g, drawOptions ) {
+        this.drawLine( g, drawOptions );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -2505,9 +2522,9 @@ class PointSingle extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw( g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2582,12 +2599,12 @@ class SplinePathInteractive extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
-        this.drawCurve(g, isOutline);
+        this.drawCurve(g, drawOptions );
 
         //Where should we draw the label? half way along the curve? 
-        this.drawLabel(g, isOutline);
+        this.drawLabel(g, drawOptions );
     }
 
 
@@ -2701,12 +2718,12 @@ class SplinePathUsingPoints extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+            this.drawPath( g, this.curve.svgPath(), drawOptions );
 
         //Where should we draw the label? half way along the curve? 
-        this.drawLabel( g, isOutline );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -2823,12 +2840,12 @@ class SplineSimple extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+            this.drawPath( g, this.curve.svgPath(), drawOptions );
 
-        this.drawLabel( g, isOutline );
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -2910,14 +2927,14 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+            this.drawPath( g, this.curve.svgPath(), drawOptions );
 
         //Where should we draw the label? half way along the curve?
-        //this.drawDot(g, isOutline);
-        this.drawLabel( g, isOutline );
+        //this.drawDot(g, drawOptions);
+        this.drawLabel( g, drawOptions );
     }
 
 
@@ -3033,10 +3050,10 @@ class TrueDart extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawLine( g, isOutline ); //TEMP - though actually handy
-        this.drawDot( g, isOutline); //TEMP
-        this.drawLabel( g, isOutline ); //TEMP
+    draw( g, drawOptions ) {
+        this.drawLine( g, drawOptions ); //TEMP - though actually handy
+        this.drawDot( g, drawOptions ); //TEMP
+        this.drawLabel( g, drawOptions ); //TEMP
     }
 
 
@@ -3129,16 +3146,16 @@ class TrueDartResult extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         if ( this.p )
-            this.drawDot( g, isOutline );
+            this.drawDot( g, drawOptions );
 
         //if ( this.line )
-        //    this.drawLine( g, isOutline ); 
+        //    this.drawLine( g, drawOptions ); 
             
         if ( this.p )
-            this.drawLabel( g, isOutline );
+            this.drawLabel( g, drawOptions );
     }
 
 
@@ -4733,21 +4750,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     //This is a graph initialisation
 
     var pattern = new Pattern( dataAndConfig, graphOptions );            
-    
-    // show menu on right-click.
-    var contextMenu = typeof goGraph === "function" ? function(d) {
-        if ( d.contextMenu )
-        {
-            d3.event.preventDefault() ;
-            var v = newkvpSet(false) ;
-            v.add("x", d.x) ;   
-            v.add("y", d.y) ;    
-            goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
-                    d3.event, 
-                    v ) ;
-        }
-    } : function(d){};     
-    
+        
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
@@ -4766,6 +4769,15 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( options.drawingTableSplit === undefined )
         options.drawingTableSplit = 0.66;
 
+    if ( options.skipDrawing === undefined )
+        options.skipDrawing = false;
+
+    if ( options.thumbnail === undefined )
+        options.thumbnail = false;
+
+    if ( options.interactive === undefined )
+        options.interactive = ! options.thumbnail;
+
     if ( options.lastMixedSplit === undefined )
         options.lastMixedSplit = options.drawingTableSplit > 0.0 && options.drawingTableSplit < 1.0 ? options.drawingTableSplit : 0.66;
 
@@ -4775,6 +4787,20 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                                 { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
 
     options.interactionPrefix = graphOptions.interactionPrefix;
+
+    // show menu on right-click.
+    var contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
+        if ( d.contextMenu )
+        {
+            d3.event.preventDefault() ;
+            var v = newkvpSet(false) ;
+            v.add("x", d.x) ;   
+            v.add("y", d.y) ;    
+            goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
+                    d3.event, 
+                    v ) ;
+        }
+    } : undefined; //function(d){};     
 
     options.layoutConfig = { drawingWidth: 400,
                              drawingHeight: 600,
@@ -4821,8 +4847,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = Math.round( window.innerWidth - 30 -32 );//targetdiv.style('width').slice(0, -2) -30 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
-        var availableHeight= Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
+        var availableWidth = ( options.maxWidth ) ? options.maxWidth : Math.round( window.innerWidth - 30 -32 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
+        var availableHeight = ( options.maxHeight ) ? options.maxHeight : Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
         if ( this.fullWindow )
         {
             availableWidth -= 32; //left & right padding 
@@ -4891,7 +4917,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
-    var focusDrawingObject = function( d, scrollTable )
+    var focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
     {
         if (    ( d3.event) 
              && ( d3.event.originalTarget )
@@ -5010,9 +5036,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
-    var controls = doControls( targetdiv, options, pattern );
+    var controls;
+    if (( ! options.hideControls ) && ( options.interactive ))
+        controls = doControls( targetdiv, options, pattern );
 
-    var drawingAndTableDiv = targetdiv.append("div").attr("class", "pattern-main")
+    var drawingAndTableDiv = targetdiv.append("div");
+    
+    if ( ! options.thumbnail ) 
+        drawingAndTableDiv.attr("class", "pattern-main")
 
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
@@ -5038,6 +5069,27 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     doDrawingAndTable();                   
     
+    if ( options.returnSVG !== undefined )
+    {
+        var serializer = new XMLSerializer();
+        var xmlString = serializer.serializeToString(d3.select('svg').node());        
+        //console.log( xmlString );
+        var thisHash = CryptoJS.MD5( xmlString ).toString();
+        if ( options.currentSVGhash !== thisHash )
+        {
+            var kvpSet = newkvpSet(true) ;
+            kvpSet.add('svg', xmlString ) ;
+            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet) ;    
+        }
+        else
+        {
+            console.log("Current thumbnail is still valid.");
+        }
+    }
+
+    if ( ! options.interactive )
+        return;
+
     var errorFound = false;
     var firstDrawingObject;
     for( var j=0; j< pattern.patternPieces.length; j++ )
@@ -5218,6 +5270,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                      .on("click", downloadFunction );
     }    
 
+    if ( editorOptions.interactive )
     {
         var toggleShowFormulas = function() {
             d3.event.preventDefault();
@@ -5334,44 +5387,6 @@ function doControls( graphdiv, editorOptions, pattern )
         controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-camera-retro"></i>' ).attr("title","Wallpapers").on("click", wallpaperMenuToggle );
     } //wallpapers button    
 
-
-//     if ( pattern.wallpapers )
-//     {
-//         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
-// //HERE
-//         var wallpaperControlsGroupsDiv = controls.append("div").attr("class","wallpapers");
-//         wallpaperControlsGroupsDiv.append("div").attr("class","fadeout")
-//         var wallpaperControlsGroupsTable = wallpaperControlsGroupsDiv.append("table");
-//         wallpaperControlsGroupsTable.selectAll("tr")
-//             .data( pattern.wallpapers )
-//             .enter()
-//             .append("tr")
-//             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
-//             .each( function(wallpaper,i){                
-//                 var wallpaperDiv = d3.select(this);
-//                 wallpaperDiv.append( "td" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
-//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-//                                                                       w.hide = ! w.hide; 
-//                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
-//                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
-//                                                                       w.updateServer();
-//                                                                       var wallpaperGroups = graphdiv.select( "g.wallpapers");
-//                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
-//                                                                      } );
-//                 wallpaperDiv.append( "td" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
-//                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
-//                                                                       if ( w.allowEdit )
-//                                                                       {
-//                                                                         w.editable = ! w.editable; 
-//                                                                         d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
-//                                                                         var wallpaperGroups = graphdiv.select( "g.wallpapers");
-//                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
-//                                                                       }
-//                                                                      } );
-//                 wallpaperDiv.append( "td" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
-//                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
-//             });
-//     }
     return controls;
 }
 
@@ -5552,7 +5567,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     }
      
     //Clicking on an object in the drawing should highlight it in the table.
-    var onclick = function(d) {
+    var onclick = ! editorOptions.interactive ? undefined : function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,true);
     };
@@ -5561,51 +5576,77 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         var patternPiece = pattern.patternPieces[j];
 
-        var skipDrawing = editorOptions.downloadOption;
+        var skipDrawing = editorOptions.skipDrawing;
 
         if ( ! skipDrawing )
         {
-            var outlineGroup = transformGroup3.append("g").attr("class","j-outline");
+            var outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
             var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
-            var a = drawingGroup.selectAll("g");    
-            a = a.data( patternPiece.drawingObjects );
-            a.enter()
-            .append("g")
-            .on("contextmenu", contextMenu)
-            .on("click", onclick)
-            .each( function(d,i) {
-                var g = d3.select( this );                        
-                if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
-                try {
-                    d.draw( g );
-                    d.drawingSvg = g;                 
-                } catch ( e ) {
-                    d.error = "Drawing failed. " + e;
-                }
-            });
+            if ( editorOptions.interactive )
+            {
+                var a = drawingGroup.selectAll("g");    
+                a = a.data( patternPiece.drawingObjects );
+                a.enter()
+                .append("g")
+                .on("contextmenu", contextMenu)
+                .on("click", onclick)
+                .each( function(d,i) {
+                    var g = d3.select( this );                        
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    try {
+                        d.draw( g, { "outline": false, "label": (! editorOptions.hideLabels) } );
+                        d.drawingSvg = g;                 
+                    } catch ( e ) {
+                        d.error = "Drawing failed. " + e;
+                    }
+                });
+            }
+            else
+            {
+                //In order to have the minimum SVG then don't create a group for each drawing object. 
+                const drawingOptions = { "outline": false, 
+                                         "label": (! editorOptions.hideLabels) };
+                drawingGroup.selectAll("g")
+                    .data( patternPiece.drawingObjects )
+                    .enter()
+                    .each( function(d,i) {
+                    var g = d3.select( this );                        
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    try {
+                        d.draw( g, drawingOptions );
+                    } catch ( e ) {
+                        d.error = "Drawing failed. " + e;
+                    }
+                });
+            }
 
-            var a = outlineGroup.selectAll("g");    
-            a = a.data( patternPiece.drawingObjects );
-            a.enter()
-            .append("g")
-            .on("contextmenu", contextMenu)
-            .on("click", onclick)
-            .each( function(d,i) {
-                var g = d3.select( this );
-                if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
-                {
-                    d.draw( g, true );
-                    d.outlineSvg = g;
-                }
-            });
+            if ( outlineGroup )
+            {
+                var a = outlineGroup.selectAll("g");    
+                a = a.data( patternPiece.drawingObjects );
+                a.enter()
+                .append("g")
+                .on("contextmenu", contextMenu)
+                .on("click", onclick)
+                .each( function(d,i) {
+                    var g = d3.select( this );
+                    if (   ( typeof d.draw === "function" ) 
+                        && ( ! d.error )
+                        && ( d.isVisible( editorOptions ) ) )
+                    {
+                        d.draw( g, { "outline": true, "label": false } );
+                        d.outlineSvg = g;
+                    }
+                });
+            }
         }
 
-        var pieceGroup   = transformGroup3.append("g").attr("class","j-pieces");
+        var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
 
         var pg = pieceGroup.selectAll("g");    
         pg = pg.data( patternPiece.pieces );

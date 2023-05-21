@@ -29,10 +29,10 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //TODO check that there is no option to draw a line as part of this tool. 
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 

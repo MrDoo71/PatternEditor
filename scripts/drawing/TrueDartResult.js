@@ -65,16 +65,16 @@ class TrueDartResult extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         if ( this.p )
-            this.drawDot( g, isOutline );
+            this.drawDot( g, drawOptions );
 
         //if ( this.line )
-        //    this.drawLine( g, isOutline ); 
+        //    this.drawLine( g, drawOptions ); 
             
         if ( this.p )
-            this.drawLabel( g, isOutline );
+            this.drawLabel( g, drawOptions );
     }
 
 

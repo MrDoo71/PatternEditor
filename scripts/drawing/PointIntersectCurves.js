@@ -76,9 +76,9 @@ class PointIntersectCurves extends DrawingObject {
     }
 
 
-    draw(g, isOutline) {
-        this.drawDot(g, isOutline);
-        this.drawLabel(g, isOutline);
+    draw(g, drawOptions ) {
+        this.drawDot(g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 

@@ -87,10 +87,10 @@ class TrueDart extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
-        this.drawLine( g, isOutline ); //TEMP - though actually handy
-        this.drawDot( g, isOutline); //TEMP
-        this.drawLabel( g, isOutline ); //TEMP
+    draw( g, drawOptions ) {
+        this.drawLine( g, drawOptions ); //TEMP - though actually handy
+        this.drawDot( g, drawOptions ); //TEMP
+        this.drawLabel( g, drawOptions ); //TEMP
     }
 
 

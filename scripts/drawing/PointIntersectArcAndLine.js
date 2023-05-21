@@ -39,11 +39,11 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         //TODO draw the line between basePoint and p
-        this.drawDot( g, isOutline );
-        this.drawLabel( g, isOutline );
+        this.drawDot( g, drawOptions );
+        this.drawLabel( g, drawOptions );
     }
 
 

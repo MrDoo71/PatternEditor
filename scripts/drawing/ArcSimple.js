@@ -50,10 +50,10 @@ class ArcSimple extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
-        this.drawArc( g, isOutline );
-        this.drawLabel(g, isOutline);
+        this.drawArc( g, drawOptions );
+        this.drawLabel(g, drawOptions );
     }
 
 

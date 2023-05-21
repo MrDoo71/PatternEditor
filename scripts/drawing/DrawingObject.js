@@ -16,10 +16,10 @@ class DrawingObject /*abstract*/ {
         this.contextMenu = data.contextMenu;
     }
 
-    drawLabel( g, isOutline ) {
+    drawLabel( g, drawingOptions ) {
 
-        if ( isOutline )
-            return; //it would be confusing to be able to click on text that you can't see to select something. 
+        if ( ! drawingOptions.label )
+            return;
 
         //g - the svg group we want to add the text to
         //o - the drawing object
@@ -104,7 +104,12 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawDot( g, isOutline ) {
+    drawDot( g, drawingOptions ) {
+
+        if ( ! drawingOptions.label )
+            return; 
+
+        const isOutline = drawingOptions.outline;
         g.append("circle")
             .attr("cx", this.p.x)
             .attr("cy", this.p.y)
@@ -112,7 +117,10 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawLine( g, isOutline ) {
+    drawLine( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+        
         if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
@@ -129,8 +137,11 @@ class DrawingObject /*abstract*/ {
     }
 
 
-    drawPath( g, path, isOutline ) {
-        if ( this.lineVisible() )//|| isOutline )
+    drawPath( g, path, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+
+        if ( this.lineVisible() )
         {
             var p = g.append("path")
                     .attr("d", path )
@@ -144,13 +155,18 @@ class DrawingObject /*abstract*/ {
     }    
 
 
-    drawCurve( g, isOutline ) {
-        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.curve )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+    drawCurve( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
+
+        if ( ( this.lineVisible() ) && this.curve )
+            this.drawPath( g, this.curve.svgPath(), drawingOptions );
     }
 
 
-    drawArc( g, isOutline ) {
+    drawArc( g, drawingOptions ) {
+
+        const isOutline = drawingOptions.outline;
         
         if ( ( this.lineVisible() /*|| isOutline*/ ) && this.arc )
         {
@@ -173,10 +189,10 @@ class DrawingObject /*abstract*/ {
                             .attr("class", this.getLineStyle() );    
                     }
                     else
-                        this.drawPath( g, this.arc.svgPath(), isOutline );    
+                        this.drawPath( g, this.arc.svgPath(), drawOptions );    
                 }
 
-                this.drawLabel(g, isOutline);
+                this.drawLabel(g, drawOptions);
         }            
     }
 
@@ -281,6 +297,7 @@ class DrawingObject /*abstract*/ {
 
         if ( options && options.targetPiece )
         {
+            //TODO get rid of this now that we have skipDrawing
             if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 

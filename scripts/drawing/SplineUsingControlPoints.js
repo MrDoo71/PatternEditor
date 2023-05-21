@@ -49,14 +49,14 @@ class SplineUsingControlPoints extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
 
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+            this.drawPath( g, this.curve.svgPath(), drawOptions );
 
         //Where should we draw the label? half way along the curve?
-        //this.drawDot(g, isOutline);
-        this.drawLabel( g, isOutline );
+        //this.drawDot(g, drawOptions);
+        this.drawLabel( g, drawOptions );
     }
 
 

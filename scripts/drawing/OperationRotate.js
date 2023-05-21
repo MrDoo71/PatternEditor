@@ -30,7 +30,7 @@ class OperationRotate extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         //this.drawLine( g ); //TODO put an arrow head on this!
         //this.drawDot( g );

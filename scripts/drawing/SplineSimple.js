@@ -64,12 +64,12 @@ class SplineSimple extends DrawingObject {
     }
 
 
-    draw( g, isOutline ) {
+    draw( g, drawOptions ) {
         
         if ( this.lineVisible() )
-            this.drawPath( g, this.curve.svgPath(), isOutline );
+            this.drawPath( g, this.curve.svgPath(), drawOptions );
 
-        this.drawLabel( g, isOutline );
+        this.drawLabel( g, drawOptions );
     }
 
 
