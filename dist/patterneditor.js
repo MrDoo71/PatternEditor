@@ -106,7 +106,7 @@ class DrawingObject /*abstract*/ {
 
     drawDot( g, drawingOptions ) {
 
-        if ( ! drawingOptions.label )
+        if ( ! drawingOptions.dot )
             return; 
 
         const isOutline = drawingOptions.outline;
@@ -3187,7 +3187,7 @@ class Pattern {
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
-        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber : "" ) + this.patternData.name;
+        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber + " ": "" ) + this.patternData.name;
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
 
@@ -3299,10 +3299,9 @@ class Pattern {
         {
             for( var i in this.variable )
             {
-                var inc = this.variable[i];
-                if ( inc.expression ) 
-                    inc.expression.addDependencies( inc, this.dependencies );
-                    //this.dependencies.add( inc, inc.expression );
+                var v = this.variable[i];
+                if ( v.expression ) 
+                    v.expression.addDependencies( v, this.dependencies );
             }
         }    
     
@@ -3350,6 +3349,13 @@ class Pattern {
     }
 
 
+    getDate() {
+        const t = new Date();
+        const date = ('0' + t.getDate()).slice(-2);
+        const month = ('0' + (t.getMonth() + 1)).slice(-2);
+        const year = t.getFullYear();
+        return `${year}-${month}-${date}`;
+    }
 }
 //(c) Copyright 2023 Jason Dore
 //https://github.com/MrDoo71/PatternEditor
@@ -3391,6 +3397,7 @@ class Piece {
         //this.update = data.update;
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
+        this.calculated = false;
 
         if (( ! this.detailNodes ) || ( this.detailNodes.length === 0))
         {
@@ -3465,7 +3472,7 @@ class Piece {
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value();
 
-        this.calculate();
+        //this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
         {
@@ -3477,6 +3484,7 @@ class Piece {
 
     calculate()
     {
+        this.calculated = true;
         console.log("*********");
         console.log("Prepare piece: " + this.name );
         var nObj;
@@ -4052,12 +4060,15 @@ class Piece {
 
     drawSeamLine( g ) 
     {
+        if ( ! this.calculated )
+            this.calculate();
+
         console.log("Time to draw seam line: ", this.name );
 
         var p = g.append("path")
                  .attr("id","seam line - " + this.name )
                  .attr("d", this.svgPath( false ) )
-                 .attr("fill", "none")
+                 .attr("fill", this.fillColour ? this.fillColour : "none" )
                  .attr("stroke", "#929292") //stroke="#929292" stroke-width="1.421" stroke-dasharray="28.426,2.843"
                  .attr("stroke-dasharray", "2,0.2" )
                  .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale
@@ -4066,6 +4077,9 @@ class Piece {
 
     drawSeamAllowance( g ) 
     {
+        if ( ! this.calculated )
+            this.calculate();
+
         console.log("Time to draw seam allowance: ", this.name );
 
         var p = g.append("path")
@@ -4081,6 +4095,9 @@ class Piece {
     {
         if ( ! this.detailNodes )
             return;
+
+        if ( ! this.calculated )
+            this.calculate();
 
         var notches = g.append("g").attr("id","notches");
         console.log("*********");
@@ -4254,13 +4271,7 @@ class Piece {
                 var text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
-                {
-                    const t = new Date();
-                    const date = ('0' + t.getDate()).slice(-2);
-                    const month = ('0' + (t.getMonth() + 1)).slice(-2);
-                    const year = t.getFullYear();
-                    text = text.replace("%date%", `${year}-${month}-${date}` );
-                }
+                    text = text.replace("%date%", this.patternPiece.pattern.getDate() );
 
                 if ( text.includes( "%pLetter%" ) )
                     text=text.replace( "%pLetter%", panel.letter );
@@ -4321,7 +4332,7 @@ class Piece {
     getStrokeWidth( isOutline, isSelected )
     {
         if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.convertMMtoPatternUnits(0.7); //0.7mm equiv
+            return this.convertMMtoPatternUnits(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
@@ -4403,6 +4414,9 @@ class Piece {
     {
         if ( ! this.detailNodes )
             return;
+
+        if ( ! this.calculated )
+            this.calculate();
 
         var mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         var my = includeOffset && this.data.my ? this.data.my : 0.0;
@@ -4488,6 +4502,7 @@ class PatternDrawing {
         if ( this.data.piece )
             for (var a = 0; a < this.data.piece.length; a++) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
+                //potentially, if options.skipPieces then don't work out the paths for the seam allowance
             }
 
         var options = this.pattern.data.options; 
@@ -4497,14 +4512,14 @@ class PatternDrawing {
         }
         else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
         {
-            for (var a = 0; a < this.data.piece.length; a++) {
+            for (var a = 0; a < this.pieces.length; a++) {
                 this.pieces[a].adjustBounds( this.visibleBounds, true );
             }
         }
         else
         {
             //This ensures the seam allowance is included in the bounds
-            if ( this.data.piece )
+            if (( this.data.piece ) && ( ! options.skipPieces ))
                 for (var a = 0; a < this.data.piece.length; a++) {
                     this.pieces[a].adjustBounds( this.visibleBounds  );
                 }
@@ -4749,16 +4764,29 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     //This is a graph initialisation
 
-    var pattern = new Pattern( dataAndConfig, graphOptions );            
-        
-    var targetdiv = d3.select( "#" + ptarget )
-                       .append( "div" )
-                       .attr( "class", "pattern-editor" );
-
     if ( ! dataAndConfig.options )
         dataAndConfig.options = {};
 
     var options = dataAndConfig.options;
+
+    var targetdiv = d3.select( "#" + ptarget )
+                       .append( "div" )
+                       .attr( "class", "pattern-editor" );
+
+    var pattern;
+    try {
+        pattern = new Pattern( dataAndConfig, graphOptions );            
+    } catch ( e ) {
+        if ( ! options.thumbnail )
+            targetdiv.append("div")
+                .attr( "class", "alert alert-warning" )
+                .text( "Pattern draw failed.");
+
+        console.log("Failed to load pattern: ", e );
+        
+        return;
+    }
+        
 
     if ( options.allowPanAndZoom === undefined )
         options.allowPanAndZoom = true;
@@ -4771,6 +4799,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     if ( options.skipDrawing === undefined )
         options.skipDrawing = false;
+
+    if ( options.skipPieces === undefined )
+        options.skipPieces = false;
 
     if ( options.thumbnail === undefined )
         options.thumbnail = false;
@@ -5072,14 +5103,16 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( options.returnSVG !== undefined )
     {
         var serializer = new XMLSerializer();
-        var xmlString = serializer.serializeToString(d3.select('svg').node());        
+        //graphdiv.select("svg.pattern-drawing")
+        var xmlString = serializer.serializeToString( targetdiv.select('svg.pattern-drawing').node());        
         //console.log( xmlString );
         var thisHash = CryptoJS.MD5( xmlString ).toString();
-        if ( options.currentSVGhash !== thisHash )
+        if (( options.currentSVGhash !== thisHash ) && ( options.returnID ))
         {
-            var kvpSet = newkvpSet(true) ;
-            kvpSet.add('svg', xmlString ) ;
-            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet) ;    
+            var kvpSet = newkvpSet(true);
+            kvpSet.add( 'svg', xmlString );
+            kvpSet.add( 'id', options.returnID ) ;
+            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
         }
         else
         {
@@ -5252,7 +5285,7 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         var downloadFunction = function() {
             var serializer = new XMLSerializer();
-            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString(d3.select('svg').node());
+            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
             //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
             var imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
             
@@ -5260,7 +5293,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml; charset=utf-8" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + " " + pattern.getDate() + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -5491,7 +5524,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     var svg;
     
-    if ( editorOptions.lifeSize )
+    if ( editorOptions.lifeSize )// || ( editorOptions.thumbnail ))
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
@@ -5499,9 +5532,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", patternWidth + pattern.units )
-                      .attr("height", patternHeight + pattern.units )
                       .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
+
+        if ( editorOptions.lifeSize )
+        {
+            svg.attr("width", patternWidth + pattern.units )
+               .attr("height", patternHeight + pattern.units );
+        }                      
     }
     else
     {
@@ -5509,6 +5546,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                        .attr("class", "pattern-drawing" )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
+
+        if ( editorOptions.thumbnail )
+            svg.attr("viewBox", 0 + " " + 0 + " " + (width + ( 2 * margin )) + " " + (height + ( 2 * margin )) );
     }
 
     var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
@@ -5520,7 +5560,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     //pixels available. So 10cm in a 500px drawing has a scale of 50. 
     var transformGroup2;
 
-    if ( editorOptions.lifeSize )
+    if ( editorOptions.lifeSize )// || ( editorOptions.thumbnail ))
     {
         scale = 1;
         transformGroup2 = transformGroup1; //we don't need another group
@@ -5585,6 +5625,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
             if ( editorOptions.interactive )
             {
+                const drawingOptions = { "outline": false, 
+                                         "label": (! editorOptions.hideLabels),
+                                         "dot":  (! editorOptions.hideLabels) };
                 var a = drawingGroup.selectAll("g");    
                 a = a.data( patternPiece.drawingObjects );
                 a.enter()
@@ -5597,18 +5640,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                         && ( ! d.error )
                         && ( d.isVisible( editorOptions ) ) )
                     try {
-                        d.draw( g, { "outline": false, "label": (! editorOptions.hideLabels) } );
+                        d.draw( g, drawingOptions );
                         d.drawingSvg = g;                 
                     } catch ( e ) {
                         d.error = "Drawing failed. " + e;
                     }
                 });
             }
-            else
+            else //thumbnail
             {
                 //In order to have the minimum SVG then don't create a group for each drawing object. 
                 const drawingOptions = { "outline": false, 
-                                         "label": (! editorOptions.hideLabels) };
+                                         "label": (! editorOptions.hideLabels),
+                                         "dot":  (! editorOptions.hideLabels) };
                 drawingGroup.selectAll("g")
                     .data( patternPiece.drawingObjects )
                     .enter()
@@ -5627,9 +5671,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
             if ( outlineGroup )
             {
-                var a = outlineGroup.selectAll("g");    
-                a = a.data( patternPiece.drawingObjects );
-                a.enter()
+                outlineGroup.selectAll("g") 
+                .data( patternPiece.drawingObjects )
+                .enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
@@ -5639,7 +5683,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                         && ( ! d.error )
                         && ( d.isVisible( editorOptions ) ) )
                     {
-                        d.draw( g, { "outline": true, "label": false } );
+                        d.draw( g, { "outline": true, "label": false, "dot":true } );
                         d.outlineSvg = g;
                     }
                 });
@@ -5648,32 +5692,41 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
         var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
 
-        var pg = pieceGroup.selectAll("g");    
-        pg = pg.data( patternPiece.pieces );
-        pg.enter()
-         .append("g")        
-         //.on("contextmenu", contextMenu)
-         //.on("click", onclick)
-         .each( function(p,i) {
-            var g = d3.select( this );
-            g.attr("id", p.name );
+        if ( ! editorOptions.skipPieces )
+        {
+            var pg = pieceGroup.selectAll("g");    
+            pg = pg.data( patternPiece.pieces );
+            pg.enter()
+            .append("g")        
+            //.on("contextmenu", contextMenu)
+            //.on("click", onclick)
+            .each( function(p,i) {
+                var g = d3.select( this );
+                g.attr("id", p.name );
 
-            //if doing an export of multiple pieces then take the piece.mx/my into account
-            if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
-            {
-                g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
-            }
+                //if doing an export of multiple pieces then take the piece.mx/my into account
+                if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
+                {
+                    g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+                }
 
-            if (   ( typeof p.drawSeamLine === "function" ) )
-            {
-                p.drawSeamLine( g );
-                p.drawSeamAllowance( g );
-                p.drawNotches( g );
-                p.drawInternalPaths( g );
-                p.drawMarkings( g );
-                p.svg = g;
-            }
-        });
+                if (   ( typeof p.drawSeamLine === "function" ) )
+                {
+                    if ( editorOptions.thumbnail )
+                        p.fillColour = "#e0e0e0";
+
+                    p.drawSeamLine( g );
+                    p.drawSeamAllowance( g );
+                    p.drawInternalPaths( g );
+                    if ( ! editorOptions.thumbnail )
+                    {
+                        p.drawNotches( g );
+                        p.drawMarkings( g );
+                    }
+                    p.svg = g;
+                }
+            });
+        }
     };
 
     var updateServerAfterDelay = function()

@@ -106,7 +106,7 @@ class DrawingObject /*abstract*/ {
 
     drawDot( g, drawingOptions ) {
 
-        if ( ! drawingOptions.label )
+        if ( ! drawingOptions.dot )
             return; 
 
         const isOutline = drawingOptions.outline;

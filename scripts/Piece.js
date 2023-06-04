@@ -13,6 +13,7 @@ class Piece {
         //this.update = data.update;
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
+        this.calculated = false;
 
         if (( ! this.detailNodes ) || ( this.detailNodes.length === 0))
         {
@@ -87,7 +88,7 @@ class Piece {
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value();
 
-        this.calculate();
+        //this.calculate();
 
         if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
         {
@@ -99,6 +100,7 @@ class Piece {
 
     calculate()
     {
+        this.calculated = true;
         console.log("*********");
         console.log("Prepare piece: " + this.name );
         var nObj;
@@ -674,12 +676,15 @@ class Piece {
 
     drawSeamLine( g ) 
     {
+        if ( ! this.calculated )
+            this.calculate();
+
         console.log("Time to draw seam line: ", this.name );
 
         var p = g.append("path")
                  .attr("id","seam line - " + this.name )
                  .attr("d", this.svgPath( false ) )
-                 .attr("fill", "none")
+                 .attr("fill", this.fillColour ? this.fillColour : "none" )
                  .attr("stroke", "#929292") //stroke="#929292" stroke-width="1.421" stroke-dasharray="28.426,2.843"
                  .attr("stroke-dasharray", "2,0.2" )
                  .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale
@@ -688,6 +693,9 @@ class Piece {
 
     drawSeamAllowance( g ) 
     {
+        if ( ! this.calculated )
+            this.calculate();
+
         console.log("Time to draw seam allowance: ", this.name );
 
         var p = g.append("path")
@@ -703,6 +711,9 @@ class Piece {
     {
         if ( ! this.detailNodes )
             return;
+
+        if ( ! this.calculated )
+            this.calculate();
 
         var notches = g.append("g").attr("id","notches");
         console.log("*********");
@@ -876,13 +887,7 @@ class Piece {
                 var text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
-                {
-                    const t = new Date();
-                    const date = ('0' + t.getDate()).slice(-2);
-                    const month = ('0' + (t.getMonth() + 1)).slice(-2);
-                    const year = t.getFullYear();
-                    text = text.replace("%date%", `${year}-${month}-${date}` );
-                }
+                    text = text.replace("%date%", this.patternPiece.pattern.getDate() );
 
                 if ( text.includes( "%pLetter%" ) )
                     text=text.replace( "%pLetter%", panel.letter );
@@ -943,7 +948,7 @@ class Piece {
     getStrokeWidth( isOutline, isSelected )
     {
         if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.convertMMtoPatternUnits(0.7); //0.7mm equiv
+            return this.convertMMtoPatternUnits(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
@@ -1025,6 +1030,9 @@ class Piece {
     {
         if ( ! this.detailNodes )
             return;
+
+        if ( ! this.calculated )
+            this.calculate();
 
         var mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         var my = includeOffset && this.data.my ? this.data.my : 0.0;

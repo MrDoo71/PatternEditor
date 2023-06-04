@@ -8,7 +8,8 @@ function drawPattern( dataAndConfig, ptarget, options )
 {
     console.log( "Calling moduleExports.drawPattern");
 
-    $( "div.k-bottom-main-buttons-wrapper" ).remove();
+    //This breaks forms, e.g. piece graph on a form, why did we need to do it? 
+    //$( "div.k-bottom-main-buttons-wrapper" ).remove();
 
     if ( $("body.k-dark-mode").length )
     {

@@ -11,7 +11,7 @@ class Pattern {
         this.measurement = {};
         this.units = this.patternData.units ? this.patternData.units : "cm";
         this.wallpapers = data.wallpaper;
-        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber : "" ) + this.patternData.name;
+        this.patternNumberAndName = ( this.patternData.patternNumber ? this.patternData.patternNumber + " ": "" ) + this.patternData.name;
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
 
@@ -123,10 +123,9 @@ class Pattern {
         {
             for( var i in this.variable )
             {
-                var inc = this.variable[i];
-                if ( inc.expression ) 
-                    inc.expression.addDependencies( inc, this.dependencies );
-                    //this.dependencies.add( inc, inc.expression );
+                var v = this.variable[i];
+                if ( v.expression ) 
+                    v.expression.addDependencies( v, this.dependencies );
             }
         }    
     
@@ -174,4 +173,11 @@ class Pattern {
     }
 
 
+    getDate() {
+        const t = new Date();
+        const date = ('0' + t.getDate()).slice(-2);
+        const month = ('0' + (t.getMonth() + 1)).slice(-2);
+        const year = t.getFullYear();
+        return `${year}-${month}-${date}`;
+    }
 }

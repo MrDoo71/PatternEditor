@@ -69,14 +69,14 @@ class PatternDrawing {
         }
         else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
         {
-            for (var a = 0; a < this.data.piece.length; a++) {
+            for (var a = 0; a < this.pieces.length; a++) {
                 this.pieces[a].adjustBounds( this.visibleBounds, true );
             }
         }
         else
         {
             //This ensures the seam allowance is included in the bounds
-            if ( this.data.piece )
+            if (( this.data.piece ) && ( ! options.skipPieces ))
                 for (var a = 0; a < this.data.piece.length; a++) {
                     this.pieces[a].adjustBounds( this.visibleBounds  );
                 }

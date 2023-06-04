@@ -17,7 +17,7 @@ div.mp-mini-pattern > button {
     text-align: left;
     width: 100%;
     position: relative;
-    height: 90px;
+    height: 200px;
 }
 
 div.mp-mini-pattern > button > div {
@@ -95,6 +95,10 @@ div.mp-mini-pattern-filename:hover {
 div.mp-mini-pattern-preview {
     font-size: 10px;
     margin-top: 8px;
+    height: 148px;
+    overflow: hidden;
+    position: absolute;
+    top: 30px;
 }
 
 div.mp-mini-pattern-tags {

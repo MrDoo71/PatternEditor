@@ -28,16 +28,29 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     //This is a graph initialisation
 
-    var pattern = new Pattern( dataAndConfig, graphOptions );            
-        
-    var targetdiv = d3.select( "#" + ptarget )
-                       .append( "div" )
-                       .attr( "class", "pattern-editor" );
-
     if ( ! dataAndConfig.options )
         dataAndConfig.options = {};
 
     var options = dataAndConfig.options;
+
+    var targetdiv = d3.select( "#" + ptarget )
+                       .append( "div" )
+                       .attr( "class", "pattern-editor" );
+
+    var pattern;
+    try {
+        pattern = new Pattern( dataAndConfig, graphOptions );            
+    } catch ( e ) {
+        if ( ! options.thumbnail )
+            targetdiv.append("div")
+                .attr( "class", "alert alert-warning" )
+                .text( "Pattern draw failed.");
+
+        console.log("Failed to load pattern: ", e );
+        
+        return;
+    }
+        
 
     if ( options.allowPanAndZoom === undefined )
         options.allowPanAndZoom = true;
@@ -50,6 +63,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     if ( options.skipDrawing === undefined )
         options.skipDrawing = false;
+
+    if ( options.skipPieces === undefined )
+        options.skipPieces = false;
 
     if ( options.thumbnail === undefined )
         options.thumbnail = false;
@@ -348,17 +364,17 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     doDrawingAndTable();                   
     
-    if ( options.returnSVG !== undefined )
+    if (( options.returnSVG !== undefined ) && ( options.returnID ))
     {
         var serializer = new XMLSerializer();
-        var xmlString = serializer.serializeToString(d3.select('svg').node());        
-        //console.log( xmlString );
+        var xmlString = serializer.serializeToString( targetdiv.select('svg.pattern-drawing').node());        
         var thisHash = CryptoJS.MD5( xmlString ).toString();
         if ( options.currentSVGhash !== thisHash )
         {
-            var kvpSet = newkvpSet(true) ;
-            kvpSet.add('svg', xmlString ) ;
-            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet) ;    
+            var kvpSet = newkvpSet(true);
+            kvpSet.add( 'svg', xmlString );
+            kvpSet.add( 'id', options.returnID ) ;
+            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
         }
         else
         {
@@ -531,7 +547,7 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         var downloadFunction = function() {
             var serializer = new XMLSerializer();
-            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString(d3.select('svg').node());
+            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
             //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
             var imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
             
@@ -539,7 +555,7 @@ function doControls( graphdiv, editorOptions, pattern )
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml; charset=utf-8" )
                           .attr( "href", imgData )
-                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + ".svg" );
+                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + " " + pattern.getDate() + ".svg" );
         };
 
         var downloadLink = controls.append("a")
@@ -778,9 +794,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("width", patternWidth + pattern.units )
-                      .attr("height", patternHeight + pattern.units )
                       .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
+
+        if ( editorOptions.lifeSize )
+        {
+            svg.attr("width", patternWidth + pattern.units )
+               .attr("height", patternHeight + pattern.units );
+        }                      
     }
     else
     {
@@ -788,6 +808,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                        .attr("class", "pattern-drawing" )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
+
+        if ( editorOptions.thumbnail )
+            svg.attr("viewBox", 0 + " " + 0 + " " + (width + ( 2 * margin )) + " " + (height + ( 2 * margin )) );
     }
 
     var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
@@ -799,7 +822,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     //pixels available. So 10cm in a 500px drawing has a scale of 50. 
     var transformGroup2;
 
-    if ( editorOptions.lifeSize )
+    if ( editorOptions.lifeSize )// || ( editorOptions.thumbnail ))
     {
         scale = 1;
         transformGroup2 = transformGroup1; //we don't need another group
@@ -864,6 +887,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
             if ( editorOptions.interactive )
             {
+                const drawingOptions = { "outline": false, 
+                                         "label": (! editorOptions.hideLabels),
+                                         "dot":  (! editorOptions.hideLabels) };
                 var a = drawingGroup.selectAll("g");    
                 a = a.data( patternPiece.drawingObjects );
                 a.enter()
@@ -876,18 +902,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                         && ( ! d.error )
                         && ( d.isVisible( editorOptions ) ) )
                     try {
-                        d.draw( g, { "outline": false, "label": (! editorOptions.hideLabels) } );
+                        d.draw( g, drawingOptions );
                         d.drawingSvg = g;                 
                     } catch ( e ) {
                         d.error = "Drawing failed. " + e;
                     }
                 });
             }
-            else
+            else //thumbnail
             {
                 //In order to have the minimum SVG then don't create a group for each drawing object. 
                 const drawingOptions = { "outline": false, 
-                                         "label": (! editorOptions.hideLabels) };
+                                         "label": (! editorOptions.hideLabels),
+                                         "dot":  (! editorOptions.hideLabels) };
                 drawingGroup.selectAll("g")
                     .data( patternPiece.drawingObjects )
                     .enter()
@@ -906,9 +933,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
             if ( outlineGroup )
             {
-                var a = outlineGroup.selectAll("g");    
-                a = a.data( patternPiece.drawingObjects );
-                a.enter()
+                outlineGroup.selectAll("g") 
+                .data( patternPiece.drawingObjects )
+                .enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
@@ -918,7 +945,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                         && ( ! d.error )
                         && ( d.isVisible( editorOptions ) ) )
                     {
-                        d.draw( g, { "outline": true, "label": false } );
+                        d.draw( g, { "outline": true, "label": false, "dot":true } );
                         d.outlineSvg = g;
                     }
                 });
@@ -927,32 +954,41 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
         var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
 
-        var pg = pieceGroup.selectAll("g");    
-        pg = pg.data( patternPiece.pieces );
-        pg.enter()
-         .append("g")        
-         //.on("contextmenu", contextMenu)
-         //.on("click", onclick)
-         .each( function(p,i) {
-            var g = d3.select( this );
-            g.attr("id", p.name );
+        if ( ! editorOptions.skipPieces )
+        {
+            var pg = pieceGroup.selectAll("g");    
+            pg = pg.data( patternPiece.pieces );
+            pg.enter()
+            .append("g")        
+            //.on("contextmenu", contextMenu)
+            //.on("click", onclick)
+            .each( function(p,i) {
+                var g = d3.select( this );
+                g.attr("id", p.name );
 
-            //if doing an export of multiple pieces then take the piece.mx/my into account
-            if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
-            {
-                g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
-            }
+                //if doing an export of multiple pieces then take the piece.mx/my into account
+                if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
+                {
+                    g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+                }
 
-            if (   ( typeof p.drawSeamLine === "function" ) )
-            {
-                p.drawSeamLine( g );
-                p.drawSeamAllowance( g );
-                p.drawNotches( g );
-                p.drawInternalPaths( g );
-                p.drawMarkings( g );
-                p.svg = g;
-            }
-        });
+                if (   ( typeof p.drawSeamLine === "function" ) )
+                {
+                    if ( editorOptions.thumbnail )
+                        p.fillColour = "#e0e0e0";
+
+                    p.drawSeamLine( g );
+                    p.drawSeamAllowance( g );
+                    p.drawInternalPaths( g );
+                    if ( ! editorOptions.thumbnail )
+                    {
+                        p.drawNotches( g );
+                        p.drawMarkings( g );
+                    }
+                    p.svg = g;
+                }
+            });
+        }
     };
 
     var updateServerAfterDelay = function()
