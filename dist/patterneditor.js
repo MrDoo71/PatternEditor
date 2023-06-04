@@ -4502,7 +4502,6 @@ class PatternDrawing {
         if ( this.data.piece )
             for (var a = 0; a < this.data.piece.length; a++) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
-                //potentially, if options.skipPieces then don't work out the paths for the seam allowance
             }
 
         var options = this.pattern.data.options; 
@@ -5100,14 +5099,12 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     doDrawingAndTable();                   
     
-    if ( options.returnSVG !== undefined )
+    if (( options.returnSVG !== undefined ) && ( options.returnID ))
     {
         var serializer = new XMLSerializer();
-        //graphdiv.select("svg.pattern-drawing")
         var xmlString = serializer.serializeToString( targetdiv.select('svg.pattern-drawing').node());        
-        //console.log( xmlString );
         var thisHash = CryptoJS.MD5( xmlString ).toString();
-        if (( options.currentSVGhash !== thisHash ) && ( options.returnID ))
+        if ( options.currentSVGhash !== thisHash )
         {
             var kvpSet = newkvpSet(true);
             kvpSet.add( 'svg', xmlString );
@@ -5524,7 +5521,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     var svg;
     
-    if ( editorOptions.lifeSize )// || ( editorOptions.thumbnail ))
+    if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
         var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
