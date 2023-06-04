@@ -33,6 +33,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     var options = dataAndConfig.options;
 
+    options.interactionPrefix = graphOptions.interactionPrefix;
+
     var targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
@@ -47,6 +49,17 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 .text( "Pattern draw failed.");
 
         console.log("Failed to load pattern: ", e );
+
+        try {
+            if (( options.returnSVG !== undefined ) && ( options.returnID ))
+            {
+                var kvpSet = newkvpSet(true);
+                kvpSet.add( 'svg', 'FAIL:' + e.message );
+                kvpSet.add( 'id', options.returnID ) ;
+                goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
+            }
+        } catch ( f ) {
+        }
         
         return;
     }
@@ -80,8 +93,6 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         options.viewOption = [  { "mode":"drawing", "icon": "icon-picture",       "drawingTableSplit": 1.0 },
                                 { "mode":"mixed",   "icon": "icon-columns",       "drawingTableSplit": 0.5 },
                                 { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
-
-    options.interactionPrefix = graphOptions.interactionPrefix;
 
     // show menu on right-click.
     var contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
