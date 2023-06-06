@@ -4058,7 +4058,7 @@ class Piece {
     }
 
 
-    drawSeamLine( g ) 
+    drawSeamLine( g, useExportStyles ) 
     {
         if ( ! this.calculated )
             this.calculate();
@@ -4067,15 +4067,18 @@ class Piece {
 
         var p = g.append("path")
                  .attr("id","seam line - " + this.name )
+                 .attr("class", "seamline" )
                  .attr("d", this.svgPath( false ) )
-                 .attr("fill", this.fillColour ? this.fillColour : "none" )
-                 .attr("stroke", "#929292") //stroke="#929292" stroke-width="1.421" stroke-dasharray="28.426,2.843"
                  .attr("stroke-dasharray", "2,0.2" )
-                 .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale
+                 .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale;
+
+        if ( useExportStyles )
+            p.attr("fill", "none" )
+             .attr("stroke", "#929292");
     }
 
 
-    drawSeamAllowance( g ) 
+    drawSeamAllowance( g, useExportStyles ) 
     {
         if ( ! this.calculated )
             this.calculate();
@@ -4084,14 +4087,17 @@ class Piece {
 
         var p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
+                 .attr("class", "seamallowance" )
                  .attr("d", this.svgPath( true ) )
-                 .attr("fill", "none")
-                 .attr("stroke", "black")
                  .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
+
+        if ( useExportStyles )
+            p.attr("fill", "none")
+             .attr("stroke", "black");
     } 
 
 
-    drawNotches( g )
+    drawNotches( g, useExportStyles  )
     {
         if ( ! this.detailNodes )
             return;
@@ -4122,9 +4128,12 @@ class Piece {
                 //TODO should we connect these D3 data-wise to the notches
                 var p = notches.append("path")
                     .attr("d", path )
-                    .attr("fill", "none")
-                    .attr("stroke", "black")
+                    .attr("class", "notch" )
                     .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+                if ( useExportStyles )
+                    p.attr("fill", "none")
+                     .attr("stroke", "black");
             }
             else
                 console.log("******** Node " + n.obj + " has no pointEndSA");
@@ -4132,20 +4141,22 @@ class Piece {
     }    
 
 
-    drawInternalPaths( g )
+    drawInternalPaths( g, useExportStyles  )
     {
-        var internalPathsGroup = g.append("g").attr("id","internal paths");        
+        var internalPathsGroup = g.append("g")
+                                  .attr("id","internal paths");        
         var strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
+
         if ( this.internalPaths )
             this.internalPaths.forEach( 
                 function(ip) { 
                     if ( ip.nodes )
-                        this.drawInternalPath( internalPathsGroup, ip, strokeWidth );
+                        this.drawInternalPath( internalPathsGroup, ip, strokeWidth, useExportStyles );
                 }, this );   
     }
 
 
-    drawInternalPath( internalPathsGroup, internalPath, strokeWidth )
+    drawInternalPath( internalPathsGroup, internalPath, strokeWidth, useExportStyles )
     {
         var path = undefined;
 
@@ -4188,10 +4199,13 @@ class Piece {
 
         var p = internalPathsGroup.append("path")
             .attr("d", path )
+            .attr("class", "internalpath" )
             .attr("fill", "none")
-            .attr("stroke", "black")
             //.attr("class", internalPath.lineStyle )
             .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+        if ( useExportStyles )
+            p.attr("stroke", "black");
 
         if ( internalPath.lineStyle ) 
         {
@@ -4210,7 +4224,7 @@ class Piece {
     }
 
 
-    drawMarkings( g )
+    drawMarkings( g, useExportStyles )
     {
         var lineSpacing = 1.2;
         var fontSize = this.convertMMtoPatternUnits( 8 ); //8mm equiv
@@ -4261,6 +4275,7 @@ class Piece {
 
             var dataPanelGroup = g.append("text")
                                   .attr("id","data panel:" + panel.letter )
+                                  .attr("class","patternlabel")
                                   .attr("transform", "translate(" + x + "," + y + ")" )
                                   //.attr("text-anchor", align ) //dominant-baseline="middle"
                                   .attr("font-size", fontSize );
@@ -5597,7 +5612,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")                               
-                                         .attr("class","pattern");                           
+                                         .attr("class", editorOptions.thumbnail ? "pattern thumbnail" : "pattern");                           
 
     if ( editorOptions.downloadOption )  
         transformGroup3.attr("id", pattern.patternNumberAndName )
@@ -5720,16 +5735,16 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                 if (   ( typeof p.drawSeamLine === "function" ) )
                 {
-                    if ( editorOptions.thumbnail )
-                        p.fillColour = "#e0e0e0";
+                    const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
+                    const useExportStyles = editorOptions.downloadOption;
 
-                    p.drawSeamLine( g );
-                    p.drawSeamAllowance( g );
-                    p.drawInternalPaths( g );
-                    if ( ! editorOptions.thumbnail )
+                    p.drawSeamAllowance( g, useExportStyles ); //do this first as it is bigger and we want it underneath in case we fill 
+                    p.drawSeamLine( g, useExportStyles );
+                    p.drawInternalPaths( g, useExportStyles );
+                    if ( ! simplify )
                     {
-                        p.drawNotches( g );
-                        p.drawMarkings( g );
+                        p.drawNotches( g, useExportStyles );
+                        p.drawMarkings( g, useExportStyles );
                     }
                     p.svg = g;
                 }

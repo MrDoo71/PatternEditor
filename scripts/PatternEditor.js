@@ -862,7 +862,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
     var transformGroup3 = transformGroup2.append("g")                               
-                                         .attr("class","pattern");                           
+                                         .attr("class", editorOptions.thumbnail ? "pattern thumbnail" : "pattern");                           
 
     if ( editorOptions.downloadOption )  
         transformGroup3.attr("id", pattern.patternNumberAndName )
@@ -985,16 +985,16 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                 if (   ( typeof p.drawSeamLine === "function" ) )
                 {
-                    if ( editorOptions.thumbnail )
-                        p.fillColour = "#e0e0e0";
+                    const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
+                    const useExportStyles = editorOptions.downloadOption;
 
-                    p.drawSeamLine( g );
-                    p.drawSeamAllowance( g );
-                    p.drawInternalPaths( g );
-                    if ( ! editorOptions.thumbnail )
+                    p.drawSeamAllowance( g, useExportStyles ); //do this first as it is bigger and we want it underneath in case we fill 
+                    p.drawSeamLine( g, useExportStyles );
+                    p.drawInternalPaths( g, useExportStyles );
+                    if ( ! simplify )
                     {
-                        p.drawNotches( g );
-                        p.drawMarkings( g );
+                        p.drawNotches( g, useExportStyles );
+                        p.drawMarkings( g, useExportStyles );
                     }
                     p.svg = g;
                 }

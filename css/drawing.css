@@ -256,6 +256,54 @@ g.j-outline g.j-active:not(.j-active-2s) > line {
     animation-timing-function: ease-out;
 }
 
+/*Remember, these won't apply to exported SVG*/
+g.j-pieces path.seamline {
+    fill: white;
+    stroke:#929292;
+}
+
+body.k-dark-mode
+g.j-pieces path.seamline {
+    fill: #505050;
+    stroke: #f0f0f0;
+}
+
+/*Remember, these won't apply to exported SVG* /
+.thumbnail g.j-pieces path.seamline {
+    fill: #e0e0e0;
+}*/
+
+/*Remember, these won't apply to exported SVG*/
+g.j-pieces path.seamallowance {
+    fill: #f0f0f0;
+    stroke: black;
+}
+
+body.k-dark-mode
+g.j-pieces path.seamallowance {
+    fill: #303030;
+    stroke: #f8f8f8;
+}
+
+g.j-pieces path.internalpath,
+g.j-pieces path.notch {
+    stroke:black;
+}
+
+body.k-dark-mode g.j-pieces path.internalpath,
+body.k-dark-mode g.j-pieces path.notch {
+    stroke:white;
+}
+
+g.j-pieces text.patternlabel {
+    fill: black;
+}
+
+body.k-dark-mode
+g.j-pieces text.patternlabel {
+    fill: white;
+}
+
 /* the line from a point to its label positioned at mx,my */
 line.labelLine {
     stroke:#d0d0d0;
