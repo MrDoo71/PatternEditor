@@ -262,5 +262,17 @@ class GeoLine {
     getLength() {
         return this.length;
     }
+
+
+    pointAlongPathFraction( fraction ) {
+        if ( fraction == 0 )
+            return this.p1;
+
+        if ( fraction == 100 )
+            return this.p2;
+
+        return new GeoPoint( ( this.p2.x - this.p1.x ) * fraction + this.p1.x,
+                             ( this.p2.y - this.p1.y ) * fraction + this.p1.y );
+    }
 }
 

@@ -24,14 +24,10 @@ class DrawingObject /*abstract*/ {
         //g - the svg group we want to add the text to
         //o - the drawing object
 
-        if ( ! this.p )
-            return;
-        
-        if (typeof this.p.x !== "number")
-            return;
-
         var d = this.data; //the original json data
 
+        if (   ( this.p )
+            && ( typeof this.p.x === "number" ) )
         {
             var labelPosition = this.labelPosition();
 
@@ -44,11 +40,107 @@ class DrawingObject /*abstract*/ {
                 .attr("stroke-width", this.getStrokeWidth( false ) )
                 .attr("class", "labelLine" );
 
+            var labelText = d.name;
+            try {
+                if ( d.showLength === "label" )
+                    labelText += " " + this.getLengthAndUnits();
+            } catch ( e ) {                
+            }
+
             g.append("text")
+            .attr("class","labl")
             .attr("x", labelPosition.labelX )
             .attr("y", labelPosition.labelY )
-            .text(d.name)
-            .attr("font-size", labelPosition.fontSize + "px");
+            .attr("font-size", labelPosition.fontSize + "px")
+            .text( labelText );
+
+        }
+
+        if (( d.showLength === "line" ) && this.lineVisible())
+            this.drawLengthAlongLine( g, drawingOptions );
+    }
+
+    drawLengthAlongLine( g, drawingOptions )
+    {
+        const d = this.data; //the original json data
+        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+
+        
+        try {
+            const lengthToDisplay = this.getLengthAndUnits();
+            var p;
+            var a = 0; //horizontal, unless we get an angle. 
+            if ( this.line  )
+            {
+                p = this.line.pointAlongPathFraction(0.5);
+                a = this.line.angleDeg();
+            }
+
+            else if ( this.curve )
+            {
+                p = this.curve.pointAlongPathFraction(0.5);
+                //TODO a =
+            }
+
+            if ( ! p )
+                throw "Failed to determine position for label";
+
+            {
+                var baseline = "middle";
+                var align = "middle";
+                var ta = 0;
+                var dy = 0;
+                //const patternUnits = this.patternPiece.pattern.units;
+                // /const spacing = (fontSize * 0.2);
+                const spacing = this.patternPiece.pattern.getPatternEquivalentOfMM(1);
+    
+
+                // East(ish)
+                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                {
+                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                    ta = - a;
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                // West(ish)
+                else if (  (( a >= 135 ) && ( a <225 )) 
+                )//|| (( a > 270 ) && ( a <315 ))  )
+                {
+                    baseline = "hanging";
+                    ta = - (a-180);
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                //North(ish)
+                else if (( a > 45 ) && ( a < 135 )) 
+                {
+                    baseline = "middle";//"auto"
+                    align = "middle";
+                    ta = -a;
+                    p.x -= spacing;
+                }
+                //South(ish)
+                else if (( a > 225 ) && ( a <= 270 )) 
+                {
+                    baseline = "auto"
+                    align = "middle";
+                    ta = - ( a-180 );
+                    p.x -= spacing;
+                }
+
+                g.append("text")
+                .attr("class","length")
+                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
+                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
+                .attr( "text-anchor", align ) //if we're drawing to the left of the line
+                .attr( "dy", dy + "px" ) //need to also scale this
+                .attr("font-size", fontSize + "px")
+                .text( lengthToDisplay ); //TODO make this more generic to cater for different types.
+    
+            }
+        } catch ( e ) {
+            console.log( "Failed to show length. ", e );            
         }
     }
 
@@ -104,6 +196,31 @@ class DrawingObject /*abstract*/ {
     }
 
 
+    getLengthAndUnits()
+    {
+        var l = undefined;
+
+        if ( this.line )
+            l = this.line.length;
+        else if (( this.curve ) && ( typeof this.curve.pathLength === "function" ))
+            l = this.curve.pathLength();
+        else if (( this.arc ) && ( typeof this.arc.pathLength === "function" ))
+            l = this.arc.pathLength();
+
+        if ( l !== undefined )
+        {
+            const patternUnits = this.patternPiece.pattern.units;
+            var precision = patternUnits === "mm" ? 10.0 : 100.0;
+            l = Math.round( precision * l ) / precision;            
+            return l + " " + patternUnits;    
+        }
+            
+
+        throw "Unknown length";
+        //return this.length.htmlLength(false);
+    }
+
+
     drawDot( g, drawingOptions ) {
 
         if ( ! drawingOptions.dot )
@@ -121,7 +238,7 @@ class DrawingObject /*abstract*/ {
 
         const isOutline = drawingOptions.outline;
         
-        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
+        if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
                      .attr("x1", this.line.p1.x)
@@ -192,6 +309,7 @@ class DrawingObject /*abstract*/ {
                         this.drawPath( g, this.arc.svgPath(), drawingOptions );    
                 }
 
+                //Labels that are along the line  should only show if we're drawing the line
                 this.drawLabel(g, drawingOptions);
         }            
     }
@@ -401,7 +519,7 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, drawOptions ) {
         this.drawArc( g, drawOptions );        
-        //this.drawLabel( g, drawOptions );
+        //this.drawLabel( g, drawOptions ); Only do the label if the line style!=none
     }
 
 
@@ -481,7 +599,7 @@ class ArcSimple extends DrawingObject {
     draw( g, drawOptions ) {
 
         this.drawArc( g, drawOptions );
-        this.drawLabel(g, drawOptions );
+        //this.drawLabel(g, drawOptions ); Only do the label if the line style!=none
     }
 
 
@@ -595,6 +713,8 @@ class Line extends DrawingObject {
     draw( g, drawOptions ) {
         
         this.drawLine( g, drawOptions );
+
+        this.drawLabel( g, drawOptions );
         
         //TODO we could display the derived name Line_A1_A2 at the mid-point along the line?       
 
@@ -3268,6 +3388,15 @@ class Pattern {
     }
 
 
+    //Return the pattern local equivalent of this number of mm
+    getPatternEquivalentOfMM( mm )
+    {
+        return this.units === "mm" ? mm 
+                                   : this.units === "cm" ? mm/10 
+                                                         : mm/25.4;
+    }
+
+
     analyseDependencies() {
         //Now build up dependency links
         this.dependencies = { 
@@ -4227,7 +4356,7 @@ class Piece {
     drawMarkings( g, useExportStyles )
     {
         var lineSpacing = 1.2;
-        var fontSize = this.convertMMtoPatternUnits( 8 ); //8mm equiv
+        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(8); //8mm equiv
         var align = "start";
 
         if ( this.dataPanels )
@@ -4347,7 +4476,7 @@ class Piece {
     getStrokeWidth( isOutline, isSelected )
     {
         if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.convertMMtoPatternUnits(0.4); //0.4mm equiv
+            return this.patternPiece.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
@@ -5530,7 +5659,8 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    //var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    var margin = editorOptions.lifeSize ? getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
         pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
@@ -5550,7 +5680,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        //var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        var margin = getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
@@ -5657,6 +5788,17 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
+                .on('touchstart', function() { this.touchStartTime = new Date(); })
+                .on('touchend',function(d) {    
+                    const endTime = new Date(); 
+                    const duration = endTime - this.touchStartTime;
+                    if ( duration > 1000) { 
+                        console.log("long touch, " + (duration) + " milliseconds long");
+                    }
+                    else {
+                        console.log("regular touch, " + (duration) + " milliseconds long");
+                    }                    
+                })
                 .each( function(d,i) {
                     var g = d3.select( this );                        
                     if (   ( typeof d.draw === "function" ) 
@@ -5806,7 +5948,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                                 if ( labelPosition )
                                 {
-                                    g.selectAll( "text" )
+                                    g.selectAll( "text.labl" )
                                     .attr("font-size", labelPosition.fontSize + "px")
                                     .attr("x", labelPosition.labelX )
                                     .attr("y", labelPosition.labelY );
@@ -5815,6 +5957,11 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                     .attr("x2", labelPosition.labelLineX )
                                     .attr("y2", labelPosition.labelLineY );
                                 }
+
+                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+                                g.selectAll( "text.length" )
+                                 .attr("font-size", fontSize + "px");
+
                        
                                 g.selectAll( "circle" )
                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
@@ -7792,6 +7939,19 @@ class GeoLine {
 
     getLength() {
         return this.length;
+    }
+
+
+    pointAlongPathFraction( fraction ) {
+
+        if ( fraction == 0 )
+            return this.p1;
+
+        if ( fraction == 100 )
+            return this.p2;
+
+        return new GeoPoint( ( this.p2.x - this.p1.x ) * fraction + this.p1.x,
+                             ( this.p2.y - this.p1.y ) * fraction + this.p1.y );
     }
 }
 

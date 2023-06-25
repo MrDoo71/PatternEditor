@@ -843,7 +843,7 @@ class Piece {
     drawMarkings( g, useExportStyles )
     {
         var lineSpacing = 1.2;
-        var fontSize = this.convertMMtoPatternUnits( 8 ); //8mm equiv
+        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(8); //8mm equiv
         var align = "start";
 
         if ( this.dataPanels )
@@ -963,7 +963,7 @@ class Piece {
     getStrokeWidth( isOutline, isSelected )
     {
         if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.convertMMtoPatternUnits(0.4); //0.4mm equiv
+            return this.patternPiece.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }

@@ -53,7 +53,7 @@ class ArcSimple extends DrawingObject {
     draw( g, drawOptions ) {
 
         this.drawArc( g, drawOptions );
-        this.drawLabel(g, drawOptions );
+        //this.drawLabel(g, drawOptions ); Only do the label if the line style!=none
     }
 
 

@@ -32,6 +32,8 @@ class Line extends DrawingObject {
     draw( g, drawOptions ) {
         
         this.drawLine( g, drawOptions );
+
+        this.drawLabel( g, drawOptions );
         
         //TODO we could display the derived name Line_A1_A2 at the mid-point along the line?       
 

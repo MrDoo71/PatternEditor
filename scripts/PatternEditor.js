@@ -780,7 +780,8 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    //var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
+    var margin = editorOptions.lifeSize ? getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
         pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
@@ -800,7 +801,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        //var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
+        var margin = getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
@@ -1056,7 +1058,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                                 if ( labelPosition )
                                 {
-                                    g.selectAll( "text" )
+                                    g.selectAll( "text.labl" )
                                     .attr("font-size", labelPosition.fontSize + "px")
                                     .attr("x", labelPosition.labelX )
                                     .attr("y", labelPosition.labelY );
@@ -1065,6 +1067,11 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                     .attr("x2", labelPosition.labelLineX )
                                     .attr("y2", labelPosition.labelLineY );
                                 }
+
+                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+                                g.selectAll( "text.length" )
+                                 .attr("font-size", fontSize + "px");
+
                        
                                 g.selectAll( "circle" )
                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );

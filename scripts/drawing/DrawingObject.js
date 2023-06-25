@@ -24,14 +24,10 @@ class DrawingObject /*abstract*/ {
         //g - the svg group we want to add the text to
         //o - the drawing object
 
-        if ( ! this.p )
-            return;
-        
-        if (typeof this.p.x !== "number")
-            return;
-
         var d = this.data; //the original json data
 
+        if (   ( this.p )
+            && ( typeof this.p.x === "number" ) )
         {
             var labelPosition = this.labelPosition();
 
@@ -44,11 +40,107 @@ class DrawingObject /*abstract*/ {
                 .attr("stroke-width", this.getStrokeWidth( false ) )
                 .attr("class", "labelLine" );
 
+            var labelText = d.name;
+            try {
+                if ( d.showLength === "label" )
+                    labelText += " " + this.getLengthAndUnits();
+            } catch ( e ) {                
+            }
+
             g.append("text")
+            .attr("class","labl")
             .attr("x", labelPosition.labelX )
             .attr("y", labelPosition.labelY )
-            .text(d.name)
-            .attr("font-size", labelPosition.fontSize + "px");
+            .attr("font-size", labelPosition.fontSize + "px")
+            .text( labelText );
+
+        }
+
+        if (( d.showLength === "line" ) && this.lineVisible())
+            this.drawLengthAlongLine( g, drawingOptions );
+    }
+
+    drawLengthAlongLine( g, drawingOptions )
+    {
+        const d = this.data; //the original json data
+        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+
+        
+        try {
+            const lengthToDisplay = this.getLengthAndUnits();
+            var p;
+            var a = 0; //horizontal, unless we get an angle. 
+            if ( this.line  )
+            {
+                p = this.line.pointAlongPathFraction(0.5);
+                a = this.line.angleDeg();
+            }
+
+            else if ( this.curve )
+            {
+                p = this.curve.pointAlongPathFraction(0.5);
+                //TODO a =
+            }
+
+            if ( ! p )
+                throw "Failed to determine position for label";
+
+            {
+                var baseline = "middle";
+                var align = "middle";
+                var ta = 0;
+                var dy = 0;
+                //const patternUnits = this.patternPiece.pattern.units;
+                // /const spacing = (fontSize * 0.2);
+                const spacing = this.patternPiece.pattern.getPatternEquivalentOfMM(1);
+    
+
+                // East(ish)
+                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                {
+                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                    ta = - a;
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                // West(ish)
+                else if (  (( a >= 135 ) && ( a <225 )) 
+                )//|| (( a > 270 ) && ( a <315 ))  )
+                {
+                    baseline = "hanging";
+                    ta = - (a-180);
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                //North(ish)
+                else if (( a > 45 ) && ( a < 135 )) 
+                {
+                    baseline = "middle";//"auto"
+                    align = "middle";
+                    ta = -a;
+                    p.x -= spacing;
+                }
+                //South(ish)
+                else if (( a > 225 ) && ( a <= 270 )) 
+                {
+                    baseline = "auto"
+                    align = "middle";
+                    ta = - ( a-180 );
+                    p.x -= spacing;
+                }
+
+                g.append("text")
+                .attr("class","length")
+                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
+                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
+                .attr( "text-anchor", align ) //if we're drawing to the left of the line
+                .attr( "dy", dy + "px" ) //need to also scale this
+                .attr("font-size", fontSize + "px")
+                .text( lengthToDisplay ); //TODO make this more generic to cater for different types.
+    
+            }
+        } catch ( e ) {
+            console.log( "Failed to show length. ", e );            
         }
     }
 
@@ -104,6 +196,29 @@ class DrawingObject /*abstract*/ {
     }
 
 
+    getLengthAndUnits()
+    {
+        var l = undefined;
+
+        if ( this.line )
+            l = this.line.length;
+        else if (( this.curve ) && ( typeof this.curve.pathLength === "function" ))
+            l = this.curve.pathLength();
+        else if (( this.arc ) && ( typeof this.arc.pathLength === "function" ))
+            l = this.arc.pathLength();
+
+        if ( l !== undefined )
+        {
+            const patternUnits = this.patternPiece.pattern.units;
+            var precision = patternUnits === "mm" ? 10.0 : 100.0;
+            l = Math.round( precision * l ) / precision;            
+            return l + " " + patternUnits;    
+        }
+            
+        throw "Unknown length";
+    }
+
+
     drawDot( g, drawingOptions ) {
 
         if ( ! drawingOptions.dot )
@@ -121,7 +236,7 @@ class DrawingObject /*abstract*/ {
 
         const isOutline = drawingOptions.outline;
         
-        if ( ( this.lineVisible() /*|| isOutline*/ ) && this.line ) //If there was an error, line may not be set. 
+        if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
         {
             var l = g.append("line")
                      .attr("x1", this.line.p1.x)
@@ -192,6 +307,7 @@ class DrawingObject /*abstract*/ {
                         this.drawPath( g, this.arc.svgPath(), drawingOptions );    
                 }
 
+                //Labels that are along the line  should only show if we're drawing the line
                 this.drawLabel(g, drawingOptions);
         }            
     }

@@ -92,6 +92,15 @@ class Pattern {
     }
 
 
+    //Return the pattern local equivalent of this number of mm
+    getPatternEquivalentOfMM( mm )
+    {
+        return this.units === "mm" ? mm 
+                                   : this.units === "cm" ? mm/10 
+                                                         : mm/25.4;
+    }
+
+
     analyseDependencies() {
         //Now build up dependency links
         this.dependencies = { 
