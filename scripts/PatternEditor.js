@@ -780,7 +780,6 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    //var margin = editorOptions.lifeSize ? ( margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1 ) : 0;
     var margin = editorOptions.lifeSize ? getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
@@ -801,7 +800,6 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        //var margin = pattern.units == "mm" ? 5 : pattern.units == "cm" ? 0.5 : 0.1;
         var margin = getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
@@ -909,6 +907,24 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
+                .on('touchstart', function() { 
+                    this.touchStartTime = new Date(); 
+                    if ( event ) event.preventDefault();
+                })
+                .on('touchend',function(d) {    
+                    const endTime = new Date(); 
+                    const duration = endTime - this.touchStartTime;
+                    if ( event ) event.preventDefault();
+                    if (( duration > 400) || ( selectedObject === d ))
+                    { 
+                        //console.log("long touch, " + (duration) + " milliseconds long");
+                        contextMenu(d);
+                    }
+                    else {
+                        //console.log("regular touch, " + (duration) + " milliseconds long");
+                        onclick(d);
+                    }                    
+                })
                 .each( function(d,i) {
                     var g = d3.select( this );                        
                     if (   ( typeof d.draw === "function" ) 
@@ -952,6 +968,24 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
+                .on('touchstart', function() { 
+                    this.touchStartTime = new Date(); 
+                    if ( event ) event.preventDefault();
+                })
+                .on('touchend',function(d) {    
+                    const endTime = new Date(); 
+                    const duration = endTime - this.touchStartTime;
+                    if ( event ) event.preventDefault();
+                    if (( duration > 400) || ( selectedObject === d ))
+                    { 
+                        //console.log("long touch, " + (duration) + " milliseconds long");
+                        contextMenu(d);
+                    }
+                    else {
+                        //console.log("regular touch, " + (duration) + " milliseconds long");
+                        onclick(d);
+                    }                    
+                })                
                 .each( function(d,i) {
                     var g = d3.select( this );
                     if (   ( typeof d.draw === "function" ) 
@@ -1419,8 +1453,26 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
                                     return ypos } )
 
         g.on("contextmenu", contextMenu)
-         .on("click", onclick );
-    });                   
+         .on("click", onclick )
+         .on('touchstart', function() { 
+            this.touchStartTime = new Date(); 
+            if ( event ) event.preventDefault();
+         })
+         .on('touchend',function(d) {    
+            const endTime = new Date(); 
+            const duration = endTime - this.touchStartTime;
+            if ( event ) event.preventDefault();
+            if (( duration > 400) || ( selectedObject === d ))
+            { 
+                //console.log("long touch, " + (duration) + " milliseconds long");
+                contextMenu(d);
+            }
+            else {
+                //console.log("regular touch, " + (duration) + " milliseconds long");
+                onclick(d);
+            }                    
+         });
+    }); //.each
         
     svg.attr("height", ypos );    
 

@@ -1,6 +1,6 @@
-import  { drawPattern } from '../dist/patterneditor.js?v=3';
+import  { drawPattern } from '../dist/patterneditor.js?v=4';
 
-console.log( "kinodbglue2.js?v=2 module");
+console.log( "kinodbglue2.js?v=4 module");
 
 //This is setting the non-module global reference that can then be called normally
 console.log( "Populating moduleExports.drawPattern");
