@@ -4246,24 +4246,52 @@ class Piece {
 
             if ( typeof n.notch === "undefined" )
                 continue;
-         
+
+            const notchType = n.notch;
+            const notchAngle = n.notchAngle === undefined ? 0 : n.notchAngle;
+            const notchCount = n.notchCount === undefined ? 1 : n.notchCount;
+            const notchLength = n.notchLength === undefined ? 0.25 : n.notchLength;
+            const notchWidth  = n.notchWidth === undefined ? 0.25 : n.notchWidth;      
+            const tangentDeg = n.pointEndSA ? (new GeoLine( n.point, n.pointEndSA)).angleDeg() : n.tangentAfterDeg;
+
             //TODO if no SA, then create a point at an internal tangent
-            if ( n.pointEndSA )
+            var path = "";
+
+            //One notch : 0    
+            //Two notches : -0.5 +0.5    0-1  1-1   n-(c/2)+0.5
+            //Three notches : -1 0 +1 
+            for( var i = 0;  i < notchCount; i++ )
             {
-                var path = "M" + this.roundForSVG( n.point.x ) + "," + this.roundForSVG( n.point.y ) + " L" + this.roundForSVG( n.pointEndSA.x ) + "," + this.roundForSVG( n.pointEndSA.y );
+                const offset = i-(notchCount/2)+0.5;
+                const roundForSVG = this.roundForSVG;
+                const drawNotch = function( p ) {
+                    var start = p;
+                    if ( offset != 0 )
+                    {
+                        const offsetAmount = offset * notchWidth;
+                        start = start.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+                    }
+                    var end = start.pointAtDistanceAndAngleDeg( notchLength, tangentDeg + 180 + notchAngle );
 
-                //TODO should we connect these D3 data-wise to the notches
-                var p = notches.append("path")
-                    .attr("d", path )
-                    .attr("class", "notch" )
-                    .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+                    path += "M" + roundForSVG( start.x ) + "," + roundForSVG( start.y ) + " L" + roundForSVG( end.x ) + "," + roundForSVG( end.y );
+                }
 
-                if ( useExportStyles )
-                    p.attr("fill", "none")
-                     .attr("stroke", "black");
+                drawNotch( n.point );
+                if ( n.pointEndSA )
+                    drawNotch( n.pointEndSA );
+
+
             }
-            else
-                console.log("******** Node " + n.obj + " has no pointEndSA");
+
+            //TODO should we connect these D3 data-wise to the notches
+            var p = notches.append("path")
+                .attr("d", path )
+                .attr("class", "notch" )
+                .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
+
+            if ( useExportStyles )
+                p.attr("fill", "none")
+                    .attr("stroke", "black");
         };
     }    
 
@@ -5657,7 +5685,7 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = editorOptions.lifeSize ? getPatternEquivalentOfMM(5) : 0;
+    var margin = editorOptions.lifeSize ? pattern.getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
         pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
@@ -5677,7 +5705,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        var margin = getPatternEquivalentOfMM(5);
+        var margin = pattern.getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")

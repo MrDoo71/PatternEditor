@@ -780,7 +780,7 @@ function scrollTopTween(scrollTop)
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     var layoutConfig = editorOptions.layoutConfig;
-    var margin = editorOptions.lifeSize ? getPatternEquivalentOfMM(5) : 0;
+    var margin = editorOptions.lifeSize ? pattern.getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
         pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
@@ -800,7 +800,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        var margin = getPatternEquivalentOfMM(5);
+        var margin = pattern.getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
