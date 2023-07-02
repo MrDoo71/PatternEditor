@@ -748,28 +748,45 @@ class Piece {
 
             //One notch : 0    
             //Two notches : -0.5 +0.5    0-1  1-1   n-(c/2)+0.5
-            //Three notches : -1 0 +1 
+            //Three notches : -1 0 +1             
             for( var i = 0;  i < notchCount; i++ )
             {
                 const offset = i-(notchCount/2)+0.5;
                 const roundForSVG = this.roundForSVG;
-                const drawNotch = function( p ) {
+
+                const drawNotch = function( p, notchLength ) {
+
+                    const offsetAmount = offset * notchWidth;
                     var start = p;
                     if ( offset != 0 )
-                    {
-                        const offsetAmount = offset * notchWidth;
                         start = start.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
-                    }
-                    var end = start.pointAtDistanceAndAngleDeg( notchLength, tangentDeg + 180 + notchAngle );
+
+                    var end;
+                    if ( notchLength === undefined ) //drawing one notch from seamline to seamallowanceline
+                        end = offset == 0 ? n.point
+                                          : n.point.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+                    else
+                        end = start.pointAtDistanceAndAngleDeg( notchLength, tangentDeg + 180 + notchAngle );
 
                     //notchType == "slit"
                     //TODO: tNotch; uNotch; vInternal vExternal castle diamond
                     path += "M" + roundForSVG( start.x ) + "," + roundForSVG( start.y ) + " L" + roundForSVG( end.x ) + "," + roundForSVG( end.y );
                 }
 
-                drawNotch( n.point );
-                if ( n.pointEndSA )
-                    drawNotch( n.pointEndSA );
+                //In deliberate variation to Seamly2D, if notchLength < seamAllowance, and notchAngle == 0 then draw the notch from the seam
+                //allowance line to the seam line. 
+
+                if (( n.pointEndSA ) && ( notchAngle === 0 ) && (notchLength < n.sa2) )
+                {
+                    drawNotch( n.pointEndSA, undefined );
+                }
+                else if ( n.pointEndSA ) 
+                {
+                    drawNotch( n.pointEndSA, notchLength );
+                    drawNotch( n.point, notchLength );
+                }
+                else
+                    drawNotch( n.point, notchLength );
 
 
             }

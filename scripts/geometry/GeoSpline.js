@@ -292,6 +292,14 @@ class GeoSpline {
         if ( c2 === undefined )
             throw "p2 is not on spline;"
 
+        if (    ( c1.beforePoint === null )
+             && ( c2.afterPoint === null ) )
+             return this;
+
+        if (    ( c2.beforePoint === null )
+             && ( c1.afterPoint === null ) )
+             return this; //though note that this may be the reverse of the curve we want. 
+
         //For each segment, determine t for each of p1 and p2
         //the first one we find is the first point. 
         
