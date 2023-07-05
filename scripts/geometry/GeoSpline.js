@@ -349,53 +349,60 @@ class GeoSpline {
         //1.2 - 1.3
         //1 less than t1, split and add part 2
         //2 greater than t2, split and add part 1;
-        var alt = undefined;
-        if (    ( Math.floor(t1) != Math.floor(t2) )
-             && ( Math.ceil(t1) != Math.ceil(t2) ) ) //e.g. 0.5 and 1 would fail the first test, but match this one. 
-        {
-            var nodeSubset = [];
-            for ( var i= Math.floor(t1); i<=Math.ceil(t2); i++ )
+        try{        
+            var alt = undefined;
+            if (    ( Math.floor(t1) != Math.floor(t2) )
+                 && ( Math.ceil(t1) != Math.ceil(t2) ) ) //e.g. 0.5 and 1 would fail the first test, but match this one. 
             {
-                if ( i < t1 )
+                var nodeSubset = [];
+                for ( var i= Math.floor(t1); i<=Math.ceil(t2); i++ )
                 {
-                    const segment = this.pathSegment( i+1 ); 
-                    const splits = segment.cutAtT( t1 - Math.floor(t1) );
-                    const n2 = this.nodeData[i+1];
-                    splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
-                    splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
-                    splits.afterPoint.nodeData[1].outLength = n2.outLength;
-                    nodeSubset.push( splits.afterPoint.nodeData[0] );
-                    nodeSubset.push( splits.afterPoint.nodeData[1] );
-                    i++; //we've already done i+1
+                    if ( i < t1 )
+                    {
+                        const segment = this.pathSegment( i+1 ); 
+                        const splits = segment.cutAtT( t1 - Math.floor(t1) );
+                        const n2 = this.nodeData[i+1];
+                        splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
+                        splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
+                        splits.afterPoint.nodeData[1].outLength = n2.outLength;
+                        nodeSubset.push( splits.afterPoint.nodeData[0] );
+                        nodeSubset.push( splits.afterPoint.nodeData[1] );
+                        i++; //we've already done i+1
+                    }
+                    else if ( i > t2 )
+                    {
+                        const segment = this.pathSegment( i ); 
+                        const splits = segment.cutAtT( t2 - Math.floor(t2) );
+                        const p = nodeSubset.pop();
+                        splits.beforePoint.nodeData[0].inControlPoint = p.inControlPoint;
+                        splits.beforePoint.nodeData[0].inAngle = p.inAngle;
+                        splits.beforePoint.nodeData[0].inLength = p.inLength;
+                        nodeSubset.push( splits.beforePoint.nodeData[0] );
+                        nodeSubset.push( splits.beforePoint.nodeData[1] );
+                    }
+                    else
+                        nodeSubset.push( this.nodeData[i] )
                 }
-                else if ( i > t2 )
-                {
-                    const segment = this.pathSegment( i ); 
-                    const splits = segment.cutAtT( t2 - Math.floor(t2) );
-                    const p = nodeSubset.pop();
-                    splits.beforePoint.nodeData[0].inControlPoint = p.inControlPoint;
-                    splits.beforePoint.nodeData[0].inAngle = p.inAngle;
-                    splits.beforePoint.nodeData[0].inLength = p.inLength;
-                    nodeSubset.push( splits.beforePoint.nodeData[0] );
-                    nodeSubset.push( splits.beforePoint.nodeData[1] );
-                }
-                else
-                    nodeSubset.push( this.nodeData[i] )
+                alt = new GeoSpline( nodeSubset );
+                return alt;
             }
-            alt = new GeoSpline( nodeSubset );
+            
+        } catch ( e ) {
+            console.log("Failed fast splineBetweenPoints() ", e );
         }
 
         //The older way which works but needs to find t2 afresh
-        // var c1 = this.cutAtPoint( p1 );
+        var c1 = this.cutAtPoint( p1 );
 
-        // if ( c1 === undefined )
-        //     throw "p1 is not on spline;"
+        if ( c1 === undefined )
+            throw "p1 is not on spline;"
 
-        // var splineAfterPoint = c1.afterPoint;
-        // var c3 = splineAfterPoint.cutAtPoint( p2 );
-        // if ( ! c3 )
-        //     console.log("c3 not found"); //this is odd because c1 and c2 were found
-        // var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
+        var splineAfterPoint = c1.afterPoint;
+        var c3 = splineAfterPoint.cutAtPoint( p2 );
+        if ( ! c3 )
+            console.log("c3 not found"); //this is odd because c1 and c2 were found
+        var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
+        return cut2;
         //Compare the two approaches
         // if ( alt )
         // {
@@ -424,8 +431,7 @@ class GeoSpline {
         //     }            
         // }
 
-        return alt;
-        //return cut2;
+        
     }
 
 
