@@ -196,6 +196,7 @@ class Piece {
                     } catch ( e ) {
                         console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + n.obj );
                         //This is not an issue, it just means we're not clipping the start/end of the curve
+                        //But, we are now dependent on the reverse flag being set correctly as we cannot determine it ourselves. 
 
                         var curveSegment;
                         
@@ -232,6 +233,7 @@ class Piece {
                         }
 
                         try {
+                            //Do we need to add an explicit point for the end of the curve? Probably not                            
                             var cut = curveSegment.cutAtPoint( nextP );
                             if ( cut && cut.beforePoint )
                                 curveSegment = cut.beforePoint;

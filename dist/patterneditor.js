@@ -3707,6 +3707,7 @@ class Piece {
                     } catch ( e ) {
                         console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + n.obj );
                         //This is not an issue, it just means we're not clipping the start/end of the curve
+                        //But, we are now dependent on the reverse flag being set correctly as we cannot determine it ourselves. 
 
                         var curveSegment;
                         
@@ -3743,6 +3744,7 @@ class Piece {
                         }
 
                         try {
+//Do we need to add an explicit point for the end of the curve                            
                             var cut = curveSegment.cutAtPoint( nextP );
                             if ( cut && cut.beforePoint )
                                 curveSegment = cut.beforePoint;
@@ -8326,7 +8328,18 @@ class GeoSpline {
         //sometimes we're testing whether point p is on the arc. 
 
         if ( this.nodeData.length !== 2 )
-            throw "findTForPoint() only supported for individual segments";
+        {
+            for ( var i=0; i<(this.nodeData.length-1); i++ )
+            {
+                var node1 = this.nodeData[i];
+                var node2 = this.nodeData[i+1];
+                var t = (new GeoSpline( [ node1, node2 ] )).findTForPoint(p);
+                if ( t !== undefined )
+                    return t+i
+            }
+            return undefined;
+            //throw "findTForPoint() only supported for individual segments";
+        }
 
         //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
         //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
@@ -8345,8 +8358,8 @@ class GeoSpline {
         var t;
         while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
-            var closestT = null;
             var closestDistance = undefined;
+            var closestT = null;
             var interval = (maxT - minT)/4; //0.25 first time around.
             for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
@@ -8373,8 +8386,17 @@ class GeoSpline {
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
         //console.log("Point not on curve." );
-        if (( t > 0 ) && ( t < 1 ))
-            return t; 
+        if (   ( t > 0 ) 
+            && ( t < 1 ) )
+            //&& ( closestDistance < threshold ))
+        {
+            var pt = this.getPointForT( t );
+            var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+
+            console.log("**** CLOSEST " + d + " THRESHOLD:" + threshold );
+            if ( d <= (threshold*2) ) //Stocking top appears to need threshold*2
+                return t; 
+        }
 
         return undefined;
     }
@@ -8404,49 +8426,92 @@ class GeoSpline {
 
     splineBetweenPoints( p1, p2 )
     {
+        var t1 = this.findTForPoint(p1);
+
+        if ( t1 === undefined )
+            throw "p1 is not on spline;";
+
+        var t2 = this.findTForPoint(p2);
+
+        if ( t2 === undefined )
+            throw "p2 is not on spline;";
+
+        if (( t1 === 0 ) && ( t2 === this.nodeData.length ))
+            return this;
+
+        if ( t1 > t2 )
+        {
+            var p = p1;
+            p1 = p2;
+            p2 = p;
+            var t = t1;
+            t1 = t2;
+            t2 = t;
+        }
+
+        if (    Number.isInteger( t1 ) 
+             && Number.isInteger( t2 ) )
+        {
+            var nodeSubset = [];
+            for ( var i= t1; i<=t2; i++ )
+                nodeSubset.push( this.nodeData[i] );
+            return new GeoSpline( nodeSubset );
+        } 
+
+        //This alternative doesn't quite work out the way it should, but would be slightly more efficient. 
+        //0.5 - 4.5
+        //0,1,2,3,4,5
+        //0 less than t1, split and add part2.
+        //1
+        //2
+        //3
+        //4
+        //5 greater than t2, split and add part1
+        //1.2 - 1.3
+        //1 less than t1, split and add part 2
+        //2 greater than t2, split and add part 1;
+        // var alt = undefined;
+        // if (    ( Math.floor(t1) != Math.floor(t2) )
+        //      && ( Math.ceil(t1) != Math.ceil(t2) ) ) //e.g. 0.5 and 1 would fail the first test, but match this one. 
+        // {
+        //     var nodeSubset = [];
+        //     for ( var i= Math.floor(t1); i<=Math.ceil(t2); i++ )
+        //     {
+        //         if ( i < t1 )
+        //         {
+        //             var segment = this.pathSegment( i+1 ); 
+        //             var splits = segment.cutAtT( t1 );
+
+        //             //splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
+        //             //splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
+        //             //splits.beforePoint.nodeData[0].inLength = n1.inLength;
+        //             //nodesBeforeCut.push( splits.beforePoint.nodeData[0] );
+        //             //nodesBeforeCut.push( splits.beforePoint.nodeData[1] );
+
+        //             //splits.afterPoint.nodeData[1].outControlPoint = n2.outControlPoint;
+        //             //splits.afterPoint.nodeData[1].outAngle = n2.outAngle;
+        //             //splits.afterPoint.nodeData[1].outLength = n2.outLength;
+        //             //nodesAfterCut.push( splits.afterPoint.nodeData[0] );
+        //             //nodesAfterCut.push( splits.afterPoint.nodeData[1] );
+        //             nodeSubset.push( splits.afterPoint.nodeData[0] );
+        //         }
+        //         else if ( i > t2 )
+        //         {
+        //             var segment = this.pathSegment( i ); 
+        //             var splits = segment.cutAtT( t2 );
+        //             nodeSubset.push( splits.beforePoint.nodeData[1] );
+        //         }
+        //         else
+        //             nodeSubset.push( this.nodeData[i] )
+        //     }
+        //     alt = new GeoSpline( nodeSubset );
+        // }
+
         var c1 = this.cutAtPoint( p1 );
-        var c2 = this.cutAtPoint( p2 );
+        //var c2 = this.cutAtPoint( p2 );
 
         if ( c1 === undefined )
             throw "p1 is not on spline;"
-
-        if ( c2 === undefined )
-            throw "p2 is not on spline;"
-
-        if (    ( c1.beforePoint === null )
-             && ( c2.afterPoint === null ) )
-             return this;
-
-        if (    ( c2.beforePoint === null )
-             && ( c1.afterPoint === null ) )
-             return this; //though note that this may be the reverse of the curve we want. 
-
-        //For each segment, determine t for each of p1 and p2
-        //the first one we find is the first point. 
-        
-        //TODO this can be optimised here. 
-
-        //We can avoid the more expensive pathLength() if we can see that one of 
-        //the points is in an earlier segment. 
-        var s1 = c1.beforePoint == null ? 0 : c1.beforePoint.nodeData.length;
-        var s2 = c2.beforePoint == null ? 0 : c2.beforePoint.nodeData.length;
-        var swap = s1 > s2;
-
-        if ( s1 == s2 )
-        {
-            //nb we have seen the pathLength() not produce a correct result.  Returns >3000 when this.pathLength = 60.  
-            var d1 = c1.beforePoint == null ? 0 : c1.beforePoint.pathLength();
-            var d2 = c2.beforePoint == null ? 0 : c2.beforePoint.pathLength();
-            swap = d1 > d2;
-        }
-
-        if ( swap )
-        {
-            var t = p2;
-            p2 = p1;
-            p1 = t;
-            c1 = c2;
-        }
 
         var cut1 = c1;
         var splineAfterPoint = cut1.afterPoint;
@@ -8454,6 +8519,45 @@ class GeoSpline {
         if ( ! c3 )
             console.log("c3 not found"); //this is odd because c1 and c2 were found
         var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
+
+        // if ( alt )
+        // {
+        //     if ( alt.nodeData.length == cut2.nodeData.length )
+        //     {
+        //         for( var i=0; i<alt.nodeData.length; i++ )
+        //         {
+        //             var altn = alt.nodeData[i];
+        //             var cutn = cut2.nodeData[i];
+        //             if ( ! altn.point.equals( cutn.point ) )
+        //                 console.log( "*********** ERROR ********** - different point" );
+        //             if ( altn.outAngle != cutn.outAngle )
+        //                 console.log( "*********** ERROR ********** - different outAngle" );
+        //             if ( altn.outLength != cutn.outLength )
+        //                 console.log( "*********** ERROR ********** - different outLength" );
+        //             if ( altn.inAngle != cutn.inAngle )
+        //                 console.log( "*********** ERROR ********** - different inAngle" );
+        //             if ( altn.inLength != cutn.inLength )
+        //                 console.log( "*********** ERROR ********** - different inLength" );
+
+        //         }
+        //     }
+        //     else
+        //     {
+        //         console.log( "*********** ERROR ********** - different length" );
+        //     }
+
+        //     if ( alt.svgPath() == cut2.svgPath() )
+        //     {
+        //         console.log("******* GREAT *****" );
+        //     }
+        //     else{
+        //         console.log("*********** ERROR **********" );
+        //         console.log( alt.svgPath() );
+        //         console.log( cut2.svgPath() );
+        //     }
+        //     //return alt;
+        // }
+
         return cut2;
     }
 
@@ -8530,7 +8634,7 @@ class GeoSpline {
             nodesAfterCut = [];
 
         var cutMade = false;
-        for( var i=0; i<(nodeData.length-1); i++ )
+        for( var i=0; i<(nodeData.length-0); i++ )
         {
             var n1 = nodeData[i];
             var n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
@@ -8545,13 +8649,13 @@ class GeoSpline {
                 nodesBeforeCut.push( n1 );
                 nodesAfterCut.push( n1 );
             }
-            else if ( n2.point.equals(p) )
+            else if ( n2 !== null &&  n2.point.equals(p) )
             {
                 cutMade = true;
                 nodesBeforeCut.push( n1 );
                 nodesBeforeCut.push( n2 );
             }
-            else
+            else if ( n2 != null )
             {
                 var segment = this.pathSegment( i+1 ); //so from i to i+1
                 var tWithinSegment = segment.findTForPoint(p);                    
@@ -8567,6 +8671,7 @@ class GeoSpline {
                     cutMade = true;
                     nodesBeforeCut.push( n1 );
                     nodesBeforeCut.push( n2 );
+                    //nodesAfterCut.push( n2 );    
                 }
                 else 
                 {
