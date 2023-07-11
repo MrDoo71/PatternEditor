@@ -54,6 +54,21 @@ class Bounds {
     
         return Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
     }
+
+    
+    /**
+     * Return true if these bounds contain the point, false if the point
+     * is outside these bounds. 
+     * 
+     * @param {*} p 
+     */
+    containsPoint( p )
+    {
+        return    ( p.x >= this.minX )
+               && ( p.x <= this.maxX )
+               && ( p.y >= this.minY )
+               && ( p.y <= this.maxY );
+    }
 }
 
 

@@ -42,7 +42,7 @@ class DrawingObject /*abstract*/ {
 
             var labelText = d.name;
             try {
-                if ( d.showLength === "label" )
+                if ( this.showLength() === "label" )
                     labelText += " " + this.getLengthAndUnits();
             } catch ( e ) {                
             }
@@ -56,94 +56,28 @@ class DrawingObject /*abstract*/ {
 
         }
 
-        if (( d.showLength === "line" ) && this.lineVisible())
+        if (( this.showLength() === "line" ) && this.lineVisible())
             this.drawLengthAlongLine( g, drawingOptions );
     }
 
+
     drawLengthAlongLine( g, drawingOptions )
     {
-        const d = this.data; //the original json data
-        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+        var path;
+        if ( this.line )
+            path = this.line;
+        else if ( this.curve )
+            path = this.curve;
+        else if ( this.arc )
+            path = this.arc;
+        else 
+            throw "Unknown type to add length along line";
 
-        
-        try {
-            const lengthToDisplay = this.getLengthAndUnits();
-            var p;
-            var a = 0; //horizontal, unless we get an angle. 
-            if ( this.line  )
-            {
-                p = this.line.pointAlongPathFraction(0.5);
-                a = this.line.angleDeg();
-            }
+        const lengthAndUnits = this.getLengthAndUnits();
 
-            else if ( this.curve )
-            {
-                p = this.curve.pointAlongPathFraction(0.5);
-                //TODO a =
-            }
-
-            if ( ! p )
-                throw "Failed to determine position for label";
-
-            {
-                var baseline = "middle";
-                var align = "middle";
-                var ta = 0;
-                var dy = 0;
-                //const patternUnits = this.patternPiece.pattern.units;
-                // /const spacing = (fontSize * 0.2);
-                const spacing = this.patternPiece.pattern.getPatternEquivalentOfMM(1);
-    
-
-                // East(ish)
-                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
-                {
-                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
-                    ta = - a;
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                // West(ish)
-                else if (  (( a >= 135 ) && ( a <225 )) 
-                )//|| (( a > 270 ) && ( a <315 ))  )
-                {
-                    baseline = "hanging";
-                    ta = - (a-180);
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                //North(ish)
-                else if (( a > 45 ) && ( a < 135 )) 
-                {
-                    baseline = "middle";//"auto"
-                    align = "middle";
-                    ta = -a;
-                    p.x -= spacing;
-                }
-                //South(ish)
-                else if (( a > 225 ) && ( a <= 270 )) 
-                {
-                    baseline = "auto"
-                    align = "middle";
-                    ta = - ( a-180 );
-                    p.x -= spacing;
-                }
-
-                g.append("text")
-                .attr("class","length")
-                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
-                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
-                .attr( "text-anchor", align ) //if we're drawing to the left of the line
-                .attr( "dy", dy + "px" ) //need to also scale this
-                .attr("font-size", fontSize + "px")
-                .text( lengthToDisplay ); //TODO make this more generic to cater for different types.
-    
-            }
-        } catch ( e ) {
-            console.log( "Failed to show length. ", e );            
-        }
+        this.patternPiece.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
     }
-
+s
 
     labelPosition() {
 
@@ -392,6 +326,23 @@ class DrawingObject /*abstract*/ {
             this.memberOf = [];
 
         this.memberOf.push( group );
+    }
+
+
+    showLength()
+    {
+        if (   this.data.showLength !== undefined 
+            && this.data.showLength !== "none" )
+            return this.data.showLength;
+
+        if ( this.memberOf )   
+            for( const g of this.memberOf )
+            {
+                if ( g.showLength !== "none" ) 
+                    return g.showLength;
+            }
+
+        return "none";
     }
 
 
@@ -3496,6 +3447,7 @@ class Group {
         this.visible = data.visible;
         this.update = data.update;
         this.contextMenu = data.contextMenu;
+        this.showLength = data.showLength === "none" ? undefined : data.showLength; //line or label
         this.members = [];
 
         if ( this.data.member )
@@ -3571,6 +3523,8 @@ class Piece {
                             else
                                 console.log("Couldn't match internal path node to drawing object: ", n );
                         }, ip );
+
+                    ip.showLength = ip.showLength === "none" ? undefined : ip.showLength; //line or label
                 }, this );             
                 
         if ( this.dataPanels )
@@ -4334,7 +4288,8 @@ class Piece {
 
     drawInternalPath( internalPathsGroup, internalPath, strokeWidth, useExportStyles )
     {
-        var path = undefined;
+        var path = undefined; //path as SVG
+        var geopath = undefined; //path as GeoSpline - so we can find the mid-point for adding the length
 
         var previousP;
         for  (var a=0; a<internalPath.nodes.length; a++ )
@@ -4364,13 +4319,40 @@ class Piece {
                 }
 
                 path = curve.svgPath( path );
+                geopath = geopath === undefined ? curve : geopath.extend( curve );
                 previousP = curve.pointAlongPathFraction(1);
             }
             else
             {
                 path = this.lineTo( path, n.p );
+                geopath = geopath === undefined ? new GeoSpline([{  inControlPoint:   undefined,
+                                                                    point:            n.p,
+                                                                    outControlPoint:  n.p } ]) : geopath.extend( n.p );
                 previousP = n.p;
             }
+        }
+
+        //nb path and geopath.svgPath() should be equivalent, though they won't be identical.
+        console.log( "Path " + path );
+        console.log( "GeoPath " + geopath );
+
+        if ( internalPath.showLength !== undefined ) //we don't draw a label, though we could use label as 100% and line as 50%
+        {
+            //TODO use non-semantic-scaling font size that we use for labels
+            var l = geopath.pathLength(); //"TODO";//this.getLengthAndUnits();
+
+            if ( l !== undefined )
+            {
+                const patternUnits = this.patternPiece.pattern.units;
+                var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                l = Math.round( precision * l ) / precision;            
+                l = l + " " + patternUnits;    
+            }
+
+            //var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+    
+            const fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+            this.patternPiece.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
         }
 
         var p = internalPathsGroup.append("path")
@@ -4397,13 +4379,15 @@ class Piece {
             if ( dasharray )
                 p.attr("stroke-dasharray", dasharray );  
         }
+
+
     }
 
 
     drawMarkings( g, useExportStyles )
     {
         var lineSpacing = 1.2;
-        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(8); //8mm equiv
+        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
         var align = "start";
 
         if ( this.dataPanels )
@@ -4902,7 +4886,7 @@ class PatternDrawing {
     }
 
     add(data) {
-console.log("Add() is this used anywhere?");
+        console.log("Add() is this used anywhere?");
 
         if (this.defaults) {
             for (var d in this.defaults) {
@@ -4918,9 +4902,93 @@ console.log("Add() is this used anywhere?");
         return dObj;
     }
 
+
     setDefaults(defaults) {
         this.defaults = defaults;
     }
+
+
+    //Add a label (to svg group g) positioned midway along path
+    drawLabelAlongPath( g, path, label, fontSize ) //TODO  t, include in .val export but strip 
+    {
+        //const d = this.data; //the original json data
+        fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        
+        try {
+            const p = path.pointAlongPathFraction(0.5);
+            var a = 0; //horizontal, unless we get an angle. 
+            if ( path instanceof GeoLine  )
+            {
+                a = path.angleDeg();
+            }
+            else if ( path instanceof GeoSpline )
+            {
+                const p2 = path.pointAlongPathFraction(0.5001);
+                const lineSegment = new GeoLine(p, p2);
+                a = lineSegment.angleDeg();
+            }
+
+            if ( ! p )
+                throw "Failed to determine position for label";
+
+            {
+                var baseline = "middle";
+                var align = "middle";
+                var ta = 0;
+                var dy = 0;
+                //const patternUnits = this.patternPiece.pattern.units;
+                // /const spacing = (fontSize * 0.2);
+                const spacing = this.pattern.getPatternEquivalentOfMM(1);
+    
+
+                // East(ish)
+                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                {
+                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                    ta = - a;
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                // West(ish)
+                else if (  (( a >= 135 ) && ( a <225 )) 
+                )//|| (( a > 270 ) && ( a <315 ))  )
+                {
+                    baseline = "hanging";
+                    ta = - (a-180);
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                //North(ish)
+                else if (( a > 45 ) && ( a < 135 )) 
+                {
+                    baseline = "middle";//"auto"
+                    align = "middle";
+                    ta = -a;
+                    p.x -= spacing;
+                }
+                //South(ish)
+                else if (( a > 225 ) && ( a <= 270 )) 
+                {
+                    baseline = "auto"
+                    align = "middle";
+                    ta = - ( a-180 );
+                    p.x -= spacing;
+                }
+
+                g.append("text")
+                .attr("class","length")
+                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
+                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
+                .attr( "text-anchor", align ) //if we're drawing to the left of the line
+                .attr( "dy", dy + "px" ) //need to also scale this
+                .attr("font-size", fontSize + "px")
+                .text( label ); //TODO make this more generic to cater for different types.
+    
+            }
+        } catch ( e ) {
+            console.log( "Failed to show length. ", e );            
+        }
+    }    
 }
 
 
@@ -7201,6 +7269,20 @@ class Bounds {
     
         return Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
     }
+
+    /**
+     * Return true if these bounds contain the point, false if the point
+     * is outside these bounds. 
+     * 
+     * @param {*} p 
+     */
+    containsPoint( p )
+    {
+        return    ( p.x >= this.minX )
+               && ( p.x <= this.maxX )
+               && ( p.y >= this.minY )
+               && ( p.y <= this.maxY );
+    }
 }
 
 
@@ -8323,6 +8405,13 @@ class GeoSpline {
     }
 
 
+    /**
+     * Return the value t for this spline.
+     * If this spline has two nodes, then t is between 0 and 1, or undefined if point p is not on the curve.
+     * If this spline has three+ nodes then t is between 0 and nodes.length-1. 
+     * @param {*} p 
+     * @returns 
+     */
     findTForPoint(p) {
         //only where nodeData.length == 2
         //sometimes we're testing whether point p is on the arc. 
@@ -8331,14 +8420,20 @@ class GeoSpline {
         {
             for ( var i=0; i<(this.nodeData.length-1); i++ )
             {
-                var node1 = this.nodeData[i];
-                var node2 = this.nodeData[i+1];
-                var t = (new GeoSpline( [ node1, node2 ] )).findTForPoint(p);
+                const node1 = this.nodeData[i];
+                const node2 = this.nodeData[i+1];
+                const segment = new GeoSpline( [ node1, node2 ] );
+                const bounds = new Bounds();
+                segment.adjustBounds( bounds );
+
+                if ( ! bounds.containsPoint(p) )
+                    continue;
+
+                var t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
             }
             return undefined;
-            //throw "findTForPoint() only supported for individual segments";
         }
 
         //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
@@ -8412,6 +8507,12 @@ class GeoSpline {
         return shorterPath;
     }
 
+
+    /**
+     * Return the length of this spline, or the given segment. 
+     * @param {*} segment 
+     * @returns 
+     */
     pathLength( segment ) {
 
         if ( segment ) {
@@ -8562,6 +8663,7 @@ class GeoSpline {
     getStrutPoints(t) {
         return this.applyDecasteljau(t).strutPoints;
     }
+
 
     getPointForT(t) {
         return this.applyDecasteljau(t).point;
@@ -8783,6 +8885,7 @@ class GeoSpline {
     {
         return this.angleEnteringNode( 0 );
     }
+
 
     angleEnteringNode( i )
     {
@@ -9031,6 +9134,7 @@ class GeoSpline {
         return { baseCurve: this, offsetCurve: offsetCurve }; 
     }   
 
+
     //For two curves that are supposed to be paralled, 
     //what offset has actually been achieved at t?    
     getOffsetBetweenCurves( otherCurve, t, targetOffset )
@@ -9058,6 +9162,40 @@ class GeoSpline {
 
         var line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
         return line.getLength();
+    }
+
+
+    /**
+     * Create an extended spline with the addition of a point or another curve.  Nb. there may be an acute
+     * angle resulting. 
+     */
+    extend( addition )
+    {
+        const extendedNodeData = this.nodeData.slice();
+
+        if ( addition instanceof GeoPoint )
+        {
+            var p = extendedNodeData.pop();
+
+            extendedNodeData.push( {inControlPoint:   p.inControlPoint,
+                                    point:            p.point,
+                                    outControlPoint:  p.outControlPoint ? p.outControlPoint : p.point } );
+
+            extendedNodeData.push( {inControlPoint:   addition,
+                                    point:            addition,
+                                    outControlPoint:  addition } );
+        }
+        else if ( addition instanceof GeoSpline ) 
+        {
+            for( const n of addition.nodeData )
+            {
+                extendedNodeData.push( {inControlPoint:   n.inControlPoint ? n.inControlPoint : n.point,
+                                        point:            n.point,
+                                        outControlPoint:  n.outControlPoint ? n.outControlPoint : n.point } );
+            } 
+        }
+        else throw "Unexpected type of addition. ";
+        return new GeoSpline( extendedNodeData );
     }
 }
 //# sourceMappingURL=patterneditor.js.map

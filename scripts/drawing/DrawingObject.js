@@ -42,7 +42,7 @@ class DrawingObject /*abstract*/ {
 
             var labelText = d.name;
             try {
-                if ( d.showLength === "label" )
+                if ( this.showLength() === "label" )
                     labelText += " " + this.getLengthAndUnits();
             } catch ( e ) {                
             }
@@ -56,94 +56,28 @@ class DrawingObject /*abstract*/ {
 
         }
 
-        if (( d.showLength === "line" ) && this.lineVisible())
+        if (( this.showLength() === "line" ) && this.lineVisible())
             this.drawLengthAlongLine( g, drawingOptions );
     }
 
+
     drawLengthAlongLine( g, drawingOptions )
     {
-        const d = this.data; //the original json data
-        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+        var path;
+        if ( this.line )
+            path = this.line;
+        else if ( this.curve )
+            path = this.curve;
+        else if ( this.arc )
+            path = this.arc;
+        else 
+            throw "Unknown type to add length along line";
 
-        
-        try {
-            const lengthToDisplay = this.getLengthAndUnits();
-            var p;
-            var a = 0; //horizontal, unless we get an angle. 
-            if ( this.line  )
-            {
-                p = this.line.pointAlongPathFraction(0.5);
-                a = this.line.angleDeg();
-            }
+        const lengthAndUnits = this.getLengthAndUnits();
 
-            else if ( this.curve )
-            {
-                p = this.curve.pointAlongPathFraction(0.5);
-                //TODO a =
-            }
-
-            if ( ! p )
-                throw "Failed to determine position for label";
-
-            {
-                var baseline = "middle";
-                var align = "middle";
-                var ta = 0;
-                var dy = 0;
-                //const patternUnits = this.patternPiece.pattern.units;
-                // /const spacing = (fontSize * 0.2);
-                const spacing = this.patternPiece.pattern.getPatternEquivalentOfMM(1);
-    
-
-                // East(ish)
-                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
-                {
-                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
-                    ta = - a;
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                // West(ish)
-                else if (  (( a >= 135 ) && ( a <225 )) 
-                )//|| (( a > 270 ) && ( a <315 ))  )
-                {
-                    baseline = "hanging";
-                    ta = - (a-180);
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                //North(ish)
-                else if (( a > 45 ) && ( a < 135 )) 
-                {
-                    baseline = "middle";//"auto"
-                    align = "middle";
-                    ta = -a;
-                    p.x -= spacing;
-                }
-                //South(ish)
-                else if (( a > 225 ) && ( a <= 270 )) 
-                {
-                    baseline = "auto"
-                    align = "middle";
-                    ta = - ( a-180 );
-                    p.x -= spacing;
-                }
-
-                g.append("text")
-                .attr("class","length")
-                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
-                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
-                .attr( "text-anchor", align ) //if we're drawing to the left of the line
-                .attr( "dy", dy + "px" ) //need to also scale this
-                .attr("font-size", fontSize + "px")
-                .text( lengthToDisplay ); //TODO make this more generic to cater for different types.
-    
-            }
-        } catch ( e ) {
-            console.log( "Failed to show length. ", e );            
-        }
+        this.patternPiece.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
     }
-
+s
 
     labelPosition() {
 
@@ -392,6 +326,23 @@ class DrawingObject /*abstract*/ {
             this.memberOf = [];
 
         this.memberOf.push( group );
+    }
+
+
+    showLength()
+    {
+        if (   this.data.showLength !== undefined 
+            && this.data.showLength !== "none" )
+            return this.data.showLength;
+
+        if ( this.memberOf )   
+            for( const g of this.memberOf )
+            {
+                if ( g.showLength !== "none" ) 
+                    return g.showLength;
+            }
+
+        return "none";
     }
 
 

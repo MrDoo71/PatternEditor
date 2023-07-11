@@ -10,6 +10,7 @@ class Group {
         this.visible = data.visible;
         this.update = data.update;
         this.contextMenu = data.contextMenu;
+        this.showLength = data.showLength === "none" ? undefined : data.showLength; //line or label
         this.members = [];
 
         if ( this.data.member )

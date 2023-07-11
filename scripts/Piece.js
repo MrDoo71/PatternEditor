@@ -60,6 +60,8 @@ class Piece {
                             else
                                 console.log("Couldn't match internal path node to drawing object: ", n );
                         }, ip );
+
+                    ip.showLength = ip.showLength === "none" ? undefined : ip.showLength; //line or label
                 }, this );             
                 
         if ( this.dataPanels )
@@ -823,7 +825,8 @@ class Piece {
 
     drawInternalPath( internalPathsGroup, internalPath, strokeWidth, useExportStyles )
     {
-        var path = undefined;
+        var path = undefined; //path as SVG
+        var geopath = undefined; //path as GeoSpline - so we can find the mid-point for adding the length
 
         var previousP;
         for  (var a=0; a<internalPath.nodes.length; a++ )
@@ -853,13 +856,38 @@ class Piece {
                 }
 
                 path = curve.svgPath( path );
+                geopath = geopath === undefined ? curve : geopath.extend( curve );
                 previousP = curve.pointAlongPathFraction(1);
             }
             else
             {
                 path = this.lineTo( path, n.p );
+                geopath = geopath === undefined ? new GeoSpline([{  inControlPoint:   undefined,
+                                                                    point:            n.p,
+                                                                    outControlPoint:  n.p } ]) : geopath.extend( n.p );
                 previousP = n.p;
             }
+        }
+
+        //nb path and geopath.svgPath() should be equivalent, though they won't be identical.
+        //console.log( "Path " + path );
+        //console.log( "GeoPath " + geopath );
+
+        if ( internalPath.showLength !== undefined ) //we don't draw a label, though we could use label as 100% and line as 50%
+        {
+            //TODO use non-semantic-scaling font size that we use for labels
+            var l = geopath.pathLength(); //"TODO";//this.getLengthAndUnits();
+
+            if ( l !== undefined )
+            {
+                const patternUnits = this.patternPiece.pattern.units;
+                var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                l = Math.round( precision * l ) / precision;            
+                l = l + " " + patternUnits;    
+            }
+
+            const fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+            this.patternPiece.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
         }
 
         var p = internalPathsGroup.append("path")
@@ -892,7 +920,7 @@ class Piece {
     drawMarkings( g, useExportStyles )
     {
         var lineSpacing = 1.2;
-        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(8); //8mm equiv
+        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
         var align = "start";
 
         if ( this.dataPanels )

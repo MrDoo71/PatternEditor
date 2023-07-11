@@ -200,6 +200,13 @@ class GeoSpline {
     }
 
 
+    /**
+     * Return the value t for this spline.
+     * If this spline has two nodes, then t is between 0 and 1, or undefined if point p is not on the curve.
+     * If this spline has three+ nodes then t is between 0 and nodes.length-1. 
+     * @param {*} p 
+     * @returns 
+     */
     findTForPoint(p) {
         //only where nodeData.length == 2
         //sometimes we're testing whether point p is on the arc. 
@@ -208,14 +215,20 @@ class GeoSpline {
         {
             for ( var i=0; i<(this.nodeData.length-1); i++ )
             {
-                var node1 = this.nodeData[i];
-                var node2 = this.nodeData[i+1];
-                var t = (new GeoSpline( [ node1, node2 ] )).findTForPoint(p);
+                const node1 = this.nodeData[i];
+                const node2 = this.nodeData[i+1];
+                const segment = new GeoSpline( [ node1, node2 ] );
+                const bounds = new Bounds();
+                segment.adjustBounds( bounds );
+
+                if ( ! bounds.containsPoint(p) )
+                    continue;
+
+                var t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
             }
             return undefined;
-            //throw "findTForPoint() only supported for individual segments";
         }
 
         //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
@@ -289,6 +302,12 @@ class GeoSpline {
         return shorterPath;
     }
 
+
+    /**
+     * Return the length of this spline, or the given segment. 
+     * @param {*} segment 
+     * @returns 
+     */
     pathLength( segment ) {
 
         if ( segment ) {
@@ -439,6 +458,7 @@ class GeoSpline {
     getStrutPoints(t) {
         return this.applyDecasteljau(t).strutPoints;
     }
+
 
     getPointForT(t) {
         return this.applyDecasteljau(t).point;
@@ -660,6 +680,7 @@ class GeoSpline {
     {
         return this.angleEnteringNode( 0 );
     }
+
 
     angleEnteringNode( i )
     {
@@ -908,6 +929,7 @@ class GeoSpline {
         return { baseCurve: this, offsetCurve: offsetCurve }; 
     }   
 
+
     //For two curves that are supposed to be paralled, 
     //what offset has actually been achieved at t?    
     getOffsetBetweenCurves( otherCurve, t, targetOffset )
@@ -935,5 +957,41 @@ class GeoSpline {
 
         var line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
         return line.getLength();
+    }
+
+
+    /**
+     * Create an extended spline with the addition of a point or another curve.  Nb. there may be an acute
+     * angle resulting. 
+     */
+    extend( addition )
+    {
+        const extendedNodeData = this.nodeData.slice();
+
+        if ( addition instanceof GeoPoint )
+        {
+            var p = extendedNodeData.pop();
+
+            extendedNodeData.push( {inControlPoint:   p.inControlPoint,
+                                    point:            p.point,
+                                    outControlPoint:  p.outControlPoint ? p.outControlPoint : p.point } );
+
+            extendedNodeData.push( {inControlPoint:   addition,
+                                    point:            addition,
+                                    outControlPoint:  addition } );
+        }
+        else if ( addition instanceof GeoSpline ) 
+        {
+            for( const n of addition.nodeData )
+            {
+                extendedNodeData.push( {inControlPoint:   n.inControlPoint ? n.inControlPoint : n.point,
+                                        point:            n.point,
+                                        outControlPoint:  n.outControlPoint ? n.outControlPoint : n.point } );
+            } 
+        }
+        else 
+            throw "Unexpected type of addition. ";
+            
+        return new GeoSpline( extendedNodeData );
     }
 }

@@ -269,7 +269,7 @@ class PatternDrawing {
     }
 
     add(data) {
-console.log("Add() is this used anywhere?");
+        console.log("Add() is this used anywhere?");
 
         if (this.defaults) {
             for (var d in this.defaults) {
@@ -285,8 +285,92 @@ console.log("Add() is this used anywhere?");
         return dObj;
     }
 
+
     setDefaults(defaults) {
         this.defaults = defaults;
     }
+
+
+    //Add a label (to svg group g) positioned midway along path
+    drawLabelAlongPath( g, path, label, fontSize ) //TODO  t, include in .val export but strip 
+    {
+        //const d = this.data; //the original json data
+        fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        
+        try {
+            const p = path.pointAlongPathFraction(0.5);
+            var a = 0; //horizontal, unless we get an angle. 
+            if ( path instanceof GeoLine  )
+            {
+                a = path.angleDeg();
+            }
+            else if ( path instanceof GeoSpline )
+            {
+                const p2 = path.pointAlongPathFraction(0.5001);
+                const lineSegment = new GeoLine(p, p2);
+                a = lineSegment.angleDeg();
+            }
+
+            if ( ! p )
+                throw "Failed to determine position for label";
+
+            {
+                var baseline = "middle";
+                var align = "middle";
+                var ta = 0;
+                var dy = 0;
+                //const patternUnits = this.patternPiece.pattern.units;
+                // /const spacing = (fontSize * 0.2);
+                const spacing = this.pattern.getPatternEquivalentOfMM(1);
+    
+
+                // East(ish)
+                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                {
+                    baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                    ta = - a;
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                // West(ish)
+                else if (  (( a >= 135 ) && ( a <225 )) 
+                )//|| (( a > 270 ) && ( a <315 ))  )
+                {
+                    baseline = "hanging";
+                    ta = - (a-180);
+                    //p.y += spacing;
+                    dy = spacing;
+                }
+                //North(ish)
+                else if (( a > 45 ) && ( a < 135 )) 
+                {
+                    baseline = "middle";//"auto"
+                    align = "middle";
+                    ta = -a;
+                    p.x -= spacing;
+                }
+                //South(ish)
+                else if (( a > 225 ) && ( a <= 270 )) 
+                {
+                    baseline = "auto"
+                    align = "middle";
+                    ta = - ( a-180 );
+                    p.x -= spacing;
+                }
+
+                g.append("text")
+                .attr("class","length")
+                .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
+                .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
+                .attr( "text-anchor", align ) //if we're drawing to the left of the line
+                .attr( "dy", dy + "px" ) //need to also scale this
+                .attr("font-size", fontSize + "px")
+                .text( label ); //TODO make this more generic to cater for different types.
+    
+            }
+        } catch ( e ) {
+            console.log( "Failed to show length. ", e );            
+        }
+    }    
 }
 
