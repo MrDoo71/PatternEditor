@@ -233,7 +233,7 @@ s
                         .attr("fill", "none")
                         .attr("stroke-width", this.getStrokeWidth( isOutline) );
     
-                        if ( ! isOutline )        
+                        if ( ! isOutline )
                             p.attr("stroke", this.getColor() )
                             .attr("class", this.getLineStyle() );    
                     }
@@ -271,11 +271,11 @@ s
 
     getColor() {
 
-        if (( this.data.color === "black" ) && ( typeof iskDarkMode !== "undefined" ) && iskDarkMode )
-            return "white";
+        //if (( this.data.color === "black" ) && ( typeof iskDarkMode !== "undefined" ) && iskDarkMode )
+        //    return "white";
 
-        if (( this.data.color === "white" ) && ( typeof iskDarkMode !== "undefined" )&& ( ! iskDarkMode ) )
-            return "black";
+        //if (( this.data.color === "white" ) && ( typeof iskDarkMode !== "undefined" )&& ( ! iskDarkMode ) )
+        //    return "black";
           
         return this.data.color;
     }
@@ -4333,8 +4333,8 @@ class Piece {
         }
 
         //nb path and geopath.svgPath() should be equivalent, though they won't be identical.
-        console.log( "Path " + path );
-        console.log( "GeoPath " + geopath );
+        //console.log( "Path " + path );
+        //console.log( "GeoPath " + geopath );
 
         if ( internalPath.showLength !== undefined ) //we don't draw a label, though we could use label as 100% and line as 50%
         {
@@ -4349,8 +4349,6 @@ class Piece {
                 l = l + " " + patternUnits;    
             }
 
-            //var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
-    
             const fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
             this.patternPiece.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
         }
@@ -4379,8 +4377,6 @@ class Piece {
             if ( dasharray )
                 p.attr("stroke-dasharray", dasharray );  
         }
-
-
     }
 
 
@@ -7270,6 +7266,7 @@ class Bounds {
         return Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
     }
 
+    
     /**
      * Return true if these bounds contain the point, false if the point
      * is outside these bounds. 
@@ -9194,7 +9191,9 @@ class GeoSpline {
                                         outControlPoint:  n.outControlPoint ? n.outControlPoint : n.point } );
             } 
         }
-        else throw "Unexpected type of addition. ";
+        else 
+            throw "Unexpected type of addition. ";
+            
         return new GeoSpline( extendedNodeData );
     }
 }

@@ -233,7 +233,7 @@ s
                         .attr("fill", "none")
                         .attr("stroke-width", this.getStrokeWidth( isOutline) );
     
-                        if ( ! isOutline )        
+                        if ( ! isOutline )
                             p.attr("stroke", this.getColor() )
                             .attr("class", this.getLineStyle() );    
                     }
@@ -271,11 +271,11 @@ s
 
     getColor() {
 
-        if (( this.data.color === "black" ) && ( typeof iskDarkMode !== "undefined" ) && iskDarkMode )
-            return "white";
-
-        if (( this.data.color === "white" ) && ( typeof iskDarkMode !== "undefined" )&& ( ! iskDarkMode ) )
-            return "black";
+        //Actually, we'll handle this in the stylesheet
+        //if (( this.data.color === "black" ) && ( typeof iskDarkMode !== "undefined" ) && iskDarkMode )
+        //    return "white";
+        //if (( this.data.color === "white" ) && ( typeof iskDarkMode !== "undefined" )&& ( ! iskDarkMode ) )
+        //    return "black";
           
         return this.data.color;
     }
