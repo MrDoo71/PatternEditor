@@ -62,12 +62,13 @@ class Bounds {
      * 
      * @param {*} p 
      */
-    containsPoint( p )
+    containsPoint( p, tolerance )
     {
-        return    ( p.x >= this.minX )
-               && ( p.x <= this.maxX )
-               && ( p.y >= this.minY )
-               && ( p.y <= this.maxY );
+        tolerance = tolerance === undefined ? 0 : tolerance;
+        return    ( p.x >= ( this.minX - tolerance ) )
+               && ( p.x <= ( this.maxX + tolerance ) )
+               && ( p.y >= ( this.minY - tolerance ) )
+               && ( p.y <= ( this.maxY + tolerance ) );
     }
 }
 

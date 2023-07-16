@@ -123,7 +123,7 @@ class GeoSpline {
         if ( fraction == 0 )
             return this.nodeData[0].point;
 
-        if ( fraction == 100 )
+        if ( fraction == 1 )
             return this.nodeData[ this.nodeData.length-1 ].point;
 
         var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -208,22 +208,30 @@ class GeoSpline {
      * @returns 
      */
     findTForPoint(p) {
-        //only where nodeData.length == 2
-        //sometimes we're testing whether point p is on the arc. 
 
+        //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
+        //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
         if ( this.nodeData.length !== 2 )
         {
             for ( var i=0; i<(this.nodeData.length-1); i++ )
             {
                 const node1 = this.nodeData[i];
                 const node2 = this.nodeData[i+1];
+
+                if ( node1.point.equals( p ) )
+                    return i * 1.0;
+
+                if ( node2.point.equals( p ) )
+                    return (i+1) *1.0;
+
                 const segment = new GeoSpline( [ node1, node2 ] );
                 const bounds = new Bounds();
                 segment.adjustBounds( bounds );
 
-                if ( ! bounds.containsPoint(p) )
+                if ( ! bounds.containsPoint(p, 0.0002 ) )
                     continue;
 
+                console.log( "Segment " + i );
                 var t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
@@ -231,25 +239,27 @@ class GeoSpline {
             return undefined;
         }
 
-        //We could do this for each segnment and instantly dismiss any segment where p not in the box bounded by
-        //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
+        //only where nodeData.length == 2
+        //sometimes we're testing whether point p is on the arc. 
 
-        //TODO special handing for where p is either nodeData[0 or 1].point return 0 or 1
-        //if ( )
+        if ( this.nodeData[0].point.equals( p ) )
+            return 0.0;
 
-        //TODO we can shortcut and return undefined if p is outside the binding box
-
+        if ( this.nodeData[1].point.equals( p ) )
+            return 1.0;        
 
         var minT = 0.0,
             maxT = 1.0,
             iter = 0,
-            threshold = this.pathLength() / 1000;
+            threshold = this.pathLength() / 1000.0;
 
         var t;
+        var closestDistance;
+        var closestT;
         while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
-            var closestDistance = undefined;
-            var closestT = null;
+            closestDistance = undefined;
+            closestT = null;
             var interval = (maxT - minT)/4; //0.25 first time around.
             for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
@@ -264,26 +274,25 @@ class GeoSpline {
                 if (( d === 0 ) || ( d < threshold )) 
                 {
                     //console.log( "i:" + iter + " t:" + t + " d:" + d + " FOUND" );
-                    if (( t > 1 ) || ( t < 0 ))
-                        return undefined; //they are probably on another segment
+                    //if (( t > 1 ) || ( t < 0 ))
+                    //    return undefined; //they are probably on another segment
 
                     return t;
                 }
 
             }
-            minT = closestT - interval; //So at the end of iteration 1 we'll be setting up a span next time that is 0.5 wide, which we'll cut into five slots 
-            maxT = closestT + interval;
+            minT = Math.max( closestT - (interval*1.001), 0.0 ); //So at the end of iteration 1 we'll be setting up a span next time that is 0.5 wide, which we'll cut into five slots 
+            maxT = Math.min( closestT + (interval*1.001), 1.0 );
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
         //console.log("Point not on curve." );
-        if (   ( t > 0 ) 
-            && ( t < 1 ) )
+        if (   ( closestT >= 0.0 ) 
+            && ( closestT <= 1.0 ) )
             //&& ( closestDistance < threshold ))
         {
-            var pt = this.getPointForT( t );
+            var pt = this.getPointForT( closestT );
             var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
 
-            console.log("**** CLOSEST " + d + " THRESHOLD:" + threshold );
             if ( d <= (threshold*2) ) //Stocking top appears to need threshold*2
                 return t; 
         }
@@ -551,7 +560,11 @@ class GeoSpline {
             else if ( n2 != null )
             {
                 var segment = this.pathSegment( i+1 ); //so from i to i+1
-                var tWithinSegment = segment.findTForPoint(p);                    
+
+                const bounds = new Bounds();
+                segment.adjustBounds( bounds );
+
+                var tWithinSegment = bounds.containsPoint(p,0.0002) ? segment.findTForPoint(p) : undefined;
 
                 if ( tWithinSegment === 0 ) //effectively ( n1.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
                 {

@@ -65,6 +65,26 @@ class GeoPoint {
 
     equals( p )
     {
+        if ( p === this )
+            return true;
+
+        if ( this.x === p.x && this.y === p.y )
+            return true;
+
+        const dx = Math.abs( this.x - p.x );
+        const dy = Math.abs( this.y - p.y );
+        
+        if (( dx < 0.001 ) && ( dy < 0.001 ))
+        {
+            if (( dx < 0.001 ) && ( dy < 0.001 ))
+            {
+                //console.warn("EQUALS - CLOSE! " + Math.max( dx, dy ) + " MATCHED");
+                return true;
+            }
+
+            //console.warn("EQUALS - CLOSE! " + Math.max( dx, dy ) + " X");
+        }
+
         return this.x === p.x && this.y === p.y;
     }
 
