@@ -999,10 +999,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             }
         }
 
-        var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
-
         if ( ! editorOptions.skipPieces )
         {
+            var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
             var pg = pieceGroup.selectAll("g");    
             pg = pg.data( patternPiece.pieces );
             pg.enter()

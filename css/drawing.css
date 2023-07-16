@@ -286,7 +286,7 @@ g.j-pieces path.seamallowance {
 }
 
 g.j-pieces path.internalpath,
-g.j-pieces path.notch
+g.j-pieces path.notch,
 g.j-drawing line[stroke="white"],
 g.j-drawing path[stroke="white"]{
     stroke:black;
@@ -299,12 +299,13 @@ body.k-dark-mode g.j-drawing path[stroke="black"] {
     stroke:white;
 }
 
-g.j-pieces text.patternlabel {
+g.j-pieces text.patternlabel,
+g.j-pieces text.length {
     fill: black;
 }
 
-body.k-dark-mode
-g.j-pieces text.patternlabel {
+body.k-dark-mode g.j-pieces text.patternlabel,
+body.k-dark-mode g.j-pieces text.length {
     fill: white;
 }
 

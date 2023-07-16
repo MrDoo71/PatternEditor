@@ -14,10 +14,12 @@ class Piece {
         //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
         this.calculated = false;
+        this.ignore = false;
 
-        if (( ! this.detailNodes ) || ( this.detailNodes.length === 0))
+        if (( ! this.detailNodes ) || ( this.detailNodes.length < 2 ) )
         {
-            console.log("Piece " + this.name + " has no nodes." );
+            console.log("Piece " + this.name + " has 0-1 nodes and is therefore invalid." );
+            this.ignore = true;
             return;
         }
 
@@ -102,6 +104,9 @@ class Piece {
 
     calculate()
     {
+        if ( this.ignore )
+            return;
+
         this.calculated = true;
         console.log("*********");
         console.log("Prepare piece: " + this.name );
@@ -680,6 +685,9 @@ class Piece {
 
     drawSeamLine( g, useExportStyles ) 
     {
+        if ( this.ignore )
+            return;
+
         if ( ! this.calculated )
             this.calculate();
 
@@ -700,6 +708,9 @@ class Piece {
 
     drawSeamAllowance( g, useExportStyles ) 
     {
+        if ( this.ignore )
+            return;
+
         if ( ! this.calculated )
             this.calculate();
 
@@ -719,6 +730,9 @@ class Piece {
 
     drawNotches( g, useExportStyles  )
     {
+        if ( this.ignore )
+            return;
+
         if ( ! this.detailNodes )
             return;
 
@@ -810,6 +824,9 @@ class Piece {
 
     drawInternalPaths( g, useExportStyles  )
     {
+        if ( this.ignore )
+            return;
+
         var internalPathsGroup = g.append("g")
                                   .attr("id","internal paths");        
         var strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
@@ -825,6 +842,9 @@ class Piece {
 
     drawInternalPath( internalPathsGroup, internalPath, strokeWidth, useExportStyles )
     {
+        if ( this.ignore )
+            return;
+
         var path = undefined; //path as SVG
         var geopath = undefined; //path as GeoSpline - so we can find the mid-point for adding the length
 
@@ -919,6 +939,9 @@ class Piece {
 
     drawMarkings( g, useExportStyles )
     {
+        if ( this.ignore )
+            return;
+
         var lineSpacing = 1.2;
         var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
         var align = "start";

@@ -379,11 +379,12 @@ s
             //if ( this.usedByPieces contains options.targetPiece )
             //return true else return false
 
-            options.targetPiece.detailNodes.forEach( 
-                function(n) { 
+            if ( options.targetPiece.detailNodes )
+                for( const n of options.targetPiece.detailNodes )
+                {
                     if ( n.dObj === this ) 
                         isVisible = true; 
-            }, this ); 
+                }
 
             if ( ! isVisible )
                 return false;
