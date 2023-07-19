@@ -35,10 +35,25 @@ class GeoSpline {
             var n = this.nodeData[i];
 
             if (( ! n.outControlPoint ) && ( typeof n.outAngle === "number" ) && ( typeof n.outLength === "number" ))
+            {
                 n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
+            }
+            else if ( n.outControlPoint && n.outAngle === undefined )
+            {
+                //using angles in formulas requires that these are set
+                const l = new GeoLine( n.point, n.outControlPoint );
+                n.outAngle = l.angleDeg();
+            }
 
             if (( ! n.inControlPoint ) && ( typeof n.inAngle === "number" ) && ( typeof n.inLength === "number" ))
+            {
                 n.inControlPoint = n.point.pointAtDistanceAndAngleDeg( n.inLength, n.inAngle );
+            }
+            else if ( n.inControlPoint && n.inAngle === undefined )
+            {
+                const l = new GeoLine( n.point, n.inControlPoint );
+                n.inAngle = l.angleDeg();
+            }
         }
     }
 
