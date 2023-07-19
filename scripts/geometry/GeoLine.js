@@ -84,9 +84,10 @@ class GeoLine {
     //Return a GeoPoint for where this line intersects the specified GeoArc, GeoEllipticalArc, or GeoSpline.
     intersectArc( arc, alreadyTweaked ) { 
         //work around a bug where the arc spans 0 deg
-        if (    ( arc.angle1 < 0 ) 
+        if (    ( arc instanceof GeoArc )
+             && ( arc.angle1 < 0 ) 
              && ( arc.angle2 > 0 ) 
-             && ( arc instanceof GeoArc ) ) //not an elliptical
+              ) //not an elliptical
         {
             try { 
                 var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
@@ -171,8 +172,16 @@ class GeoLine {
             {
                 //console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
-                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.0000000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
-                return lineTweaked.intersectArc( arc, true );
+                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.00000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
+
+                try {
+                    //This should be no different, but sometimes this works when arc-line intersect fails
+                    return lineTweaked.intersectArc( arc, true );
+                } catch ( e ) {
+                    //There still appears to be a bug in arc intersection. 
+                    const arcAsSpline = arc.asGeoSpline();
+                    return this.intersectArc( arcAsSpline );
+                }
             }
             throw "No intersection with arc. ";
         }
