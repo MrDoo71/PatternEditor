@@ -10,13 +10,13 @@ class PointCutSplinePath extends DrawingObject {
     calculate(bounds) {
         var d = this.data;
 
-        if (typeof this.splinePath === "undefined")
-            this.splinePath = this.patternPiece.getObject(d.splinePath);
+        if (typeof this.curve === "undefined")
+            this.curve = this.patternPiece.getObject(d.splinePath);
 
         if (typeof this.length === "undefined")
             this.length = this.patternPiece.newFormula(d.length);
 
-        this.p = this.splinePath.pointAlongPath( this.length.value() );
+        this.p = this.curve.pointAlongPath( this.length.value() );
         
         this.adjustBounds( bounds );
     }
@@ -37,12 +37,12 @@ class PointCutSplinePath extends DrawingObject {
     html( asFormula ) {
         return '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
-                + " along path " + this.refOf( this.splinePath );
+                + " along path " + this.refOf( this.curve );
     }
 
 
     setDependencies( dependencies ) {
-        dependencies.add( this, this.splinePath );
+        dependencies.add( this, this.curve );
         dependencies.add( this, this.length );
     }    
 

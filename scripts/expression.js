@@ -84,24 +84,40 @@ class Expression {
                         this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
                         //one of these will be a Spline, the other will be an intersection point on it, or distance along it. 
 
-                        //We're not the whole spline, just a segment of it. 
+                        //We're not the whole spline, just a segment of it. We need to find a curve that both drawing objects are on.
 
-                        var drawingObjectDefiningSpline = (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
-                                                            || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
-                                                            || ( this.drawingObject1.data.objectType === "cutSpline" ) ) 
-                                                          ? this.drawingObject1
-                                                          : this.drawingObject2;
+                        const curveBeingCut = function( d ) {
+                            if ( d.arc )                             
+                                return d.arc;
+                            else if ( d.curve )                             
+                                return d.curve;
+                            else
+                                throw "Path not found.";                
+                        };
 
-                        if ( drawingObjectDefiningSpline.arc )                             
-                            this.splineDrawingObject = drawingObjectDefiningSpline.arc;
-                        else if ( drawingObjectDefiningSpline.splinePath )                             
-                            this.splineDrawingObject = drawingObjectDefiningSpline.splinePath;
-                        else if ( drawingObjectDefiningSpline.curve )                             
-                            this.splineDrawingObject = drawingObjectDefiningSpline.curve;
-                        else
-                            throw "Path not found.";
+                        //Return true if 'other' is the start or end of this curve. 
+                        const checkRelevant = function( curve, other ) {
+                            return    ( ( curve.startPoint ) && ( curve.startPoint === other ) )
+                                   || ( ( curve.endPoint ) && ( curve.endPoint === other ) )
+                                   || ( ( curve.data.pathNode ) && ( curve.data.pathNode[0].point === other ) )
+                                   || ( ( curve.data.pathNode ) && ( curve.data.pathNode[curve.data.pathNode.length-1].point === other ) );
+                        };
 
-                        //console.log("Function " + data.variableType + " this.drawingObject1.data.objectType:" + this.drawingObject1.data.objectType + " this.drawingObject2.data.objectType:" + this.drawingObject2.data.objectType + " splineDrawingObject:" + this.splineDrawingObject );
+                        var drawingObjectCuttingSpline;
+
+                        if (    (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
+                                  || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
+                                  || ( this.drawingObject1.data.objectType === "cutSpline" ) )
+                             && checkRelevant( curveBeingCut( this.drawingObject1 ), this.drawingObject2 ) )
+                            drawingObjectCuttingSpline = this.drawingObject1;
+
+                        else if (    (    ( this.drawingObject2.data.objectType === "pointIntersectArcAndAxis" )               
+                                       || ( this.drawingObject2.data.objectType === "pointCutSplinePath" ) 
+                                       || ( this.drawingObject2.data.objectType === "cutSpline" ) )
+                                 && checkRelevant( curveBeingCut( this.drawingObject2 ), this.drawingObject1 ) )
+                                 drawingObjectCuttingSpline = this.drawingObject2;
+
+                        this.splineDrawingObject = curveBeingCut( drawingObjectCuttingSpline );
 
                         //The other drawing object will either be the start or end of this curve, OR another intersect on the same curve. 
                     }
@@ -188,6 +204,9 @@ class Expression {
 
 
     functionValue(currentLength) {
+
+        var r; 
+
         if ( this.function === "angleOfLine" )
         {
             var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
@@ -196,7 +215,7 @@ class Expression {
             var deg = line.angleDeg();
             if ( deg < 0 )
                 deg += 360; 
-            return deg;
+            r = deg;
         }
         else if ( this.function === "lengthOfLine" )
         {
@@ -204,7 +223,7 @@ class Expression {
             var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
             var line = new GeoLine( point1, point2 );
             //console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
-            return line.getLength();
+            r = line.getLength();
         }
         else if (    ( this.function === "lengthOfSplinePath" )
                   || ( this.function === "lengthOfSpline" ) )
@@ -222,9 +241,9 @@ class Expression {
 
             if (    ( this.function === "lengthOfSplinePath" )
                  && ( this.segment ) )
-                 return this.drawingObject.curve.pathLength( this.segment );
-
-            return this.drawingObject.curve.pathLength();
+                r = this.drawingObject.curve.pathLength( this.segment );
+            else 
+                r = this.drawingObject.curve.pathLength();
         }
         else if (    ( this.function === "angle1OfSpline" )
                   || ( this.function === "angle2OfSpline" ) )
@@ -245,14 +264,14 @@ class Expression {
             }
 
             if ( this.function === "angle1OfSpline" )
-                return spline.nodeData[0].outAngle;
+                r = spline.nodeData[0].outAngle;
             else //angle2OfSpline
-                return spline.nodeData[ spline.nodeData.length-1 ].inAngle;
+                r = spline.nodeData[ spline.nodeData.length-1 ].inAngle;
         }
         else if ( this.function === "lengthOfArc" )
         {
             if ( this.arcSelection === "wholeArc")
-                return this.drawingObject.arc.pathLength();
+                r = this.drawingObject.arc.pathLength();
             else
             {
                 //this.drawingObject is a cut object
@@ -270,7 +289,7 @@ class Expression {
                         cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
                         if ( cutArc.angle2 < 0 )
                             cutArc.angle2 += 360;
-                        return cutArc.pathLength();
+                        r = cutArc.pathLength();
                     }
                     else //if arc
                     {
@@ -279,7 +298,7 @@ class Expression {
                         var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
 
                         //console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
-                        return length;
+                        r = length;
                     }                    
                 }
                 else //afterArcCut
@@ -290,14 +309,14 @@ class Expression {
                         cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
                         if ( cutArc.angle1 < 0 )
                             cutArc.angle1 += 360;
-                        return cutArc.pathLength();
+                        r = cutArc.pathLength();
                     }
                     else //if arc
                     {
                         var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
                         var segmentRad = arcEndAngleRad - angleToIntersectRad;
                         var length = radiusToIntersectLine.length * segmentRad;
-                        return length;
+                        r = length;
                     }
                 }
             }
@@ -305,65 +324,70 @@ class Expression {
         else if ( this.function === "radiusOfArc" )
         {
             if ( this.radiusSelection === 1 )
-                return this.drawingObject.radius1.value();
+                r = this.drawingObject.radius1.value();
             else if ( this.radiusSelection === 2 )
-                return this.drawingObject.radius2.value();
+                r = this.drawingObject.radius2.value();
             else
-                return this.drawingObject.radius.value();
+                r = this.drawingObject.radius.value();
         }
         else if  ( this.function === "sqrt" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.sqrt( p1 ); 
+            r = Math.sqrt( p1 ); 
         }
         else if  ( this.function === "-" )
         {
             var p1 = this.params[0].value(currentLength);
-            return -p1; 
+            r = -p1; 
         }
         else if ( this.function === "min" )
         {
             var p1 = this.params[0].value(currentLength);
             var p2 = this.params[1].value(currentLength);
-            return Math.min( p1, p2 );
+            r = Math.min( p1, p2 );
         }
         else if ( this.function === "max" )
         {
             var p1 = this.params[0].value(currentLength);
             var p2 = this.params[1].value(currentLength);
-            return Math.max( p1, p2 );
+            r = Math.max( p1, p2 );
         }
         else if ( this.function === "sin" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.sin( p1 * Math.PI / 180 );
+            r = Math.sin( p1 * Math.PI / 180 );
         }
         else if ( this.function === "cos" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.cos( p1 * Math.PI / 180 );
+            r = Math.cos( p1 * Math.PI / 180 );
         }
         else if ( this.function === "tan" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.tan( p1 * Math.PI / 180 );
+            r = Math.tan( p1 * Math.PI / 180 );
         }
         else if ( this.function === "asin" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.asin( p1 ) * 180 / Math.PI;
+            r = Math.asin( p1 ) * 180 / Math.PI;
         }
         else if ( this.function === "acos" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.acos( p1 ) * 180 / Math.PI;
+            r = Math.acos( p1 ) * 180 / Math.PI;
         }
         else if ( this.function === "atan" )
         {
             var p1 = this.params[0].value(currentLength);
-            return Math.atan( p1 ) * 180 / Math.PI;
+            r = Math.atan( p1 ) * 180 / Math.PI;
         }        
         else throw ("Unknown function: " + this.function );
+
+        if ( r === undefined || Number.isNaN( r ) )
+            throw this.function + " - result not a number. ";
+
+        return r;
     }
     
 

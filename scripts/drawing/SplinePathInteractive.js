@@ -19,21 +19,27 @@ class SplinePathInteractive extends DrawingObject {
         if ( typeof this.nodes === "undefined" )
         {
             this.nodes = [];
-            for( var i=0; i< d.pathNode.length; i++ )
-            {
-                var pathNode = this.data.pathNode[i];
 
-                pathNode.point   = this.patternPiece.getObject( pathNode.point );
-                pathNode.angle1  = this.patternPiece.newFormula( pathNode.angle1 ); 
-                pathNode.length1 = this.patternPiece.newFormula( pathNode.length1 ); 
-                pathNode.angle2  = this.patternPiece.newFormula( pathNode.angle2 ); 
-                pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
+            try {
+                for( var i=0; i< d.pathNode.length; i++ )
+                {
+                    var pathNode = this.data.pathNode[i];
 
-                this.nodes.push( { inAngle:   pathNode.angle1.value(),
-                                    inLength:  pathNode.length1.value(),
-                                    point:     pathNode.point.p,
-                                    outAngle:  pathNode.angle2.value(),
-                                    outLength: pathNode.length2.value() } );
+                    pathNode.point   = this.patternPiece.getObject( pathNode.point );
+                    pathNode.angle1  = this.patternPiece.newFormula( pathNode.angle1 ); 
+                    pathNode.length1 = this.patternPiece.newFormula( pathNode.length1 ); 
+                    pathNode.angle2  = this.patternPiece.newFormula( pathNode.angle2 ); 
+                    pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
+
+                    this.nodes.push( { inAngle:   pathNode.angle1.value(),
+                                       inLength:  pathNode.length1.value(),
+                                       point:     pathNode.point.p,
+                                       outAngle:  pathNode.angle2.value(),
+                                       outLength: pathNode.length2.value() } );
+                }
+            } catch ( e ) {
+                this.error = e;
+                return;
             }
         }
 
@@ -77,29 +83,36 @@ class SplinePathInteractive extends DrawingObject {
                     +'curved path:';
 
         var d = this.data;
+        
+        try {
+            var thtml = "<table><tbody>";
+            for( var i=0; i< d.pathNode.length; i++ )
+            {
+                thtml += "<tr><td>";
+                thtml += this.refOf( d.pathNode[i].point );
+                thtml += "</td>";
 
-        html += "<table><tbody>";
-        for( var i=0; i< d.pathNode.length; i++ )
-        {
-            html += "<tr><td>";
-            html += this.refOf( d.pathNode[i].point );
-            html += "</td>";
+                if ( i == 0 )
+                    thtml += "<td></td><td></td>";
+                else
+                    thtml +=    "<td>" + d.pathNode[i].angle1.htmlAngle( asFormula ) 
+                            + "</td><td>" + d.pathNode[i].length1.htmlLength( asFormula ) + "</td>";
 
-            if ( i == 0 )
-                html += "<td></td><td></td>";
-            else
-                html +=    "<td>" + d.pathNode[i].angle1.htmlAngle( asFormula ) 
-                        + "</td><td>" + d.pathNode[i].length1.htmlLength( asFormula ) + "</td>";
+                if ( i == (d.pathNode.length -1) )
+                    thtml += "<td></td><td></td>";
+                else
+                    thtml +=    " <td>" + d.pathNode[i].angle2.htmlAngle( asFormula ) 
+                            + "</td><td>" + d.pathNode[i].length2.htmlLength( asFormula ) + "</td>";
 
-            if ( i == (d.pathNode.length -1) )
-                html += "<td></td><td></td>";
-            else
-                html +=    " <td>" + d.pathNode[i].angle2.htmlAngle( asFormula ) 
-                        + "</td><td>" + d.pathNode[i].length2.htmlLength( asFormula ) + "</td>";
-
-            html += "</tr>";         
+                thtml += "</tr>";         
+            }
+            thtml += "</tbody></table>";
+            html += thtml;
+        } catch ( e ) {
+            if ( ! this.error )
+                html += e;
         }
-        html += "</tbody></table>";
+
         return html;
     }
 

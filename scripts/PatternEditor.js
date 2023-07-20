@@ -1427,6 +1427,8 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
             if ( ! d.error )
                 d.error = "Failed to generate description.";
+
+            html = '<div class="error">' + d.error + '</div>';
         }
 
         if ( d.error )

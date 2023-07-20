@@ -220,7 +220,10 @@ class PatternDrawing {
         else if (typeof formula.expression === "object") {
             f.expression = new Expression( f.expression, this.pattern, this );
             f.value = function (currentLength) {
-                return f.expression.value(currentLength);
+                const v = f.expression.value(currentLength);
+                if ( Number.isNaN( v ) )
+                    throw "Formula result is not a number. ";
+                return v;
             };
             f.html = function( asFormula, currentLength ) {
                 return f.expression.html( asFormula, currentLength );
