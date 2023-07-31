@@ -2217,6 +2217,7 @@ class PointIntersectCurves extends DrawingObject {
         {
             //Vertical correction has first dibs. verticalCrossPoint=="One" means highest point; horizontalCrossPoint=="One" means leftmost point
             var minXPnt, maxXPnt, minYPnt, maxYPnt;
+            var selectedPoint;
             for ( var i = 0; i<intersections.points.length; i++ )
             {
                 var intersect = intersections.points[i];
@@ -2232,17 +2233,18 @@ class PointIntersectCurves extends DrawingObject {
             if ( minYPnt !== maxYPnt )
             {
                 if ( this.data.verticalCrossPoint === "One" )
-                    this.p = minYPnt;
+                    selectedPoint = minYPnt;
                 else
-                    this.p = maxYPnt;
+                    selectedPoint = maxYPnt;
             }
             else
             {
                 if ( this.data.horizontalCrossPoint === "One" )
-                    this.p = minXPnt;
+                    selectedPoint = minXPnt;
                 else
-                    this.p = maxXPnt;
+                    selectedPoint = maxXPnt;
             }
+            this.p = new GeoPoint( selectedPoint.x, selectedPoint.y );
         }
 
         this.adjustBounds( bounds );
@@ -5081,10 +5083,14 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         console.log("Failed to load pattern: ", e );
 
         try {
-            if (( options.returnSVG !== undefined ) && ( options.returnID ))
+            const failMessage = 'FAIL:' + e.message;
+            const failMessageHash = CryptoJS.MD5( failMessage ).toString();
+            if (    ( options.returnSVG !== undefined ) 
+                 && ( dataAndConfig.options.currentSVGhash !== failMessageHash )
+                 && ( options.returnID ))
             {
                 var kvpSet = newkvpSet(true);
-                kvpSet.add( 'svg', 'FAIL:' + e.message );
+                kvpSet.add( 'svg', failMessage );
                 kvpSet.add( 'id', options.returnID ) ;
                 goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
             }

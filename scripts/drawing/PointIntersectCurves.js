@@ -38,6 +38,7 @@ class PointIntersectCurves extends DrawingObject {
         {
             //Vertical correction has first dibs. verticalCrossPoint=="One" means highest point; horizontalCrossPoint=="One" means leftmost point
             var minXPnt, maxXPnt, minYPnt, maxYPnt;
+            var selectedPoint;
             for ( var i = 0; i<intersections.points.length; i++ )
             {
                 var intersect = intersections.points[i];
@@ -53,17 +54,18 @@ class PointIntersectCurves extends DrawingObject {
             if ( minYPnt !== maxYPnt )
             {
                 if ( this.data.verticalCrossPoint === "One" )
-                    this.p = minYPnt;
+                    selectedPoint = minYPnt;
                 else
-                    this.p = maxYPnt;
+                    selectedPoint = maxYPnt;
             }
             else
             {
                 if ( this.data.horizontalCrossPoint === "One" )
-                    this.p = minXPnt;
+                    selectedPoint = minXPnt;
                 else
-                    this.p = maxXPnt;
+                    selectedPoint = maxXPnt;
             }
+            this.p = new GeoPoint( selectedPoint.x, selectedPoint.y );
         }
 
         this.adjustBounds( bounds );
