@@ -1548,7 +1548,7 @@ function newkvpSet(noRefresh)
 
         for (var i = 0 ; i < this.kvps.length ; i++)
         {
-            r += '&' + p + this.kvps[i].k + '=' + this.kvps[i].v ;
+            r += '&' + p + this.kvps[i].k + '=' + encodeURIComponent( this.kvps[i].v );
         }
 
         return r ;
