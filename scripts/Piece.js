@@ -23,48 +23,58 @@ class Piece {
             return;
         }
 
-        this.detailNodes.forEach( 
-            function(n) { 
-                var dObj =  this.patternPiece.getObject( n.obj, true );//this.drawing[ n.obj ]; 
-                if ( dObj ) 
-                {
-                    this.nodesByName[ n.obj ] = n;
-                    n.dObj = dObj;
-                    if ( ! n.reverse )
-                        n.reverse = false;
-                }
-                else
-                {
-                    console.log("Couldn't match piece node to drawing object: ", n.obj );
-                }
+        for( const n of this.detailNodes )
+        {
+            var dObj =  this.patternPiece.getObject( n.obj, true );
+            if ( dObj ) 
+            {
+                this.nodesByName[ n.obj ] = n;
+                n.dObj = dObj;
+                if ( ! n.reverse )
+                    n.reverse = false;
 
-                //TODO also populate dObj.usedByPieces
-                //dObj.setUsedByPiece( this );
-            }, this ); 
+                if ( n.before !== undefined )
+                {
+                    n.before = this.patternPiece.newFormula( n.before );
+                    if ( typeof n.before === "object" )
+                        n.before = n.before.value(); //should we defer evaluating this fornula?
+                }
+        
+                if ( n.after !== undefined )
+                {
+                    n.after = this.patternPiece.newFormula( n.after );
+                    if ( typeof n.after === "object" )
+                        n.after = n.after.value(); //should we defer evaluating this fornula?
+                }
+            }
+            else
+            {
+                console.log("Couldn't match piece node to drawing object: ", n.obj );
+            }
+        }    
 
         var resolve = function( objName, b ) {
             return patternPiece.getObject( objName, b );
         };
 
         if ( this.internalPaths )
-            this.internalPaths.forEach( 
-                function(ip) { 
+            for( const ip of this.internalPaths )
+            {
+                if ( ! ip.node )
+                    return; 
 
-                    if ( ! ip.node )
-                        return; 
+                ip.nodes = [];
+                for( const n of ip.node )
+                {
+                    var dObj = resolve( n, true );
+                    if ( dObj ) 
+                        ip.nodes.push( dObj );
+                    else
+                        console.log("Couldn't match internal path node to drawing object: ", n );
+                }
 
-                    ip.nodes = [];
-                    ip.node.forEach(
-                        function(n) {
-                            var dObj = resolve( n, true );
-                            if ( dObj ) 
-                                this.nodes.push( dObj );
-                            else
-                                console.log("Couldn't match internal path node to drawing object: ", n );
-                        }, ip );
-
-                    ip.showLength = ip.showLength === "none" ? undefined : ip.showLength; //line or label
-                }, this );             
+                ip.showLength = ip.showLength === "none" ? undefined : ip.showLength; //line or label
+            }
                 
         if ( this.dataPanels )
             for( var i in this.dataPanels )
@@ -90,7 +100,7 @@ class Piece {
 
         this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
-            this.defaultSeamAllowance = this.defaultSeamAllowance.value();
+            this.defaultSeamAllowance = this.defaultSeamAllowance.value(); //should we defer evaluating this fornula?
 
         //this.calculate();
 
