@@ -2440,18 +2440,37 @@ class PointOfTriangle extends DrawingObject {
 
             
         var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
+
+        //otherLine is the hypotenous of the right angled triangle
         var otherLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );
+
+        //how long should we extend the axis line? 
+        const l1 = new GeoLine( this.firstPoint.p, this.p1Line1.p );
+        const l2 = new GeoLine( this.firstPoint.p, this.p2Line1.p );
+        const l3 = new GeoLine( this.secondPoint.p, this.p1Line1.p );
+        const l4 = new GeoLine( this.secondPoint.p, this.p2Line1.p );
+        const maxDistance = Math.max( l1.length, l2.length, l3.length, l4.length ) + otherLine.length;
 
         //Now we work out another point along the axis line that forms the right angle triangle 
         //with the otherLine.
         //
         //The trick here is to observe that all these points, for any axisLine will form an arc
         //centered on the midpoint of otherLine with radiu of half length of otherLine
-        var intersectionPoint = axisLine.intersect( otherLine );
+
         var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
         var arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
-        var extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
+
+        var intersectionPoint = axisLine.intersect( otherLine );
+        var extendedAxis;
+        //if intersectionPoint is along the line, then we'll have to triangles to choose from
+        
+        if ( (new GeoLine( this.firstPoint.p, intersectionPoint )).length < otherLine.length )
+            extendedAxis = new GeoLine( intersectionPoint, intersectionPoint.pointAtDistanceAndAngleRad( otherLine.length*2, axisLine.angle ) );
+        else
+            extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( maxDistance, axisLine.angle ) );
+
         this.p = extendedAxis.intersectArc( arc );
+
 
         this.adjustBounds( bounds );
     }
@@ -6580,7 +6599,7 @@ function newkvpSet(noRefresh)
 
         for (var i = 0 ; i < this.kvps.length ; i++)
         {
-            r += '&' + p + this.kvps[i].k + '=' + this.kvps[i].v ;
+            r += '&' + p + this.kvps[i].k + '=' + encodeURIComponent( this.kvps[i].v );
         }
 
         return r ;
@@ -8096,8 +8115,13 @@ class GeoLine {
                     return lineTweaked.intersectArc( arc, true );
                 } catch ( e ) {
                     //There still appears to be a bug in arc intersection. 
-                    const arcAsSpline = arc.asGeoSpline();
-                    return this.intersectArc( arcAsSpline );
+                    if (( arc instanceof GeoArc ) || ( arc instanceof GeoEllipticalArc ))
+                    {
+                        const arcAsSpline = arc.asGeoSpline();
+                        return this.intersectArc( arcAsSpline );
+                    }
+                    else
+                        throw e;
                 }
             }
             throw "No intersection with arc. ";

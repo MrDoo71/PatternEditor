@@ -179,8 +179,13 @@ class GeoLine {
                     return lineTweaked.intersectArc( arc, true );
                 } catch ( e ) {
                     //There still appears to be a bug in arc intersection. 
-                    const arcAsSpline = arc.asGeoSpline();
-                    return this.intersectArc( arcAsSpline );
+                    if (( arc instanceof GeoArc ) || ( arc instanceof GeoEllipticalArc ))
+                    {
+                        const arcAsSpline = arc.asGeoSpline();
+                        return this.intersectArc( arcAsSpline );
+                    }
+                    else
+                        throw e;
                 }
             }
             throw "No intersection with arc. ";
