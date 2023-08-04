@@ -185,13 +185,14 @@ class PatternDrawing {
             return new TrueDart(dObj);                              
         else if (dObj.objectType === "trueDartResult")
             return new TrueDartResult(dObj);                              
+        else if (dObj.objectType === "arcWithLength")
+            return new ArcWithLength(dObj);                              
         else 
         {
             var fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
             fail.error =  "Unsupported drawing object type:" + dObj.objectType;
             return fail;
         }
-        //throw( "Unsupported drawing object type:" + dObj.objectType );
 
         return null;
     }
