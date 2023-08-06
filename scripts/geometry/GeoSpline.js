@@ -626,6 +626,13 @@ class GeoSpline {
                     }
                 }
             }
+            else if ( n2 == null )
+            {
+                if ( cutMade )
+                    nodesAfterCut.push( n1 )
+                else
+                    nodesBeforeCut.push( n1 );
+            }
         }
 
         return { beforePoint: nodesBeforeCut.length < 2 ? null : new GeoSpline(nodesBeforeCut),

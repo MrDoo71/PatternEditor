@@ -157,7 +157,9 @@ class Piece {
             if ( a === 0 ) //Note if first node is curve, then it could be done at the start. 
             {
                 if ( dObj.curve instanceof GeoSpline )
-                    previousP = dObj.curve.pointAlongPathFraction(100); //this wouldn't be correct if the curve needed splitting, i.e. if this is a node on a curve
+                    previousP = dObj.curve.pointAlongPathFraction( n.reverse ? 0: 100) ; //this wouldn't be correct if the curve needed splitting, i.e. if this is a node on a curve
+                else if ((dObj.arc instanceof GeoArc ) || ( dObj.arc instanceof GeoEllipticalArc ))
+                    previousP = dObj.arc.pointAlongPathFraction( n.reverse ? 0 : 100);
                 else
                     previousP = dObj.p;
 
@@ -1171,6 +1173,9 @@ class Piece {
 
             if ( n.pointStartSA )
                 bounds.adjustToIncludeXY( n.pointStartSA.x + mx, n.pointStartSA.y + my );
+
+            if ( n.curveSegmentSA )
+                n.curveSegmentSA.adjustBounds( bounds );
         }
     }
 
