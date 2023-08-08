@@ -3472,7 +3472,13 @@ class Pattern {
             {
                 var v = this.variable[i];
                 if ( v.expression ) 
-                    v.expression.addDependencies( v, this.dependencies );
+                {
+                    if ( typeof v.expression.addDependencies === "function" )
+                        v.expression.addDependencies( v, this.dependencies );
+                    else
+                        //cater for an variable invalidly having a constant and an expression
+                        console.log( "v.expression does not have addDependencies " );
+                }
             }
         }    
     
