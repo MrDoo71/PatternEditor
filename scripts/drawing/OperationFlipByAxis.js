@@ -16,7 +16,7 @@ class OperationFlipByAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
 
         this.adjustBounds( bounds );
     }

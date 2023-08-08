@@ -13,10 +13,10 @@ class PointIntersectCurves extends DrawingObject {
         var d = this.data;
 
         if (typeof this.curve1 === "undefined")
-            this.curve1 = this.patternPiece.getObject(d.curve1);
+            this.curve1 = this.drawing.getObject(d.curve1);
             
         if (typeof this.curve2 === "undefined")
-            this.curve2 = this.patternPiece.getObject(d.curve2);
+            this.curve2 = this.drawing.getObject(d.curve2);
 
         var curve1SI = this.curve1.asShapeInfo();
         var curve2SI = this.curve2.asShapeInfo();

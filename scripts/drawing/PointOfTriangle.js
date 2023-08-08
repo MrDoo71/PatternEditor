@@ -14,14 +14,14 @@ class PointOfTriangle extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
             
         var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    

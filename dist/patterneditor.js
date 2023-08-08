@@ -75,7 +75,7 @@ class DrawingObject /*abstract*/ {
 
         const lengthAndUnits = this.getLengthAndUnits();
 
-        this.patternPiece.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
+        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
     }
 s
 
@@ -143,7 +143,7 @@ s
 
         if ( l !== undefined )
         {
-            const patternUnits = this.patternPiece.pattern.units;
+            const patternUnits = this.drawing.pattern.units;
             var precision = patternUnits === "mm" ? 10.0 : 100.0;
             l = Math.round( precision * l ) / precision;            
             return l + " " + patternUnits;    
@@ -295,28 +295,28 @@ s
     pointEndLine(data) {
         data.objectType = "pointEndLine";
         data.basePoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     pointAlongLine(data) {
         data.objectType = "pointAlongLine";
         data.firstPoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     lineTo(data) {
         data.objectType = "line";
         data.firstPoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     pointLineIntersect(data) {
         data.objectType = "pointLineIntersect";
         data.p1Line1 = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
@@ -415,17 +415,17 @@ class ArcElliptical extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
         if (typeof this.radius1 === "undefined")
-            this.radius1 = this.patternPiece.newFormula(d.radius1);
+            this.radius1 = this.drawing.newFormula(d.radius1);
         if (typeof this.radius2 === "undefined")
-            this.radius2 = this.patternPiece.newFormula(d.radius2);
+            this.radius2 = this.drawing.newFormula(d.radius2);
         if (typeof this.rotationAngle === "undefined")
-            this.rotationAngle = this.patternPiece.newFormula(d.rotationAngle);
+            this.rotationAngle = this.drawing.newFormula(d.rotationAngle);
 
         this.arc = new GeoEllipticalArc( this.center.p, 
                                          this.radius1.value(),
@@ -513,13 +513,13 @@ class ArcSimple extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 
@@ -589,13 +589,13 @@ class ArcWithLength extends ArcSimple {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle1);
+            this.angle = this.drawing.newFormula(d.angle1);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         //circle-circ = 2 * pi * radius
         //fraction of circle = length / circle-cird
@@ -642,10 +642,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         var d = this.data;
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.spline);
+            this.curve = this.drawing.getObject(d.spline);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         //Note tha this.curve might be something like a SplineSimple, but it might also be an OperationResult
         this.p = this.curve.pointAlongPath( this.length.value() );
@@ -701,10 +701,10 @@ class Line extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
             
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
 
@@ -759,7 +759,7 @@ class OperationFlipByAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
 
         this.adjustBounds( bounds );
     }
@@ -831,10 +831,10 @@ class OperationFlipByLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
 
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         this.line = new GeoLine( this.p1Line1.p, this.p2Line1.p );
 
@@ -910,13 +910,13 @@ class OperationMove extends DrawingObject {
         var d = this.data;
 
         //if (typeof this.basePoint === "undefined")
-        //    this.basePoint = this.patternPiece.getObject(d.basePoint);
+        //    this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
             
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
             
         //Convert degrees to radians
         //this.p = this.basePoint.p.pointAtDistanceAndAngleRad(this.length.value(), Math.PI * 2 * this.angle.value() / 360);
@@ -981,10 +981,10 @@ class OperationResult extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.fromOperation === "undefined")
-            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+            this.fromOperation = this.drawing.getObject(d.fromOperation);
 
         //if this.basePoint is a point... (if a curve, this is the midpoint)
         if ( this.basePoint.p )
@@ -1110,10 +1110,10 @@ class OperationRotate extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
             
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);            
+            this.angle = this.drawing.newFormula(d.angle);            
             
         this.adjustBounds( bounds );
     }
@@ -1169,11 +1169,11 @@ class PerpendicularPointAlongLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.p1Line1);
+            this.firstPoint = this.drawing.getObject(d.p1Line1);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.p2Line1);
+            this.secondPoint = this.drawing.getObject(d.p2Line1);
 
         var line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
         
@@ -1231,13 +1231,13 @@ class PointAlongBisector extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
         if (typeof this.thirdPoint === "undefined")
-            this.thirdPoint = this.patternPiece.getObject(d.thirdPoint);
+            this.thirdPoint = this.drawing.getObject(d.thirdPoint);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
             
         var line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
         var line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
@@ -1300,13 +1300,13 @@ class PointAlongLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
 
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         this.baseLine = new GeoLine(this.firstPoint.p, this.secondPoint.p);
         this.p = this.firstPoint.p.pointAtDistanceAndAngleRad(this.length.value(this.baseLine.length), this.baseLine.angle);
@@ -1362,13 +1362,13 @@ class PointAlongPerpendicular extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
             
         var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
         var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
@@ -1429,10 +1429,10 @@ class PointCutArc extends DrawingObject {
         var d = this.data;
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.arc);
+            this.arc = this.drawing.getObject(d.arc);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         this.p = this.arc.pointAlongPath( this.length.value() );
         
@@ -1479,10 +1479,10 @@ class PointCutSplinePath extends DrawingObject {
         var d = this.data;
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.splinePath);
+            this.curve = this.drawing.getObject(d.splinePath);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         this.p = this.curve.pointAlongPath( this.length.value() );
         
@@ -1531,13 +1531,13 @@ class PointEndLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
             
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         this.line = new GeoLine(this.basePoint.p, this.p);
@@ -1589,10 +1589,10 @@ class PointFromArcAndTangent extends DrawingObject {
         var d = this.data;
 
         if (typeof this.tangent === "undefined")
-            this.tangent = this.patternPiece.getObject(d.tangent);
+            this.tangent = this.drawing.getObject(d.tangent);
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.arc); 
+            this.arc = this.drawing.getObject(d.arc); 
 
         this.crossPoint = d.crossPoint;
 
@@ -1653,13 +1653,13 @@ class PointFromCircleAndTangent extends DrawingObject {
         var d = this.data;
 
         if (typeof this.tangent === "undefined")
-            this.tangent = this.patternPiece.getObject(d.tangent);
+            this.tangent = this.drawing.getObject(d.tangent);
 
         if (typeof this.arc === "undefined")
-            this.center = this.patternPiece.getObject(d.center); 
+            this.center = this.drawing.getObject(d.center); 
 
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         this.crossPoint = d.crossPoint;
 
@@ -1723,9 +1723,9 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
         //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
@@ -1773,13 +1773,13 @@ class PointIntersectArcAndAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.curve); //An anomaly, would be better if this were arc.
+            this.arc = this.drawing.getObject(d.curve); //An anomaly, would be better if this were arc.
 
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         var angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
@@ -1855,16 +1855,16 @@ class PointIntersectArcAndLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
             
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
 
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
         var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
@@ -1923,10 +1923,10 @@ class PointIntersectArcs extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstArc === "undefined")
-            this.firstArc = this.patternPiece.getObject(d.firstArc);
+            this.firstArc = this.drawing.getObject(d.firstArc);
             
         if (typeof this.secondArc === "undefined")
-            this.secondArc = this.patternPiece.getObject(d.secondArc);
+            this.secondArc = this.drawing.getObject(d.secondArc);
 
         var arc1SI = this.firstArc.asShapeInfo();
         var arc2SI = this.secondArc.asShapeInfo();
@@ -2021,16 +2021,16 @@ class PointIntersectCircles extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center1 === "undefined")
-            this.center1 = this.patternPiece.getObject(d.center1);
+            this.center1 = this.drawing.getObject(d.center1);
             
         if (typeof this.center2 === "undefined")
-            this.center2 = this.patternPiece.getObject(d.center2);
+            this.center2 = this.drawing.getObject(d.center2);
 
         if (typeof this.radius1 === "undefined")
-            this.radius1 = this.patternPiece.newFormula(d.radius1);
+            this.radius1 = this.drawing.newFormula(d.radius1);
 
         if (typeof this.radius2 === "undefined")
-            this.radius2 = this.patternPiece.newFormula(d.radius2);
+            this.radius2 = this.drawing.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
         var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
@@ -2157,13 +2157,13 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.curve);
+            this.curve = this.drawing.getObject(d.curve);
 
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         var angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
@@ -2250,10 +2250,10 @@ class PointIntersectCurves extends DrawingObject {
         var d = this.data;
 
         if (typeof this.curve1 === "undefined")
-            this.curve1 = this.patternPiece.getObject(d.curve1);
+            this.curve1 = this.drawing.getObject(d.curve1);
             
         if (typeof this.curve2 === "undefined")
-            this.curve2 = this.patternPiece.getObject(d.curve2);
+            this.curve2 = this.drawing.getObject(d.curve2);
 
         var curve1SI = this.curve1.asShapeInfo();
         var curve2SI = this.curve2.asShapeInfo();
@@ -2352,16 +2352,16 @@ class PointIntersectLineAndAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
 
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
@@ -2424,13 +2424,13 @@ class PointLineIntersect extends DrawingObject {
         var d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
         if (typeof this.p1Line2 === "undefined")
-            this.p1Line2 = this.patternPiece.getObject(d.p1Line2);
+            this.p1Line2 = this.drawing.getObject(d.p1Line2);
         if (typeof this.p2Line2 === "undefined")
-            this.p2Line2 = this.patternPiece.getObject(d.p2Line2);
+            this.p2Line2 = this.drawing.getObject(d.p2Line2);
 
         this.line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
         this.line2 = new GeoLine(this.p1Line2.p, this.p2Line2.p);
@@ -2487,14 +2487,14 @@ class PointOfTriangle extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
             
         var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
@@ -2580,16 +2580,16 @@ class PointShoulder extends DrawingObject {
         var d = this.data;
 
         if (typeof this.shoulderPoint === "undefined")
-            this.shoulderPoint = this.patternPiece.getObject(d.shoulderPoint);
+            this.shoulderPoint = this.drawing.getObject(d.shoulderPoint);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
 
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         //Find the point that is length away from the shoulderPoint along
         //the line p1Line1-p2line1.
@@ -2715,11 +2715,11 @@ class SplinePathInteractive extends DrawingObject {
                 {
                     var pathNode = this.data.pathNode[i];
 
-                    pathNode.point   = this.patternPiece.getObject( pathNode.point );
-                    pathNode.angle1  = this.patternPiece.newFormula( pathNode.angle1 ); 
-                    pathNode.length1 = this.patternPiece.newFormula( pathNode.length1 ); 
-                    pathNode.angle2  = this.patternPiece.newFormula( pathNode.angle2 ); 
-                    pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
+                    pathNode.point   = this.drawing.getObject( pathNode.point );
+                    pathNode.angle1  = this.drawing.newFormula( pathNode.angle1 ); 
+                    pathNode.length1 = this.drawing.newFormula( pathNode.length1 ); 
+                    pathNode.angle2  = this.drawing.newFormula( pathNode.angle2 ); 
+                    pathNode.length2 = this.drawing.newFormula( pathNode.length2 );
 
                     this.nodes.push( { inAngle:   pathNode.angle1.value(),
                                        inLength:  pathNode.length1.value(),
@@ -2845,7 +2845,7 @@ class SplinePathUsingPoints extends DrawingObject {
 
             for( var i=0; i< d.pathNode.length; i++ )
             {
-                this.data.pathNode[i].point = this.patternPiece.getObject( this.data.pathNode[i].point );
+                this.data.pathNode[i].point = this.drawing.getObject( this.data.pathNode[i].point );
             }
 
             for( var i=0; i< d.pathNode.length; i+=3 )
@@ -2963,22 +2963,22 @@ class SplineSimple extends DrawingObject {
         var d = this.data;
 
         if (typeof this.startPoint === "undefined")
-            this.startPoint = this.patternPiece.getObject(d.point1);
+            this.startPoint = this.drawing.getObject(d.point1);
 
         if (typeof this.endPoint === "undefined")
-            this.endPoint = this.patternPiece.getObject(d.point4);
+            this.endPoint = this.drawing.getObject(d.point4);
 
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
 
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
 
         if (typeof this.length1 === "undefined")
-            this.length1 = this.patternPiece.newFormula(d.length1);
+            this.length1 = this.drawing.newFormula(d.length1);
 
         if (typeof this.length2 === "undefined")
-            this.length2 = this.patternPiece.newFormula(d.length2);
+            this.length2 = this.drawing.newFormula(d.length2);
 
         this.curve = new GeoSpline( [ { inAngle: undefined, inLength: undefined, point: this.startPoint.p, outAngle: this.angle1.value(), outLength: this.length1.value() },
                                        { inAngle: this.angle2.value(), inLength: this.length2.value(), point: this.endPoint.p, outAngle: undefined, outLength: undefined } ] );
@@ -3057,16 +3057,16 @@ class SplineUsingControlPoints extends DrawingObject {
         var d = this.data;
 
         if (typeof this.startPoint === "undefined")
-            this.startPoint = this.patternPiece.getObject(d.point1);
+            this.startPoint = this.drawing.getObject(d.point1);
 
         if (typeof this.startControlPoint === "undefined")
-            this.startControlPoint = this.patternPiece.getObject(d.point2);
+            this.startControlPoint = this.drawing.getObject(d.point2);
 
         if (typeof this.endControlPoint === "undefined")
-            this.endControlPoint = this.patternPiece.getObject(d.point3);
+            this.endControlPoint = this.drawing.getObject(d.point3);
 
         if (typeof this.endPoint === "undefined")
-            this.endPoint = this.patternPiece.getObject(d.point4);
+            this.endPoint = this.drawing.getObject(d.point4);
 
         this.curve = new GeoSpline( [ { point: this.startPoint.p, outControlPoint: this.startControlPoint.p },
                                       { inControlPoint: this.endControlPoint.p,  point: this.endPoint.p } ] );
@@ -3141,16 +3141,16 @@ class TrueDart extends DrawingObject {
         var d = this.data;
 
         if (typeof this.point1 === "undefined")
-            this.point1 = this.patternPiece.getObject(d.point1);
+            this.point1 = this.drawing.getObject(d.point1);
         if (typeof this.point2 === "undefined")
-            this.point2 = this.patternPiece.getObject(d.point2);
+            this.point2 = this.drawing.getObject(d.point2);
         if (typeof this.point3 === "undefined")
-            this.point3 = this.patternPiece.getObject(d.point3);
+            this.point3 = this.drawing.getObject(d.point3);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         //var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
         //var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );
@@ -3255,7 +3255,7 @@ class TrueDartResult extends DrawingObject {
         var d = this.data;
 
         if (typeof this.fromOperation === "undefined")
-            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+            this.fromOperation = this.drawing.getObject(d.fromOperation);
 
         if ( this.name === this.fromOperation.data.trueDartResult1 )
             this.p = this.fromOperation.td1;
@@ -3420,10 +3420,15 @@ class Pattern {
             }
         }        
 
-        this.patternPieces = [];
-        for( var i=0; i<this.patternData.patternPiece.length; i++ )
+        this.drawings = [];
+
+        //Cater for older JSON
+        if ( this.patternData.patternPiece )
+            this.patternData.drawing = this.patternData.patternPiece;
+
+        for( var i=0; i<this.patternData.drawing.length; i++ )
         {
-            this.patternPieces.push( new PatternDrawing( this.patternData.patternPiece[i], this ) );
+            this.drawings.push( new PatternDrawing( this.patternData.drawing[i], this ) );
         }   
 
         this.analyseDependencies();
@@ -3482,9 +3487,9 @@ class Pattern {
             }
         }    
     
-        for( var j=0; j< this.patternPieces.length; j++ )
+        for( var j=0; j< this.drawings.length; j++ )
         {
-            var piece = this.patternPieces[j];
+            var piece = this.drawings[j];
             for (var a = 0; a < piece.drawingObjects.length; a++) 
             {
                 var dObj = piece.drawingObjects[a];
@@ -3515,9 +3520,9 @@ class Pattern {
 
     getObject( name )
     {
-        for( var j=0; j< this.patternPieces.length; j++ )
+        for( var j=0; j< this.drawings.length; j++ )
         {
-            var piece = this.patternPieces[j];
+            var piece = this.drawings[j];
             var obj = piece.getObject( name, true /*restrict search to this piece*/ );
             if ( obj )
                 return obj;
@@ -3539,9 +3544,9 @@ class Pattern {
 
 class Group {
 
-    constructor (data, patternPiece) {
+    constructor (data, drawing) {
         this.data = data;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
         this.name = data.name;
         this.visible = data.visible;
         this.update = data.update;
@@ -3551,7 +3556,7 @@ class Group {
 
         if ( this.data.member )
             this.data.member.forEach( function(m){
-                var dObj = this.patternPiece.getObject( m, true );
+                var dObj = this.drawing.getObject( m, true );
                 if ( dObj )
                 {
                     this.members.push( dObj );
@@ -3565,9 +3570,9 @@ class Group {
 
 class Piece {
 
-    constructor (data, patternPiece) {
+    constructor (data, drawing) {
         this.data = data;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
         this.name = data.name;
         this.detailNodes = data.detailNode;
         this.internalPaths = data.internalPath;
@@ -3587,7 +3592,7 @@ class Piece {
 
         for( const n of this.detailNodes )
         {
-            var dObj =  this.patternPiece.getObject( n.obj, true );
+            var dObj =  this.drawing.getObject( n.obj, true );
             if ( dObj ) 
             {
                 this.nodesByName[ n.obj ] = n;
@@ -3597,14 +3602,14 @@ class Piece {
 
                 if ( n.before !== undefined )
                 {
-                    n.before = this.patternPiece.newFormula( n.before );
+                    n.before = this.drawing.newFormula( n.before );
                     if ( typeof n.before === "object" )
                         n.before = n.before.value(); //should we defer evaluating this fornula?
                 }
         
                 if ( n.after !== undefined )
                 {
-                    n.after = this.patternPiece.newFormula( n.after );
+                    n.after = this.drawing.newFormula( n.after );
                     if ( typeof n.after === "object" )
                         n.after = n.after.value(); //should we defer evaluating this fornula?
                 }
@@ -3616,7 +3621,7 @@ class Piece {
         }    
 
         var resolve = function( objName, b ) {
-            return patternPiece.getObject( objName, b );
+            return drawing.getObject( objName, b );
         };
 
         if ( this.internalPaths )
@@ -3660,15 +3665,15 @@ class Piece {
                     panel.foldPosition = "";
             }
 
-        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
+        this.defaultSeamAllowance = this.drawing.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value(); //should we defer evaluating this fornula?
 
         //this.calculate();
 
-        if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
+        if ( this.name === this.drawing.pattern.data.options.targetPiece )
         {
-            this.patternPiece.pattern.data.options.targetPiece = this;
+            this.drawing.pattern.data.options.targetPiece = this;
             //this.highlight = true;
         }
     }
@@ -4474,14 +4479,14 @@ class Piece {
 
             if ( l !== undefined )
             {
-                const patternUnits = this.patternPiece.pattern.units;
+                const patternUnits = this.drawing.pattern.units;
                 var precision = patternUnits === "mm" ? 10.0 : 100.0;
                 l = Math.round( precision * l ) / precision;            
                 l = l + " " + patternUnits;    
             }
 
-            const fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
-            this.patternPiece.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
+            const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+            this.drawing.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
         }
 
         var p = internalPathsGroup.append("path")
@@ -4517,7 +4522,7 @@ class Piece {
             return;
 
         var lineSpacing = 1.2;
-        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+        var fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
         var align = "start";
 
         if ( this.dataPanels )
@@ -4576,7 +4581,7 @@ class Piece {
                 var text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
-                    text = text.replace("%date%", this.patternPiece.pattern.getDate() );
+                    text = text.replace("%date%", this.drawing.pattern.getDate() );
 
                 if ( text.includes( "%pLetter%" ) )
                     text=text.replace( "%pLetter%", panel.letter );
@@ -4601,14 +4606,14 @@ class Piece {
 
                 if ( text.includes( "%patternNumber%" ) )
                 {
-                    var patternNumber = this.patternPiece.pattern.patternData.patternNumber;
+                    var patternNumber = this.drawing.pattern.patternData.patternNumber;
                     if ( patternNumber === undefined )
                         patternNumber = "";
                     text=text.replace( "%patternNumber%", patternNumber );
                 }
 
                 if ( text.includes( "%patternName%" ) )
-                    text=text.replace( "%patternName%", this.patternPiece.pattern.patternData.name );
+                    text=text.replace( "%patternName%", this.drawing.pattern.patternData.name );
 
                 dataPanelGroup.append("tspan")
                               .attr("x", "0" )
@@ -4625,9 +4630,9 @@ class Piece {
 
     convertMMtoPatternUnits( mm )
     {
-        if ( this.patternPiece.pattern.units = "cm" )
+        if ( this.drawing.pattern.units = "cm" )
             return mm/10;
-        else if ( this.patternPiece.pattern.units = "mm" )
+        else if ( this.drawing.pattern.units = "mm" )
             return mm;
         else //inches
             return mm/25.4;
@@ -4636,8 +4641,8 @@ class Piece {
 
     getStrokeWidth( isOutline, isSelected )
     {
-        if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.patternPiece.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
+        if ( this.drawing.pattern.data.options.lifeSize ) 
+            return this.drawing.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }
@@ -4796,7 +4801,7 @@ class PatternDrawing {
 
 
             this.drawing[dObj.data.name] = dObj;
-            dObj.patternPiece = this;    
+            dObj.drawing = this;    
             this.calculateObj(dObj);
         }
 
@@ -5034,7 +5039,7 @@ class PatternDrawing {
         var dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
         this.drawing[dObj.data.name] = dObj;
-        dObj.patternPiece = this;
+        dObj.drawing = this;
         this.calculateObj(dObj);
         return dObj;
     }
@@ -5073,7 +5078,7 @@ class PatternDrawing {
                 var align = "middle";
                 var ta = 0;
                 var dy = 0;
-                //const patternUnits = this.patternPiece.pattern.units;
+                //const patternUnits = this.drawing.pattern.units;
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
     
@@ -5366,7 +5371,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
              && ( selectedObject == d )
              )
         {
-            selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
+            selectedObject = d.drawing.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
         }
         else if (    ( d3.event) 
@@ -5375,7 +5380,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                   && ( selectedObject == d )
              )
         {
-            selectedObject = d.patternPiece.getObject( d3.event.srcElement.innerHTML );
+            selectedObject = d.drawing.getObject( d3.event.srcElement.innerHTML );
             scrollTable = true;
         }
         else
@@ -5383,10 +5388,10 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             selectedObject = d;
         }
 
-        for( var j=0; j< pattern.patternPieces.length; j++ )
-            for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
+        for( var j=0; j< pattern.drawings.length; j++ )
+            for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
             {
-                var a = pattern.patternPieces[j].drawingObjects[i];
+                var a = pattern.drawings[j].drawingObjects[i];
                 var g = a.drawingSvg;
                 if ( g )
                 {
@@ -5533,11 +5538,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     var errorFound = false;
     var firstDrawingObject;
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
+        for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
         {
-            var a = pattern.patternPieces[j].drawingObjects[i];
+            var a = pattern.drawings[j].drawingObjects[i];
 
             if (( firstDrawingObject === undefined ) && ( a.isVisible( options ) ))
                 firstDrawingObject = a;
@@ -5730,7 +5735,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                  .append("div").attr("id","optionMenu" ); //.css("display","visible")
         optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
 
-        pattern.patternPieces.forEach( function(pp) {
+        pattern.drawings.forEach( function(pp) {
             if ( ! pp.groups.length )
                 return;
             var groupOptionsForPiece = optionMenu.append("section");
@@ -6020,9 +6025,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         focusDrawingObject(d,true);
     };
 
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        var patternPiece = pattern.patternPieces[j];
+        var drawing = pattern.drawings[j];
 
         var skipDrawing = editorOptions.skipDrawing;
 
@@ -6037,7 +6042,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          "label": (! editorOptions.hideLabels),
                                          "dot":  (! editorOptions.hideLabels) };
                 var a = drawingGroup.selectAll("g");    
-                a = a.data( patternPiece.drawingObjects );
+                a = a.data( drawing.drawingObjects );
                 a.enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
@@ -6080,7 +6085,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          "label": (! editorOptions.hideLabels),
                                          "dot":  (! editorOptions.hideLabels) };
                 drawingGroup.selectAll("g")
-                    .data( patternPiece.drawingObjects )
+                    .data( drawing.drawingObjects )
                     .enter()
                     .each( function(d,i) {
                     var g = d3.select( this );                        
@@ -6098,7 +6103,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             if ( outlineGroup )
             {
                 outlineGroup.selectAll("g") 
-                .data( patternPiece.drawingObjects )
+                .data( drawing.drawingObjects )
                 .enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
@@ -6138,7 +6143,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         {
             var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
             var pg = pieceGroup.selectAll("g");    
-            pg = pg.data( patternPiece.pieces );
+            pg = pg.data( drawing.pieces );
             pg.enter()
             .append("g")        
             //.on("contextmenu", contextMenu)
@@ -6212,13 +6217,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
                     //console.log( "Resize for " + fontsSizedForScale);
 
-                    for( var j=0; j< pattern.patternPieces.length; j++ )
+                    for( var j=0; j< pattern.drawings.length; j++ )
                     {
-                        var patternPiece = pattern.patternPieces[j];
+                        var drawing = pattern.drawings[j];
                 
-                        for( var i=0; i< patternPiece.drawingObjects.length; i++ )
+                        for( var i=0; i< drawing.drawingObjects.length; i++ )
                         {
-                            var a = patternPiece.drawingObjects[i];
+                            var a = drawing.drawingObjects[i];
                             var g = a.drawingSvg;                            
                             if ( g )
                             {
@@ -6465,7 +6470,7 @@ function doWallpapers( wallpaperGroups, pattern )
 
 function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
-    var patternPiece1 = pattern.patternPieces[0];
+    var drawing1 = pattern.drawings[0];
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.tableMargin;//25; 
     var width =  layoutConfig.tableWidth;//400;
@@ -6499,9 +6504,9 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             combinedObjects.push( pattern.variable[i] );
     }
 
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        combinedObjects = combinedObjects.concat( pattern.patternPieces[j].drawingObjects);
+        combinedObjects = combinedObjects.concat( pattern.drawings[j].drawingObjects);
     }
 
     var svg = graphdiv.append("div")
@@ -6725,11 +6730,11 @@ export{ PatternDrawing, doDrawing, doTable, drawPattern  };
 
 class Expression {
 
-    constructor(data, pattern, patternPiece) {
+    constructor(data, pattern, drawing) {
         this.dataDebug = data;
         //this.operation = data.operation;// ? data.operation : data.operationType ;
         this.pattern = pattern;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
 
         //divide, multiply etc. and functions too
         if (typeof data.parameter !== "undefined") 
@@ -6737,7 +6742,7 @@ class Expression {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
-                this.params[a] = new Expression(p, pattern, patternPiece);
+                this.params[a] = new Expression(p, pattern, drawing);
             }            
         }
 
@@ -6771,15 +6776,15 @@ class Expression {
             }
             else if ( data.variableType === "angleOfLine" )
             {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
             else if ( data.variableType === "lengthOfLine" )
             {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
@@ -6791,13 +6796,13 @@ class Expression {
                 if ( data.drawingObject1 && data.drawingObject2 )
                 {
                     //This shouldn't find an object, otherwise we'd have passed it as a single drawingObject.
-                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                    this.drawingObject = drawing.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
 
                     //at least one of these will be an intersect on a curve, or position along a curve, otherwise they are end points of the curve. 
                     if ( ! this.drawingObject )
                     {
-                        this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                        this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                        this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                        this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                         //one of these will be a Spline, the other will be an intersection point on it, or distance along it. 
 
                         //We're not the whole spline, just a segment of it. We need to find a curve that both drawing objects are on.
@@ -6840,7 +6845,7 @@ class Expression {
                 }
                 else
                     //this is the spline drawing object itself, the curve comes directly from it. 
-                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                    this.drawingObject = drawing.getObject( data.drawingObject1 );
 
                 if (( data.segment ) && ( parseInt(data.segment) !== 0 ))
                     this.segment = parseInt(data.segment);
@@ -6850,14 +6855,14 @@ class Expression {
             }            
             else if ( data.variableType === "lengthOfArc" )
             {
-                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject = drawing.getObject( data.drawingObject1 );
                 this.arcSelection = data.arcSelection;
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
             else if ( data.variableType === "radiusOfArc" )
             {
-                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject = drawing.getObject( data.drawingObject1 );
 
                 if ( data.radiusSelection === "ellipticalArcRadius1" )
                     this.radiusSelection = 1;

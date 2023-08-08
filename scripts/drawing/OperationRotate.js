@@ -15,10 +15,10 @@ class OperationRotate extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
             
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);            
+            this.angle = this.drawing.newFormula(d.angle);            
             
         this.adjustBounds( bounds );
     }

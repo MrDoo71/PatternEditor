@@ -14,13 +14,13 @@ class PointLineIntersect extends DrawingObject {
         var d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
         if (typeof this.p1Line2 === "undefined")
-            this.p1Line2 = this.patternPiece.getObject(d.p1Line2);
+            this.p1Line2 = this.drawing.getObject(d.p1Line2);
         if (typeof this.p2Line2 === "undefined")
-            this.p2Line2 = this.patternPiece.getObject(d.p2Line2);
+            this.p2Line2 = this.drawing.getObject(d.p2Line2);
 
         this.line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
         this.line2 = new GeoLine(this.p1Line2.p, this.p2Line2.p);

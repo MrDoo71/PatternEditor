@@ -17,13 +17,13 @@ class ArcSimple extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );
 

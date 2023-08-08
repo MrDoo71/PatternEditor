@@ -3,9 +3,9 @@
 
 class Piece {
 
-    constructor (data, patternPiece) {
+    constructor (data, drawing) {
         this.data = data;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
         this.name = data.name;
         this.detailNodes = data.detailNode;
         this.internalPaths = data.internalPath;
@@ -25,7 +25,7 @@ class Piece {
 
         for( const n of this.detailNodes )
         {
-            var dObj =  this.patternPiece.getObject( n.obj, true );
+            var dObj =  this.drawing.getObject( n.obj, true );
             if ( dObj ) 
             {
                 this.nodesByName[ n.obj ] = n;
@@ -35,14 +35,14 @@ class Piece {
 
                 if ( n.before !== undefined )
                 {
-                    n.before = this.patternPiece.newFormula( n.before );
+                    n.before = this.drawing.newFormula( n.before );
                     if ( typeof n.before === "object" )
                         n.before = n.before.value(); //should we defer evaluating this fornula?
                 }
         
                 if ( n.after !== undefined )
                 {
-                    n.after = this.patternPiece.newFormula( n.after );
+                    n.after = this.drawing.newFormula( n.after );
                     if ( typeof n.after === "object" )
                         n.after = n.after.value(); //should we defer evaluating this fornula?
                 }
@@ -54,7 +54,7 @@ class Piece {
         }    
 
         var resolve = function( objName, b ) {
-            return patternPiece.getObject( objName, b );
+            return drawing.getObject( objName, b );
         };
 
         if ( this.internalPaths )
@@ -98,15 +98,15 @@ class Piece {
                     panel.foldPosition = "";
             }
 
-        this.defaultSeamAllowance = this.patternPiece.newFormula( data.seamAllowanceWidth );
+        this.defaultSeamAllowance = this.drawing.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value(); //should we defer evaluating this fornula?
 
         //this.calculate();
 
-        if ( this.name === this.patternPiece.pattern.data.options.targetPiece )
+        if ( this.name === this.drawing.pattern.data.options.targetPiece )
         {
-            this.patternPiece.pattern.data.options.targetPiece = this;
+            this.drawing.pattern.data.options.targetPiece = this;
             //this.highlight = true;
         }
     }
@@ -912,14 +912,14 @@ class Piece {
 
             if ( l !== undefined )
             {
-                const patternUnits = this.patternPiece.pattern.units;
+                const patternUnits = this.drawing.pattern.units;
                 var precision = patternUnits === "mm" ? 10.0 : 100.0;
                 l = Math.round( precision * l ) / precision;            
                 l = l + " " + patternUnits;    
             }
 
-            const fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
-            this.patternPiece.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
+            const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+            this.drawing.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
         }
 
         var p = internalPathsGroup.append("path")
@@ -955,7 +955,7 @@ class Piece {
             return;
 
         var lineSpacing = 1.2;
-        var fontSize = this.patternPiece.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+        var fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
         var align = "start";
 
         if ( this.dataPanels )
@@ -1014,7 +1014,7 @@ class Piece {
                 var text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
-                    text = text.replace("%date%", this.patternPiece.pattern.getDate() );
+                    text = text.replace("%date%", this.drawing.pattern.getDate() );
 
                 if ( text.includes( "%pLetter%" ) )
                     text=text.replace( "%pLetter%", panel.letter );
@@ -1039,14 +1039,14 @@ class Piece {
 
                 if ( text.includes( "%patternNumber%" ) )
                 {
-                    var patternNumber = this.patternPiece.pattern.patternData.patternNumber;
+                    var patternNumber = this.drawing.pattern.patternData.patternNumber;
                     if ( patternNumber === undefined )
                         patternNumber = "";
                     text=text.replace( "%patternNumber%", patternNumber );
                 }
 
                 if ( text.includes( "%patternName%" ) )
-                    text=text.replace( "%patternName%", this.patternPiece.pattern.patternData.name );
+                    text=text.replace( "%patternName%", this.drawing.pattern.patternData.name );
 
                 dataPanelGroup.append("tspan")
                               .attr("x", "0" )
@@ -1063,9 +1063,9 @@ class Piece {
 
     convertMMtoPatternUnits( mm )
     {
-        if ( this.patternPiece.pattern.units = "cm" )
+        if ( this.drawing.pattern.units = "cm" )
             return mm/10;
-        else if ( this.patternPiece.pattern.units = "mm" )
+        else if ( this.drawing.pattern.units = "mm" )
             return mm;
         else //inches
             return mm/25.4;
@@ -1074,8 +1074,8 @@ class Piece {
 
     getStrokeWidth( isOutline, isSelected )
     {
-        if ( this.patternPiece.pattern.data.options.lifeSize ) 
-            return this.patternPiece.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
+        if ( this.drawing.pattern.data.options.lifeSize ) 
+            return this.drawing.pattern.getPatternEquivalentOfMM(0.4); //0.4mm equiv
             
         return Math.round( 1000 * ( isOutline ? 7.0 : ( isSelected ? 3.0 : 1.0 ) ) / scale / fontsSizedForScale ) /1000;
     }

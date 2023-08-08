@@ -17,13 +17,13 @@ class ArcWithLength extends ArcSimple {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle1);
+            this.angle = this.drawing.newFormula(d.angle1);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         //circle-circ = 2 * pi * radius
         //fraction of circle = length / circle-cird

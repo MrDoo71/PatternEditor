@@ -14,16 +14,16 @@ class PointIntersectCircles extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center1 === "undefined")
-            this.center1 = this.patternPiece.getObject(d.center1);
+            this.center1 = this.drawing.getObject(d.center1);
             
         if (typeof this.center2 === "undefined")
-            this.center2 = this.patternPiece.getObject(d.center2);
+            this.center2 = this.drawing.getObject(d.center2);
 
         if (typeof this.radius1 === "undefined")
-            this.radius1 = this.patternPiece.newFormula(d.radius1);
+            this.radius1 = this.drawing.newFormula(d.radius1);
 
         if (typeof this.radius2 === "undefined")
-            this.radius2 = this.patternPiece.newFormula(d.radius2);
+            this.radius2 = this.drawing.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
         var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );

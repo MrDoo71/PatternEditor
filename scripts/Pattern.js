@@ -82,10 +82,15 @@ class Pattern {
             }
         }        
 
-        this.patternPieces = [];
-        for( var i=0; i<this.patternData.patternPiece.length; i++ )
+        this.drawings = [];
+
+        //Cater for older JSON
+        if ( this.patternData.patternPiece )
+            this.patternData.drawing = this.patternData.patternPiece;
+
+        for( var i=0; i<this.patternData.drawing.length; i++ )
         {
-            this.patternPieces.push( new PatternDrawing( this.patternData.patternPiece[i], this ) );
+            this.drawings.push( new PatternDrawing( this.patternData.drawing[i], this ) );
         }   
 
         this.analyseDependencies();
@@ -144,9 +149,9 @@ class Pattern {
             }
         }    
     
-        for( var j=0; j< this.patternPieces.length; j++ )
+        for( var j=0; j< this.drawings.length; j++ )
         {
-            var piece = this.patternPieces[j];
+            var piece = this.drawings[j];
             for (var a = 0; a < piece.drawingObjects.length; a++) 
             {
                 var dObj = piece.drawingObjects[a];
@@ -177,9 +182,9 @@ class Pattern {
 
     getObject( name )
     {
-        for( var j=0; j< this.patternPieces.length; j++ )
+        for( var j=0; j< this.drawings.length; j++ )
         {
-            var piece = this.patternPieces[j];
+            var piece = this.drawings[j];
             var obj = piece.getObject( name, true /*restrict search to this piece*/ );
             if ( obj )
                 return obj;

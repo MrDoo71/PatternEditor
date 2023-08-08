@@ -12,7 +12,7 @@ class TrueDartResult extends DrawingObject {
         var d = this.data;
 
         if (typeof this.fromOperation === "undefined")
-            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+            this.fromOperation = this.drawing.getObject(d.fromOperation);
 
         if ( this.name === this.fromOperation.data.trueDartResult1 )
             this.p = this.fromOperation.td1;

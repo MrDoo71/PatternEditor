@@ -11,10 +11,10 @@ class PointCutSplinePath extends DrawingObject {
         var d = this.data;
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.splinePath);
+            this.curve = this.drawing.getObject(d.splinePath);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         this.p = this.curve.pointAlongPath( this.length.value() );
         

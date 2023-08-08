@@ -12,10 +12,10 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
         var d = this.data;
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.spline);
+            this.curve = this.drawing.getObject(d.spline);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         //Note tha this.curve might be something like a SplineSimple, but it might also be an OperationResult
         this.p = this.curve.pointAlongPath( this.length.value() );

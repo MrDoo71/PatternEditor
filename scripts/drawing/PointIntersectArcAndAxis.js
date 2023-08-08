@@ -12,13 +12,13 @@ class PointIntersectArcAndAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.curve); //An anomaly, would be better if this were arc.
+            this.arc = this.drawing.getObject(d.curve); //An anomaly, would be better if this were arc.
 
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         var angleDeg = this.angle.value();
         if ( angleDeg >= 360 )

@@ -17,16 +17,16 @@ class SplineUsingControlPoints extends DrawingObject {
         var d = this.data;
 
         if (typeof this.startPoint === "undefined")
-            this.startPoint = this.patternPiece.getObject(d.point1);
+            this.startPoint = this.drawing.getObject(d.point1);
 
         if (typeof this.startControlPoint === "undefined")
-            this.startControlPoint = this.patternPiece.getObject(d.point2);
+            this.startControlPoint = this.drawing.getObject(d.point2);
 
         if (typeof this.endControlPoint === "undefined")
-            this.endControlPoint = this.patternPiece.getObject(d.point3);
+            this.endControlPoint = this.drawing.getObject(d.point3);
 
         if (typeof this.endPoint === "undefined")
-            this.endPoint = this.patternPiece.getObject(d.point4);
+            this.endPoint = this.drawing.getObject(d.point4);
 
         this.curve = new GeoSpline( [ { point: this.startPoint.p, outControlPoint: this.startControlPoint.p },
                                       { inControlPoint: this.endControlPoint.p,  point: this.endPoint.p } ] );

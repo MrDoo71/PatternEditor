@@ -12,13 +12,13 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.curve === "undefined")
-            this.curve = this.patternPiece.getObject(d.curve);
+            this.curve = this.drawing.getObject(d.curve);
 
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
 
         var angleDeg = this.angle.value();
         if ( angleDeg >= 360 )

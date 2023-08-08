@@ -75,7 +75,7 @@ class DrawingObject /*abstract*/ {
 
         const lengthAndUnits = this.getLengthAndUnits();
 
-        this.patternPiece.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
+        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
     }
 s
 
@@ -143,7 +143,7 @@ s
 
         if ( l !== undefined )
         {
-            const patternUnits = this.patternPiece.pattern.units;
+            const patternUnits = this.drawing.pattern.units;
             var precision = patternUnits === "mm" ? 10.0 : 100.0;
             l = Math.round( precision * l ) / precision;            
             return l + " " + patternUnits;    
@@ -295,28 +295,28 @@ s
     pointEndLine(data) {
         data.objectType = "pointEndLine";
         data.basePoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     pointAlongLine(data) {
         data.objectType = "pointAlongLine";
         data.firstPoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     lineTo(data) {
         data.objectType = "line";
         data.firstPoint = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 
     pointLineIntersect(data) {
         data.objectType = "pointLineIntersect";
         data.p1Line1 = this;
-        return this.patternPiece.add(data);
+        return this.drawing.add(data);
     }
 
 

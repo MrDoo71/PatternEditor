@@ -13,10 +13,10 @@ class OperationResult extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
 
         if (typeof this.fromOperation === "undefined")
-            this.fromOperation = this.patternPiece.getObject(d.fromOperation);
+            this.fromOperation = this.drawing.getObject(d.fromOperation);
 
         //if this.basePoint is a point... (if a curve, this is the midpoint)
         if ( this.basePoint.p )

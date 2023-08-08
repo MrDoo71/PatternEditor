@@ -12,9 +12,9 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
         //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);

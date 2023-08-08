@@ -19,17 +19,17 @@ class ArcElliptical extends DrawingObject {
         var d = this.data;
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
         if (typeof this.radius1 === "undefined")
-            this.radius1 = this.patternPiece.newFormula(d.radius1);
+            this.radius1 = this.drawing.newFormula(d.radius1);
         if (typeof this.radius2 === "undefined")
-            this.radius2 = this.patternPiece.newFormula(d.radius2);
+            this.radius2 = this.drawing.newFormula(d.radius2);
         if (typeof this.rotationAngle === "undefined")
-            this.rotationAngle = this.patternPiece.newFormula(d.rotationAngle);
+            this.rotationAngle = this.drawing.newFormula(d.rotationAngle);
 
         this.arc = new GeoEllipticalArc( this.center.p, 
                                          this.radius1.value(),

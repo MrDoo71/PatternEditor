@@ -25,22 +25,22 @@ class SplineSimple extends DrawingObject {
         var d = this.data;
 
         if (typeof this.startPoint === "undefined")
-            this.startPoint = this.patternPiece.getObject(d.point1);
+            this.startPoint = this.drawing.getObject(d.point1);
 
         if (typeof this.endPoint === "undefined")
-            this.endPoint = this.patternPiece.getObject(d.point4);
+            this.endPoint = this.drawing.getObject(d.point4);
 
         if (typeof this.angle1 === "undefined")
-            this.angle1 = this.patternPiece.newFormula(d.angle1);
+            this.angle1 = this.drawing.newFormula(d.angle1);
 
         if (typeof this.angle2 === "undefined")
-            this.angle2 = this.patternPiece.newFormula(d.angle2);
+            this.angle2 = this.drawing.newFormula(d.angle2);
 
         if (typeof this.length1 === "undefined")
-            this.length1 = this.patternPiece.newFormula(d.length1);
+            this.length1 = this.drawing.newFormula(d.length1);
 
         if (typeof this.length2 === "undefined")
-            this.length2 = this.patternPiece.newFormula(d.length2);
+            this.length2 = this.drawing.newFormula(d.length2);
 
         this.curve = new GeoSpline( [ { inAngle: undefined, inLength: undefined, point: this.startPoint.p, outAngle: this.angle1.value(), outLength: this.length1.value() },
                                        { inAngle: this.angle2.value(), inLength: this.length2.value(), point: this.endPoint.p, outAngle: undefined, outLength: undefined } ] );

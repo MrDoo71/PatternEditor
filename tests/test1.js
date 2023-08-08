@@ -3,14 +3,14 @@ import  { PatternDrawing, doDrawing, doTable } from '../dist/patterneditor.js';
 
 function v343110_graph1_init()
 {
-    let patternPiece1 = new PatternDrawing();
+    let drawing1 = new PatternDrawing();
 
-    patternPiece1.setDefaults( { "mx": 0.132292, 
+    drawing1.setDefaults( { "mx": 0.132292, 
                                  "my": 0.264583,
                                  "lineStyle": "hair",
                                  "color": "black" } );
     
-    let a = patternPiece1.pointSingle( { "name": "A", 
+    let a = drawing1.pointSingle( { "name": "A", 
                                          "x": 0.79375, 
                                          "y": 1.05833, 
                                         } );
@@ -56,11 +56,11 @@ function v343110_graph1_init()
 
     var targetdiv = d3.select( "#v343110_graph1" );
 
-    //patternPiece1.analyseDependencies();
+    //drawing1.analyseDependencies();
     
-    doDrawing( targetdiv, patternPiece1, null );
+    doDrawing( targetdiv, drawing1, null );
     
-    doTable( targetdiv, patternPiece1, null );
+    doTable( targetdiv, drawing1, null );
 
 }
 

@@ -13,11 +13,11 @@ class PerpendicularPointAlongLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.basePoint === "undefined")
-            this.basePoint = this.patternPiece.getObject(d.basePoint);
+            this.basePoint = this.drawing.getObject(d.basePoint);
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.p1Line1);
+            this.firstPoint = this.drawing.getObject(d.p1Line1);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.p2Line1);
+            this.secondPoint = this.drawing.getObject(d.p2Line1);
 
         var line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
         

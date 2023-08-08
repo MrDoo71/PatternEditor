@@ -235,7 +235,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
              && ( selectedObject == d )
              )
         {
-            selectedObject = d.patternPiece.getObject( d3.event.originalTarget.innerHTML );
+            selectedObject = d.drawing.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
         }
         else if (    ( d3.event) 
@@ -244,7 +244,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                   && ( selectedObject == d )
              )
         {
-            selectedObject = d.patternPiece.getObject( d3.event.srcElement.innerHTML );
+            selectedObject = d.drawing.getObject( d3.event.srcElement.innerHTML );
             scrollTable = true;
         }
         else
@@ -252,10 +252,10 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             selectedObject = d;
         }
 
-        for( var j=0; j< pattern.patternPieces.length; j++ )
-            for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
+        for( var j=0; j< pattern.drawings.length; j++ )
+            for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
             {
-                var a = pattern.patternPieces[j].drawingObjects[i];
+                var a = pattern.drawings[j].drawingObjects[i];
                 var g = a.drawingSvg;
                 if ( g )
                 {
@@ -402,11 +402,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     var errorFound = false;
     var firstDrawingObject;
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        for( var i=0; i< pattern.patternPieces[j].drawingObjects.length; i++ )
+        for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
         {
-            var a = pattern.patternPieces[j].drawingObjects[i];
+            var a = pattern.drawings[j].drawingObjects[i];
 
             if (( firstDrawingObject === undefined ) && ( a.isVisible( options ) ))
                 firstDrawingObject = a;
@@ -599,7 +599,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                  .append("div").attr("id","optionMenu" ); //.css("display","visible")
         optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
 
-        pattern.patternPieces.forEach( function(pp) {
+        pattern.drawings.forEach( function(pp) {
             if ( ! pp.groups.length )
                 return;
             var groupOptionsForPiece = optionMenu.append("section");
@@ -889,9 +889,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         focusDrawingObject(d,true);
     };
 
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        var patternPiece = pattern.patternPieces[j];
+        var drawing = pattern.drawings[j];
 
         var skipDrawing = editorOptions.skipDrawing;
 
@@ -906,7 +906,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          "label": (! editorOptions.hideLabels),
                                          "dot":  (! editorOptions.hideLabels) };
                 var a = drawingGroup.selectAll("g");    
-                a = a.data( patternPiece.drawingObjects );
+                a = a.data( drawing.drawingObjects );
                 a.enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
@@ -949,7 +949,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                          "label": (! editorOptions.hideLabels),
                                          "dot":  (! editorOptions.hideLabels) };
                 drawingGroup.selectAll("g")
-                    .data( patternPiece.drawingObjects )
+                    .data( drawing.drawingObjects )
                     .enter()
                     .each( function(d,i) {
                     var g = d3.select( this );                        
@@ -967,7 +967,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             if ( outlineGroup )
             {
                 outlineGroup.selectAll("g") 
-                .data( patternPiece.drawingObjects )
+                .data( drawing.drawingObjects )
                 .enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
@@ -1007,7 +1007,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         {
             var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
             var pg = pieceGroup.selectAll("g");    
-            pg = pg.data( patternPiece.pieces );
+            pg = pg.data( drawing.pieces );
             pg.enter()
             .append("g")        
             //.on("contextmenu", contextMenu)
@@ -1081,13 +1081,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
                     //console.log( "Resize for " + fontsSizedForScale);
 
-                    for( var j=0; j< pattern.patternPieces.length; j++ )
+                    for( var j=0; j< pattern.drawings.length; j++ )
                     {
-                        var patternPiece = pattern.patternPieces[j];
+                        var drawing = pattern.drawings[j];
                 
-                        for( var i=0; i< patternPiece.drawingObjects.length; i++ )
+                        for( var i=0; i< drawing.drawingObjects.length; i++ )
                         {
-                            var a = patternPiece.drawingObjects[i];
+                            var a = drawing.drawingObjects[i];
                             var g = a.drawingSvg;                            
                             if ( g )
                             {
@@ -1334,7 +1334,7 @@ function doWallpapers( wallpaperGroups, pattern )
 
 function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
-    var patternPiece1 = pattern.patternPieces[0];
+    var drawing1 = pattern.drawings[0];
     var layoutConfig = editorOptions.layoutConfig;
     var margin = layoutConfig.tableMargin;//25; 
     var width =  layoutConfig.tableWidth;//400;
@@ -1368,9 +1368,9 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             combinedObjects.push( pattern.variable[i] );
     }
 
-    for( var j=0; j< pattern.patternPieces.length; j++ )
+    for( var j=0; j< pattern.drawings.length; j++ )
     {
-        combinedObjects = combinedObjects.concat( pattern.patternPieces[j].drawingObjects);
+        combinedObjects = combinedObjects.concat( pattern.drawings[j].drawingObjects);
     }
 
     var svg = graphdiv.append("div")

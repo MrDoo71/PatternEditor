@@ -12,10 +12,10 @@ class PointIntersectArcs extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstArc === "undefined")
-            this.firstArc = this.patternPiece.getObject(d.firstArc);
+            this.firstArc = this.drawing.getObject(d.firstArc);
             
         if (typeof this.secondArc === "undefined")
-            this.secondArc = this.patternPiece.getObject(d.secondArc);
+            this.secondArc = this.drawing.getObject(d.secondArc);
 
         var arc1SI = this.firstArc.asShapeInfo();
         var arc2SI = this.secondArc.asShapeInfo();

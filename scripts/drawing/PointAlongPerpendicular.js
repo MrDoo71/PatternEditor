@@ -14,13 +14,13 @@ class PointAlongPerpendicular extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
         if (typeof this.angle === "undefined")
-            this.angle = this.patternPiece.newFormula(d.angle);
+            this.angle = this.drawing.newFormula(d.angle);
             
         var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
         var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();

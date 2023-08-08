@@ -11,10 +11,10 @@ class PointCutArc extends DrawingObject {
         var d = this.data;
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.arc);
+            this.arc = this.drawing.getObject(d.arc);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         this.p = this.arc.pointAlongPath( this.length.value() );
         

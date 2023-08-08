@@ -9,11 +9,11 @@
 
 class Expression {
 
-    constructor(data, pattern, patternPiece) {
+    constructor(data, pattern, drawing) {
         this.dataDebug = data;
         //this.operation = data.operation;// ? data.operation : data.operationType ;
         this.pattern = pattern;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
 
         //divide, multiply etc. and functions too
         if (typeof data.parameter !== "undefined") 
@@ -21,7 +21,7 @@ class Expression {
             this.params = data.parameter;
             for (var a = 0; a < this.params.length; a++) {
                 var p = this.params[a];
-                this.params[a] = new Expression(p, pattern, patternPiece);
+                this.params[a] = new Expression(p, pattern, drawing);
             }            
         }
 
@@ -55,15 +55,15 @@ class Expression {
             }
             else if ( data.variableType === "angleOfLine" )
             {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
             else if ( data.variableType === "lengthOfLine" )
             {
-                this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }
@@ -75,13 +75,13 @@ class Expression {
                 if ( data.drawingObject1 && data.drawingObject2 )
                 {
                     //This shouldn't find an object, otherwise we'd have passed it as a single drawingObject.
-                    this.drawingObject = patternPiece.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
+                    this.drawingObject = drawing.getObject( "Spl_" + data.drawingObject1 + "_" + data.drawingObject2 );
 
                     //at least one of these will be an intersect on a curve, or position along a curve, otherwise they are end points of the curve. 
                     if ( ! this.drawingObject )
                     {
-                        this.drawingObject1 = patternPiece.getObject( data.drawingObject1 );
-                        this.drawingObject2 = patternPiece.getObject( data.drawingObject2 );
+                        this.drawingObject1 = drawing.getObject( data.drawingObject1 );
+                        this.drawingObject2 = drawing.getObject( data.drawingObject2 );
                         //one of these will be a Spline, the other will be an intersection point on it, or distance along it. 
 
                         //We're not the whole spline, just a segment of it. We need to find a curve that both drawing objects are on.
@@ -124,7 +124,7 @@ class Expression {
                 }
                 else
                     //this is the spline drawing object itself, the curve comes directly from it. 
-                    this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                    this.drawingObject = drawing.getObject( data.drawingObject1 );
 
                 if (( data.segment ) && ( parseInt(data.segment) !== 0 ))
                     this.segment = parseInt(data.segment);
@@ -134,14 +134,14 @@ class Expression {
             }            
             else if ( data.variableType === "lengthOfArc" )
             {
-                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject = drawing.getObject( data.drawingObject1 );
                 this.arcSelection = data.arcSelection;
                 this.function = data.variableType;
                 this.value = this.functionValue;
             }            
             else if ( data.variableType === "radiusOfArc" )
             {
-                this.drawingObject = patternPiece.getObject( data.drawingObject1 );
+                this.drawingObject = drawing.getObject( data.drawingObject1 );
 
                 if ( data.radiusSelection === "ellipticalArcRadius1" )
                     this.radiusSelection = 1;

@@ -17,10 +17,10 @@ class OperationFlipByLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
 
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         this.line = new GeoLine( this.p1Line1.p, this.p2Line1.p );
 

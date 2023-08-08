@@ -22,7 +22,7 @@ class SplinePathUsingPoints extends DrawingObject {
 
             for( var i=0; i< d.pathNode.length; i++ )
             {
-                this.data.pathNode[i].point = this.patternPiece.getObject( this.data.pathNode[i].point );
+                this.data.pathNode[i].point = this.drawing.getObject( this.data.pathNode[i].point );
             }
 
             for( var i=0; i< d.pathNode.length; i+=3 )

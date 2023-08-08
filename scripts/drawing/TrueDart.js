@@ -16,16 +16,16 @@ class TrueDart extends DrawingObject {
         var d = this.data;
 
         if (typeof this.point1 === "undefined")
-            this.point1 = this.patternPiece.getObject(d.point1);
+            this.point1 = this.drawing.getObject(d.point1);
         if (typeof this.point2 === "undefined")
-            this.point2 = this.patternPiece.getObject(d.point2);
+            this.point2 = this.drawing.getObject(d.point2);
         if (typeof this.point3 === "undefined")
-            this.point3 = this.patternPiece.getObject(d.point3);
+            this.point3 = this.drawing.getObject(d.point3);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         //var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
         //var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );

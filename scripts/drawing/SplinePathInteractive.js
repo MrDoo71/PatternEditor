@@ -25,11 +25,11 @@ class SplinePathInteractive extends DrawingObject {
                 {
                     var pathNode = this.data.pathNode[i];
 
-                    pathNode.point   = this.patternPiece.getObject( pathNode.point );
-                    pathNode.angle1  = this.patternPiece.newFormula( pathNode.angle1 ); 
-                    pathNode.length1 = this.patternPiece.newFormula( pathNode.length1 ); 
-                    pathNode.angle2  = this.patternPiece.newFormula( pathNode.angle2 ); 
-                    pathNode.length2 = this.patternPiece.newFormula( pathNode.length2 );
+                    pathNode.point   = this.drawing.getObject( pathNode.point );
+                    pathNode.angle1  = this.drawing.newFormula( pathNode.angle1 ); 
+                    pathNode.length1 = this.drawing.newFormula( pathNode.length1 ); 
+                    pathNode.angle2  = this.drawing.newFormula( pathNode.angle2 ); 
+                    pathNode.length2 = this.drawing.newFormula( pathNode.length2 );
 
                     this.nodes.push( { inAngle:   pathNode.angle1.value(),
                                        inLength:  pathNode.length1.value(),

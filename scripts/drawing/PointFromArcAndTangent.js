@@ -12,10 +12,10 @@ class PointFromArcAndTangent extends DrawingObject {
         var d = this.data;
 
         if (typeof this.tangent === "undefined")
-            this.tangent = this.patternPiece.getObject(d.tangent);
+            this.tangent = this.drawing.getObject(d.tangent);
 
         if (typeof this.arc === "undefined")
-            this.arc = this.patternPiece.getObject(d.arc); 
+            this.arc = this.drawing.getObject(d.arc); 
 
         this.crossPoint = d.crossPoint;
 

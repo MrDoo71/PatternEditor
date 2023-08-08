@@ -13,16 +13,16 @@ class PointIntersectArcAndLine extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
             
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         if (typeof this.center === "undefined")
-            this.center = this.patternPiece.getObject(d.center);
+            this.center = this.drawing.getObject(d.center);
 
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
         var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );

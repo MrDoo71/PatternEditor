@@ -46,7 +46,7 @@ class PatternDrawing {
 
 
             this.drawing[dObj.data.name] = dObj;
-            dObj.patternPiece = this;    
+            dObj.drawing = this;    
             this.calculateObj(dObj);
         }
 
@@ -284,7 +284,7 @@ class PatternDrawing {
         var dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
         this.drawing[dObj.data.name] = dObj;
-        dObj.patternPiece = this;
+        dObj.drawing = this;
         this.calculateObj(dObj);
         return dObj;
     }
@@ -323,7 +323,7 @@ class PatternDrawing {
                 var align = "middle";
                 var ta = 0;
                 var dy = 0;
-                //const patternUnits = this.patternPiece.pattern.units;
+                //const patternUnits = this.drawing.pattern.units;
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
     

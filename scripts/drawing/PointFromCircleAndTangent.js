@@ -13,13 +13,13 @@ class PointFromCircleAndTangent extends DrawingObject {
         var d = this.data;
 
         if (typeof this.tangent === "undefined")
-            this.tangent = this.patternPiece.getObject(d.tangent);
+            this.tangent = this.drawing.getObject(d.tangent);
 
         if (typeof this.arc === "undefined")
-            this.center = this.patternPiece.getObject(d.center); 
+            this.center = this.drawing.getObject(d.center); 
 
         if (typeof this.radius === "undefined")
-            this.radius = this.patternPiece.newFormula(d.radius);
+            this.radius = this.drawing.newFormula(d.radius);
 
         this.crossPoint = d.crossPoint;
 

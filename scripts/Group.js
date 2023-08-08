@@ -3,9 +3,9 @@
 
 class Group {
 
-    constructor (data, patternPiece) {
+    constructor (data, drawing) {
         this.data = data;
-        this.patternPiece = patternPiece;
+        this.drawing = drawing;
         this.name = data.name;
         this.visible = data.visible;
         this.update = data.update;
@@ -15,7 +15,7 @@ class Group {
 
         if ( this.data.member )
             this.data.member.forEach( function(m){
-                var dObj = this.patternPiece.getObject( m, true );
+                var dObj = this.drawing.getObject( m, true );
                 if ( dObj )
                 {
                     this.members.push( dObj );

@@ -14,13 +14,13 @@ class PointAlongBisector extends DrawingObject {
         var d = this.data;
 
         if (typeof this.firstPoint === "undefined")
-            this.firstPoint = this.patternPiece.getObject(d.firstPoint);
+            this.firstPoint = this.drawing.getObject(d.firstPoint);
         if (typeof this.secondPoint === "undefined")
-            this.secondPoint = this.patternPiece.getObject(d.secondPoint);
+            this.secondPoint = this.drawing.getObject(d.secondPoint);
         if (typeof this.thirdPoint === "undefined")
-            this.thirdPoint = this.patternPiece.getObject(d.thirdPoint);
+            this.thirdPoint = this.drawing.getObject(d.thirdPoint);
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
             
         var line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
         var line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    

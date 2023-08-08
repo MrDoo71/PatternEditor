@@ -13,16 +13,16 @@ class PointShoulder extends DrawingObject {
         var d = this.data;
 
         if (typeof this.shoulderPoint === "undefined")
-            this.shoulderPoint = this.patternPiece.getObject(d.shoulderPoint);
+            this.shoulderPoint = this.drawing.getObject(d.shoulderPoint);
 
         if (typeof this.p1Line1 === "undefined")
-            this.p1Line1 = this.patternPiece.getObject(d.p1Line1);
+            this.p1Line1 = this.drawing.getObject(d.p1Line1);
 
         if (typeof this.p2Line1 === "undefined")
-            this.p2Line1 = this.patternPiece.getObject(d.p2Line1);
+            this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
         if (typeof this.length === "undefined")
-            this.length = this.patternPiece.newFormula(d.length);
+            this.length = this.drawing.newFormula(d.length);
 
         //Find the point that is length away from the shoulderPoint along
         //the line p1Line1-p2line1.
