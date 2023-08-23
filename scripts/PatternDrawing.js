@@ -296,7 +296,7 @@ class PatternDrawing {
 
 
     //Add a label (to svg group g) positioned midway along path
-    drawLabelAlongPath( g, path, label, fontSize ) //TODO  t, include in .val export but strip 
+    drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
         //const d = this.data; //the original json data
         fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
@@ -327,39 +327,48 @@ class PatternDrawing {
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
     
-
-                // East(ish)
-                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                if ( followPathDirection )
                 {
                     baseline = "hanging"; //For Safari, handing doesn't work once rotated
-                    ta = - a;
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                // West(ish)
-                else if (  (( a >= 135 ) && ( a <225 )) 
-                )//|| (( a > 270 ) && ( a <315 ))  )
-                {
-                    baseline = "hanging";
-                    ta = - (a-180);
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                //North(ish)
-                else if (( a > 45 ) && ( a < 135 )) 
-                {
-                    baseline = "middle";//"auto"
-                    align = "middle";
                     ta = -a;
-                    p.x -= spacing;
+                    //p.y += spacing;
+                    dy = spacing;
                 }
-                //South(ish)
-                else if (( a > 225 ) && ( a <= 270 )) 
+                else
                 {
-                    baseline = "auto"
-                    align = "middle";
-                    ta = - ( a-180 );
-                    p.x -= spacing;
+                    // East(ish)
+                    if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                    {
+                        baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                        ta = - a;
+                        //p.y += spacing;
+                        dy = spacing;
+                    }
+                    // West(ish)
+                    else if (  (( a >= 135 ) && ( a <225 )) 
+                    )//|| (( a > 270 ) && ( a <315 ))  )
+                    {
+                        baseline = "hanging";
+                        ta = - (a-180);
+                        //p.y += spacing;
+                        dy = spacing;
+                    }
+                    //North(ish)
+                    else if (( a > 45 ) && ( a < 135 )) 
+                    {
+                        baseline = "middle";//"auto"
+                        align = "middle";
+                        ta = -a;
+                        p.x -= spacing;
+                    }
+                    //South(ish)
+                    else if (( a > 225 ) && ( a <= 270 )) 
+                    {
+                        baseline = "auto"
+                        align = "middle";
+                        ta = - ( a-180 );
+                        p.x -= spacing;
+                    }
                 }
 
                 g.append("text")

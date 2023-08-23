@@ -75,7 +75,7 @@ class DrawingObject /*abstract*/ {
 
         const lengthAndUnits = this.getLengthAndUnits();
 
-        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
+        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits, false ); //no fontSize, so semantic zoom font size. 
     }
 s
 

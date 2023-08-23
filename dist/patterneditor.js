@@ -75,7 +75,7 @@ class DrawingObject /*abstract*/ {
 
         const lengthAndUnits = this.getLengthAndUnits();
 
-        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits ); //no fontSize, so semantic zoom font size. 
+        this.drawing.drawLabelAlongPath( g, path, lengthAndUnits, false ); //no fontSize, so semantic zoom font size. 
     }
 s
 
@@ -4272,7 +4272,7 @@ class Piece {
 
         console.log("Time to draw seam line: ", this.name );
 
-        var p = g.append("path")
+        const p = g.append("path")
                  .attr("id","seam line - " + this.name )
                  .attr("class", "seamline" )
                  .attr("d", this.svgPath( false ) )
@@ -4282,6 +4282,17 @@ class Piece {
         if ( useExportStyles )
             p.attr("fill", "none" )
              .attr("stroke", "#929292");
+
+        for (var a = 0; a < this.detailNodes.length; a++) 
+        {
+            var n = this.detailNodes[ a ];
+            if (( n.label ) && ( n.curveSegment))
+            {
+                const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6);
+
+                this.drawing.drawLabelAlongPath( g, n.curveSegment, n.label, fontSize, true );    
+            }
+        }
     }
 
 
@@ -4338,65 +4349,90 @@ class Piece {
             const notchCount = n.notchCount === undefined ? 1 : n.notchCount;
             const notchLength = n.notchLength === undefined ? 0.25 : n.notchLength;
             const notchWidth  = n.notchWidth === undefined ? 0.25 : n.notchWidth;      
-            const tangentDeg = n.pointEndSA ? (new GeoLine( n.point, n.pointEndSA)).angleDeg() : n.tangentAfterDeg;
 
-            //TODO if no SA, then create a point at an internal tangent
-            var path = "";
+            const roundForSVG = this.roundForSVG;
 
-            //One notch : 0    
-            //Two notches : -0.5 +0.5    0-1  1-1   n-(c/2)+0.5
-            //Three notches : -1 0 +1             
-            for( var i = 0;  i < notchCount; i++ )
-            {
-                const offset = i-(notchCount/2)+0.5;
-                const roundForSVG = this.roundForSVG;
+            const drawNotch = function( point, pointSA, tangentDeg, sa ) {
 
-                const drawNotch = function( p, notchLength ) {
+                //TODO if no SA, then create a point at an internal tangent
+                var path = "";
 
-                    const offsetAmount = offset * notchWidth;
-                    var start = p;
-                    if ( offset != 0 )
-                        start = start.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+                //One notch : 0    
+                //Two notches : -0.5 +0.5    0-1  1-1   n-(c/2)+0.5
+                //Three notches : -1 0 +1             
+                for( var i = 0;  i < notchCount; i++ )
+                {
+                    const offset = i-(notchCount/2)+0.5;
 
-                    var end;
-                    if ( notchLength === undefined ) //drawing one notch from seamline to seamallowanceline
-                        end = offset == 0 ? n.point
-                                          : n.point.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+                    const drawNotchMark = function( p, notchLength, otherPoint ) {
+
+                        const offsetAmount = offset * notchWidth;
+                        var start = p;
+                        if ( offset != 0 )
+                            start = start.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+
+                        var end;
+                        if ( notchLength === undefined ) //drawing one notch from seamline to seamallowanceline
+                            end = offset == 0 ? otherPoint
+                                              : otherPoint.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
+                        else
+                            end = start.pointAtDistanceAndAngleDeg( notchLength, tangentDeg + 180 + notchAngle );
+
+                        //notchType == "slit"
+                        //TODO: tNotch; uNotch; vInternal vExternal castle diamond
+                        path += "M" + roundForSVG( start.x ) + "," + roundForSVG( start.y ) + " L" + roundForSVG( end.x ) + "," + roundForSVG( end.y );
+                    }
+
+                    //In deliberate variation to Seamly2D, if notchLength < seamAllowance, and notchAngle == 0 then draw the notch from the seam
+                    //allowance line to the seam line. 
+
+                    if (( pointSA ) && ( notchAngle === 0 ) && (notchLength < sa ))
+                    {
+                        drawNotchMark( pointSA, undefined, point );
+                    }
+                    else if ( pointSA ) 
+                    {
+                        drawNotchMark( pointSA, notchLength );
+                        drawNotchMark( point, notchLength );
+                    }
                     else
-                        end = start.pointAtDistanceAndAngleDeg( notchLength, tangentDeg + 180 + notchAngle );
-
-                    //notchType == "slit"
-                    //TODO: tNotch; uNotch; vInternal vExternal castle diamond
-                    path += "M" + roundForSVG( start.x ) + "," + roundForSVG( start.y ) + " L" + roundForSVG( end.x ) + "," + roundForSVG( end.y );
+                        drawNotchMark( point, notchLength );
                 }
 
-                //In deliberate variation to Seamly2D, if notchLength < seamAllowance, and notchAngle == 0 then draw the notch from the seam
-                //allowance line to the seam line. 
+                //TODO should we connect these D3 data-wise to the notches
+                var p = notches.append("path")
+                    .attr("d", path )
+                    .attr("class", "notch" )
+                    .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
 
-                if (( n.pointEndSA ) && ( notchAngle === 0 ) && (notchLength < n.sa2) )
+                if ( useExportStyles )
+                    p.attr("fill", "none")
+                        .attr("stroke", "black");
+            };
+
+            if ( n.notchesAlongPath !== undefined )            
+            {
+                //3 along the path means cutting it into 4.
+                for ( var j=1; j<=n.notchesAlongPath; j++ )
                 {
-                    drawNotch( n.pointEndSA, undefined );
+                    //1,2,3
+                    const fractionAlongLine = j / ( n.notchesAlongPath + 1); //0.25, 0.5, 0.75
+                    const p = n.curveSegment.pointAlongPathFraction( fractionAlongLine );
+                    const sa = n.sa1;
+                    const tinyBitFurtherAlongLine = fractionAlongLine + 0.0001;
+                    const p2 = n.curveSegment.pointAlongPathFraction( tinyBitFurtherAlongLine );
+                    const tangentDeg = (new GeoLine( p, p2 )).angleDeg() + 90.0;
+                    const tangentLine = new GeoLine( p, p.pointAtDistanceAndAngleDeg( sa, tangentDeg ) );
+                    const pSA = n.curveSegmentSA === undefined ? undefined : p.pointAtDistanceAndAngleDeg( sa, tangentDeg );
+                    drawNotch( p, pSA, tangentDeg, sa );
                 }
-                else if ( n.pointEndSA ) 
-                {
-                    drawNotch( n.pointEndSA, notchLength );
-                    drawNotch( n.point, notchLength );
-                }
-                else
-                    drawNotch( n.point, notchLength );
-
-
             }
-
-            //TODO should we connect these D3 data-wise to the notches
-            var p = notches.append("path")
-                .attr("d", path )
-                .attr("class", "notch" )
-                .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
-
-            if ( useExportStyles )
-                p.attr("fill", "none")
-                    .attr("stroke", "black");
+            else if ( n.point !== undefined )
+            {
+                //Normal point notch
+                const tangentDeg = n.pointEndSA ? (new GeoLine( n.point, n.pointEndSA)).angleDeg() : n.tangentAfterDeg;
+                drawNotch( n.point, n.pointEndSA, tangentDeg, n.sa2 );
+            }
         };
     }    
 
@@ -4486,7 +4522,7 @@ class Piece {
             }
 
             const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
-            this.drawing.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize );    
+            this.drawing.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize, true );    
         }
 
         var p = internalPathsGroup.append("path")
@@ -5051,7 +5087,7 @@ class PatternDrawing {
 
 
     //Add a label (to svg group g) positioned midway along path
-    drawLabelAlongPath( g, path, label, fontSize ) //TODO  t, include in .val export but strip 
+    drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
         //const d = this.data; //the original json data
         fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
@@ -5082,39 +5118,48 @@ class PatternDrawing {
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
     
-
-                // East(ish)
-                if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                if ( followPathDirection )
                 {
                     baseline = "hanging"; //For Safari, handing doesn't work once rotated
-                    ta = - a;
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                // West(ish)
-                else if (  (( a >= 135 ) && ( a <225 )) 
-                )//|| (( a > 270 ) && ( a <315 ))  )
-                {
-                    baseline = "hanging";
-                    ta = - (a-180);
-                    //p.y += spacing;
-                    dy = spacing;
-                }
-                //North(ish)
-                else if (( a > 45 ) && ( a < 135 )) 
-                {
-                    baseline = "middle";//"auto"
-                    align = "middle";
                     ta = -a;
-                    p.x -= spacing;
+                    //p.y += spacing;
+                    dy = spacing;
                 }
-                //South(ish)
-                else if (( a > 225 ) && ( a <= 270 )) 
+                else
                 {
-                    baseline = "auto"
-                    align = "middle";
-                    ta = - ( a-180 );
-                    p.x -= spacing;
+                    // East(ish)
+                    if ((( a >= 0 ) && ( a <45 )) || (( a > 270 ) && ( a <= 360 )))
+                    {
+                        baseline = "hanging"; //For Safari, handing doesn't work once rotated
+                        ta = - a;
+                        //p.y += spacing;
+                        dy = spacing;
+                    }
+                    // West(ish)
+                    else if (  (( a >= 135 ) && ( a <225 )) 
+                    )//|| (( a > 270 ) && ( a <315 ))  )
+                    {
+                        baseline = "hanging";
+                        ta = - (a-180);
+                        //p.y += spacing;
+                        dy = spacing;
+                    }
+                    //North(ish)
+                    else if (( a > 45 ) && ( a < 135 )) 
+                    {
+                        baseline = "middle";//"auto"
+                        align = "middle";
+                        ta = -a;
+                        p.x -= spacing;
+                    }
+                    //South(ish)
+                    else if (( a > 225 ) && ( a <= 270 )) 
+                    {
+                        baseline = "auto"
+                        align = "middle";
+                        ta = - ( a-180 );
+                        p.x -= spacing;
+                    }
                 }
 
                 g.append("text")
