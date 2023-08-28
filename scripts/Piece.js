@@ -355,7 +355,7 @@ class Piece {
 
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
-        var currentSeamAllowance = this.defaultSeamAllowance;
+        var currentSeamAllowance = this.defaultSeamAllowance;        
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];

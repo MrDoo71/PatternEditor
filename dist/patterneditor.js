@@ -3922,7 +3922,7 @@ class Piece {
 
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
-        var currentSeamAllowance = this.defaultSeamAllowance;
+        var currentSeamAllowance = this.defaultSeamAllowance;        
         for (var a = 0; a < this.detailNodes.length; a++) {
 
             var n = this.detailNodes[ a ];
@@ -9290,6 +9290,7 @@ class GeoSpline {
 
             var newNode = {};
             newNodeData[i] = newNode;
+            
             var tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
             if ( tangentAfterDeg > 360 )
                 tangentAfterDeg -= 360;
@@ -9386,10 +9387,10 @@ class GeoSpline {
             else
             {
                 if ( i == 1 )
-                    newNodeData.push( prevNode );
+                    newNodeData.push( this.cloneNode( prevNode ) );
 
-                newNodeData.push( node );
-                c3 = node;
+                c3 = this.cloneNode( node ); //we must not change a node that exists on the base curve
+                newNodeData.push( c3 );
             }
         }
 
@@ -9485,6 +9486,18 @@ class GeoSpline {
             throw "Unexpected type of addition. ";
             
         return new GeoSpline( extendedNodeData );
+    }
+
+
+    cloneNode( n )
+    {
+        return { inControlPoint:  n.inControlPoint,
+                 inAngle       :  n.inAngle,
+                 inLength      :  n.inLength,
+                 point         :  n.point,
+                 outControlPoint: n.outControlPoint,
+                 outAngle      :  n.outAngle,
+                 outLength     :  n.outLength };
     }
 }
 //# sourceMappingURL=patterneditor.js.map
