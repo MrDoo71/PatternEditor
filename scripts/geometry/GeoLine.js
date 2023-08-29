@@ -254,16 +254,15 @@ class GeoLine {
     }
 
 
+    svgPath() 
+    {
+        return "M" + this.p1.x + "," + this.p1.y + " " +
+               "L" + this.p2.x + "," + this.p2.y + " ";
+    }
+
+
     angleDeg() {
-        /*
-        var deltaX = (this.p2.x - this.p1.x);
-        var deltaY = -1 * (this.p2.y - this.p1.y); //-1 because SVG has y going downwards
 
-        //if ( deltaX === 0 )
-        //    return deltaY > 0 ? 90 : 270;
-
-        return Math.atan2( deltaY, deltaX ) * 180 / Math.PI;
-        */
        return this.angle * 180 / Math.PI;
     }
 

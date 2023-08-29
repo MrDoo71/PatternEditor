@@ -300,12 +300,12 @@ body.k-dark-mode g.j-drawing path[stroke="black"] {
 }
 
 g.j-pieces text.patternlabel,
-g.j-pieces text.length {
+g.j-pieces text.alongPath {
     fill: black;
 }
 
 body.k-dark-mode g.j-pieces text.patternlabel,
-body.k-dark-mode g.j-pieces text.length {
+body.k-dark-mode g.j-pieces text.alongPath {
     fill: white;
 }
 

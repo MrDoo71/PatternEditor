@@ -300,6 +300,28 @@ class PatternDrawing {
     {
         //const d = this.data; //the original json data
         fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+
+        if ( followPathDirection )
+        {   
+            //Use a parallel path inset from the one provided
+            if ( path instanceof GeoSpline )
+                path = path.parallelCurve( -fontSize ).offsetCurve;
+            else if ( path instanceof GeoLine )
+                path = new GeoLine( path.p1.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ),
+                                    path.p2.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ) );
+
+            const pathSVG = path.svgPath();            
+            g.append("text")
+                .attr("class","alongPath")
+                .attr("font-size", fontSize )
+                .append( "textPath" )
+                .attr( "path", pathSVG )
+                .attr( "startOffset", "50%" )
+                .attr( "text-anchor", "middle" )
+                .attr( "side", "left" )
+                .text( label ); 
+            return;
+        }
         
         try {
             const p = path.pointAlongPathFraction(0.5);
@@ -372,7 +394,7 @@ class PatternDrawing {
                 }
 
                 g.append("text")
-                .attr("class","length")
+                .attr("class","alongPath")
                 .attr( "transform", "translate(" + p.x + "," + p.y +  ") rotate("+ta+")" )
                 .attr( "dominant-baseline", baseline ) //if we're drawing below the line. 
                 .attr( "text-anchor", align ) //if we're drawing to the left of the line

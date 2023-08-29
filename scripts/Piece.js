@@ -719,11 +719,14 @@ class Piece {
         for (var a = 0; a < this.detailNodes.length; a++) 
         {
             var n = this.detailNodes[ a ];
-            if (( n.label ) && ( n.curveSegment))
+            if ( n.label )
             {
                 const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6);
 
-                this.drawing.drawLabelAlongPath( g, n.curveSegment, n.label, fontSize, true );    
+                if ( n.curveSegment)
+                    this.drawing.drawLabelAlongPath( g, n.curveSegment, n.label, fontSize, true );
+                else if ( n.line )
+                    this.drawing.drawLabelAlongPath( g, n.line, n.label, fontSize, true );
             }
         }
     }
