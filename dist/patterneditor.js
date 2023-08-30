@@ -6579,6 +6579,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         combinedObjects = combinedObjects.concat( pattern.drawings[j].drawingObjects);
     }
 
+    const sanitiseForHTML = function ( s ) {
+            return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        };
+
     var svg = graphdiv.append("div")
                       .attr("class", "pattern-table")
                       .style( "height", height +"px" )    
@@ -6630,15 +6634,17 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         var html;
         try {
             html = d.html( asFormula );
+            if ( d.data && d.data.comments )
+                html = '<div class="comments">' + sanitiseForHTML( d.data.comments ) + '</div>' + html;
             if (d.error)
-                html += '<div class="error">' + d.error + '</div>';
+                html += '<div class="error">' + sanitiseForHTML( d.error ) + '</div>' ;
         } catch ( e ) {
             html = '<div class="error">Failed to generate description.</div>';
 
             if ( ! d.error )
                 d.error = "Failed to generate description.";
 
-            html = '<div class="error">' + d.error + '</div>';
+            html = '<div class="error">' + sanitiseForHTML( d.error ) + '</div>';
         }
 
         if ( d.error )

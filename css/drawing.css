@@ -156,6 +156,10 @@ g.j-item div.desc td {
     padding-right: 8px; 
 }
 
+g.j-item div.comments {
+    font-style: italic;
+}
+
 g.j-item.group-hidden {
     opacity: 0.5;
 }
