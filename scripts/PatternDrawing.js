@@ -9,6 +9,7 @@ class PatternDrawing {
         this.data = data;
         this.drawing = {};
         this.pattern = pattern;
+        this.textPathSeq = 0;
 
         if (data) {
             this.name = data.name;
@@ -311,11 +312,17 @@ class PatternDrawing {
                                     path.p2.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ) );
 
             const pathSVG = path.svgPath();            
+            const pathID = "tp" + this.textPathSeq++;
+            g.append("path")
+                .attr( "id", pathID )
+                .attr( "visibility", "hidden" )
+                .attr( "d", pathSVG ); 
+
             g.append("text")
                 .attr("class","alongPath")
                 .attr("font-size", fontSize )
                 .append( "textPath" )
-                .attr( "path", pathSVG )
+                .attr( "href", "#" + pathID )
                 .attr( "startOffset", "50%" )
                 .attr( "text-anchor", "middle" )
                 .attr( "side", "left" )
