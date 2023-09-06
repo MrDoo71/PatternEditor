@@ -715,6 +715,18 @@ class Piece {
         if ( useExportStyles )
             p.attr("fill", "none" )
              .attr("stroke", "#929292");
+    }
+
+
+    drawLabelsAlongSeamLine( g, useExportStyles ) 
+    {
+        if ( this.ignore )
+            return;
+
+        if ( ! this.calculated )
+            this.calculate();
+
+        console.log("Time to draw seam line labels: ", this.name );
 
         for (var a = 0; a < this.detailNodes.length; a++) 
         {

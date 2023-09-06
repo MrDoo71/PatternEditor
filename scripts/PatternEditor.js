@@ -1034,6 +1034,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     {
                         p.drawNotches( g, useExportStyles );
                         p.drawMarkings( g, useExportStyles );
+                        p.drawLabelsAlongSeamLine( g, useExportStyles );
                     }
                     p.svg = g;
                 }
