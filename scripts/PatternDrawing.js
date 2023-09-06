@@ -311,8 +311,8 @@ class PatternDrawing {
                 path = new GeoLine( path.p1.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ),
                                     path.p2.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ) );
 
-            const pathSVG = path.svgPath();            
-            const pathID = "tp" + this.textPathSeq++;
+            const pathSVG = path.svgPath();
+            const pathID = "tp" + CryptoJS.MD5( pathSVG ).toString(); //this.textPathSeq++;
             g.append("path")
                 .attr( "id", pathID )
                 .attr( "visibility", "hidden" )
