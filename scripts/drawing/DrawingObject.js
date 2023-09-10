@@ -47,13 +47,15 @@ class DrawingObject /*abstract*/ {
             } catch ( e ) {                
             }
 
-            g.append("text")
-            .attr("class","labl")
-            .attr("x", labelPosition.labelX )
-            .attr("y", labelPosition.labelY )
-            .attr("font-size", labelPosition.fontSize + "px")
-            .text( labelText );
+            const t = g.append("text")
+                        .attr("class","labl")
+                        .attr("x", labelPosition.labelX )
+                        .attr("y", labelPosition.labelY )
+                        .attr("font-size", labelPosition.fontSize + "px")
+                        .text( labelText );
 
+            if ( drawingOptions.overrideLineColour )
+                t.attr("style", "fill:"+ drawingOptions.overrideLineColour ); //using style overrides the stylesheet, whereas fill does not. 
         }
 
         if (( this.showLength() === "line" ) && this.lineVisible())
@@ -180,8 +182,8 @@ s
                      .attr("stroke-width", this.getStrokeWidth( isOutline ) );
 
             if ( ! isOutline )
-                l.attr("stroke", this.getColor() )
-                 .attr("class", this.getLineStyle() );
+                l.attr("stroke", drawingOptions.overrideLineColour ? drawingOptions.overrideLineColour : this.getColor() )
+                 .attr("class", drawingOptions.overrideLineStyle ? drawingOptions.overrideLineStyle : this.getLineStyle() );
         }
     }
 
@@ -198,8 +200,8 @@ s
                     .attr("stroke-width", this.getStrokeWidth( isOutline) );
 
             if ( ! isOutline )        
-                p.attr("stroke", this.getColor() )
-                 .attr("class", this.getLineStyle() );
+                p.attr("stroke", drawingOptions.overrideLineColour ? drawingOptions.overrideLineColour : this.getColor() )
+                 .attr("class", drawingOptions.overrideLineStyle ? drawingOptions.overrideLineStyle : this.getLineStyle() );
         }
     }    
 

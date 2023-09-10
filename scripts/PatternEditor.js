@@ -690,7 +690,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
                                                                       }
                                                                      } );
-                wallpaperDiv.append( "span" ).text( wallpaper.filename ? wallpaper.filename : wallpaper.imageurl );
+                wallpaperDiv.append( "span" ).text( wallpaper.displayName );
                                                                      //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
             });            
 
@@ -717,21 +717,24 @@ function initialiseWallpapers( pattern, interactionPrefix )
     var wallpapers = pattern.wallpapers; 
     for( var i=0; i<wallpapers.length; i++ )
     {
-        var w = wallpapers[i];
+        const w = wallpapers[i];
 
         if ( ! w.initialised )
         {
             //A 720px image is naturally 10in (at 72dpi)
             //If our pattern as 10in across then our image should be 10 units.
             //If our pattern was 10cm across then our image should be 25.4 units and we would expect to need to specify a scale of 1/2.54
-            var defaultScale = 72;
-            if ( pattern.units === "cm" )
+            var defaultScale = 72.0;
+            if ( w.patternurl )
             {
-                defaultScale = 72 / 2.54;
+                defaultScale = 1.0;
             }
-            else if ( pattern.units === "mm" )
+            else
             {
-                defaultScale = 72 / 25.4;
+                if ( pattern.units === "cm" )
+                    defaultScale = 72.0 / 2.54;
+                else if ( pattern.units === "mm" )
+                    defaultScale = 72.0 / 25.4;
             }
             w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
             w.scaleY = w.scaleY / defaultScale /*dpi*/;
@@ -739,23 +742,86 @@ function initialiseWallpapers( pattern, interactionPrefix )
             w.allowEdit = ( w.allowEdit === undefined ) || ( w.allowEdit );
             
             //w.dimensionsKnown = dimensionsKnown;
-            $("<img/>") // Make in memory copy of image to avoid css issues
-                .attr("src", w.imageurl )
-                .attr("data-wallpaper", i)
-                .on( "load", function() {
-                    //seems like we can't rely on closure to pass w in, it always   points to the final wallpaper
-                    w = wallpapers[ this.dataset.wallpaper ];
-                    w.width = this.width;   // Note: $(this).width() will not
-                    w.height = this.height; // work for in memory images.
-                    //console.log( "jquery Image loaded w.imageurl " + w.imageurl + " width:" + w.width + " height:" + w.height);
-                    //console.log( "Wallpaper dimensions known. Image loaded w.imageurl width:" + w.width + " height:" + w.height );
-                    if ( w.image )
+            if ( w.imageurl )
+            {
+                w.displayName = w.filename ? w.filename : w.imageurl;
+
+                $("<img/>") // Make in memory copy of image to avoid css issues
+                    .attr("src", w.imageurl )
+                    .attr("data-wallpaper", i)
+                    .on( "load", function() {
+                        //seems like we can't rely on closure to pass w in, it always   points to the final wallpaper
+                        const w = wallpapers[ this.dataset.wallpaper ];
+                        w.width = this.width;   // Note: $(this).width() will not
+                        w.height = this.height; // work for in memory images.
+                        //console.log( "jquery Image loaded w.imageurl " + w.imageurl + " width:" + w.width + " height:" + w.height);
+                        //console.log( "Wallpaper dimensions known. Image loaded w.imageurl width:" + w.width + " height:" + w.height );
+                        if ( w.image )
+                        {
+                            //console.log( " setting d3Image dimentions." );
+                            d3.select( w.image ).attr("width", w.width );        
+                            d3.select( w.image ).attr("height", w.height );        
+                        }
+                    });
+            } 
+            else if ( w.patternurl )
+            {
+                w.displayName = w.patternName;
+
+                w.drawPatternWallpaper = function drawPatternWallpaper()
+                {
+                    const w = this;
+                    const drawingOptions = { "outline": false, 
+                                             "label": w.showLabels,
+                                             "dot": false };
+
+                    if ( w.overrideLineColour )
+                        drawingOptions.overrideLineColour = w.overrideLineColour;
+
+                    if ( w.overrideLineStyle )
+                        drawingOptions.overrideLineStyle = w.overrideLineStyle;
+
+//rework to create/update groups for drawings                        
+                    for( const drawing of w.pattern.drawings )
                     {
-                        //console.log( " setting d3Image dimentions." );
-                        d3.select( w.image ).attr("width", w.width );        
-                        d3.select( w.image ).attr("height", w.height );        
+                        const drawingGroup = d3.select( w.g ).append("g").attr("class","j-drawing");
+
+                        const drawing0 = drawing; //required for closure
+                        drawingGroup.selectAll("g")
+                            .data( drawing0.drawingObjects )
+                            .enter()
+                            .each( function(d,i) {
+                                var gd3 = d3.select( this );                        
+                                if (   ( typeof d.draw === "function" ) 
+                                    && ( ! d.error )
+                                    && ( d.isVisible() ) )// editorOptions ) ) )
+                                try {
+                                    d.draw( gd3, drawingOptions );
+                                } catch ( e ) {
+                                    d.error = "Drawing failed. " + e;
+                                }
+                            });
                     }
-                });
+                }
+
+                const fetchPatternForWallpaper = async () => {
+                    const response = await fetch( w.patternurl, {
+                      method: 'GET',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      }
+                    });
+                    const data = await response.json();
+                    data.wallpaper = undefined; //don't put wallpapers on wallpapers
+                    w.pattern = new Pattern( data );
+                    w.width  = w.pattern.visibleBounds.maxX - w.pattern.visibleBounds.minX;
+                    w.height = w.pattern.visibleBounds.maxY - w.pattern.visibleBounds.minY;
+                    if ( w.g )
+                        w.drawPatternWallpaper(); //otherwise we'll do it when we create w.g
+                  }
+
+                fetchPatternForWallpaper();                
+            }
                 
             if ( updateServer )
                 w.updateServer = updateServer;
@@ -900,6 +966,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
             var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
+            const drawObject = function( d, g, drawingOptions ) {
+                var gd3 = d3.select( g );                        
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                try {
+                    d.draw( gd3, drawingOptions );
+                    d.drawingSvg = gd3; //not necessary if this is thumbnail
+                } catch ( e ) {
+                    d.error = "Drawing failed. " + e;
+                }
+            };
+
             if ( editorOptions.interactive )
             {
                 const drawingOptions = { "outline": false, 
@@ -930,16 +1009,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     }                    
                 })
                 .each( function(d,i) {
-                    var g = d3.select( this );                        
-                    if (   ( typeof d.draw === "function" ) 
-                        && ( ! d.error )
-                        && ( d.isVisible( editorOptions ) ) )
-                    try {
-                        d.draw( g, drawingOptions );
-                        d.drawingSvg = g;                 
-                    } catch ( e ) {
-                        d.error = "Drawing failed. " + e;
-                    }
+                    drawObject( d, this, drawingOptions );
                 });
             }
             else //thumbnail
@@ -952,16 +1022,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     .data( drawing.drawingObjects )
                     .enter()
                     .each( function(d,i) {
-                    var g = d3.select( this );                        
-                    if (   ( typeof d.draw === "function" ) 
-                        && ( ! d.error )
-                        && ( d.isVisible( editorOptions ) ) )
-                    try {
-                        d.draw( g, drawingOptions );
-                    } catch ( e ) {
-                        d.error = "Drawing failed. " + e;
-                    }
-                });
+                        drawObject( d, this, drawingOptions );
+                    });
             }
 
             if ( outlineGroup )
@@ -1204,15 +1266,10 @@ function doWallpapers( wallpaperGroups, pattern )
 
     var drag = d3.drag()
         .on("start", function(wallpaper) {
-            //var wallpaperG = d3.select(this);
-            //if ( ! wallpaper.editable )
-            //    return;
             wallpaper.offsetXdragStart = wallpaper.offsetX - d3.event.x;
             wallpaper.offsetYdragStart = wallpaper.offsetY - d3.event.y;
         })
         .on("drag", function(wallpaper) {
-            //if ( ! wallpaper.editable )
-            //    return;
             var wallpaperG = d3.select(this);        
             wallpaper.offsetX = wallpaper.offsetXdragStart + d3.event.x;
             wallpaper.offsetY = wallpaper.offsetYdragStart + d3.event.y;
@@ -1223,31 +1280,43 @@ function doWallpapers( wallpaperGroups, pattern )
         });
 
     wallpaperGroups.selectAll("g")
-                    .data( visibleWallpapers, function(d){return d.filename} )
+                    .data( visibleWallpapers, function(d){ return d.filename || d.patternurl; } )
                     //.filter(function(w){return !w.hide;})
                     .enter()
                     .append("g")
                     .attr( "class", function(w){ return w.editable ? "wallpaper editable" : "wallpaper" } )
-                    .attr("transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
+                    .attr( "transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
                                                                     + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
-                    .append( "image" )
-                    //.on( "load", function(w) {
-                    //    console.log("d3 image loaded");
-                    //})
-                    .attr( "href", function(w) { return w.imageurl } )
-                    .attr( "opacity", function(w) { return w.opacity } )
                     .each( function(w){
                         //Set this up so that we can later use dimensionsKnown()
-                        console.log("** added d3 image and setting w.image width:" + w.width + " height:" + w.height );
-                        w.image = this; 
-                        //if we know the dimensions already, set them! (Safari needs this on showing a hidden wallpaper)
-                        d3.select(this).attr( "width",w.width);
-                        d3.select(this).attr( "height",w.height);
+                        //console.log("** added d3 image and setting w.image width:" + w.width + " height:" + w.height );
+
+                        if ( w.imageurl )
+                        {
+                            //if we know the dimensions already, set them! (Safari needs this on showing a hidden wallpaper)
+                            const imaged3 = d3.select(this).append("image")
+                                                    .attr( "href", w.imageurl )
+                                                    .attr( "opacity", w.opacity )
+                                                    .attr( "width", w.width)
+                                                    .attr( "height", w.height);
+                            imaged3.each( function(i) {
+                                w.image = this;
+                            });
+                        }
+                        else if ( w.patternurl ) 
+                        {
+                            w.g = this;
+                            d3.select(this).attr("opacity", w.opacity );
+                            if ( w.pattern ) //pattern loaded already, including when toggling full screen
+                                w.drawPatternWallpaper();
+                        }
                     } );
 
-    wallpaperGroups.selectAll("g")
-                    .data( visibleWallpapers, function(d){return d.filename} )
-                    .exit().remove();
+    //This seems to make a pattern based wallpaper disappear when switching to/from full-screen
+    //We currently create the parent group afresh anyway, so this shouldn't be necessary?                
+    //wallpaperGroups.selectAll("g")
+    //              .data( visibleWallpapers, function(d){return d.filename || d.patternurl } )
+    //            .exit().remove();
 
     var resize = d3.drag()
                     .on("start", function(wallpaper) {
@@ -1313,13 +1382,14 @@ function doWallpapers( wallpaperGroups, pattern )
                             .attr("width", w.width)
                             .attr("height", w.height);
     
-                            g.append( "circle") 
-                            .attr("cx", function(w) { return w.width } )
-                            .attr("cy", function(w) { return w.height } )
-                            .attr("r", 10 / scale / w.scaleX / fontsSizedForScale )
-                            .attr("fill", "red")
-                            .call(resize);
-                            
+                            if ( ! w.patternurl ) //don't allow re-sizing of patterns, just images
+                                g.append( "circle") 
+                                .attr("cx", function(w) { return w.width } )
+                                .attr("cy", function(w) { return w.height } )
+                                .attr("r", 10 / scale / w.scaleX / fontsSizedForScale )
+                                .attr("fill", "red")
+                                .call(resize);
+                                
                             g.call(drag);
                         }
                         else
@@ -1359,13 +1429,13 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
     //TODO ? a mode where we don't include measurements and variables in the table.
     if ( pattern.measurement )
     {
-        for( var m in pattern.measurement )
+        for( const m in pattern.measurement )
             combinedObjects.push( pattern.measurement[m] );
     }
 
     if ( pattern.variable )
     {
-        for( var i in pattern.variable )
+        for( const i in pattern.variable )
             combinedObjects.push( pattern.variable[i] );
     }
 
