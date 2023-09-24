@@ -316,13 +316,15 @@ class PatternDrawing {
             g.append("path")
                 .attr( "id", pathID )
                 .attr( "visibility", "hidden" )
+                .attr( "fill", "none" )
                 .attr( "d", pathSVG ); 
 
             g.append("text")
                 .attr("class","alongPath")
                 .attr("font-size", fontSize )
                 .append( "textPath" )
-                .attr( "href", "#" + pathID )
+                .attr( "xlink:href", "#" + pathID )
+                //.attr( "path", pathSVG )
                 .attr( "startOffset", "50%" )
                 .attr( "text-anchor", "middle" )
                 .attr( "side", "left" )

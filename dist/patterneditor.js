@@ -5124,13 +5124,15 @@ class PatternDrawing {
             g.append("path")
                 .attr( "id", pathID )
                 .attr( "visibility", "hidden" )
+                .attr( "fill", "none" )
                 .attr( "d", pathSVG ); 
 
             g.append("text")
                 .attr("class","alongPath")
                 .attr("font-size", fontSize )
                 .append( "textPath" )
-                .attr( "href", "#" + pathID )
+                .attr( "xlink:href", "#" + pathID )
+                //.attr( "path", pathSVG )
                 .attr( "startOffset", "50%" )
                 .attr( "text-anchor", "middle" )
                 .attr( "side", "left" )
@@ -6102,13 +6104,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
-
-        if ( editorOptions.lifeSize )
-        {
-            svg.attr("width", patternWidth + pattern.units )
-               .attr("height", patternHeight + pattern.units );
-        }                      
+                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight )
+                      .attr("width", patternWidth + pattern.units )
+                      .attr("height", patternHeight + pattern.units )
+                      .attr("xmlns:xlink", "http://www.w3.org/1999/xlink" );
     }
     else
     {
@@ -7256,6 +7255,21 @@ class Expression {
             var p1 = this.params[0].value(currentLength);
             r = Math.tan( p1 * Math.PI / 180 );
         }
+        else if ( this.function === "sinD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.sin( p1 );
+        }
+        else if ( this.function === "cosD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.cos( p1 );
+        }
+        else if ( this.function === "tanD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.tan( p1 );
+        }
         else if ( this.function === "asin" )
         {
             var p1 = this.params[0].value(currentLength);
@@ -7270,6 +7284,11 @@ class Expression {
         {
             var p1 = this.params[0].value(currentLength);
             r = Math.atan( p1 ) * 180 / Math.PI;
+        }        
+        else if ( this.function === "abs" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.abs( p1 );
         }        
         else throw ("Unknown function: " + this.function );
 
@@ -7441,9 +7460,13 @@ class Expression {
                  || ( this.function === "sin" )
                  || ( this.function === "cos" )
                  || ( this.function === "tan" ) 
+                 || ( this.function === "sinD" )
+                 || ( this.function === "cosD" )
+                 || ( this.function === "tanD" ) 
                  || ( this.function === "asin" )
                  || ( this.function === "acos" )
-                 || ( this.function === "atan" ) )
+                 || ( this.function === "atan" ) 
+                 || ( this.function === "abs" ) )
             {
                 return ( this.function + "(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
             }

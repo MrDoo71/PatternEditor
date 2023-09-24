@@ -875,13 +875,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing" )
-                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight );
-
-        if ( editorOptions.lifeSize )
-        {
-            svg.attr("width", patternWidth + pattern.units )
-               .attr("height", patternHeight + pattern.units );
-        }                      
+                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight )
+                      .attr("width", patternWidth + pattern.units )
+                      .attr("height", patternHeight + pattern.units )
+                      .attr("xmlns:xlink", "http://www.w3.org/1999/xlink" );
     }
     else
     {
