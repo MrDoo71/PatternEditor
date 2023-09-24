@@ -367,6 +367,21 @@ class Expression {
             var p1 = this.params[0].value(currentLength);
             r = Math.tan( p1 * Math.PI / 180 );
         }
+        else if ( this.function === "sinD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.sin( p1 );
+        }
+        else if ( this.function === "cosD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.cos( p1 );
+        }
+        else if ( this.function === "tanD" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.tan( p1 );
+        }
         else if ( this.function === "asin" )
         {
             var p1 = this.params[0].value(currentLength);
@@ -381,6 +396,11 @@ class Expression {
         {
             var p1 = this.params[0].value(currentLength);
             r = Math.atan( p1 ) * 180 / Math.PI;
+        }        
+        else if ( this.function === "abs" )
+        {
+            var p1 = this.params[0].value(currentLength);
+            r = Math.abs( p1 );
         }        
         else throw ("Unknown function: " + this.function );
 
@@ -552,9 +572,13 @@ class Expression {
                  || ( this.function === "sin" )
                  || ( this.function === "cos" )
                  || ( this.function === "tan" ) 
+                 || ( this.function === "sinD" )
+                 || ( this.function === "cosD" )
+                 || ( this.function === "tanD" ) 
                  || ( this.function === "asin" )
                  || ( this.function === "acos" )
-                 || ( this.function === "atan" ) )
+                 || ( this.function === "atan" ) 
+                 || ( this.function === "abs" ) )
             {
                 return ( this.function + "(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
             }
