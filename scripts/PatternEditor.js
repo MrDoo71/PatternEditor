@@ -1276,44 +1276,41 @@ function doWallpapers( wallpaperGroups, pattern )
             wallpaper.updateServer( d3.event );
         });
 
-    wallpaperGroups.selectAll("g")
-                    .data( visibleWallpapers, function(d){ return d.filename || d.patternurl; } )
-                    //.filter(function(w){return !w.hide;})
-                    .enter()
-                    .append("g")
-                    .attr( "class", function(w){ return w.editable ? "wallpaper editable" : "wallpaper" } )
-                    .attr( "transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
-                                                                    + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
-                    .each( function(w){
-                        //Set this up so that we can later use dimensionsKnown()
-                        //console.log("** added d3 image and setting w.image width:" + w.width + " height:" + w.height );
+    const data = wallpaperGroups.selectAll("g.wallpaper")
+                    .data( visibleWallpapers, function(d){ return d.patternurl || d.imageurl } //required to correctly match wallpapers to objects
+                    );
 
-                        if ( w.imageurl )
-                        {
-                            //if we know the dimensions already, set them! (Safari needs this on showing a hidden wallpaper)
-                            const imaged3 = d3.select(this).append("image")
-                                                    .attr( "href", w.imageurl )
-                                                    .attr( "opacity", w.opacity )
-                                                    .attr( "width", w.width)
-                                                    .attr( "height", w.height);
-                            imaged3.each( function(i) {
-                                w.image = this;
-                            });
-                        }
-                        else if ( w.patternurl ) 
-                        {
-                            w.g = this;
-                            d3.select(this).attr("opacity", w.opacity );
-                            if ( w.pattern ) //pattern loaded already, including when toggling full screen
-                                w.drawPatternWallpaper();
-                        }
-                    } );
+    data.enter()
+        .append("g")
+        .attr( "class", function(w){ return w.editable ? "wallpaper editable" : "wallpaper" } )
+        .attr( "transform", function(wallpaper) { return  "translate(" + ( wallpaper.offsetX ) + "," + ( wallpaper.offsetY ) + ")"
+                                                        + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + ")" } )
+        .each( function(w){
+            //Set this up so that we can later use dimensionsKnown()
 
-    //This seems to make a pattern based wallpaper disappear when switching to/from full-screen
-    //We currently create the parent group afresh anyway, so this shouldn't be necessary?                
-    //wallpaperGroups.selectAll("g")
-    //              .data( visibleWallpapers, function(d){return d.filename || d.patternurl } )
-    //            .exit().remove();
+            if ( w.imageurl )
+            {
+                //if we know the dimensions already, set them! (Safari needs this on showing a hidden wallpaper)
+                const imaged3 = d3.select(this).append("image")
+                                        .attr( "href", w.imageurl )
+                                        .attr( "opacity", w.opacity )
+                                        .attr( "width", w.width)
+                                        .attr( "height", w.height);
+                imaged3.each( function(i) {
+                    w.image = this;
+                });
+            }
+            else if ( w.patternurl ) 
+            {
+                w.g = this;
+                d3.select(this).attr("opacity", w.opacity );
+                if ( w.pattern ) //pattern loaded already, including when toggling full screen
+                    w.drawPatternWallpaper();
+            }
+        } );
+
+    data.exit()
+        .remove();
 
     var resize = d3.drag()
                     .on("start", function(wallpaper) {
@@ -1360,8 +1357,7 @@ function doWallpapers( wallpaperGroups, pattern )
 
     //Add a resizing boundary to each editable wallpaper.                 
     wallpaperGroups.selectAll("g")
-                    .data( visibleWallpapers,function(d){return d.filename} )
-                    //.filter(function(w){return !w.hide;})
+                    .data( visibleWallpapers ,function(d){return d.patternurl || d.imageurl} )
                     .each( function(w,i) {
                         var g = d3.select(this);
                         //This worked on Firefox and Chrome, but not Safari.
