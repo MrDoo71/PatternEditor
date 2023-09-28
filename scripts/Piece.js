@@ -728,17 +728,24 @@ class Piece {
 
         console.log("Time to draw seam line labels: ", this.name );
 
-        for (var a = 0; a < this.detailNodes.length; a++) 
+        let labelGroup = undefined;
+
+        //for (var a = 0; a < this.detailNodes.length; a++) 
+        for ( const n of this.detailNodes )
         {
-            var n = this.detailNodes[ a ];
+            //var n = this.detailNodes[ a ];
             if ( n.label )
             {
                 const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6);
 
+                if ( labelGroup === undefined )
+                    labelGroup = g.append("g")
+                                  .attr( "id", this.name + " - path labels" );
+
                 if ( n.curveSegment)
-                    this.drawing.drawLabelAlongPath( g, n.curveSegment, n.label, fontSize, true );
+                    this.drawing.drawLabelAlongPath( labelGroup, n.curveSegment, n.label, fontSize, true );
                 else if ( n.line )
-                    this.drawing.drawLabelAlongPath( g, n.line, n.label, fontSize, true );
+                    this.drawing.drawLabelAlongPath( labelGroup, n.line, n.label, fontSize, true );
             }
         }
     }
@@ -777,7 +784,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        var notches = g.append("g").attr("id","notches");
+        var notches = g.append("g").attr( "id", this.name + " - notches");
         console.log("*********");
         console.log("notches: " + this.name );
 
@@ -890,16 +897,23 @@ class Piece {
         if ( this.ignore )
             return;
 
-        var internalPathsGroup = g.append("g")
-                                  .attr("id","internal paths");        
+        var internalPathsGroup = undefined;
+
         var strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
 
         if ( this.internalPaths )
-            this.internalPaths.forEach( 
-                function(ip) { 
-                    if ( ip.nodes )
-                        this.drawInternalPath( internalPathsGroup, ip, strokeWidth, useExportStyles );
-                }, this );   
+            //this.internalPaths.forEach( 
+            //    function(ip) { 
+            for( const ip of this.internalPaths )
+            {
+                if ( internalPathsGroup === undefined )
+                    internalPathsGroup = g.append("g")
+                                          .attr("id", this.name + " - internal paths");        
+
+                if ( ip.nodes )
+                    this.drawInternalPath( internalPathsGroup, ip, strokeWidth, useExportStyles );
+            }
+            //    }, this );   
     }
 
 
