@@ -695,7 +695,7 @@ class Piece {
     }
 
 
-    drawSeamLine( g, useExportStyles ) 
+    drawSeamLine( g, editorOptions ) 
     {
         if ( this.ignore )
             return;
@@ -712,9 +712,12 @@ class Piece {
                  .attr("stroke-dasharray", "2,0.2" )
                  .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale;
 
-        if ( useExportStyles )
+        if ( editorOptions.downloadOption)
             p.attr("fill", "none" )
              .attr("stroke", "#929292");
+        else if ( ! editorOptions.skipDrawing )
+             p.attr( "opacity", "0.5" );
+ 
     }
 
 
@@ -730,7 +733,6 @@ class Piece {
 
         let labelGroup = undefined;
 
-        //for (var a = 0; a < this.detailNodes.length; a++) 
         for ( const n of this.detailNodes )
         {
             //var n = this.detailNodes[ a ];
@@ -751,7 +753,7 @@ class Piece {
     }
 
 
-    drawSeamAllowance( g, useExportStyles ) 
+    drawSeamAllowance( g, editorOptions ) 
     {
         if ( this.ignore )
             return;
@@ -767,9 +769,11 @@ class Piece {
                  .attr("d", this.svgPath( true ) )
                  .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
 
-        if ( useExportStyles )
+        if ( editorOptions.downloadOption )
             p.attr("fill", "none")
              .attr("stroke", "black");
+        else if ( ! editorOptions.skipDrawing )
+            p.attr( "opacity", "0.5" );
     } 
 
 

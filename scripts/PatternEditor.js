@@ -1086,8 +1086,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
                     const useExportStyles = editorOptions.downloadOption;
 
-                    p.drawSeamAllowance( g, useExportStyles ); //do this first as it is bigger and we want it underneath in case we fill 
-                    p.drawSeamLine( g, useExportStyles );
+                    p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
+                    p.drawSeamLine( g, editorOptions );
                     p.drawInternalPaths( g, useExportStyles );
                     if ( ! simplify )
                     {
