@@ -9,7 +9,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -31,16 +31,26 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var tempBounds = new Bounds();
+        const tempBounds = new Bounds();
         tempBounds.adjust( this.basePoint.p );
         this.arc.adjustBounds( tempBounds );
-        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
-        
+
+        let maxLineLength = tempBounds.diagonaglLength() * 1.25;        
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
+        let longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        var longLine = new GeoLine( this.basePoint.p, otherPoint );
+        try {
+            this.p = longLine.intersectArc( curveOrArc );
 
-        this.p = longLine.intersectArc( curveOrArc );
+        } catch ( e ) {
+
+            //For compatibility with Seamly2D, if the line doesn't find an intersection in the direction in 
+            //which it is specified, try the other direction. 
+            otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg + 180 );
+            longLine = new GeoLine( this.basePoint.p, otherPoint );
+            this.p = longLine.intersectArc( curveOrArc );
+        }
+
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 

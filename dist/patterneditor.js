@@ -1772,7 +1772,7 @@ class PointIntersectArcAndAxis extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -1794,16 +1794,26 @@ class PointIntersectArcAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var tempBounds = new Bounds();
+        const tempBounds = new Bounds();
         tempBounds.adjust( this.basePoint.p );
         this.arc.adjustBounds( tempBounds );
-        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
-        
+
+        let maxLineLength = tempBounds.diagonaglLength() * 1.25;        
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
+        let longLine = new GeoLine( this.basePoint.p, otherPoint );
 
-        var longLine = new GeoLine( this.basePoint.p, otherPoint );
+        try {
+            this.p = longLine.intersectArc( curveOrArc );
 
-        this.p = longLine.intersectArc( curveOrArc );
+        } catch ( e ) {
+
+            //For compatibility with Seamly2D, if the line doesn't find an intersection in the direction in 
+            //which it is specified, try the other direction. 
+            otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg + 180 );
+            longLine = new GeoLine( this.basePoint.p, otherPoint );
+            this.p = longLine.intersectArc( curveOrArc );
+        }
+
 
         this.line = new GeoLine( this.basePoint.p, this.p );
 
@@ -4264,7 +4274,7 @@ class Piece {
     }
 
 
-    drawSeamLine( g, useExportStyles ) 
+    drawSeamLine( g, editorOptions ) 
     {
         if ( this.ignore )
             return;
@@ -4281,9 +4291,12 @@ class Piece {
                  .attr("stroke-dasharray", "2,0.2" )
                  .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale;
 
-        if ( useExportStyles )
+        if ( editorOptions.downloadOption)
             p.attr("fill", "none" )
              .attr("stroke", "#929292");
+        else if ( ! editorOptions.skipDrawing )
+             p.attr( "opacity", "0.5" );
+ 
     }
 
 
@@ -4299,7 +4312,6 @@ class Piece {
 
         let labelGroup = undefined;
 
-        //for (var a = 0; a < this.detailNodes.length; a++) 
         for ( const n of this.detailNodes )
         {
             //var n = this.detailNodes[ a ];
@@ -4320,7 +4332,7 @@ class Piece {
     }
 
 
-    drawSeamAllowance( g, useExportStyles ) 
+    drawSeamAllowance( g, editorOptions ) 
     {
         if ( this.ignore )
             return;
@@ -4336,9 +4348,11 @@ class Piece {
                  .attr("d", this.svgPath( true ) )
                  .attr("stroke-width", this.getStrokeWidth() ); //TODO this has to be set according to scale
 
-        if ( useExportStyles )
+        if ( editorOptions.downloadOption )
             p.attr("fill", "none")
              .attr("stroke", "black");
+        else if ( ! editorOptions.skipDrawing )
+            p.attr( "opacity", "0.5" );
     } 
 
 
@@ -6329,8 +6343,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
                     const useExportStyles = editorOptions.downloadOption;
 
-                    p.drawSeamAllowance( g, useExportStyles ); //do this first as it is bigger and we want it underneath in case we fill 
-                    p.drawSeamLine( g, useExportStyles );
+                    p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
+                    p.drawSeamLine( g, editorOptions );
                     p.drawInternalPaths( g, useExportStyles );
                     if ( ! simplify )
                     {
