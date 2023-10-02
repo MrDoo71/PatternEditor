@@ -14,7 +14,7 @@ class ArcWithLength extends ArcSimple {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);

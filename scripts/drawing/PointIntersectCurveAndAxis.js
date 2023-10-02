@@ -9,7 +9,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -20,7 +20,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var angleDeg = this.angle.value();
+        let angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
             angleDeg -= 360;
         else if ( angleDeg < 0 )
@@ -30,19 +30,19 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var tempBounds = new Bounds();
+        const tempBounds = new Bounds();
         tempBounds.adjust( this.basePoint.p );
         this.curve.adjustBounds( tempBounds );
-        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
+        const maxLineLength = tempBounds.diagonaglLength() * 1.25;
         
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
-        var line = new GeoLine( this.basePoint.p, otherPoint );
+        const line = new GeoLine( this.basePoint.p, otherPoint );
 
-        var lineSI = line.asShapeInfo();
-        var curveSI = this.curve.asShapeInfo();
+        const lineSI = line.asShapeInfo();
+        const curveSI = this.curve.asShapeInfo();
 
-        var intersections = Intersection.intersect(lineSI, curveSI);        
+        const intersections = Intersection.intersect(lineSI, curveSI);        
 
         if ( intersections.points.length === 0 )
         {
@@ -50,7 +50,6 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         }
         else
         {
-            //intersections.points.forEach(console.log);    
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         this.line = new GeoLine( this.basePoint.p, this.p );

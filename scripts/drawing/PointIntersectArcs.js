@@ -9,7 +9,7 @@ class PointIntersectArcs extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstArc === "undefined")
             this.firstArc = this.drawing.getObject(d.firstArc);
@@ -17,12 +17,10 @@ class PointIntersectArcs extends DrawingObject {
         if (typeof this.secondArc === "undefined")
             this.secondArc = this.drawing.getObject(d.secondArc);
 
-        var arc1SI = this.firstArc.asShapeInfo();
-        var arc2SI = this.secondArc.asShapeInfo();
+        const arc1SI = this.firstArc.asShapeInfo();
+        const arc2SI = this.secondArc.asShapeInfo();
 
-        var intersections = Intersection.intersect(arc1SI, arc2SI);
-        
-        //intersections.points.forEach(console.log);    
+        const intersections = Intersection.intersect(arc1SI, arc2SI);
 
         if ( intersections.points.length === 0 )
         {
@@ -42,10 +40,10 @@ class PointIntersectArcs extends DrawingObject {
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( this.firstArc.center.p, p1)).angle;
-            var angle2 = (new GeoLine( this.firstArc.center.p, p2)).angle;
+            const p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            const p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            const angle1 = (new GeoLine( this.firstArc.center.p, p1)).angle;
+            const angle2 = (new GeoLine( this.firstArc.center.p, p2)).angle;
 
             if ( this.data.crossPoint === "One" )
             {

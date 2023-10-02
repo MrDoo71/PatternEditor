@@ -8,7 +8,7 @@ class PointCutSplinePath extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.curve === "undefined")
             this.curve = this.drawing.getObject(d.splinePath);

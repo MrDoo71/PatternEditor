@@ -13,7 +13,7 @@ class OperationFlipByAxis extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -51,7 +51,7 @@ class OperationFlipByAxis extends DrawingObject {
 
 
     flipPoint( p, center ) {
-        var result = new GeoPoint( p.x, p.y );
+        const result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
              || ( this.axis === "vertical" )) //just in case.

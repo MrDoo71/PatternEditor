@@ -14,7 +14,7 @@ class OperationFlipByLine extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
             this.p1Line1 = this.drawing.getObject(d.p1Line1);
@@ -62,11 +62,11 @@ class OperationFlipByLine extends DrawingObject {
         //image the point of view rotated such that this.line is on the x-axis at 0deg. 
         //if the line is at 45deg, rotate the line and the source point by -45 deg. flip the y component, then rotate back by +45. 
 
-        var p0 = p.rotate( this.line.p1, -this.line.angleDeg() );
+        const p0 = p.rotate( this.line.p1, -this.line.angleDeg() );
 
-        var p0f = new GeoPoint( p0.x, this.line.p1.y - ( p0.y - this.line.p1.y ) );
+        const p0f = new GeoPoint( p0.x, this.line.p1.y - ( p0.y - this.line.p1.y ) );
 
-        var result = p0f.rotate( this.line.p1, this.line.angleDeg() );
+        const result = p0f.rotate( this.line.p1, this.line.angleDeg() );
 
         return result;
     }

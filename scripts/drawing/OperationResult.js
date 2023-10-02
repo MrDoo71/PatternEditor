@@ -10,7 +10,7 @@ class OperationResult extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -22,8 +22,8 @@ class OperationResult extends DrawingObject {
         if ( this.basePoint.p )
             this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
 
-        var operation = this.fromOperation;
-        var applyOperationToPointFunc = function( p ) {
+        const operation = this.fromOperation;
+        const applyOperationToPointFunc = function( p ) {
             return operation.applyOperationToPoint( p );
         };
 

@@ -1,3 +1,5 @@
+
+
 class PointSingle extends DrawingObject {
 
     constructor(data) {
@@ -6,7 +8,7 @@ class PointSingle extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
         this.p = new GeoPoint(d.x, d.y);
         this.adjustBounds( bounds );
     }

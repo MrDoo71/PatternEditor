@@ -10,7 +10,7 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -24,8 +24,8 @@ class PointIntersectArcAndLine extends DrawingObject {
         if (typeof this.radius === "undefined")
             this.radius = this.drawing.newFormula(d.radius);
 
-        var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
-        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
+        const line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
+        const arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
         this.p = line.intersectArc( arc );
 

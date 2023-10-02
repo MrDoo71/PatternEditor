@@ -9,7 +9,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.curve === "undefined")
             this.curve = this.drawing.getObject(d.spline);
@@ -30,7 +30,6 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
 
     draw( g, drawOptions ) {
-        //this.drawLine( g );
         this.drawDot( g, drawOptions );
         this.drawLabel( g, drawOptions );
     }

@@ -15,7 +15,7 @@ class Group {
 
         if ( this.data.member )
             this.data.member.forEach( function(m){
-                var dObj = this.drawing.getObject( m, true );
+                const dObj = this.drawing.getObject( m, true );
                 if ( dObj )
                 {
                     this.members.push( dObj );

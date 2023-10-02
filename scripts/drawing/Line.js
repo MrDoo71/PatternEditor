@@ -9,7 +9,7 @@ class Line extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);

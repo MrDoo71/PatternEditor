@@ -11,7 +11,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -25,11 +25,11 @@ class PointIntersectLineAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
+        const line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
-        var otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
+        const otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
 
-        var line2 = new GeoLine(this.basePoint.p, otherPoint );
+        const line2 = new GeoLine(this.basePoint.p, otherPoint );
 
         this.p = line1.intersect(line2);
         this.line = new GeoLine( this.basePoint.p, this.p );

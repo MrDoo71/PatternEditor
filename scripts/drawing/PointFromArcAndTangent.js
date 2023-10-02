@@ -9,7 +9,7 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.tangent === "undefined")
             this.tangent = this.drawing.getObject(d.tangent);
@@ -19,9 +19,8 @@ class PointFromArcAndTangent extends DrawingObject {
 
         this.crossPoint = d.crossPoint;
 
-        var tangentIntersections = this.arc.arc.getPointsOfTangent( this.tangent.p );
+        const tangentIntersections = this.arc.arc.getPointsOfTangent( this.tangent.p );
         
-        //TODO what is the real logic for crossPoint One vs Two
         if ( this.crossPoint === "One" ) 
             this.p = tangentIntersections[1];
         else 

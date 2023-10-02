@@ -20,13 +20,13 @@ class PointIntersectArcAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var angleDeg = this.angle.value();
+        let angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
             angleDeg -= 360;
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-        var curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
+        const curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
 
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than

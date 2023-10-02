@@ -11,7 +11,7 @@ class PointAlongBisector extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -22,11 +22,11 @@ class PointAlongBisector extends DrawingObject {
         if (typeof this.length === "undefined")
             this.length = this.drawing.newFormula(d.length);
             
-        var line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
-        var line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
+        const line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
+        const line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
 
         //TODO test what happens when this crosses the equator! i.e. one point is just below the equator and one just above (and in either direction)
-        var bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
+        const bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
 
         //Convert degrees to radians
         this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );

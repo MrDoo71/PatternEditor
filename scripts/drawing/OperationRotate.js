@@ -12,7 +12,7 @@ class OperationRotate extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);

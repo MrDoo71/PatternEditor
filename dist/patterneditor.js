@@ -24,12 +24,12 @@ class DrawingObject /*abstract*/ {
         //g - the svg group we want to add the text to
         //o - the drawing object
 
-        var d = this.data; //the original json data
+        const d = this.data; //the original json data
 
         if (   ( this.p )
             && ( typeof this.p.x === "number" ) )
         {
-            var labelPosition = this.labelPosition();
+            const labelPosition = this.labelPosition();
 
             if ( labelPosition.drawLine )
                 g.append("line")
@@ -40,7 +40,7 @@ class DrawingObject /*abstract*/ {
                 .attr("stroke-width", this.getStrokeWidth( false ) )
                 .attr("class", "labelLine" );
 
-            var labelText = d.name;
+            let labelText = d.name;
             try {
                 if ( this.showLength() === "label" )
                     labelText += " " + this.getLengthAndUnits();
@@ -65,7 +65,7 @@ class DrawingObject /*abstract*/ {
 
     drawLengthAlongLine( g, drawingOptions )
     {
-        var path;
+        let path;
         if ( this.line )
             path = this.line;
         else if ( this.curve )
@@ -86,18 +86,16 @@ s
         if ( ! this.p )
             return null;
 
-        //console.log( "Scale: " + scale + " fontsSizedForScale:" + fontsSizedForScale );    
-
-        var d = this.data; //the original json data
-        var fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
-        var fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
+        const d = this.data; //the original json data
+        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+        let fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
 
         //This is different to seamly2d behaviour, we'll actually reduce mx/my a bit if you zoom in
         if ( fontsSizedForScale > 1 )
             fudge = (1 + 1/fontsSizedForScale) /2;
 
-        var mx = (typeof d.mx === "undefined") ? 0 : d.mx;
-        var my = (typeof d.my === "undefined") ? 0 : d.my;
+        let mx = (typeof d.mx === "undefined") ? 0 : d.mx;
+        let my = (typeof d.my === "undefined") ? 0 : d.my;
 
         //some odd data exists out there in operation results of splines e.g. 3 Button Sack rev.1
         if (( mx >= 2147480000 ) || ( my >= 2147480000 ))
@@ -106,7 +104,7 @@ s
             my = 0;
         }
 
-        var pos = { labelX: this.p.x + fudge * mx,
+        const pos = { labelX: this.p.x + fudge * mx,
                     labelY: this.p.y + fudge * ( my + fontSize ),
                     labelLineX: this.p.x + fudge * mx,  //line goes to left of label
                     labelLineY: this.p.y + fudge * ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
@@ -121,7 +119,7 @@ s
         if ( my <= 0 )
             pos.labelLineY = this.p.y + fudge * ( my + fontSize ); //align to bottom of text
 
-        var minLineLength = 2 * fontSize;
+        const minLineLength = 2 * fontSize;
 
         pos.drawLine =    ( Math.abs( this.p.x - pos.labelX ) > minLineLength )
                        || ( Math.abs( this.p.y - pos.labelY ) > minLineLength );
@@ -134,7 +132,7 @@ s
 
     getLengthAndUnits()
     {
-        var l = undefined;
+        let l;
 
         if ( this.line )
             l = this.line.length;
@@ -146,7 +144,7 @@ s
         if ( l !== undefined )
         {
             const patternUnits = this.drawing.pattern.units;
-            var precision = patternUnits === "mm" ? 10.0 : 100.0;
+            const precision = patternUnits === "mm" ? 10.0 : 100.0;
             l = Math.round( precision * l ) / precision;            
             return l + " " + patternUnits;    
         }
@@ -174,7 +172,7 @@ s
         
         if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
         {
-            var l = g.append("line")
+            const l = g.append("line")
                      .attr("x1", this.line.p1.x)
                      .attr("y1", this.line.p1.y)
                      .attr("x2", this.line.p2.x)
@@ -194,7 +192,7 @@ s
 
         if ( this.lineVisible() )
         {
-            var p = g.append("path")
+            const p = g.append("path")
                     .attr("d", path )
                     .attr("fill", "none")
                     .attr("stroke-width", this.getStrokeWidth( isOutline) );
@@ -226,7 +224,7 @@ s
                     if (    ( this.arc instanceof GeoEllipticalArc )
                          && ( this.arc.useSvgEllipse() ) )
                     {
-                        var p = g.append("ellipse")
+                        const p = g.append("ellipse")
                         .attr("transform", "rotate(" + this.arc.rotationAngle + ")" )
                         .attr("cx", this.arc.center.x )
                         .attr("cy", this.arc.center.y )
@@ -352,7 +350,7 @@ s
     {
         if ( this.memberOf )   
         {
-            var isVisible = false;
+            let isVisible = false;
 
             this.memberOf.forEach( 
                 function(g) { 
@@ -364,13 +362,13 @@ s
                 return false; //We are in 1+ groups, but none were visible.
         }
 
-        if ( options && options.targetPiece )
+        if ( options?.targetPiece )
         {
             //TODO get rid of this now that we have skipDrawing
             if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 
-            var isVisible = false;
+            let isVisible = false;
 
             //if this obj doesn't match a detailNode then return false
             //if ( options.targetPiece.nodesByName[ this.data.name ] )
@@ -414,7 +412,7 @@ class ArcElliptical extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -435,14 +433,6 @@ class ArcElliptical extends DrawingObject {
                                          this.angle1.value(), 
                                          this.angle2.value(),
                                          this.rotationAngle.value() );
-        /*
-        if ( this.rotationAngle.value() != 0 )                                         
-        this.debugArc = new GeoEllipticalArc( this.center.p, 
-                                            this.radius1.value(),
-                                            this.radius2.value(), 
-                                            this.angle1.value(), 
-                                            this.angle2.value(),
-                                            0 );*/
    
         this.p = this.arc.pointAlongPathFraction( 0.5 );
 
@@ -471,7 +461,6 @@ class ArcElliptical extends DrawingObject {
 
     draw( g, drawOptions ) {
         this.drawArc( g, drawOptions );        
-        //this.drawLabel( g, drawOptions );
     }
 
 
@@ -512,7 +501,7 @@ class ArcSimple extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -588,7 +577,7 @@ class ArcWithLength extends ArcSimple {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -641,7 +630,7 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.curve === "undefined")
             this.curve = this.drawing.getObject(d.spline);
@@ -662,7 +651,6 @@ class CutSpline extends DrawingObject { //TODO for consistency should be PointCu
 
 
     draw( g, drawOptions ) {
-        //this.drawLine( g );
         this.drawDot( g, drawOptions );
         this.drawLabel( g, drawOptions );
     }
@@ -700,7 +688,7 @@ class Line extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -758,7 +746,7 @@ class OperationFlipByAxis extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -796,7 +784,7 @@ class OperationFlipByAxis extends DrawingObject {
 
 
     flipPoint( p, center ) {
-        var result = new GeoPoint( p.x, p.y );
+        const result = new GeoPoint( p.x, p.y );
 
         if (    ( this.axis === "Vertical" ) 
              || ( this.axis === "vertical" )) //just in case.
@@ -830,7 +818,7 @@ class OperationFlipByLine extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
             this.p1Line1 = this.drawing.getObject(d.p1Line1);
@@ -878,11 +866,11 @@ class OperationFlipByLine extends DrawingObject {
         //image the point of view rotated such that this.line is on the x-axis at 0deg. 
         //if the line is at 45deg, rotate the line and the source point by -45 deg. flip the y component, then rotate back by +45. 
 
-        var p0 = p.rotate( this.line.p1, -this.line.angleDeg() );
+        const p0 = p.rotate( this.line.p1, -this.line.angleDeg() );
 
-        var p0f = new GeoPoint( p0.x, this.line.p1.y - ( p0.y - this.line.p1.y ) );
+        const p0f = new GeoPoint( p0.x, this.line.p1.y - ( p0.y - this.line.p1.y ) );
 
-        var result = p0f.rotate( this.line.p1, this.line.angleDeg() );
+        const result = p0f.rotate( this.line.p1, this.line.angleDeg() );
 
         return result;
     }
@@ -909,10 +897,7 @@ class OperationMove extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
-
-        //if (typeof this.basePoint === "undefined")
-        //    this.basePoint = this.drawing.getObject(d.basePoint);
+        const d = this.data;
 
         if (typeof this.length === "undefined")
             this.length = this.drawing.newFormula(d.length);
@@ -954,7 +939,7 @@ class OperationMove extends DrawingObject {
 
     applyOperationToPoint( p ) {
         //Convert degrees to radians
-        var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
+        const result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
         return result;
     }
@@ -980,7 +965,7 @@ class OperationResult extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -992,8 +977,8 @@ class OperationResult extends DrawingObject {
         if ( this.basePoint.p )
             this.p = this.fromOperation.applyOperationToPoint( this.basePoint.p );
 
-        var operation = this.fromOperation;
-        var applyOperationToPointFunc = function( p ) {
+        const operation = this.fromOperation;
+        const applyOperationToPointFunc = function( p ) {
             return operation.applyOperationToPoint( p );
         };
 
@@ -1109,7 +1094,7 @@ class OperationRotate extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center === "undefined")
             this.center = this.drawing.getObject(d.center);
@@ -1168,7 +1153,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -1177,9 +1162,8 @@ class PerpendicularPointAlongLine extends DrawingObject {
         if (typeof this.secondPoint === "undefined")
             this.secondPoint = this.drawing.getObject(d.p2Line1);
 
-        var line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
-        
-        var baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngleDeg( 1, line.angleDeg() + 90 ) );
+        const line = new GeoLine(this.firstPoint.p, this.secondPoint.p);        
+        const baseLine = new GeoLine( this.basePoint.p, this.basePoint.p.pointAtDistanceAndAngleDeg( 1, line.angleDeg() + 90 ) );
 
         this.p = line.intersect(baseLine);
         this.line = new GeoLine( this.basePoint.p, this.p );
@@ -1230,7 +1214,7 @@ class PointAlongBisector extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -1241,11 +1225,11 @@ class PointAlongBisector extends DrawingObject {
         if (typeof this.length === "undefined")
             this.length = this.drawing.newFormula(d.length);
             
-        var line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
-        var line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
+        const line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    
+        const line2 = new GeoLine( this.secondPoint.p, this.thirdPoint.p );    
 
         //TODO test what happens when this crosses the equator! i.e. one point is just below the equator and one just above (and in either direction)
-        var bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
+        const bisectingAngle = ( line1.angleDeg() + line2.angleDeg() ) /2;
 
         //Convert degrees to radians
         this.p = this.secondPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), bisectingAngle );
@@ -1299,7 +1283,7 @@ class PointAlongLine extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -1361,7 +1345,7 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -1372,8 +1356,8 @@ class PointAlongPerpendicular extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
             
-        var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
-        var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
+        const baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
+        const totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
         //Convert degrees to radians
         this.p = this.firstPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), totalAngle );
         this.line = new GeoLine(this.firstPoint.p, this.p);
@@ -1396,7 +1380,7 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     html( asFormula ) {
-        var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
+        let h = '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.firstPoint ) 
                 + " perpendicular to the line to " + this.refOf( this.secondPoint );
@@ -1428,7 +1412,7 @@ class PointCutArc extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.arc === "undefined")
             this.arc = this.drawing.getObject(d.arc);
@@ -1478,7 +1462,7 @@ class PointCutSplinePath extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.curve === "undefined")
             this.curve = this.drawing.getObject(d.splinePath);
@@ -1530,7 +1514,7 @@ class PointEndLine extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -1588,7 +1572,7 @@ class PointFromArcAndTangent extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.tangent === "undefined")
             this.tangent = this.drawing.getObject(d.tangent);
@@ -1598,9 +1582,8 @@ class PointFromArcAndTangent extends DrawingObject {
 
         this.crossPoint = d.crossPoint;
 
-        var tangentIntersections = this.arc.arc.getPointsOfTangent( this.tangent.p );
+        const tangentIntersections = this.arc.arc.getPointsOfTangent( this.tangent.p );
         
-        //TODO what is the real logic for crossPoint One vs Two
         if ( this.crossPoint === "One" ) 
             this.p = tangentIntersections[1];
         else 
@@ -1652,7 +1635,7 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.tangent === "undefined")
             this.tangent = this.drawing.getObject(d.tangent);
@@ -1665,9 +1648,9 @@ class PointFromCircleAndTangent extends DrawingObject {
 
         this.crossPoint = d.crossPoint;
 
-        var circle = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
+        const circle = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
-        var tangentIntersections = circle.getPointsOfTangent( this.tangent.p );
+        const tangentIntersections = circle.getPointsOfTangent( this.tangent.p );
         
         //TODO what is the real logic for crossPoint One vs Two
         if ( this.crossPoint === "One" ) 
@@ -1722,7 +1705,7 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -1783,13 +1766,13 @@ class PointIntersectArcAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var angleDeg = this.angle.value();
+        let angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
             angleDeg -= 360;
         else if ( angleDeg < 0 )
             angleDeg += 360;
 
-        var curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
+        const curveOrArc = ( this.arc.arc ) ? this.arc.arc : this.arc.curve ;
 
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
@@ -1864,7 +1847,7 @@ class PointIntersectArcAndLine extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -1878,8 +1861,8 @@ class PointIntersectArcAndLine extends DrawingObject {
         if (typeof this.radius === "undefined")
             this.radius = this.drawing.newFormula(d.radius);
 
-        var line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
-        var arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
+        const line = new GeoLine( this.firstPoint.p, this.secondPoint.p );
+        const arc  = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
         this.p = line.intersectArc( arc );
 
@@ -1932,7 +1915,7 @@ class PointIntersectArcs extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstArc === "undefined")
             this.firstArc = this.drawing.getObject(d.firstArc);
@@ -1940,12 +1923,10 @@ class PointIntersectArcs extends DrawingObject {
         if (typeof this.secondArc === "undefined")
             this.secondArc = this.drawing.getObject(d.secondArc);
 
-        var arc1SI = this.firstArc.asShapeInfo();
-        var arc2SI = this.secondArc.asShapeInfo();
+        const arc1SI = this.firstArc.asShapeInfo();
+        const arc2SI = this.secondArc.asShapeInfo();
 
-        var intersections = Intersection.intersect(arc1SI, arc2SI);
-        
-        //intersections.points.forEach(console.log);    
+        const intersections = Intersection.intersect(arc1SI, arc2SI);
 
         if ( intersections.points.length === 0 )
         {
@@ -1965,10 +1946,10 @@ class PointIntersectArcs extends DrawingObject {
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( this.firstArc.center.p, p1)).angle;
-            var angle2 = (new GeoLine( this.firstArc.center.p, p2)).angle;
+            const p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            const p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            const angle1 = (new GeoLine( this.firstArc.center.p, p1)).angle;
+            const angle2 = (new GeoLine( this.firstArc.center.p, p2)).angle;
 
             if ( this.data.crossPoint === "One" )
             {
@@ -2030,7 +2011,7 @@ class PointIntersectCircles extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center1 === "undefined")
             this.center1 = this.drawing.getObject(d.center1);
@@ -2045,15 +2026,13 @@ class PointIntersectCircles extends DrawingObject {
             this.radius2 = this.drawing.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
-        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
-        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
+        const circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
+        const circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
 
-        var arc1SI = circle1.asShapeInfo();
-        var arc2SI = circle2.asShapeInfo();
+        const arc1SI = circle1.asShapeInfo();
+        const arc2SI = circle2.asShapeInfo();
 
-        var intersections = Intersection.intersect(arc1SI, arc2SI);
-        
-        //intersections.points.forEach(console.log);    
+        const intersections = Intersection.intersect(arc1SI, arc2SI);
         
         if ( intersections.points.length === 0 )
         {
@@ -2074,10 +2053,10 @@ class PointIntersectCircles extends DrawingObject {
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
-            var angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
+            const p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            const p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            let angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
+            let angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
             if (( angle1 >= 270 ) && ( angle2 > 0 ) && ( angle2 < 90 ))
                 angle2 += 360;
             else if (( angle2 >= 270 ) && ( angle1 > 0 ) && ( angle1 < 90 ))
@@ -2096,27 +2075,7 @@ class PointIntersectCircles extends DrawingObject {
                     this.p = p2;
                 else
                     this.p = p1;
-            }
-            
-           /*
-            //this is just a guess.. TODO what happens if the two y's are the same??
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            if ( this.data.crossPoint === "One" )
-            {
-                if ( p1.y < p2.y )
-                    this.p = p2;
-                else
-                    this.p = p1;
-            }
-            else
-            {
-                if ( p1.y < p2.y )
-                    this.p = p1;
-                else
-                    this.p = p2;
-            }
-            */
+            }            
         }
 
         this.adjustBounds( bounds );
@@ -2166,7 +2125,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -2177,7 +2136,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var angleDeg = this.angle.value();
+        let angleDeg = this.angle.value();
         if ( angleDeg >= 360 )
             angleDeg -= 360;
         else if ( angleDeg < 0 )
@@ -2187,19 +2146,19 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         //Rather than use an arbitrarily long line (which was causing issues)
         //calculate the max length of line. The line cannot be longer than
         //the bounding box encompassing the basePoint and the curve. 
-        var tempBounds = new Bounds();
+        const tempBounds = new Bounds();
         tempBounds.adjust( this.basePoint.p );
         this.curve.adjustBounds( tempBounds );
-        var maxLineLength = tempBounds.diagonaglLength() * 1.25;
+        const maxLineLength = tempBounds.diagonaglLength() * 1.25;
         
         let otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( maxLineLength, angleDeg );
 
-        var line = new GeoLine( this.basePoint.p, otherPoint );
+        const line = new GeoLine( this.basePoint.p, otherPoint );
 
-        var lineSI = line.asShapeInfo();
-        var curveSI = this.curve.asShapeInfo();
+        const lineSI = line.asShapeInfo();
+        const curveSI = this.curve.asShapeInfo();
 
-        var intersections = Intersection.intersect(lineSI, curveSI);        
+        const intersections = Intersection.intersect(lineSI, curveSI);        
 
         if ( intersections.points.length === 0 )
         {
@@ -2207,7 +2166,6 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         }
         else
         {
-            //intersections.points.forEach(console.log);    
             this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         this.line = new GeoLine( this.basePoint.p, this.p );
@@ -2259,7 +2217,7 @@ class PointIntersectCurves extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.curve1 === "undefined")
             this.curve1 = this.drawing.getObject(d.curve1);
@@ -2267,12 +2225,11 @@ class PointIntersectCurves extends DrawingObject {
         if (typeof this.curve2 === "undefined")
             this.curve2 = this.drawing.getObject(d.curve2);
 
-        var curve1SI = this.curve1.asShapeInfo();
-        var curve2SI = this.curve2.asShapeInfo();
+        const curve1SI = this.curve1.asShapeInfo();
+        const curve2SI = this.curve2.asShapeInfo();
 
-        var intersections = Intersection.intersect(curve1SI, curve2SI);
+        const intersections = Intersection.intersect(curve1SI, curve2SI);
         
-        //intersections.points.forEach(console.log);    
         if ( intersections.points.length === 0 )
         {
             this.p = new GeoPoint(0,0);
@@ -2286,11 +2243,10 @@ class PointIntersectCurves extends DrawingObject {
         else if ( intersections.points.length > 1 )    
         {
             //Vertical correction has first dibs. verticalCrossPoint=="One" means highest point; horizontalCrossPoint=="One" means leftmost point
-            var minXPnt, maxXPnt, minYPnt, maxYPnt;
-            var selectedPoint;
-            for ( var i = 0; i<intersections.points.length; i++ )
+            let minXPnt, maxXPnt, minYPnt, maxYPnt;
+            let selectedPoint;
+            for ( const intersect of intersections.points )
             {
-                var intersect = intersections.points[i];
                 if (( ! minXPnt ) || ( intersect.x < minXPnt.x ))
                     minXPnt = intersect;
                 if (( ! maxXPnt ) || ( intersect.x > maxXPnt.x ))
@@ -2361,7 +2317,7 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.basePoint === "undefined")
             this.basePoint = this.drawing.getObject(d.basePoint);
@@ -2375,11 +2331,11 @@ class PointIntersectLineAndAxis extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
 
-        var line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
+        const line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);
 
-        var otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
+        const otherPoint = this.basePoint.p.pointAtDistanceAndAngleDeg( 1, this.angle.value() );
 
-        var line2 = new GeoLine(this.basePoint.p, otherPoint );
+        const line2 = new GeoLine(this.basePoint.p, otherPoint );
 
         this.p = line1.intersect(line2);
         this.line = new GeoLine( this.basePoint.p, this.p );
@@ -2420,6 +2376,8 @@ class PointIntersectLineAndAxis extends DrawingObject {
 
 }
 
+
+
 class PointLineIntersect extends DrawingObject {
 
     //p1Line1
@@ -2433,7 +2391,7 @@ class PointLineIntersect extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
             this.p1Line1 = this.drawing.getObject(d.p1Line1);
@@ -2483,6 +2441,8 @@ class PointLineIntersect extends DrawingObject {
 
 }
 
+
+
 class PointOfTriangle extends DrawingObject {
 
     //firstPoint
@@ -2496,7 +2456,7 @@ class PointOfTriangle extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -2509,10 +2469,10 @@ class PointOfTriangle extends DrawingObject {
             this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
             
-        var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
+        const axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
 
         //otherLine is the hypotenous of the right angled triangle
-        var otherLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );
+        const otherLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );
 
         //how long should we extend the axis line? 
         const l1 = new GeoLine( this.firstPoint.p, this.p1Line1.p );
@@ -2527,11 +2487,11 @@ class PointOfTriangle extends DrawingObject {
         //The trick here is to observe that all these points, for any axisLine will form an arc
         //centered on the midpoint of otherLine with radiu of half length of otherLine
 
-        var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
-        var arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
+        const midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
+        const arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
 
-        var intersectionPoint = axisLine.intersect( otherLine );
-        var extendedAxis;
+        const intersectionPoint = axisLine.intersect( otherLine );
+        let extendedAxis;
         //if intersectionPoint is along the line, then we'll have to triangles to choose from
         
         if ( (new GeoLine( this.firstPoint.p, intersectionPoint )).length < otherLine.length )
@@ -2577,6 +2537,8 @@ class PointOfTriangle extends DrawingObject {
 
 }
 
+
+
 class PointShoulder extends DrawingObject {
 
     //pShoulder
@@ -2589,7 +2551,7 @@ class PointShoulder extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.shoulderPoint === "undefined")
             this.shoulderPoint = this.drawing.getObject(d.shoulderPoint);
@@ -2606,22 +2568,22 @@ class PointShoulder extends DrawingObject {
         //Find the point that is length away from the shoulderPoint along
         //the line p1Line1-p2line1.
             
-        var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
-        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
-        var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
-        var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
+        const axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
+        const arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
+        const offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
+        const extendedAxisLength = this.length.value() + offset.length;
+        const extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
 
         try {
             this.p = extendedAxis.intersectArc( arc );
         } catch (e) {
             //Maybe the axisLine is going in the wrong direction, and therefore extending it's length didn't help.
             //Try reversing axisLine...
-            var axisLine = new GeoLine( this.p2Line1.p, this.p1Line1.p );    
-            var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
-            var offset = new GeoLine( this.shoulderPoint.p, this.p2Line1.p );
-            var extendedAxisLength = this.length.value() + offset.length;
-            var extendedAxis = new GeoLine( this.p2Line1.p, this.p2Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
+            const axisLine = new GeoLine( this.p2Line1.p, this.p1Line1.p );    
+            const arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
+            const offset = new GeoLine( this.shoulderPoint.p, this.p2Line1.p );
+            const extendedAxisLength = this.length.value() + offset.length;
+            const extendedAxis = new GeoLine( this.p2Line1.p, this.p2Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
             this.p = extendedAxis.intersectArc( arc );    
         }
 
@@ -2663,6 +2625,8 @@ class PointShoulder extends DrawingObject {
 
 }
 
+
+
 class PointSingle extends DrawingObject {
 
     constructor(data) {
@@ -2671,7 +2635,7 @@ class PointSingle extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
         this.p = new GeoPoint(d.x, d.y);
         this.adjustBounds( bounds );
     }
@@ -2700,10 +2664,7 @@ class PointSingle extends DrawingObject {
 
 }
 
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
+
 
 class SplinePathInteractive extends DrawingObject {
 
@@ -2716,17 +2677,15 @@ class SplinePathInteractive extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if ( typeof this.nodes === "undefined" )
         {
             this.nodes = [];
 
             try {
-                for( var i=0; i< d.pathNode.length; i++ )
+                for( const pathNode of d.pathNode )
                 {
-                    var pathNode = this.data.pathNode[i];
-
                     pathNode.point   = this.drawing.getObject( pathNode.point );
                     pathNode.angle1  = this.drawing.newFormula( pathNode.angle1 ); 
                     pathNode.length1 = this.drawing.newFormula( pathNode.length1 ); 
@@ -2781,30 +2740,31 @@ class SplinePathInteractive extends DrawingObject {
 
 
     html( asFormula ) {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+        let html = '<span class="ps-name">' + this.data.name + '</span>: '
                     +'curved path:';
 
-        var d = this.data;
+        const d = this.data;
         
         try {
-            var thtml = "<table><tbody>";
-            for( var i=0; i< d.pathNode.length; i++ )
+            let thtml = "<table><tbody>";
+            for( const i in d.pathNode )
             {
+                const node = d.pathNode[i];
                 thtml += "<tr><td>";
-                thtml += this.refOf( d.pathNode[i].point );
+                thtml += this.refOf( node.point );
                 thtml += "</td>";
 
                 if ( i == 0 )
                     thtml += "<td></td><td></td>";
                 else
-                    thtml +=    "<td>" + d.pathNode[i].angle1.htmlAngle( asFormula ) 
-                            + "</td><td>" + d.pathNode[i].length1.htmlLength( asFormula ) + "</td>";
+                    thtml +=    "<td>" + node.angle1.htmlAngle( asFormula ) 
+                            + "</td><td>" + node.length1.htmlLength( asFormula ) + "</td>";
 
                 if ( i == (d.pathNode.length -1) )
                     thtml += "<td></td><td></td>";
                 else
-                    thtml +=    " <td>" + d.pathNode[i].angle2.htmlAngle( asFormula ) 
-                            + "</td><td>" + d.pathNode[i].length2.htmlLength( asFormula ) + "</td>";
+                    thtml +=    " <td>" + node.angle2.htmlAngle( asFormula ) 
+                            + "</td><td>" + node.length2.htmlLength( asFormula ) + "</td>";
 
                 thtml += "</tr>";         
             }
@@ -2821,9 +2781,8 @@ class SplinePathInteractive extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( var i=0; i< this.data.pathNode.length; i++ )
+        for( const pathNode of this.data.pathNode )
         {
-            var pathNode = this.data.pathNode[i];
             dependencies.add( this, pathNode.point );
             dependencies.add( this, pathNode.angle1 );
             dependencies.add( this, pathNode.angle2 );
@@ -2833,10 +2792,7 @@ class SplinePathInteractive extends DrawingObject {
     }    
 }
 
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
+
 
 class SplinePathUsingPoints extends DrawingObject {
 
@@ -2849,15 +2805,15 @@ class SplinePathUsingPoints extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if ( typeof this.nodes === "undefined" )
         {
             this.nodes = [];
 
-            for( var i=0; i< d.pathNode.length; i++ )
+            for( const pathNode of d.pathNode )
             {
-                this.data.pathNode[i].point = this.drawing.getObject( this.data.pathNode[i].point );
+                pathNode.point = this.drawing.getObject( pathNode.point );
             }
 
             for( var i=0; i< d.pathNode.length; i+=3 )
@@ -2907,10 +2863,10 @@ class SplinePathUsingPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+        let html = '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'curved path: ';
 
-        var d = this.data;
+        const d = this.data;
 
         html += "<table><tbody>";
 
@@ -2948,10 +2904,6 @@ class SplinePathUsingPoints extends DrawingObject {
     }    
 }
 
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
 
 class SplineSimple extends DrawingObject {
 
@@ -2972,7 +2924,7 @@ class SplineSimple extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.startPoint === "undefined")
             this.startPoint = this.drawing.getObject(d.point1);
@@ -3367,9 +3319,7 @@ class Pattern {
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
-            for (var a = 0; a < this.patternData.measurement.length; a++) {
-                var m = this.patternData.measurement[a];
-                var measurementUnits = this.units;
+            for ( const m of this.patternData.measurement ) {
 
                 //TODO test this variable that is a simple value...            
                 if (typeof m.value !== "undefined") 
@@ -3400,15 +3350,14 @@ class Pattern {
         if ( typeof this.patternData.variable !== "undefined" )
         {
             //Register all variable before calculating their values in to deal with dependencies.
-            for (var a = 0; a < this.patternData.variable.length; a++) {
-                var v = this.patternData.variable[a];
+            for ( const v of this.patternData.variable ) {
                 this.variable[ v.name ] = v;
                 v.isVariable = true;
             }
 
             //Now the variable are all registered, calculate their values.
-            for (var a = 0; a < this.patternData.variable.length; a++) { 
-                var inc = this.patternData.variable[a];   
+            for ( const inc of this.patternData.variable ) { 
+                 
                 //TODO test this variable that is a simple value...            
                 if (typeof inc.constant !== "undefined") 
                 {
@@ -3438,9 +3387,9 @@ class Pattern {
         if ( this.patternData.patternPiece )
             this.patternData.drawing = this.patternData.patternPiece;
 
-        for( var i=0; i<this.patternData.drawing.length; i++ )
+        for( const drawing of this.patternData.drawing )
         {
-            this.drawings.push( new PatternDrawing( this.patternData.drawing[i], this ) );
+            this.drawings.push( new PatternDrawing( drawing, this ) );
         }   
 
         this.analyseDependencies();
@@ -3485,9 +3434,9 @@ class Pattern {
         
         if ( this.variable )
         {
-            for( var i in this.variable )
+            for( const i in this.variable )
             {
-                var v = this.variable[i];
+                const v = this.variable[i];
                 if ( v.expression ) 
                 {
                     if ( typeof v.expression.addDependencies === "function" )
@@ -3499,12 +3448,10 @@ class Pattern {
             }
         }    
     
-        for( var j=0; j< this.drawings.length; j++ )
+        for( const drawing of this.drawings )
         {
-            var piece = this.drawings[j];
-            for (var a = 0; a < piece.drawingObjects.length; a++) 
+            for ( const dObj of drawing.drawingObjects ) 
             {
-                var dObj = piece.drawingObjects[a];
                 dObj.setDependencies( this.dependencies );
             }
         }
@@ -3522,7 +3469,8 @@ class Pattern {
     getMeasurement(name) {
         if (typeof name === "object")
             return name;
-        var m = this.measurement[name];
+
+        const m = this.measurement[name];
 
         if ( !m )
             throw "Measurment not found:" + name;
@@ -3532,10 +3480,9 @@ class Pattern {
 
     getObject( name )
     {
-        for( var j=0; j< this.drawings.length; j++ )
+        for( const drawing of this.drawings )
         {
-            var piece = this.drawings[j];
-            var obj = piece.getObject( name, true /*restrict search to this piece*/ );
+            const obj = drawing.getObject( name, true /*restrict search to this piece*/ );
             if ( obj )
                 return obj;
         }
@@ -3568,7 +3515,7 @@ class Group {
 
         if ( this.data.member )
             this.data.member.forEach( function(m){
-                var dObj = this.drawing.getObject( m, true );
+                const dObj = this.drawing.getObject( m, true );
                 if ( dObj )
                 {
                     this.members.push( dObj );
@@ -3589,8 +3536,6 @@ class Piece {
         this.detailNodes = data.detailNode;
         this.internalPaths = data.internalPath;
         this.dataPanels = data.dataPanel;
-        //this.update = data.update;
-        //this.contextMenu = data.contextMenu;
         this.nodesByName = {};
         this.calculated = false;
         this.ignore = false;
@@ -3604,7 +3549,7 @@ class Piece {
 
         for( const n of this.detailNodes )
         {
-            var dObj =  this.drawing.getObject( n.obj, true );
+            const dObj =  this.drawing.getObject( n.obj, true );
             if ( dObj ) 
             {
                 this.nodesByName[ n.obj ] = n;
@@ -3632,7 +3577,7 @@ class Piece {
             }
         }    
 
-        var resolve = function( objName, b ) {
+        const resolve = function( objName, b ) {
             return drawing.getObject( objName, b );
         };
 
@@ -3656,9 +3601,9 @@ class Piece {
             }
                 
         if ( this.dataPanels )
-            for( var i in this.dataPanels )
+            for( const i in this.dataPanels )
             {
-                var panel = this.dataPanels[i];
+                const panel = this.dataPanels[i];
                 if ( panel.center ) 
                     panel.center = resolve( panel.center, true );
                 if ( panel.topLeft ) 
@@ -3681,12 +3626,9 @@ class Piece {
         if ( typeof this.defaultSeamAllowance === "object" )
             this.defaultSeamAllowance = this.defaultSeamAllowance.value(); //should we defer evaluating this fornula?
 
-        //this.calculate();
-
         if ( this.name === this.drawing.pattern.data.options.targetPiece )
         {
             this.drawing.pattern.data.options.targetPiece = this;
-            //this.highlight = true;
         }
     }
 
@@ -3699,20 +3641,20 @@ class Piece {
         this.calculated = true;
         console.log("*********");
         console.log("Prepare piece: " + this.name );
-        var nObj;
-        var previousP; //not adjusted for seam allowance
-        var previousDirectionDeg; //same for SA and not SA        
+        let nObj;
+        let previousP; //not adjusted for seam allowance
+        let previousDirectionDeg; //same for SA and not SA        
 
         console.log("Pass 1 - direction and skipped nodes" );
         //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
         //which points don't lead to any progress around the curve. 
-        for (var a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
+        for (let a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
         {  
-            var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
-            var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
-            var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
-            var dObj = n.dObj;
-            var nObj = nn.dObj;
+            const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
+            const pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
+            const nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
+            const dObj = n.dObj;
+            const nObj = nn.dObj;
 
             //A point can specify before and after SA. The point will have a line drawn to it from the previous position.
             //This line should have a sa of n.before. 
@@ -3752,30 +3694,30 @@ class Piece {
                 {
                     console.log( "Curve " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
-                    var nObjCurveOrArc = nObj.curve instanceof GeoSpline ? nObj.curve
+                    let nObjCurveOrArc = nObj.curve instanceof GeoSpline ? nObj.curve
                                                                          : ( nObj.arc instanceof GeoArc || nObj.arc instanceof GeoEllipticalArc ) ? nObj.arc : undefined; //instanceof GeoArc
 
-                    var nextP = nObjCurveOrArc ? nObjCurveOrArc.pointAlongPathFraction( nn.reverse?100:0 ) 
+                    let nextP = nObjCurveOrArc ? nObjCurveOrArc.pointAlongPathFraction( nn.reverse?100:0 ) 
                                                : nObj.p;
 
-                    var dObjCurve = dObj.curve instanceof GeoSpline ? dObj.curve
+                    let dObjCurve = dObj.curve instanceof GeoSpline ? dObj.curve
                                                                     : ( dObj.arc instanceof GeoArc || dObj.arc instanceof GeoEllipticalArc ) ? dObj.arc.asGeoSpline() : undefined; 
 
                     //What if previousP and/or nextP isn't on the spline? TODO allow for one of them to be, and one not to be
-                    var curveSegment;
+                    let curveSegment;
                     try {
                         curveSegment = dObjCurve.splineBetweenPoints( previousP, nextP );
                         //We found both points, and so we can work out the forward/reverse automatically
 
                         //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(0); //and get these to be remembered
-                        var correctDirection = curveSegment.nodeData[0].point.equals( previousP );
+                        let correctDirection = curveSegment.nodeData[0].point.equals( previousP );
 
                         if ( ! correctDirection )
                         {
                             //maybe it doesn't match completely? 
                             //This would work generically for arcs and curves as curveSegment.pointAlongPathFraction(
-                            var lineToStart = new GeoLine( previousP, curveSegment.nodeData[0].point );
-                            var lineToEnd = new GeoLine( previousP, curveSegment.nodeData[ curveSegment.nodeData.length-1 ].point );
+                            const lineToStart = new GeoLine( previousP, curveSegment.nodeData[0].point );
+                            const lineToEnd = new GeoLine( previousP, curveSegment.nodeData[ curveSegment.nodeData.length-1 ].point );
                             if ( lineToStart.getLength() < lineToEnd.getLength() )
                                 correctDirection = true;
                         }
@@ -3796,7 +3738,7 @@ class Piece {
                         //This is not an issue, it just means we're not clipping the start/end of the curve
                         //But, we are now dependent on the reverse flag being set correctly as we cannot determine it ourselves. 
 
-                        var curveSegment;
+                        //let curveSegment;
                         
                         if ( n.reverse )
                             curveSegment = (new GeoSpline( [...dObjCurve.nodeData] )).reverse();
@@ -3805,8 +3747,8 @@ class Piece {
 
                         //NOW INTERSECT WITH start and end separately. 
                         try {
-                            var cut = curveSegment.cutAtPoint( previousP );
-                            if ( cut && cut.afterPoint )
+                            const cut = curveSegment.cutAtPoint( previousP );
+                            if ( cut?.afterPoint )
                             {
                                 curveSegment = cut.afterPoint;
                             }
@@ -3814,10 +3756,10 @@ class Piece {
                             {
                                 //insert an explicit point for the implicit one, otherwise we'll be confused about direction
                                 console.log("Adding explit node for an implict start of curve");
-                                var curveStartPoint = curveSegment.nodeData[0].point;
-                                var line = new GeoLine( previousP, curveStartPoint );
-                                var anglePreviousPThisP = line.angleDeg();
-                                var newNode = { obj: n.obj + "_implicit_start",
+                                const curveStartPoint = curveSegment.nodeData[0].point;
+                                const line = new GeoLine( previousP, curveStartPoint );
+                                const anglePreviousPThisP = line.angleDeg();
+                                const newNode = { obj: n.obj + "_implicit_start",
                                                 point: curveStartPoint,
                                                 line: line,
                                                 directionBeforeDeg: anglePreviousPThisP,
@@ -3832,8 +3774,8 @@ class Piece {
 
                         try {
                             //Do we need to add an explicit point for the end of the curve? Probably not                            
-                            var cut = curveSegment.cutAtPoint( nextP );
-                            if ( cut && cut.beforePoint )
+                            const cut = curveSegment.cutAtPoint( nextP );
+                            if ( cut?.beforePoint )
                                 curveSegment = cut.beforePoint;
                         } catch ( e2 ) {
                         }
@@ -3852,11 +3794,11 @@ class Piece {
                 {
                     console.log( "Other node " + n.obj + " previous:" + pn.obj + " next:" + nn.obj );
 
-                    var thisP = dObj.p;
+                    const thisP = dObj.p;
 
-                    var line = new GeoLine( previousP, thisP );
+                    const line = new GeoLine( previousP, thisP );
                     //Is this the same point
-                    var samePoint = false;                    
+                    let samePoint = false;                    
                     if ( thisP.equals( previousP ) )
                         samePoint = true;
                     else
@@ -3886,7 +3828,7 @@ class Piece {
                         console.log( "Line to " + n.obj );//+ " startAt:" + pn.obj + " endAt:" + nn.obj );
                         n.point = thisP;
                         n.line = line;
-                        var anglePreviousPThisP = (new GeoLine( previousP, thisP )).angleDeg();
+                        const anglePreviousPThisP = (new GeoLine( previousP, thisP )).angleDeg();
                         previousP = thisP;
 
                         //if ( ! pn.directionAfterDeg )
@@ -3934,10 +3876,10 @@ class Piece {
 
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
-        var currentSeamAllowance = this.defaultSeamAllowance;        
-        for (var a = 0; a < this.detailNodes.length; a++) {
+        let currentSeamAllowance = this.defaultSeamAllowance;        
+        for (let a = 0; a < this.detailNodes.length; a++) {
 
-            var n = this.detailNodes[ a ];
+            const n = this.detailNodes[ a ];
 
             if ( typeof n.sa1 != "undefined" )
                 currentSeamAllowance = n.sa1;
@@ -3961,12 +3903,12 @@ class Piece {
                 continue;
             }
     
-            var debugSA = "";
+            let debugSA = "";
     
             if ( n.curveSegment )
             {    
 
-                var parallelCurves = n.curveSegment.parallelCurve( currentSeamAllowance );
+                const parallelCurves = n.curveSegment.parallelCurve( currentSeamAllowance );
 
                 n.curveSegment = parallelCurves.baseCurve; //if we've added nodes to the curve, this would add them to the base curve too
                 n.curveSegmentSA = parallelCurves.offsetCurve;
@@ -4006,7 +3948,7 @@ class Piece {
                          " directionAfterDeg:" + ( n.directionAfterDeg === undefined ? "undefined" : Math.round(n.directionAfterDeg) ) +
                          " sa:" + ( currentSeamAllowance ) +
                          ( n.curveSegment ? " curvesegment" : n.line ? " line" : " UNKNOWN" ) + " " + debugSA);
-            pn = n;
+            //pn = n;
 
             if ( typeof n.sa1 === "undefined" )
                 n.sa1 = currentSeamAllowance;
@@ -4018,14 +3960,14 @@ class Piece {
         console.log("**********************");
         console.log("Pass 3 - intersects");
 
-        var pn = this.detailNodes[ this.detailNodes.length-1 ];
+        let pn = this.detailNodes[ this.detailNodes.length-1 ];
         if ( pn.skipPoint )
             pn = this.detailNodes[ this.detailNodes.length-2 ]; 
 
-        for (var a = 0; a < this.detailNodes.length; a++) {
+        for (let a = 0; a < this.detailNodes.length; a++) {
 
-            var n = this.detailNodes[ a ];
-            var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
+            const n = this.detailNodes[ a ];
+            const nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
 
             if ( n.skipPoint )
                 continue;
@@ -4033,10 +3975,10 @@ class Piece {
             //Now extend or trim lines and curves so that they intersect at the required points. 
             //See docs/intersectionsWithChangingSeamAllowance.svg
 
-            var sa1 = pn.sa1;
-            var sa2 = n.sa1;
+            const sa1 = pn.sa1;
+            const sa2 = n.sa1;
 
-            var angleChange = n.directionBeforeDeg - pn.directionAfterDeg;
+            let angleChange = n.directionBeforeDeg - pn.directionAfterDeg;
             if ( angleChange < -180 )
                 angleChange += 360;
             else if ( angleChange > 180 )
@@ -4062,7 +4004,7 @@ class Piece {
 
 
                 //matingAngle - the angle at which the change in SA perfectly tallies with the change in direction
-                var matingAngle = 0; //if sa2==sa1 then matingAngle == 0
+                let matingAngle = 0; //if sa2==sa1 then matingAngle == 0
                 
                 if (sa1 > sa2)
                     matingAngle = Math.acos( sa2/sa1 ) * 360 / 2 / Math.PI;
@@ -4072,7 +4014,7 @@ class Piece {
 
                 //Nb. if the smaller sa is zero, then the matingAngle is 90. 
 
-                var matingAngle2 = - matingAngle; //for where angleChange < 0, i.e. right hand bend
+                let matingAngle2 = - matingAngle; //for where angleChange < 0, i.e. right hand bend
 
                 //If moving from sa1 > sa2
                 //   then for angleChange >= matingAngle (60deg) then we just intersect the lines, neither needs extending
@@ -4086,14 +4028,14 @@ class Piece {
                 //
                 //Therefore the only difference between these cases is which we add the bend to. 
 
-                var trailingPath = pn.lineSA ? pn.lineSA : pn.curveSegmentSA;
-                var leadingPath = n.lineSA ? n.lineSA : n.curveSegmentSA;
+                let trailingPath = pn.lineSA ? pn.lineSA : pn.curveSegmentSA;
+                let leadingPath = n.lineSA ? n.lineSA : n.curveSegmentSA;
 
                 if ( angleChange >= matingAngle )
                 {
                     console.log( "Angle change > " + matingAngle + " therefore just do intersects" );
                     //then we just intersect the lines/curves, neither needs extending, both need clipping
-                    var intersect = this.intersect( trailingPath,  leadingPath );
+                    const intersect = this.intersect( trailingPath,  leadingPath );
                     trailingPath = this.clipEnd( trailingPath, intersect );
                     leadingPath = this.clipStart( leadingPath, intersect );
                     pn.pointEndSA = intersect;    
@@ -4110,9 +4052,9 @@ class Piece {
                         if ( angleChange > 0 ) //left-hand
                         {
                             //add the bend, length=(sa1-sa2), and then intersect
-                            var reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( (sa1-sa2), pn.directionAfterDeg-90 );
-                            var saChangeLine = new GeoLine( pn.pointEndSA, reducedSAPoint );
-                            var intersect = this.intersect( saChangeLine, leadingPath );
+                            const reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( (sa1-sa2), pn.directionAfterDeg-90 );
+                            const saChangeLine = new GeoLine( pn.pointEndSA, reducedSAPoint );
+                            const intersect = this.intersect( saChangeLine, leadingPath );
                             leadingPath = this.clipStart( leadingPath, intersect );
                             pn.reducedSAPoint = intersect;
                             n.pointStartSA = intersect;
@@ -4121,8 +4063,8 @@ class Piece {
                         {
                             //add the bend, with a calculated length and then just join to the leading piece. 
                             //a = acos( sa2/sa1 )
-                            var sa1Overlap = sa2 / Math.cos( angleChange / 360 * 2 * Math.PI );
-                            var reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( sa1-sa1Overlap, pn.directionAfterDeg-90 );
+                            const sa1Overlap = sa2 / Math.cos( angleChange / 360 * 2 * Math.PI );
+                            const reducedSAPoint = pn.pointEndSA.pointAtDistanceAndAngleDeg( sa1-sa1Overlap, pn.directionAfterDeg-90 );
                             pn.reducedSAPoint = reducedSAPoint;
                             //leadingPath - nothing to do, we'll just join with a line from reducedSAPoint to its start.
                             //pn.pointEndSA unchanged;    
@@ -4136,9 +4078,9 @@ class Piece {
                         if ( angleChange > 0 ) //left hand
                         {
                             //use sa2-sa1 and intersect with the trailing line
-                            var increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( (sa2-sa1), n.directionBeforeDeg-90 );
-                            var saChangeLine = new GeoLine( n.pointStartSA, increasingSAPoint );
-                            var intersect = this.intersect( saChangeLine, trailingPath );
+                            const increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( (sa2-sa1), n.directionBeforeDeg-90 );
+                            const saChangeLine = new GeoLine( n.pointStartSA, increasingSAPoint );
+                            const intersect = this.intersect( saChangeLine, trailingPath );
                             trailingPath = this.clipEnd( trailingPath, intersect );
                             pn.pointEndSA = intersect;
                             n.increasingSAPoint = intersect;
@@ -4147,8 +4089,8 @@ class Piece {
                         else //right hand
                         {
                             //add a calculated length bend to the leading piece and just join the path to it. 
-                            var sa2overlap = sa1 / Math.cos( angleChange / 360 * 2 * Math.PI );
-                            var increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( sa2-sa2overlap, n.directionBeforeDeg-90 );
+                            const sa2overlap = sa1 / Math.cos( angleChange / 360 * 2 * Math.PI );
+                            const increasingSAPoint = n.pointStartSA.pointAtDistanceAndAngleDeg( sa2-sa2overlap, n.directionBeforeDeg-90 );
                             //trailingPath - nothing to do
                             //pn.pointEndSA no change
                             //n.pointStartSA no change
@@ -4161,9 +4103,9 @@ class Piece {
                     console.log( "Angle change less than " + matingAngle2 + " need to intersect extensions" );
 
                     //we extend both lines and intersect
-                    var trailExtensionLine = new GeoLine( pn.pointEndSA, pn.pointEndSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg ) );
-                    var leadingExtensionLine = new GeoLine( n.pointStartSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg ), n.pointStartSA );
-                    var intersect = trailExtensionLine.intersect( leadingExtensionLine );
+                    const trailExtensionLine = new GeoLine( pn.pointEndSA, pn.pointEndSA.pointAtDistanceAndAngleDeg( 10, pn.directionAfterDeg ) );
+                    const leadingExtensionLine = new GeoLine( n.pointStartSA.pointAtDistanceAndAngleDeg( -10, n.directionBeforeDeg ), n.pointStartSA );
+                    const intersect = trailExtensionLine.intersect( leadingExtensionLine );
 
                     console.log( "Intersect at " + intersect.toString() );
 
@@ -4219,11 +4161,11 @@ class Piece {
 
     intersect( trailingPath, leadingPath )
     {
-        var trailingPathSI = trailingPath.asShapeInfo();
-        var leadingPathSI = leadingPath.asShapeInfo();        
-        var intersect;
+        const trailingPathSI = trailingPath.asShapeInfo();
+        const leadingPathSI = leadingPath.asShapeInfo();        
+        let intersect;
         try {
-            var intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
+            const intersections = Intersection.intersect(trailingPathSI, leadingPathSI);
             intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
 
             if ( intersections.length > 1 )
@@ -4233,7 +4175,7 @@ class Piece {
             console.log( "No intersections found (A). " + pn.obj + " and " + n.obj );
 
             try { 
-                var intersections = Intersection.intersect( leadingPathSI, leadingPathSI );
+                const intersections = Intersection.intersect( leadingPathSI, leadingPathSI );
                 intersect = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
                 if ( intersections.length > 1 )
                     console.log( "Intersections found (B). " + intersections.length );
@@ -4264,7 +4206,7 @@ class Piece {
         if ( leadingPath instanceof GeoSpline )
         {
             //TODO if cutAtPoint doesn't work we could go back to our original non-extended curve and just extend that in a straight line to our intersect point
-            var split = leadingPath.cutAtPoint( intersect );
+            const split = leadingPath.cutAtPoint( intersect );
             return split.afterPoint ? split.afterPoint : split.beforePoint;
         }
         else
@@ -4310,11 +4252,10 @@ class Piece {
 
         console.log("Time to draw seam line labels: ", this.name );
 
-        let labelGroup = undefined;
+        let labelGroup;
 
         for ( const n of this.detailNodes )
         {
-            //var n = this.detailNodes[ a ];
             if ( n.label )
             {
                 const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6);
@@ -4342,7 +4283,7 @@ class Piece {
 
         console.log("Time to draw seam allowance: ", this.name );
 
-        var p = g.append("path")
+        const p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
                  .attr("class", "seamallowance" )
                  .attr("d", this.svgPath( true ) )
@@ -4367,22 +4308,22 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        var notches = g.append("g").attr( "id", this.name + " - notches");
+        const notches = g.append("g").attr( "id", this.name + " - notches");
         console.log("*********");
         console.log("notches: " + this.name );
 
-        var pn = this.detailNodes[ this.detailNodes.length -1 ];
+       // let pn = this.detailNodes[ this.detailNodes.length -1 ];
 
-        var strokeWidth = this.getStrokeWidth();
+        const strokeWidth = this.getStrokeWidth();
 
-        for (var a = 0; a < this.detailNodes.length; a++) 
+        for (const n of this.detailNodes) 
         {
-            var n = this.detailNodes[ a ];
+            //const n = this.detailNodes[ a ];
 
             if ( typeof n.notch === "undefined" )
                 continue;
 
-            const notchType = n.notch;
+            //const notchType = n.notch;
             const notchAngle = n.notchAngle === undefined ? 0 : n.notchAngle;
             const notchCount = n.notchCount === undefined ? 1 : n.notchCount;
             const notchLength = n.notchLength === undefined ? 0.25 : n.notchLength;
@@ -4393,23 +4334,23 @@ class Piece {
             const drawNotch = function( point, pointSA, tangentDeg, sa ) {
 
                 //TODO if no SA, then create a point at an internal tangent
-                var path = "";
+                let path = "";
 
                 //One notch : 0    
                 //Two notches : -0.5 +0.5    0-1  1-1   n-(c/2)+0.5
                 //Three notches : -1 0 +1             
-                for( var i = 0;  i < notchCount; i++ )
+                for( let i = 0;  i < notchCount; i++ )
                 {
                     const offset = i-(notchCount/2)+0.5;
 
                     const drawNotchMark = function( p, notchLength, otherPoint ) {
 
                         const offsetAmount = offset * notchWidth;
-                        var start = p;
+                        let start = p;
                         if ( offset != 0 )
                             start = start.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
 
-                        var end;
+                        let end;
                         if ( notchLength === undefined ) //drawing one notch from seamline to seamallowanceline
                             end = offset == 0 ? otherPoint
                                               : otherPoint.pointAtDistanceAndAngleDeg( offsetAmount, tangentDeg + 90 );
@@ -4438,7 +4379,7 @@ class Piece {
                 }
 
                 //TODO should we connect these D3 data-wise to the notches
-                var p = notches.append("path")
+                const p = notches.append("path")
                     .attr("d", path )
                     .attr("class", "notch" )
                     .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
@@ -4451,7 +4392,7 @@ class Piece {
             if ( n.notchesAlongPath !== undefined )            
             {
                 //3 along the path means cutting it into 4.
-                for ( var j=1; j<=n.notchesAlongPath; j++ )
+                for ( let j=1; j<=n.notchesAlongPath; j++ )
                 {
                     //1,2,3
                     const fractionAlongLine = j / ( n.notchesAlongPath + 1); //0.25, 0.5, 0.75
@@ -4460,7 +4401,7 @@ class Piece {
                     const tinyBitFurtherAlongLine = fractionAlongLine + 0.0001;
                     const p2 = n.curveSegment.pointAlongPathFraction( tinyBitFurtherAlongLine );
                     const tangentDeg = (new GeoLine( p, p2 )).angleDeg() + 90.0;
-                    const tangentLine = new GeoLine( p, p.pointAtDistanceAndAngleDeg( sa, tangentDeg ) );
+                    //const tangentLine = new GeoLine( p, p.pointAtDistanceAndAngleDeg( sa, tangentDeg ) );
                     const pSA = n.curveSegmentSA === undefined ? undefined : p.pointAtDistanceAndAngleDeg( sa, tangentDeg );
                     drawNotch( p, pSA, tangentDeg, sa );
                 }
@@ -4480,9 +4421,9 @@ class Piece {
         if ( this.ignore )
             return;
 
-        var internalPathsGroup = undefined;
+        let internalPathsGroup;
 
-        var strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
+        const strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
 
         if ( this.internalPaths )
             //this.internalPaths.forEach( 
@@ -4505,15 +4446,15 @@ class Piece {
         if ( this.ignore )
             return;
 
-        var path = undefined; //path as SVG
-        var geopath = undefined; //path as GeoSpline - so we can find the mid-point for adding the length
+        let path; //path as SVG
+        let geopath; //path as GeoSpline - so we can find the mid-point for adding the length
 
-        var previousP;
-        for  (var a=0; a<internalPath.nodes.length; a++ )
+        let previousP;
+        for  (let a=0; a<internalPath.nodes.length; a++ )
         {
-            var n = internalPath.nodes[ a ];
+            const n = internalPath.nodes[ a ];
             
-            var curve = undefined;
+            let curve;
 
             if (( n.arc instanceof GeoArc ) || ( n.arc instanceof GeoEllipticalArc ))
                 curve = n.arc.asGeoSpline();
@@ -4528,8 +4469,8 @@ class Piece {
                     curve = cut.afterPoint ? cut.afterPoint : cut.beforePoint;
                 }
 
-                var nextNode = a+1 < internalPath.nodes.length ? internalPath.nodes[ a+1 ] : undefined;
-                if (( nextNode ) && ( nextNode.p ))
+                const nextNode = a+1 < internalPath.nodes.length ? internalPath.nodes[ a+1 ] : undefined;
+                if ( nextNode?.p )
                 {
                     const cut = curve.cutAtPoint( nextNode.p );
                     curve = cut.beforePoint;
@@ -4556,12 +4497,12 @@ class Piece {
         if ( internalPath.showLength !== undefined ) //we don't draw a label, though we could use label as 100% and line as 50%
         {
             //TODO use non-semantic-scaling font size that we use for labels
-            var l = geopath.pathLength(); //"TODO";//this.getLengthAndUnits();
+            let l = geopath.pathLength(); //"TODO";//this.getLengthAndUnits();
 
             if ( l !== undefined )
             {
                 const patternUnits = this.drawing.pattern.units;
-                var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                const precision = patternUnits === "mm" ? 10.0 : 100.0;
                 l = Math.round( precision * l ) / precision;            
                 l = l + " " + patternUnits;    
             }
@@ -4570,7 +4511,7 @@ class Piece {
             this.drawing.drawLabelAlongPath( internalPathsGroup, geopath, l, fontSize, true );    
         }
 
-        var p = internalPathsGroup.append("path")
+        const p = internalPathsGroup.append("path")
             .attr("d", path )
             .attr("class", "internalpath" )
             .attr("fill", "none")
@@ -4582,7 +4523,8 @@ class Piece {
 
         if ( internalPath.lineStyle ) 
         {
-            var dasharray = undefined;
+            let dasharray;
+
             switch( internalPath.lineStyle )
             {
                 case "dotLine":        dasharray = "0.25 0.25"; break;
@@ -4602,20 +4544,20 @@ class Piece {
         if ( this.ignore )
             return;
 
-        var lineSpacing = 1.2;
-        var fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
-        var align = "start";
+        const lineSpacing = 1.2;
+        const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+        let align = "start";
 
         if ( this.dataPanels )
-        for( var i in this.dataPanels )
+        for( let i in this.dataPanels )
         {
-            var panel = this.dataPanels[i];
+            const panel = this.dataPanels[i];
 
             if ( ! panel.dataItem )
                 continue;
 
-            var x = undefined;
-            var y = undefined;
+            let x;
+            let y;
             if ( typeof panel.topLeft === "object" )
             {
                 x = panel.topLeft.p.x;
@@ -4636,7 +4578,7 @@ class Piece {
             }
             if ( x === undefined ) 
             {
-                var bounds = new Bounds();
+                const bounds = new Bounds();
                 this.adjustBounds( bounds );
                 x = ( bounds.minX + bounds.maxX ) / 2;
                 y = ( bounds.minY + bounds.maxY ) / 2;
@@ -4649,17 +4591,17 @@ class Piece {
             else if ( align === "bottom" )
                 y -= panel.dataItem.length * fontSize * lineSpacing;
 
-            var dataPanelGroup = g.append("text")
+            const dataPanelGroup = g.append("text")
                                   .attr("id","data panel:" + panel.letter )
                                   .attr("class","patternlabel")
                                   .attr("transform", "translate(" + x + "," + y + ")" )
                                   //.attr("text-anchor", align ) //dominant-baseline="middle"
                                   .attr("font-size", fontSize );
 
-            for( var j in panel.dataItem )
+            for( const dataItem of panel.dataItem )
             {
-                var dataItem = panel.dataItem[ j ];
-                var text = dataItem.text;
+                //var dataItem = panel.dataItem[ j ];
+                let text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
                     text = text.replace("%date%", this.drawing.pattern.getDate() );
@@ -4687,7 +4629,7 @@ class Piece {
 
                 if ( text.includes( "%patternNumber%" ) )
                 {
-                    var patternNumber = this.drawing.pattern.patternData.patternNumber;
+                    let patternNumber = this.drawing.pattern.patternData.patternNumber;
                     if ( patternNumber === undefined )
                         patternNumber = "";
                     text=text.replace( "%patternNumber%", patternNumber );
@@ -4737,12 +4679,12 @@ class Piece {
         console.log("*********");
         console.log("svgPath: " + this.name + " seamAllowance:" + withSeamAllowance );
 
-        var path = undefined;
-        var pn = this.detailNodes[ this.detailNodes.length -1 ];
+        let path;
+        let pn = this.detailNodes[ this.detailNodes.length -1 ];
 
-        for (var a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
+        for (let a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
 
-            var n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
+            const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             //var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             //var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
          
@@ -4763,13 +4705,13 @@ class Piece {
 
             if ( n.curveSegment )
             {
-                var curveSegmentToDraw = withSeamAllowance ? n.curveSegmentSA : n.curveSegment;
+                const curveSegmentToDraw = withSeamAllowance ? n.curveSegmentSA : n.curveSegment;
 
                 path = curveSegmentToDraw.svgPath( path ) + " ";
             }
             else
             {
-                var thisP = withSeamAllowance ? n.pointEndSA : n.point;
+                const thisP = withSeamAllowance ? n.pointEndSA : n.point;
 
                 if ( withSeamAllowance && n.pointStartSA )
                 {
@@ -4809,12 +4751,10 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        var mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
-        var my = includeOffset && this.data.my ? this.data.my : 0.0;
+        const mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
+        const my = includeOffset && this.data.my ? this.data.my : 0.0;
 
-        for (var a = 0; a < this.detailNodes.length; a++) {
-
-            var n = this.detailNodes[a];
+        for ( const n of this.detailNodes ) {
 
             if ( n.pointEndSA )
                 bounds.adjustToIncludeXY( n.pointEndSA.x + mx, n.pointEndSA.y + my );
@@ -7650,8 +7590,8 @@ class Bounds {
 
     diagonaglLength() {
 
-        var deltaX = ( this.maxX - this.minX );
-        var deltaY = ( this.maxY - this.minY );
+        const deltaX = ( this.maxX - this.minX );
+        const deltaY = ( this.maxY - this.minY );
     
         return Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
     }
@@ -8537,7 +8477,6 @@ class GeoLine {
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 
 //A point
 class GeoPoint {
@@ -8563,8 +8502,8 @@ class GeoPoint {
 
 
     pointAtDistanceAndAngleRad( length, angle /*radians anti-clockwise from east*/ ) {        
-        var x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
-        var y = this.y + length * Math.sin( -1 * angle );   
+        const x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
+        const y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
     }
 
@@ -8577,11 +8516,11 @@ class GeoPoint {
     rotate( center, rotateAngleDeg ) {
         //Convert degrees to radians
         
-        var centerToSourceLine = new GeoLine( center, this );
-        var distance = centerToSourceLine.getLength();
-        var angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
+        const centerToSourceLine = new GeoLine( center, this );
+        const distance = centerToSourceLine.getLength();
+        const angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
 
-        var result = center.pointAtDistanceAndAngleDeg( distance, angle );
+        const result = center.pointAtDistanceAndAngleDeg( distance, angle );
         return result;
     }
 

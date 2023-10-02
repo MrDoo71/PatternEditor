@@ -9,7 +9,6 @@
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 
 //A point
 class GeoPoint {
@@ -35,8 +34,8 @@ class GeoPoint {
 
 
     pointAtDistanceAndAngleRad( length, angle /*radians anti-clockwise from east*/ ) {        
-        var x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
-        var y = this.y + length * Math.sin( -1 * angle );   
+        const x = this.x + length * Math.cos( -1 * angle ); //TODO this is a guess!
+        const y = this.y + length * Math.sin( -1 * angle );   
         return new GeoPoint( x, y );
     }
 
@@ -49,11 +48,11 @@ class GeoPoint {
     rotate( center, rotateAngleDeg ) {
         //Convert degrees to radians
         
-        var centerToSourceLine = new GeoLine( center, this );
-        var distance = centerToSourceLine.getLength();
-        var angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
+        const centerToSourceLine = new GeoLine( center, this );
+        const distance = centerToSourceLine.getLength();
+        const angle = centerToSourceLine.angleDeg() + rotateAngleDeg;
 
-        var result = center.pointAtDistanceAndAngleDeg( distance, angle );
+        const result = center.pointAtDistanceAndAngleDeg( distance, angle );
         return result;
     }
 

@@ -1,7 +1,4 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
+
 
 class SplinePathUsingPoints extends DrawingObject {
 
@@ -14,15 +11,15 @@ class SplinePathUsingPoints extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if ( typeof this.nodes === "undefined" )
         {
             this.nodes = [];
 
-            for( var i=0; i< d.pathNode.length; i++ )
+            for( const pathNode of d.pathNode )
             {
-                this.data.pathNode[i].point = this.drawing.getObject( this.data.pathNode[i].point );
+                pathNode.point = this.drawing.getObject( pathNode.point );
             }
 
             for( var i=0; i< d.pathNode.length; i+=3 )
@@ -72,10 +69,10 @@ class SplinePathUsingPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+        let html = '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'curved path: ';
 
-        var d = this.data;
+        const d = this.data;
 
         html += "<table><tbody>";
 

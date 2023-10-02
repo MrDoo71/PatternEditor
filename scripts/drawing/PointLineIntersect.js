@@ -1,3 +1,5 @@
+
+
 class PointLineIntersect extends DrawingObject {
 
     //p1Line1
@@ -11,7 +13,7 @@ class PointLineIntersect extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.p1Line1 === "undefined")
             this.p1Line1 = this.drawing.getObject(d.p1Line1);

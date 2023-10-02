@@ -11,7 +11,7 @@ class PointIntersectCircles extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.center1 === "undefined")
             this.center1 = this.drawing.getObject(d.center1);
@@ -26,15 +26,13 @@ class PointIntersectCircles extends DrawingObject {
             this.radius2 = this.drawing.newFormula(d.radius2);
 
         //Also this.data.crossPoint    
-        var circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
-        var circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
+        const circle1 = new GeoArc( this.center1.p, this.radius1.value(), 0, 360 );
+        const circle2 = new GeoArc( this.center2.p, this.radius2.value(), 0, 360 );
 
-        var arc1SI = circle1.asShapeInfo();
-        var arc2SI = circle2.asShapeInfo();
+        const arc1SI = circle1.asShapeInfo();
+        const arc2SI = circle2.asShapeInfo();
 
-        var intersections = Intersection.intersect(arc1SI, arc2SI);
-        
-        //intersections.points.forEach(console.log);    
+        const intersections = Intersection.intersect(arc1SI, arc2SI);
         
         if ( intersections.points.length === 0 )
         {
@@ -55,10 +53,10 @@ class PointIntersectCircles extends DrawingObject {
             //What is the angle in the first arc of the intersection point?
             //One = smallest angle in the first arc.
             //Two = largest angle in the first arc.
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            var angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
-            var angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
+            const p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            const p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
+            let angle1 = (new GeoLine( circle1.center, p1)).angleDeg();
+            let angle2 = (new GeoLine( circle1.center, p2)).angleDeg();
             if (( angle1 >= 270 ) && ( angle2 > 0 ) && ( angle2 < 90 ))
                 angle2 += 360;
             else if (( angle2 >= 270 ) && ( angle1 > 0 ) && ( angle1 < 90 ))
@@ -77,27 +75,7 @@ class PointIntersectCircles extends DrawingObject {
                     this.p = p2;
                 else
                     this.p = p1;
-            }
-            
-           /*
-            //this is just a guess.. TODO what happens if the two y's are the same??
-            var p1 = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
-            var p2 = new GeoPoint( intersections.points[1].x, intersections.points[1].y );
-            if ( this.data.crossPoint === "One" )
-            {
-                if ( p1.y < p2.y )
-                    this.p = p2;
-                else
-                    this.p = p1;
-            }
-            else
-            {
-                if ( p1.y < p2.y )
-                    this.p = p1;
-                else
-                    this.p = p2;
-            }
-            */
+            }            
         }
 
         this.adjustBounds( bounds );

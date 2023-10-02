@@ -49,8 +49,8 @@ class Bounds {
 
     diagonaglLength() {
 
-        var deltaX = ( this.maxX - this.minX );
-        var deltaY = ( this.maxY - this.minY );
+        const deltaX = ( this.maxX - this.minX );
+        const deltaY = ( this.maxY - this.minY );
     
         return Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
     }

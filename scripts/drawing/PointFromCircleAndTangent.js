@@ -10,7 +10,7 @@ class PointFromCircleAndTangent extends DrawingObject {
     }
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.tangent === "undefined")
             this.tangent = this.drawing.getObject(d.tangent);
@@ -23,9 +23,9 @@ class PointFromCircleAndTangent extends DrawingObject {
 
         this.crossPoint = d.crossPoint;
 
-        var circle = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
+        const circle = new GeoArc( this.center.p, this.radius.value(), 0, 360 );
 
-        var tangentIntersections = circle.getPointsOfTangent( this.tangent.p );
+        const tangentIntersections = circle.getPointsOfTangent( this.tangent.p );
         
         //TODO what is the real logic for crossPoint One vs Two
         if ( this.crossPoint === "One" ) 

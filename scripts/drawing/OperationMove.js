@@ -12,10 +12,7 @@ class OperationMove extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
-
-        //if (typeof this.basePoint === "undefined")
-        //    this.basePoint = this.drawing.getObject(d.basePoint);
+        const d = this.data;
 
         if (typeof this.length === "undefined")
             this.length = this.drawing.newFormula(d.length);
@@ -57,7 +54,7 @@ class OperationMove extends DrawingObject {
 
     applyOperationToPoint( p ) {
         //Convert degrees to radians
-        var result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
+        const result = p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );
         //var line = new GeoLine( source.p, result.p );
         return result;
     }

@@ -11,7 +11,7 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -22,8 +22,8 @@ class PointAlongPerpendicular extends DrawingObject {
         if (typeof this.angle === "undefined")
             this.angle = this.drawing.newFormula(d.angle);
             
-        var baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
-        var totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
+        const baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
+        const totalAngle = this.angle.value() + 90 + baseLine.angleDeg();
         //Convert degrees to radians
         this.p = this.firstPoint.p.pointAtDistanceAndAngleDeg( this.length.value(), totalAngle );
         this.line = new GeoLine(this.firstPoint.p, this.p);
@@ -46,7 +46,7 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     html( asFormula ) {
-        var h = '<span class="ps-name">' + this.data.name + '</span>: ' 
+        let h = '<span class="ps-name">' + this.data.name + '</span>: ' 
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.firstPoint ) 
                 + " perpendicular to the line to " + this.refOf( this.secondPoint );

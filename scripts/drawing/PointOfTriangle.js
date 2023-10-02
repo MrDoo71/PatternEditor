@@ -1,3 +1,5 @@
+
+
 class PointOfTriangle extends DrawingObject {
 
     //firstPoint
@@ -11,7 +13,7 @@ class PointOfTriangle extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.firstPoint === "undefined")
             this.firstPoint = this.drawing.getObject(d.firstPoint);
@@ -24,10 +26,10 @@ class PointOfTriangle extends DrawingObject {
             this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
             
-        var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
+        const axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
 
         //otherLine is the hypotenous of the right angled triangle
-        var otherLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );
+        const otherLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );
 
         //how long should we extend the axis line? 
         const l1 = new GeoLine( this.firstPoint.p, this.p1Line1.p );
@@ -42,11 +44,11 @@ class PointOfTriangle extends DrawingObject {
         //The trick here is to observe that all these points, for any axisLine will form an arc
         //centered on the midpoint of otherLine with radiu of half length of otherLine
 
-        var midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
-        var arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
+        const midpoint = this.firstPoint.p.pointAtDistanceAndAngleRad( otherLine.length/2, otherLine.angle );
+        const arc = new GeoArc( midpoint, otherLine.length/2, 0, 360 );    
 
-        var intersectionPoint = axisLine.intersect( otherLine );
-        var extendedAxis;
+        const intersectionPoint = axisLine.intersect( otherLine );
+        let extendedAxis;
         //if intersectionPoint is along the line, then we'll have to triangles to choose from
         
         if ( (new GeoLine( this.firstPoint.p, intersectionPoint )).length < otherLine.length )

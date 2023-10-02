@@ -1,3 +1,5 @@
+
+
 class PointShoulder extends DrawingObject {
 
     //pShoulder
@@ -10,7 +12,7 @@ class PointShoulder extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.shoulderPoint === "undefined")
             this.shoulderPoint = this.drawing.getObject(d.shoulderPoint);
@@ -27,22 +29,22 @@ class PointShoulder extends DrawingObject {
         //Find the point that is length away from the shoulderPoint along
         //the line p1Line1-p2line1.
             
-        var axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
-        var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
-        var offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
-        var extendedAxisLength = this.length.value() + offset.length;
-        var extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
+        const axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
+        const arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
+        const offset = new GeoLine( this.shoulderPoint.p, this.p1Line1.p );
+        const extendedAxisLength = this.length.value() + offset.length;
+        const extendedAxis = new GeoLine( this.p1Line1.p, this.p1Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
 
         try {
             this.p = extendedAxis.intersectArc( arc );
         } catch (e) {
             //Maybe the axisLine is going in the wrong direction, and therefore extending it's length didn't help.
             //Try reversing axisLine...
-            var axisLine = new GeoLine( this.p2Line1.p, this.p1Line1.p );    
-            var arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
-            var offset = new GeoLine( this.shoulderPoint.p, this.p2Line1.p );
-            var extendedAxisLength = this.length.value() + offset.length;
-            var extendedAxis = new GeoLine( this.p2Line1.p, this.p2Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
+            const axisLine = new GeoLine( this.p2Line1.p, this.p1Line1.p );    
+            const arc = new GeoArc( this.shoulderPoint.p, this.length.value(), 0, 360  );      
+            const offset = new GeoLine( this.shoulderPoint.p, this.p2Line1.p );
+            const extendedAxisLength = this.length.value() + offset.length;
+            const extendedAxis = new GeoLine( this.p2Line1.p, this.p2Line1.p.pointAtDistanceAndAngleRad( extendedAxisLength, axisLine.angle ) );
             this.p = extendedAxis.intersectArc( arc );    
         }
 

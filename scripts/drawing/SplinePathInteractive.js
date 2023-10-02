@@ -1,7 +1,4 @@
-/*define(function (require) {
-    require('./DrawingObject');
-    require('../geometry');
-});*/
+
 
 class SplinePathInteractive extends DrawingObject {
 
@@ -14,17 +11,15 @@ class SplinePathInteractive extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if ( typeof this.nodes === "undefined" )
         {
             this.nodes = [];
 
             try {
-                for( var i=0; i< d.pathNode.length; i++ )
+                for( const pathNode of d.pathNode )
                 {
-                    var pathNode = this.data.pathNode[i];
-
                     pathNode.point   = this.drawing.getObject( pathNode.point );
                     pathNode.angle1  = this.drawing.newFormula( pathNode.angle1 ); 
                     pathNode.length1 = this.drawing.newFormula( pathNode.length1 ); 
@@ -79,30 +74,31 @@ class SplinePathInteractive extends DrawingObject {
 
 
     html( asFormula ) {
-        var html = '<span class="ps-name">' + this.data.name + '</span>: '
+        let html = '<span class="ps-name">' + this.data.name + '</span>: '
                     +'curved path:';
 
-        var d = this.data;
+        const d = this.data;
         
         try {
-            var thtml = "<table><tbody>";
-            for( var i=0; i< d.pathNode.length; i++ )
+            let thtml = "<table><tbody>";
+            for( const i in d.pathNode )
             {
+                const node = d.pathNode[i];
                 thtml += "<tr><td>";
-                thtml += this.refOf( d.pathNode[i].point );
+                thtml += this.refOf( node.point );
                 thtml += "</td>";
 
                 if ( i == 0 )
                     thtml += "<td></td><td></td>";
                 else
-                    thtml +=    "<td>" + d.pathNode[i].angle1.htmlAngle( asFormula ) 
-                            + "</td><td>" + d.pathNode[i].length1.htmlLength( asFormula ) + "</td>";
+                    thtml +=    "<td>" + node.angle1.htmlAngle( asFormula ) 
+                            + "</td><td>" + node.length1.htmlLength( asFormula ) + "</td>";
 
                 if ( i == (d.pathNode.length -1) )
                     thtml += "<td></td><td></td>";
                 else
-                    thtml +=    " <td>" + d.pathNode[i].angle2.htmlAngle( asFormula ) 
-                            + "</td><td>" + d.pathNode[i].length2.htmlLength( asFormula ) + "</td>";
+                    thtml +=    " <td>" + node.angle2.htmlAngle( asFormula ) 
+                            + "</td><td>" + node.length2.htmlLength( asFormula ) + "</td>";
 
                 thtml += "</tr>";         
             }
@@ -119,9 +115,8 @@ class SplinePathInteractive extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( var i=0; i< this.data.pathNode.length; i++ )
+        for( const pathNode of this.data.pathNode )
         {
-            var pathNode = this.data.pathNode[i];
             dependencies.add( this, pathNode.point );
             dependencies.add( this, pathNode.angle1 );
             dependencies.add( this, pathNode.angle2 );
