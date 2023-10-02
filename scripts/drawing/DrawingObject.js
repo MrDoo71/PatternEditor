@@ -24,12 +24,12 @@ class DrawingObject /*abstract*/ {
         //g - the svg group we want to add the text to
         //o - the drawing object
 
-        var d = this.data; //the original json data
+        const d = this.data; //the original json data
 
         if (   ( this.p )
             && ( typeof this.p.x === "number" ) )
         {
-            var labelPosition = this.labelPosition();
+            const labelPosition = this.labelPosition();
 
             if ( labelPosition.drawLine )
                 g.append("line")
@@ -40,7 +40,7 @@ class DrawingObject /*abstract*/ {
                 .attr("stroke-width", this.getStrokeWidth( false ) )
                 .attr("class", "labelLine" );
 
-            var labelText = d.name;
+            let labelText = d.name;
             try {
                 if ( this.showLength() === "label" )
                     labelText += " " + this.getLengthAndUnits();
@@ -65,7 +65,7 @@ class DrawingObject /*abstract*/ {
 
     drawLengthAlongLine( g, drawingOptions )
     {
-        var path;
+        let path;
         if ( this.line )
             path = this.line;
         else if ( this.curve )
@@ -86,18 +86,16 @@ s
         if ( ! this.p )
             return null;
 
-        //console.log( "Scale: " + scale + " fontsSizedForScale:" + fontsSizedForScale );    
-
-        var d = this.data; //the original json data
-        var fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
-        var fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
+        const d = this.data; //the original json data
+        const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+        let fudge = 1.0; //0.75*mx because we use a smaller font than seamly2d
 
         //This is different to seamly2d behaviour, we'll actually reduce mx/my a bit if you zoom in
         if ( fontsSizedForScale > 1 )
             fudge = (1 + 1/fontsSizedForScale) /2;
 
-        var mx = (typeof d.mx === "undefined") ? 0 : d.mx;
-        var my = (typeof d.my === "undefined") ? 0 : d.my;
+        let mx = (typeof d.mx === "undefined") ? 0 : d.mx;
+        let my = (typeof d.my === "undefined") ? 0 : d.my;
 
         //some odd data exists out there in operation results of splines e.g. 3 Button Sack rev.1
         if (( mx >= 2147480000 ) || ( my >= 2147480000 ))
@@ -106,7 +104,7 @@ s
             my = 0;
         }
 
-        var pos = { labelX: this.p.x + fudge * mx,
+        const pos = { labelX: this.p.x + fudge * mx,
                     labelY: this.p.y + fudge * ( my + fontSize ),
                     labelLineX: this.p.x + fudge * mx,  //line goes to left of label
                     labelLineY: this.p.y + fudge * ( my + 0.5 * fontSize ), //line always goes to vertical midpoint of text
@@ -121,7 +119,7 @@ s
         if ( my <= 0 )
             pos.labelLineY = this.p.y + fudge * ( my + fontSize ); //align to bottom of text
 
-        var minLineLength = 2 * fontSize;
+        const minLineLength = 2 * fontSize;
 
         pos.drawLine =    ( Math.abs( this.p.x - pos.labelX ) > minLineLength )
                        || ( Math.abs( this.p.y - pos.labelY ) > minLineLength );
@@ -134,7 +132,7 @@ s
 
     getLengthAndUnits()
     {
-        var l = undefined;
+        let l;
 
         if ( this.line )
             l = this.line.length;
@@ -146,7 +144,7 @@ s
         if ( l !== undefined )
         {
             const patternUnits = this.drawing.pattern.units;
-            var precision = patternUnits === "mm" ? 10.0 : 100.0;
+            const precision = patternUnits === "mm" ? 10.0 : 100.0;
             l = Math.round( precision * l ) / precision;            
             return l + " " + patternUnits;    
         }
@@ -174,7 +172,7 @@ s
         
         if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
         {
-            var l = g.append("line")
+            const l = g.append("line")
                      .attr("x1", this.line.p1.x)
                      .attr("y1", this.line.p1.y)
                      .attr("x2", this.line.p2.x)
@@ -194,7 +192,7 @@ s
 
         if ( this.lineVisible() )
         {
-            var p = g.append("path")
+            const p = g.append("path")
                     .attr("d", path )
                     .attr("fill", "none")
                     .attr("stroke-width", this.getStrokeWidth( isOutline) );
@@ -207,8 +205,6 @@ s
 
 
     drawCurve( g, drawingOptions ) {
-
-        const isOutline = drawingOptions.outline;
 
         if ( ( this.lineVisible() ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), drawingOptions );
@@ -226,7 +222,7 @@ s
                     if (    ( this.arc instanceof GeoEllipticalArc )
                          && ( this.arc.useSvgEllipse() ) )
                     {
-                        var p = g.append("ellipse")
+                        const p = g.append("ellipse")
                         .attr("transform", "rotate(" + this.arc.rotationAngle + ")" )
                         .attr("cx", this.arc.center.x )
                         .attr("cy", this.arc.center.y )
@@ -352,7 +348,7 @@ s
     {
         if ( this.memberOf )   
         {
-            var isVisible = false;
+            let isVisible = false;
 
             this.memberOf.forEach( 
                 function(g) { 
@@ -364,13 +360,13 @@ s
                 return false; //We are in 1+ groups, but none were visible.
         }
 
-        if ( options && options.targetPiece )
+        if ( options?.targetPiece )
         {
             //TODO get rid of this now that we have skipDrawing
             if ( options.downloadOption ) //see elsewhere where we use the same control.
                 return false; //Should targetPiece mean we don't display any drawing objects? 
 
-            var isVisible = false;
+            let isVisible = false;
 
             //if this obj doesn't match a detailNode then return false
             //if ( options.targetPiece.nodesByName[ this.data.name ] )

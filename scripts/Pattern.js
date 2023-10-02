@@ -17,9 +17,7 @@ class Pattern {
 
         if ( typeof this.patternData.measurement !== "undefined" )
         {
-            for (var a = 0; a < this.patternData.measurement.length; a++) {
-                var m = this.patternData.measurement[a];
-                var measurementUnits = this.units;
+            for ( const m of this.patternData.measurement ) {
 
                 //TODO test this variable that is a simple value...            
                 if (typeof m.value !== "undefined") 
@@ -50,32 +48,31 @@ class Pattern {
         if ( typeof this.patternData.variable !== "undefined" )
         {
             //Register all variable before calculating their values in to deal with dependencies.
-            for (var a = 0; a < this.patternData.variable.length; a++) {
-                var v = this.patternData.variable[a];
+            for ( const v of this.patternData.variable ) {
                 this.variable[ v.name ] = v;
                 v.isVariable = true;
             }
 
             //Now the variable are all registered, calculate their values.
-            for (var a = 0; a < this.patternData.variable.length; a++) { 
-                var inc = this.patternData.variable[a];   
+            for ( const v of this.patternData.variable ) { 
+                 
                 //TODO test this variable that is a simple value...            
-                if (typeof inc.constant !== "undefined") 
+                if (typeof v.constant !== "undefined") 
                 {
-                    inc.value = function () {
+                    v.value = function () {
                         return this.constant;
                     };
-                    inc.html = function() {
+                    v.html = function() {
                         return this.name + ": " + this.constant + ( this.isOverridden ? " (custom)" : "" ) 
                     };
                 }
                 else
                 {
-                    inc.expression = new Expression( inc.expression, this, null );
-                    inc.value = function () {
+                    v.expression = new Expression( v.expression, this, null );
+                    v.value = function () {
                         return this.expression.value();
                     };
-                    inc.html = function(asFormula) {
+                    v.html = function(asFormula) {
                         return this.name + ": " + this.expression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) ;
                     };
                 }
@@ -88,9 +85,9 @@ class Pattern {
         if ( this.patternData.patternPiece )
             this.patternData.drawing = this.patternData.patternPiece;
 
-        for( var i=0; i<this.patternData.drawing.length; i++ )
+        for( const drawing of this.patternData.drawing )
         {
-            this.drawings.push( new PatternDrawing( this.patternData.drawing[i], this ) );
+            this.drawings.push( new PatternDrawing( drawing, this ) );
         }   
 
         this.analyseDependencies();
@@ -135,9 +132,10 @@ class Pattern {
         
         if ( this.variable )
         {
-            for( var i in this.variable )
+            //nb this.variable is on object with variables as properties, not an array
+            for( const i in this.variable )
             {
-                var v = this.variable[i];
+                const v = this.variable[i];
                 if ( v.expression ) 
                 {
                     if ( typeof v.expression.addDependencies === "function" )
@@ -149,12 +147,10 @@ class Pattern {
             }
         }    
     
-        for( var j=0; j< this.drawings.length; j++ )
+        for( const drawing of this.drawings )
         {
-            var piece = this.drawings[j];
-            for (var a = 0; a < piece.drawingObjects.length; a++) 
+            for ( const dObj of drawing.drawingObjects ) 
             {
-                var dObj = piece.drawingObjects[a];
                 dObj.setDependencies( this.dependencies );
             }
         }
@@ -172,7 +168,8 @@ class Pattern {
     getMeasurement(name) {
         if (typeof name === "object")
             return name;
-        var m = this.measurement[name];
+
+        const m = this.measurement[name];
 
         if ( !m )
             throw "Measurment not found:" + name;
@@ -182,10 +179,9 @@ class Pattern {
 
     getObject( name )
     {
-        for( var j=0; j< this.drawings.length; j++ )
+        for( const drawing of this.drawings )
         {
-            var piece = this.drawings[j];
-            var obj = piece.getObject( name, true /*restrict search to this piece*/ );
+            const obj = drawing.getObject( name, true /*restrict search to this piece*/ );
             if ( obj )
                 return obj;
         }
