@@ -206,8 +206,6 @@ s
 
     drawCurve( g, drawingOptions ) {
 
-        const isOutline = drawingOptions.outline;
-
         if ( ( this.lineVisible() ) && this.curve )
             this.drawPath( g, this.curve.svgPath(), drawingOptions );
     }
@@ -3356,25 +3354,25 @@ class Pattern {
             }
 
             //Now the variable are all registered, calculate their values.
-            for ( const inc of this.patternData.variable ) { 
+            for ( const v of this.patternData.variable ) { 
                  
                 //TODO test this variable that is a simple value...            
-                if (typeof inc.constant !== "undefined") 
+                if (typeof v.constant !== "undefined") 
                 {
-                    inc.value = function () {
+                    v.value = function () {
                         return this.constant;
                     };
-                    inc.html = function() {
+                    v.html = function() {
                         return this.name + ": " + this.constant + ( this.isOverridden ? " (custom)" : "" ) 
                     };
                 }
                 else
                 {
-                    inc.expression = new Expression( inc.expression, this, null );
-                    inc.value = function () {
+                    v.expression = new Expression( v.expression, this, null );
+                    v.value = function () {
                         return this.expression.value();
                     };
-                    inc.html = function(asFormula) {
+                    v.html = function(asFormula) {
                         return this.name + ": " + this.expression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) ;
                     };
                 }
@@ -3434,6 +3432,7 @@ class Pattern {
         
         if ( this.variable )
         {
+            //nb this.variable is on object with variables as properties, not an array
             for( const i in this.variable )
             {
                 const v = this.variable[i];
@@ -3601,9 +3600,8 @@ class Piece {
             }
                 
         if ( this.dataPanels )
-            for( const i in this.dataPanels )
+            for( const panel of this.dataPanels )
             {
-                const panel = this.dataPanels[i];
                 if ( panel.center ) 
                     panel.center = resolve( panel.center, true );
                 if ( panel.topLeft ) 
@@ -3737,8 +3735,6 @@ class Piece {
                         console.log( "Piece: " + this.name + " previous and/or next nodes not on curve:" + n.obj );
                         //This is not an issue, it just means we're not clipping the start/end of the curve
                         //But, we are now dependent on the reverse flag being set correctly as we cannot determine it ourselves. 
-
-                        //let curveSegment;
                         
                         if ( n.reverse )
                             curveSegment = (new GeoSpline( [...dObjCurve.nodeData] )).reverse();
@@ -4600,7 +4596,6 @@ class Piece {
 
             for( const dataItem of panel.dataItem )
             {
-                //var dataItem = panel.dataItem[ j ];
                 let text = dataItem.text;
 
                 if ( text.includes( "%date%" ) )
