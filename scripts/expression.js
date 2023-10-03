@@ -11,7 +11,6 @@ class Expression {
 
     constructor(data, pattern, drawing) {
         this.dataDebug = data;
-        //this.operation = data.operation;// ? data.operation : data.operationType ;
         this.pattern = pattern;
         this.drawing = drawing;
 
@@ -19,9 +18,8 @@ class Expression {
         if (typeof data.parameter !== "undefined") 
         {
             this.params = data.parameter;
-            for (var a = 0; a < this.params.length; a++) {
-                var p = this.params[a];
-                this.params[a] = new Expression(p, pattern, drawing);
+            for ( const a in this.params ) {
+                this.params[a] = new Expression( this.params[a], pattern, drawing);
             }            
         }
 
@@ -53,14 +51,8 @@ class Expression {
                 this.variable = pattern.getMeasurement( data.measurement );
                 this.value = this.measurementValue;
             }
-            else if ( data.variableType === "angleOfLine" )
-            {
-                this.drawingObject1 = drawing.getObject( data.drawingObject1 );
-                this.drawingObject2 = drawing.getObject( data.drawingObject2 );
-                this.function = data.variableType;
-                this.value = this.functionValue;
-            }
-            else if ( data.variableType === "lengthOfLine" )
+            else if (    ( data.variableType === "angleOfLine" )
+                      || ( data.variableType === "lengthOfLine" ) )
             {
                 this.drawingObject1 = drawing.getObject( data.drawingObject1 );
                 this.drawingObject2 = drawing.getObject( data.drawingObject2 );
@@ -70,7 +62,10 @@ class Expression {
             else if (    ( data.variableType === "lengthOfSplinePath" )
                       || ( data.variableType === "lengthOfSpline" )
                       || ( data.variableType === "angle1OfSpline" )
-                      || ( data.variableType === "angle2OfSpline" ) )
+                      || ( data.variableType === "angle2OfSpline" ) 
+                      || ( data.variableType === "lengthOfSplineControl1" ) 
+                      || ( data.variableType === "lengthOfSplineControl2" ) 
+                      )
             {
                 if ( data.drawingObject1 && data.drawingObject2 )
                 {
@@ -205,204 +200,241 @@ class Expression {
 
     functionValue(currentLength) {
 
-        var r; 
+        let r; 
 
-        if ( this.function === "angleOfLine" )
+        switch( this.function )
         {
-            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
-            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
-            var line = new GeoLine( point1, point2 );
-            var deg = line.angleDeg();
-            if ( deg < 0 )
-                deg += 360; 
-            r = deg;
-        }
-        else if ( this.function === "lengthOfLine" )
-        {
-            var point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
-            var point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
-            var line = new GeoLine( point1, point2 );
-            //console.log( "lengthOfLine " + this.drawingObject1.data.name + this.drawingObject2.data.name + " = " + line.getLength() );
-            r = line.getLength();
-        }
-        else if (    ( this.function === "lengthOfSplinePath" )
-                  || ( this.function === "lengthOfSpline" ) )
-        {
-            if ( ! this.drawingObject ) 
+            case "angleOfLine":
             {
-                //how far along the spline is each drawingObject (one is likely at the start or end)
-                //create a copy of the spline with the intersection point added (where along the line if it has multiple nodes? the place where the line length doesn't grow).
-                //https://pomax.github.io/bezierinfo/#splitting
-                return    this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject2.p )
-                        - this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject1.p );
-                //TODO. or we could use, though they amound to a similar thing. 
-               //     return this.splineDrawingObject.curve.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p ).pathLength();
+                const point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+                const point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+                const line = new GeoLine( point1, point2 );
+                let deg = line.angleDeg();
+                if ( deg < 0 )
+                    deg += 360; 
+                r = deg;
+                break;
             }
-
-            if (    ( this.function === "lengthOfSplinePath" )
-                 && ( this.segment ) )
-                r = this.drawingObject.curve.pathLength( this.segment );
-            else 
-                r = this.drawingObject.curve.pathLength();
-        }
-        else if (    ( this.function === "angle1OfSpline" )
-                  || ( this.function === "angle2OfSpline" ) )
-        {
-            var spline;
-            if ( this.drawingObject ) //the simple case, we are looking at the start/end of a path (not a point along the line, but could be a segment)
+            case "lengthOfLine":
             {
-                spline = this.drawingObject.curve;
-                if ( this.segment )
-                    spline = spline.pathSegment( this.segment );
+                const point1 = new GeoPoint( this.drawingObject1.p.x, this.drawingObject1.p.y );
+                const point2 = new GeoPoint( this.drawingObject2.p.x, this.drawingObject2.p.y );
+                const line = new GeoLine( point1, point2 );
+                r = line.getLength();
+                break;
             }
-            else
+            case "lengthOfSplinePath":
+            case "lengthOfSpline":
             {
-                //this.splineDrawingObject is our spl or splpath, and drawingObject1 and drawingObject2 are either its ends, or intersection/pointalong
-                //and we may also have a segment?
-                spline = this.splineDrawingObject.curve;
-                spline = spline.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p );
-            }
-
-            if ( this.function === "angle1OfSpline" )
-                r = spline.nodeData[0].outAngle;
-            else //angle2OfSpline
-                r = spline.nodeData[ spline.nodeData.length-1 ].inAngle;
-        }
-        else if ( this.function === "lengthOfArc" )
-        {
-            if ( this.arcSelection === "wholeArc")
-                r = this.drawingObject.arc.pathLength();
-            else
-            {
-                //this.drawingObject is a cut object
-                var arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
-
-                //where in the arc is this.drawingObject.curve?
-                var radiusToIntersectLine = new GeoLine( arcDrawingObject.center.p, this.drawingObject.p );
-                var angleToIntersectRad = radiusToIntersectLine.angle;
-                if ( this.arcSelection === "beforeArcCut")
+                if ( ! this.drawingObject ) 
                 {
-                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
-                    {
-                        //else elliptical arc: from the arc's start angle to this cut angle. 
-                        const cutArc = arcDrawingObject.arc.clone();
-                        cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
-                        if ( cutArc.angle2 < 0 )
-                            cutArc.angle2 += 360;
-                        r = cutArc.pathLength();
-                    }
-                    else //if arc
-                    {
-                        var arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
-                        var segmentRad = angleToIntersectRad-arcStartAngleRad;                    
-                        var length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+                    //how far along the spline is each drawingObject (one is likely at the start or end)
+                    //create a copy of the spline with the intersection point added (where along the line if it has multiple nodes? the place where the line length doesn't grow).
+                    //https://pomax.github.io/bezierinfo/#splitting
+                    return    this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject2.p )
+                            - this.splineDrawingObject.curve.pathLengthAtPoint( this.drawingObject1.p );
+                    //TODO. or we could use, though they amound to a similar thing. 
+                //     return this.splineDrawingObject.curve.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p ).pathLength();
+                }
 
-                        //console.log( "beforeArcCut " + this.drawingObject.data.name + " = " + length );
-                        r = length;
-                    }                    
-                }
-                else //afterArcCut
-                {
-                    if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
-                    {
-                        const cutArc = arcDrawingObject.arc.clone();
-                        cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
-                        if ( cutArc.angle1 < 0 )
-                            cutArc.angle1 += 360;
-                        r = cutArc.pathLength();
-                    }
-                    else //if arc
-                    {
-                        var arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
-                        var segmentRad = arcEndAngleRad - angleToIntersectRad;
-                        var length = radiusToIntersectLine.length * segmentRad;
-                        r = length;
-                    }
-                }
+                if (    ( this.function === "lengthOfSplinePath" )
+                    && ( this.segment ) )
+                    r = this.drawingObject.curve.pathLength( this.segment );
+                else 
+                    r = this.drawingObject.curve.pathLength();
+
+                break;
             }
-        }    
-        else if ( this.function === "radiusOfArc" )
-        {
-            if ( this.radiusSelection === 1 )
-                r = this.drawingObject.radius1.value();
-            else if ( this.radiusSelection === 2 )
-                r = this.drawingObject.radius2.value();
-            else
-                r = this.drawingObject.radius.value();
+            case "angle1OfSpline":
+            case "angle2OfSpline":
+            case "lengthOfSplineControl1":
+            case "lengthOfSplineControl2":    
+            {
+                let spline;
+                if ( this.drawingObject ) //the simple case, we are looking at the start/end of a path (not a point along the line, but could be a segment)
+                {
+                    spline = this.drawingObject.curve;
+                    if ( this.segment )
+                        spline = spline.pathSegment( this.segment );
+                }
+                else
+                {
+                    //this.splineDrawingObject is our spl or splpath, and drawingObject1 and drawingObject2 are either its ends, or intersection/pointalong
+                    //and we may also have a segment?
+                    spline = this.splineDrawingObject.curve;
+                    spline = spline.splineBetweenPoints( this.drawingObject1.p, this.drawingObject2.p );
+                }
+
+                switch( this.function )
+                {
+                    case "angle1OfSpline":
+                        r = spline.nodeData[0].outAngle;
+                        break;
+                    case "angle2OfSpline":
+                        r = spline.nodeData[ spline.nodeData.length-1 ].inAngle;
+                        break;
+                    case "lengthOfSplineControl1":
+                        r = spline.nodeData[0].outLength;
+                        break;
+                    case "lengthOfSplineControl2":
+                        r = spline.nodeData[ spline.nodeData.length-1 ].inLength;
+                        break;
+                }
+
+                break;
+            }
+            case "lengthOfArc":
+            {
+                if ( this.arcSelection === "wholeArc")
+                    r = this.drawingObject.arc.pathLength();
+                else
+                {
+                    //this.drawingObject is a cut object
+                    const arcDrawingObject = this.drawingObject.curve ? this.drawingObject.curve : this.drawingObject.arc;
+
+                    //where in the arc is this.drawingObject.curve?
+                    const radiusToIntersectLine = new GeoLine( arcDrawingObject.center.p, this.drawingObject.p );
+                    const angleToIntersectRad = radiusToIntersectLine.angle;
+                    if ( this.arcSelection === "beforeArcCut")
+                    {
+                        if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                        {
+                            //else elliptical arc: from the arc's start angle to this cut angle. 
+                            const cutArc = arcDrawingObject.arc.clone();
+                            cutArc.angle2 = radiusToIntersectLine.angleDeg() - cutArc.rotationAngle;
+                            if ( cutArc.angle2 < 0 )
+                                cutArc.angle2 += 360;
+                            r = cutArc.pathLength();
+                        }
+                        else //if arc
+                        {
+                            const arcStartAngleRad = arcDrawingObject.angle1.value() / 360 * 2 * Math.PI;
+                            const segmentRad = angleToIntersectRad-arcStartAngleRad;                    
+                            const length = radiusToIntersectLine.length * segmentRad; //because circumference of a arc is radius * angle (if angle is expressed in radians, where a full circle would be Math.PI*2 )
+                            r = length;
+                        }                    
+                    }
+                    else //afterArcCut
+                    {
+                        if ( arcDrawingObject.arc instanceof GeoEllipticalArc )
+                        {
+                            const cutArc = arcDrawingObject.arc.clone();
+                            cutArc.angle1 = radiusToIntersectLine.angleDeg()  - cutArc.rotationAngle;
+                            if ( cutArc.angle1 < 0 )
+                                cutArc.angle1 += 360;
+                            r = cutArc.pathLength();
+                        }
+                        else //if arc
+                        {
+                            const arcEndAngleRad = arcDrawingObject.angle2.value() / 360 * 2 * Math.PI;
+                            const segmentRad = arcEndAngleRad - angleToIntersectRad;
+                            const length = radiusToIntersectLine.length * segmentRad;
+                            r = length;
+                        }
+                    }
+                }
+                break;
+            }    
+            case "radiusOfArc":
+            {
+                if ( this.radiusSelection === 1 )
+                    r = this.drawingObject.radius1.value();
+                else if ( this.radiusSelection === 2 )
+                    r = this.drawingObject.radius2.value();
+                else
+                    r = this.drawingObject.radius.value();
+
+                break;
+            }
+            case "sqrt":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.sqrt( p1 ); 
+                break;
+            }
+            case "-":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = -p1; 
+                break;
+            }
+            case "min":
+            {
+                const p1 = this.params[0].value(currentLength);
+                const p2 = this.params[1].value(currentLength);
+                r = Math.min( p1, p2 );
+                break;
+            }
+            case "max":
+            {
+                const p1 = this.params[0].value(currentLength);
+                const p2 = this.params[1].value(currentLength);
+                r = Math.max( p1, p2 );
+                break;
+            }
+            case "sin":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.sin( p1 * Math.PI / 180 );
+                break;
+            }
+            case "cos":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.cos( p1 * Math.PI / 180 );
+                break;
+            }
+            case "tan":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.tan( p1 * Math.PI / 180 );
+                break;
+            }
+            case "sinD":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.sin( p1 );
+                break;
+            }
+            case "cosD":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.cos( p1 );
+                break;
+            }
+            case "tanD":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.tan( p1 );
+                break;
+            }
+            case "asin":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.asin( p1 ) * 180 / Math.PI;
+                break;
+            }
+            case "acos":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.acos( p1 ) * 180 / Math.PI;
+                break;
+            }
+            case "atan":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.atan( p1 ) * 180 / Math.PI;
+                break;
+            }        
+            case "abs":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.abs( p1 );
+                break;
+            }        
+            default:
+                throw ("Unknown function: " + this.function );
         }
-        else if  ( this.function === "sqrt" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.sqrt( p1 ); 
-        }
-        else if  ( this.function === "-" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = -p1; 
-        }
-        else if ( this.function === "min" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            var p2 = this.params[1].value(currentLength);
-            r = Math.min( p1, p2 );
-        }
-        else if ( this.function === "max" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            var p2 = this.params[1].value(currentLength);
-            r = Math.max( p1, p2 );
-        }
-        else if ( this.function === "sin" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.sin( p1 * Math.PI / 180 );
-        }
-        else if ( this.function === "cos" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.cos( p1 * Math.PI / 180 );
-        }
-        else if ( this.function === "tan" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.tan( p1 * Math.PI / 180 );
-        }
-        else if ( this.function === "sinD" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.sin( p1 );
-        }
-        else if ( this.function === "cosD" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.cos( p1 );
-        }
-        else if ( this.function === "tanD" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.tan( p1 );
-        }
-        else if ( this.function === "asin" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.asin( p1 ) * 180 / Math.PI;
-        }
-        else if ( this.function === "acos" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.acos( p1 ) * 180 / Math.PI;
-        }
-        else if ( this.function === "atan" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.atan( p1 ) * 180 / Math.PI;
-        }        
-        else if ( this.function === "abs" )
-        {
-            var p1 = this.params[0].value(currentLength);
-            r = Math.abs( p1 );
-        }        
-        else throw ("Unknown function: " + this.function );
 
         if ( r === undefined || Number.isNaN( r ) )
             throw this.function + " - result not a number. ";
@@ -521,69 +553,68 @@ class Expression {
 
         if ( this.function )
         {
-            if ( this.function === "lengthOfLine" )
+            switch ( this.function ) {
+
+            case "lengthOfLine":
                 return this.nameWithPopupValue( "lengthOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
-            if ( this.function === "angleOfLine" )
+            case "angleOfLine":
                 return this.nameWithPopupValue( "angleOfLine(" + this.drawingObject1.ref() + ", " + this.drawingObject2.ref() + ")" );
 
-            if (   ( this.function === "lengthOfSpline" )
-                || ( this.function === "lengthOfSplinePath" ) )
-            {
+            case "lengthOfSpline":
+            case "lengthOfSplinePath":
+            
                 if ( ! this.drawingObject )
                     return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", from:" + this.drawingObject1.ref() + ", to:" + this.drawingObject2.ref() + ")" );
                 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + (this.segment?", segment:" + this.segment:"") + ")" );
-            };
 
-            if (    ( this.function === "angle1OfSpline" )
-                 || ( this.function === "angle2OfSpline" ))
-            {
+            case "angle1OfSpline":
+            case "angle2OfSpline":
+            case "lengthOfSplineControl1":
+            case "lengthOfSplineControl2":
+            
                 if ( ! this.drawingObject )
                     return this.nameWithPopupValue( this.function + "( curve:" + this.splineDrawingObject.ref() + ", at:" +
                                             ((( this.splineDrawingObject.startPoint == this.drawingObject1 ) || ( this.splineDrawingObject.endPoint == this.drawingObject1 ))
                                             ? this.drawingObject2.ref() : this.drawingObject1.ref() ) + ")" );
 
                 return this.nameWithPopupValue( this.function + "(" + this.drawingObject.ref() + ")" );
-            };            
 
-            if ( this.function === "lengthOfArc" )
-            {
+            case "lengthOfArc":
+            
                 if ( ! this.drawingObject )
                     return "lengthOfArc( ??? )";
                 
                 return this.nameWithPopupValue( "lengthOfArc(" + this.arcSelection + " " + this.drawingObject.ref() + ")" );
-            };
 
-            if ( this.function === "radiusOfArc" )
-            {
+            case "radiusOfArc":
+
                 if ( ! this.drawingObject )
                     return "radiusOfArc( ??? )";
                 
                 return this.nameWithPopupValue( "radiusOfArc(" + this.drawingObject.ref() + ( this.radiusSelection ? ", radius-" + this.radiusSelection : "" ) + ")" );
-            };            
-
-            if ( this.function === "-" )
-            {
-                return ( "-(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
-            }       
             
-            if (    ( this.function === "sqrt" )
-                 || ( this.function === "sin" )
-                 || ( this.function === "cos" )
-                 || ( this.function === "tan" ) 
-                 || ( this.function === "sinD" )
-                 || ( this.function === "cosD" )
-                 || ( this.function === "tanD" ) 
-                 || ( this.function === "asin" )
-                 || ( this.function === "acos" )
-                 || ( this.function === "atan" ) 
-                 || ( this.function === "abs" ) )
-            {
+            case "-":
+            
+                return ( "-(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
+            
+            case "sqrt":
+            case "sin":
+            case "cos":
+            case "tan": 
+            case "sinD":
+            case "cosD":
+            case "tanD": 
+            case "asin":
+            case "acos":
+            case "atan": 
+            case "abs":
                 return ( this.function + "(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
-            }
 
-            return "UNKNOWN FUNCTION TYPE" + this.function;
+            default:
+                return "UNKNOWN FUNCTION TYPE" + this.function;
+            }
         }
 
         if ( this.operation === "?" )
