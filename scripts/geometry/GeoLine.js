@@ -90,10 +90,10 @@ class GeoLine {
               ) //not an elliptical
         {
             try { 
-                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
+                const arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
                 return this.intersectArc( arc1 );
             } catch ( e ) {
-                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
+                const arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
                 return this.intersectArc( arc2 );
             }
         }
@@ -102,10 +102,10 @@ class GeoLine {
              && ( arc instanceof GeoArc ) ) //not an elliptical
         {
             try { 
-                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 -360 );
+                const arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 -360 );
                 return this.intersectArc( arc1 );
             } catch ( e ) {
-                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1, 360 );
+                const arc2 = new GeoArc( arc.center, arc.radius, arc.angle1, 360 );
                 return this.intersectArc( arc2 );
             }
         }
@@ -213,12 +213,12 @@ class GeoLine {
             else
             {
                 //choose the first point we get to along the line. 
-                var smallestDistance = undefined;
-                for (var i = 0; i < intersections.points.length; i++) 
+                let smallestDistance;
+                for (const i in intersections.points ) 
                 {
-                    var pi = intersections.points[i];
-                    var p1pi = new GeoLine( this.p1, pi );
-                    //console.log( i + " " + p1pi.length );
+                    const pi = intersections.points[i];
+                    const p1pi = new GeoLine( this.p1, pi );
+                    
                     if (    ( smallestDistance === undefined ) 
                          || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
                               && ( p1pi.length < smallestDistance ) ) )
@@ -230,7 +230,7 @@ class GeoLine {
             }
         }
 
-        var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
+        let intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {
@@ -243,8 +243,8 @@ class GeoLine {
 
     //Return a GeoLine having applied the operationFlip or operationRotate to this GeoLine.
     applyOperation( pointTransformer ) {
-        var p1Transformed = pointTransformer( this.p1 );
-        var p2Transformed =  pointTransformer( this.p2 );
+        const p1Transformed = pointTransformer( this.p1 );
+        const p2Transformed =  pointTransformer( this.p2 );
         return new GeoLine( p1Transformed, p2Transformed );
     }    
 

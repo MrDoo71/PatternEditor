@@ -100,8 +100,8 @@ class GeoEllipticalArc {
 
 
 
-        var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
-        var path = "M" + d2.x + "," + d2.y;
+        const d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
+        let path = "M" + d2.x + "," + d2.y;
         path += " A" + d2.rx + " " + d2.ry;
         path += " " + d2.xAxisAngle;
         path += " " + d2.largeArc + ",0";// + d2.sweep;
@@ -131,16 +131,16 @@ class GeoEllipticalArc {
         //Un-rotate this if it is rotated
         if ( this.rotationAngle !== 0 )
         {
-            var center = this.center;
-            var rotationAngle = this.rotationAngle;
-            var unrotator = function( p ) {
+            const center = this.center;
+            const rotationAngle = this.rotationAngle;
+            const unrotator = function( p ) {
                 return p.rotate( center, -rotationAngle );
             };
-            var unrotatedArc = this.applyOperation( unrotator );
+            const unrotatedArc = this.applyOperation( unrotator );
 
-            var unrotatedSplines = unrotatedArc.asGeoSpline();
+            const unrotatedSplines = unrotatedArc.asGeoSpline();
 
-            var rerotator = function( p ) {
+            const rerotator = function( p ) {
                 return p.rotate( center, rotationAngle );
             };
 

@@ -276,6 +276,7 @@ class Piece {
                     {
                         //we could measure the distance and say its the same point if it is very very close
                         console.log("Distance from previousP to thisP " + line.getLength() );
+//make this tolerance dependent on this.drawing.pattern.units?                        
                         if ( line.getLength() < 0.05 )
                             samePoint = true;
                     }
@@ -695,7 +696,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam line: ", this.name );
+        //console.log("Time to draw seam line: ", this.name );
 
         const p = g.append("path")
                  .attr("id","seam line - " + this.name )
@@ -721,7 +722,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam line labels: ", this.name );
+        //console.log("Time to draw seam line labels: ", this.name );
 
         let labelGroup;
 
@@ -752,7 +753,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam allowance: ", this.name );
+        //console.log("Time to draw seam allowance: ", this.name );
 
         const p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
@@ -872,7 +873,6 @@ class Piece {
                     const tinyBitFurtherAlongLine = fractionAlongLine + 0.0001;
                     const p2 = n.curveSegment.pointAlongPathFraction( tinyBitFurtherAlongLine );
                     const tangentDeg = (new GeoLine( p, p2 )).angleDeg() + 90.0;
-                    //const tangentLine = new GeoLine( p, p.pointAtDistanceAndAngleDeg( sa, tangentDeg ) );
                     const pSA = n.curveSegmentSA === undefined ? undefined : p.pointAtDistanceAndAngleDeg( sa, tangentDeg );
                     drawNotch( p, pSA, tangentDeg, sa );
                 }
@@ -1020,10 +1020,8 @@ class Piece {
         let align = "start";
 
         if ( this.dataPanels )
-        for( let i in this.dataPanels )
+        for( const panel of this.dataPanels )
         {
-            const panel = this.dataPanels[i];
-
             if ( ! panel.dataItem )
                 continue;
 
@@ -1155,11 +1153,9 @@ class Piece {
         for (let a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
 
             const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
-            //var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
-            //var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
          
-            if ( a == this.detailNodes.length )
-                console.log("Closing path");
+            //if ( a == this.detailNodes.length )
+            //    console.log("Closing path");
 
             if ( n.skipPoint )
                 continue;
@@ -1196,7 +1192,7 @@ class Piece {
 
         //TODO actually close the SVG path? 
 
-        console.log( "Path: " + path );
+        //console.log( "Path: " + path );
 
         return path;        
     }

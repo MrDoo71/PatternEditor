@@ -37,15 +37,14 @@ class PatternDrawing {
             return;
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
-        for (var a = 0; a < this.drawingObjects.length; a++) {
+        for ( const a in this.drawingObjects ) {
             var dObj = this.drawingObjects[a];
             dObj = this.newDrawingObj(dObj);
+            
             if (dObj === null)
                 continue;
-            //    throw( "Unknown objectType:" + dObj.objectType );
+            
             this.drawingObjects[a] = dObj; //these are now the objects with methods
-
-
             this.drawing[dObj.data.name] = dObj;
             dObj.drawing = this;    
             this.calculateObj(dObj);
@@ -54,12 +53,12 @@ class PatternDrawing {
         //Take each group in the JSON and convert to an object. 
         //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
-            for (var a = 0; a < this.data.group.length; a++) {
+            for ( const a in this.data.group ) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
         if ( this.data.piece )
-            for (var a = 0; a < this.data.piece.length; a++) {
+            for ( const a in this.data.piece ) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
             }
 
@@ -70,16 +69,16 @@ class PatternDrawing {
         }
         else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
         {
-            for (var a = 0; a < this.pieces.length; a++) {
-                this.pieces[a].adjustBounds( this.visibleBounds, true );
+            for ( const p of this.pieces ) {
+                p.adjustBounds( this.visibleBounds, true );
             }
         }
         else
         {
             //This ensures the seam allowance is included in the bounds
             if (( this.data.piece ) && ( ! options.skipPieces ))
-                for (var a = 0; a < this.data.piece.length; a++) {
-                    this.pieces[a].adjustBounds( this.visibleBounds  );
+                for ( const p of this.data.piece ) {
+                    p.adjustBounds( this.visibleBounds  );
                 }
 
             //Calculate the visible bounds            
@@ -300,7 +299,7 @@ class PatternDrawing {
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
         //const d = this.data; //the original json data
-        fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
 
         if ( followPathDirection )
         {   

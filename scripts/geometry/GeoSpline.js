@@ -12,10 +12,6 @@
 //import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 
 
-
-
-
-
 class GeoSpline {
 
     //nodeData - an array of
@@ -30,10 +26,8 @@ class GeoSpline {
     constructor( nodeData ) {
         this.nodeData = nodeData;
 
-        for( var i in this.nodeData )
+        for( const n of this.nodeData )
         {
-            var n = this.nodeData[i];
-
             if (( ! n.outControlPoint ) && ( typeof n.outAngle === "number" ) && ( typeof n.outLength === "number" ))
             {
                 n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
@@ -63,14 +57,12 @@ class GeoSpline {
 
 
     applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoSpline
-        var nodeData = [];
-        for ( var i=0; i<this.nodeData.length; i++ )
+        const nodeData = [];
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             //Need a control point, not a length and angle. 
-            var inPoint = node.inControlPoint;
-            var outPoint = node.outControlPoint;
+            let inPoint = node.inControlPoint;
+            let outPoint = node.outControlPoint;
             
             if ( ( ! inPoint ) && ( node.inLength !== undefined ) )            
                 inPoint = node.point.pointAtDistanceAndAngleDeg( node.inLength, node.inAngle );
@@ -78,8 +70,8 @@ class GeoSpline {
             if ( ( ! outPoint ) && ( node.outLength !== undefined ) )
                 outPoint = node.point.pointAtDistanceAndAngleDeg( node.outLength, node.outAngle );
     
-            var inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
-            var outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
+            const inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
+            const outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
 
             nodeData.push( {inControlPoint:   inPointTransformed,
                             point:            pointTransformer( node.point ),
@@ -90,9 +82,9 @@ class GeoSpline {
 
 
     svgPath( continuePath ) {
-        var nodeData = this.nodeData;
-        var path = continuePath ? continuePath : "";
-        for ( var i=0; i<nodeData.length; i++ )
+        const nodeData = this.nodeData;
+        let path = continuePath ? continuePath : "";
+        for ( let i=0; i<nodeData.length; i++ )
         {
             if ( i===0 )
             {
@@ -100,10 +92,10 @@ class GeoSpline {
             }
             else
             {
-                var controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
+                const controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
                                                                                              : nodeData[i-1].point.pointAtDistanceAndAngleDeg( nodeData[i-1].outLength, nodeData[i-1].outAngle );
 
-                var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
+                const controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
                                                                                           : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
 
                 path += "C" + Math.round( controlPoint1.x * 1000 ) / 1000 + "," + Math.round( controlPoint1.y * 1000 ) / 1000 +
@@ -118,11 +110,11 @@ class GeoSpline {
 
     reverse()
     {
-        var len = this.nodeData.length;
-        var revNodeData = [len];
-        for ( var i=0; i<len; i++ )
+        const len = this.nodeData.length;
+        const revNodeData = [len];
+        for ( const i in this.nodeData )
         {
-            var node = this.nodeData[i];
+            const node = this.nodeData[i];
 
             revNodeData[len-i-1] =  { inControlPoint:   node.outControlPoint,
                                       point:            node.point,
@@ -145,10 +137,10 @@ class GeoSpline {
         if ( fraction == 1 )
             return this.nodeData[ this.nodeData.length-1 ].point;
 
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var l = path.getTotalLength();
-        var p = path.getPointAtLength( l * fraction );
+        const l = path.getTotalLength();
+        const p = path.getPointAtLength( l * fraction );
 
         //Note, we cannot, even if a single segment use this.getPointForT() because
         //length is not linear with t.
@@ -162,10 +154,10 @@ class GeoSpline {
 
 
     pointAlongPath( length ) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var xy = path.getPointAtLength( length );    
-        var p = new GeoPoint( xy.x, xy.y );
+        const xy = path.getPointAtLength( length );    
+        const p = new GeoPoint( xy.x, xy.y );
 
         //If we want to do the calculation ourselves: 
         //iterate over the segments, adding their length to the total
@@ -184,14 +176,14 @@ class GeoSpline {
         //let's cross check!
         if ( this.nodeData.length === 2 )
         {
-            var t = this.findTForPoint( p );
+            const t = this.findTForPoint( p );
 
             if ( t === undefined )
                 console.log("ERROR: Result of pointAlongPath() is not on path?" );
         }
         else
         {
-            var cut = this.cutAtPoint( p );
+            const cut = this.cutAtPoint( p );
             if ( cut === undefined )
                 console.log("ERROR: Result of pointAlongPath() is not on path?" );
         }
@@ -203,17 +195,17 @@ class GeoSpline {
     pathLengthAtPoint( p ) {
         //do a binary search on the length of the curve to find out best % along curve that is our intersection point. 
 
-        var firstNode = this.nodeData[0].point;
+        const firstNode = this.nodeData[0].point;
         if (    ( p.x === firstNode.x )
              && ( p.y === firstNode.y ) )
              return 0;
 
-        var lastNode = this.nodeData[ this.nodeData.length -1 ].point;
+        const lastNode = this.nodeData[ this.nodeData.length -1 ].point;
         if (    ( p.x === lastNode.x )
              && ( p.y === lastNode.y ) )
              return this.pathLength();
 
-        var cutSpline = this.cutAtPoint( p ).beforePoint;
+        const cutSpline = this.cutAtPoint( p ).beforePoint;
 
         return cutSpline.pathLength();
     }
@@ -232,7 +224,7 @@ class GeoSpline {
         //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
         if ( this.nodeData.length !== 2 )
         {
-            for ( var i=0; i<(this.nodeData.length-1); i++ )
+            for ( let i=0; i<(this.nodeData.length-1); i++ )
             {
                 const node1 = this.nodeData[i];
                 const node2 = this.nodeData[i+1];
@@ -251,10 +243,12 @@ class GeoSpline {
                     continue;
 
                 console.log( "Segment " + i );
-                var t = segment.findTForPoint(p);
+                const t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
             }
+
+            //console.warn("Point not on curve. not in any segments bounding box");    
             return undefined;
         }
 
@@ -267,35 +261,33 @@ class GeoSpline {
         if ( this.nodeData[1].point.equals( p ) )
             return 1.0;        
 
-        var minT = 0.0,
+        let minT = 0.0,
             maxT = 1.0,
-            iter = 0,
-            threshold = this.pathLength() / 1000.0;
+            iter = 0;
 
-        var t;
-        var closestDistance;
-        var closestT;
+        const threshold = 0.0001;//this.pathLength() / 10000.0;
+
+        let t;
+        let closestDistance;
+        let closestT;
         while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
             closestDistance = undefined;
             closestT = null;
-            var interval = (maxT - minT)/4; //0.25 first time around.
+            const interval = (maxT - minT)/4; //0.25 first time around.
             for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
-                var pt = this.getPointForT( t );
-                var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+                const pt = this.getPointForT( t );
+                const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
                 if (( closestDistance === undefined ) || ( d < closestDistance ))
                 {
                     closestT = t;
                     closestDistance = d;
                 }
 
-                if (( d === 0 ) || ( d < threshold )) 
+                if ( d < threshold )
                 {
-                    //console.log( "i:" + iter + " t:" + t + " d:" + d + " FOUND" );
-                    //if (( t > 1 ) || ( t < 0 ))
-                    //    return undefined; //they are probably on another segment
-
+                    //console.log( "findT i:" + iter + " t:" + t + " d:" + d + " FOUND" );
                     return t;
                 }
 
@@ -304,17 +296,22 @@ class GeoSpline {
             maxT = Math.min( closestT + (interval*1.001), 1.0 );
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
-        //console.log("Point not on curve." );
+        
         if (   ( closestT >= 0.0 ) 
             && ( closestT <= 1.0 ) )
-            //&& ( closestDistance < threshold ))
         {
-            var pt = this.getPointForT( closestT );
-            var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+            const pt = this.getPointForT( closestT );
+            const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
 
-            if ( d <= (threshold*2) ) //Stocking top appears to need threshold*2
+            if ( d <= (threshold*10) ) //Stocking top appears to need threshold*2
+            {
+                //console.warn("Iter max reached. interval:" + (maxT-minT) + " d:" + d + " threshold:" + threshold + " closestT"+ closestT + " FOUND");    
                 return t; 
+            }
+
         }
+
+        //console.warn("Point not on curve. interval:" + (maxT-minT) + " d:" + closestDistance + " threshold:" + threshold + " closestT"+ closestT);    
 
         return undefined;
     }
@@ -324,9 +321,9 @@ class GeoSpline {
             return this;
 
         //Create a shorter path
-        var startNode = this.nodeData[ segment -1 ];
-        var endNode = this.nodeData[ segment ];
-        var shorterPath = new GeoSpline( [ startNode, endNode ] );
+        const startNode = this.nodeData[ segment -1 ];
+        const endNode = this.nodeData[ segment ];
+        const shorterPath = new GeoSpline( [ startNode, endNode ] );
         return shorterPath;
     }
 
@@ -342,7 +339,7 @@ class GeoSpline {
             return this.pathSegment(segment).pathLength();
         }
 
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
     }
@@ -350,12 +347,12 @@ class GeoSpline {
 
     splineBetweenPoints( p1, p2 )
     {
-        var t1 = this.findTForPoint(p1);
+        const t1 = this.findTForPoint(p1);
 
         if ( t1 === undefined )
             throw "p1 is not on spline;";
 
-        var t2 = this.findTForPoint(p2);
+        const t2 = this.findTForPoint(p2);
 
         if ( t2 === undefined )
             throw "p2 is not on spline;";
@@ -366,10 +363,10 @@ class GeoSpline {
         if ( t1 > t2 )
         {
             //Swap the parameters
-            var p = p1;
+            const p = p1;
             p1 = p2;
             p2 = p;
-            var t = t1;
+            const t = t1;
             t1 = t2;
             t2 = t;
         }
@@ -378,8 +375,8 @@ class GeoSpline {
              && Number.isInteger( t2 ) )
         {
             //An easy subset of the curve matching the nodes.
-            var nodeSubset = [];
-            for ( var i= t1; i<=t2; i++ )
+            const nodeSubset = [];
+            for ( let i= t1; i<=t2; i++ )
                 nodeSubset.push( this.nodeData[i] );
             return new GeoSpline( nodeSubset );
         } 
@@ -397,12 +394,12 @@ class GeoSpline {
         //1 less than t1, split and add part 2
         //2 greater than t2, split and add part 1;
         try{        
-            var alt = undefined;
+
             if (    ( Math.floor(t1) != Math.floor(t2) )
                  && ( Math.ceil(t1) != Math.ceil(t2) ) ) //e.g. 0.5 and 1 would fail the first test, but match this one. 
             {
-                var nodeSubset = [];
-                for ( var i= Math.floor(t1); i<=Math.ceil(t2); i++ )
+                const nodeSubset = [];
+                for ( let i= Math.floor(t1); i<=Math.ceil(t2); i++ )
                 {
                     if ( i < t1 )
                     {
@@ -430,8 +427,7 @@ class GeoSpline {
                     else
                         nodeSubset.push( this.nodeData[i] )
                 }
-                alt = new GeoSpline( nodeSubset );
-                return alt;
+                return new GeoSpline( nodeSubset );
             }
             
         } catch ( e ) {
@@ -439,16 +435,16 @@ class GeoSpline {
         }
 
         //The older way which works but needs to find t2 afresh
-        var c1 = this.cutAtPoint( p1 );
+        const c1 = this.cutAtPoint( p1 );
 
         if ( c1 === undefined )
             throw "p1 is not on spline;"
 
-        var splineAfterPoint = c1.afterPoint;
-        var c3 = splineAfterPoint.cutAtPoint( p2 );
+        const splineAfterPoint = c1.afterPoint;
+        const c3 = splineAfterPoint.cutAtPoint( p2 );
         if ( ! c3 )
             console.log("c3 not found"); //this is odd because c1 and c2 were found
-        var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
+        const cut2 = c3 ? c3.beforePoint : splineAfterPoint;
         return cut2;
         //Compare the two approaches
         // if ( alt )
@@ -499,21 +495,19 @@ class GeoSpline {
         if ( this.nodeData.length !== 2 )
             throw( "applyDecasteljau only valid for a segment" );
 
-        var points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
-        var strutPoints = [];
+        let points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
+        const strutPoints = [];
 
-        for( var i=0; i<points.length; i++ )
-            strutPoints.push( points[i] );
+        for( const p of points )
+            strutPoints.push( p );
 
         while( points.length > 1 )
         {
-            var newPoints = [];
-            for( var i=0; i<points.length-1; i++ )
+            const newPoints = [];
+            for( let i=0; i<points.length-1; i++ )
             {
-                if ( points[i+1] === undefined  )
-                    console.log("how?");
 
-                var newPoint = new GeoPoint( (1-t) * points[i].x + t * points[i+1].x,
+                const newPoint = new GeoPoint( (1-t) * points[i].x + t * points[i+1].x,
                                              (1-t) * points[i].y + t * points[i+1].y );
                 newPoints.push( newPoint );
                 strutPoints.push( newPoint );
@@ -551,14 +545,14 @@ class GeoSpline {
             }
         }
 
-        var nodesBeforeCut = [],
-            nodesAfterCut = [];
+        const nodesBeforeCut = [],
+              nodesAfterCut = [];
 
-        var cutMade = false;
-        for( var i=0; i<(nodeData.length-0); i++ )
+        let cutMade = false;
+        for( let i=0; i<nodeData.length; i++ )
         {
-            var n1 = nodeData[i];
-            var n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
+            const n1 = nodeData[i];
+            const n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
 
             if ( cutMade ) 
             {
@@ -570,7 +564,7 @@ class GeoSpline {
                 nodesBeforeCut.push( n1 );
                 nodesAfterCut.push( n1 );
             }
-            else if ( n2 !== null &&  n2.point.equals(p) )
+            else if ( n2?.point.equals(p) )
             {
                 cutMade = true;
                 nodesBeforeCut.push( n1 );
@@ -578,12 +572,12 @@ class GeoSpline {
             }
             else if ( n2 != null )
             {
-                var segment = this.pathSegment( i+1 ); //so from i to i+1
+                const segment = this.pathSegment( i+1 ); //so from i to i+1
 
                 const bounds = new Bounds();
                 segment.adjustBounds( bounds );
 
-                var tWithinSegment = bounds.containsPoint(p,0.0002) ? segment.findTForPoint(p) : undefined;
+                const tWithinSegment = bounds.containsPoint(p,0.0002) ? segment.findTForPoint(p) : undefined;
 
                 if ( tWithinSegment === 0 ) //effectively ( n1.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
                 {
@@ -596,11 +590,10 @@ class GeoSpline {
                     cutMade = true;
                     nodesBeforeCut.push( n1 );
                     nodesBeforeCut.push( n2 );
-                    //nodesAfterCut.push( n2 );    
                 }
                 else 
                 {
-                    var pointLiesInThisSegment = tWithinSegment !== undefined;
+                    const pointLiesInThisSegment = tWithinSegment !== undefined;
 
                     if ( ! pointLiesInThisSegment )
                     {
@@ -612,7 +605,7 @@ class GeoSpline {
                     }
                     else //point lies in this segment
                     {
-                        var splits = segment.cutAtT( tWithinSegment );
+                        const splits = segment.cutAtT( tWithinSegment );
 
                         splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
                         splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
@@ -673,13 +666,13 @@ class GeoSpline {
 
         if ( inControlPoint )
         {
-            var inControlPointLine = new GeoLine( point, inControlPoint );
+            const inControlPointLine = new GeoLine( point, inControlPoint );
             c.inAngle = inControlPointLine.angleDeg();
             c.inLength = inControlPointLine.getLength();
         }
         if ( outControlPoint )
         {
-            var outControlPointLine = new GeoLine( point, outControlPoint );    
+            const outControlPointLine = new GeoLine( point, outControlPoint );    
             c.outAngle = outControlPointLine.angleDeg();
             c.outLength = outControlPointLine.getLength();
         }
@@ -693,10 +686,8 @@ class GeoSpline {
         //It won't be a perfectly tight bounding box, but 
         //it should be ample to encompass the spline loosely. 
         
-        for ( var i=0; i<this.nodeData.length; i++ )
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             bounds.adjust( node.point );
 
             if ( node.inControlPoint )
@@ -723,10 +714,10 @@ class GeoSpline {
 
     angleEnteringNode( i )
     {
-        var n = this.nodeData[ i ];
-        var inControlPoint = n.inControlPoint;
-        var outControlPoint = n.outControlPoint;
-        var directionLine;
+        const n = this.nodeData[ i ];
+        let inControlPoint = n.inControlPoint;
+        let outControlPoint = n.outControlPoint;
+        let directionLine;
 
         if ( inControlPoint && inControlPoint.equals( n.point ) )
             inControlPoint = undefined;
@@ -750,10 +741,10 @@ class GeoSpline {
 
     angleLeavingNode( i )
     {
-        var n = this.nodeData[ i ];
-        var inControlPoint = n.inControlPoint;
-        var outControlPoint = n.outControlPoint;
-        var directionLine;
+        const n = this.nodeData[ i ];
+        let inControlPoint = n.inControlPoint;
+        let outControlPoint = n.outControlPoint;
+        let directionLine;
 
         //What if length2 == 0, the node's inControlPoint == point
         if (( i == 0 ) && ( outControlPoint ))
@@ -790,11 +781,9 @@ class GeoSpline {
 
     toString()
     {
-        var s = "GeoSpline[ ";
-        for ( var i=0; i<this.nodeData.length; i++ )
+        let s = "GeoSpline[ ";
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             if ( node.inControlPoint )
                 s += " in:" + node.inControlPoint.toString();
 
@@ -822,27 +811,29 @@ class GeoSpline {
 
     parallelCurve( sa, depth )
     {
+        const debug = false;
+
         if ( sa === 0 )
         {
             return { baseCurve: this, offsetCurve: this }; 
         }
 
-        var newNodeData = [];
-        var len = this.nodeData.length;
-        var prevNode;
-        var prevNewNode;
-        for ( var i=0; i<len; i++ )
+        let newNodeData = [];
+        const len = this.nodeData.length;
+        let prevNode;
+        let prevNewNode;
+        for ( let i=0; i<len; i++ )
         {
-            var node = this.nodeData[i];
+            const node = this.nodeData[i];
 
-            var newNode = {};
+            const newNode = {};
             newNodeData[i] = newNode;
             
-            var tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+            let tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
             if ( tangentAfterDeg > 360 )
                 tangentAfterDeg -= 360;
 
-            var tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately?
+            const tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately?
 
             newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, tangentAfterDeg );
             if ( node.inControlPoint )
@@ -854,19 +845,19 @@ class GeoSpline {
             {
                 //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), 
                 //and scale the length of the control points accordingly. 
-                var distance = (new GeoLine( prevNode.point, node.point )).getLength();
-                var offsetDistance = (new GeoLine( prevNewNode.point, newNode.point )).getLength();
+                const distance = (new GeoLine( prevNode.point, node.point )).getLength();
+                const offsetDistance = (new GeoLine( prevNewNode.point, newNode.point )).getLength();
                 if ( ( distance > 0 ) && ( offsetDistance > 0) && ( distance != offsetDistance ) )
                 {
-                    var extension = offsetDistance / distance; //nb this could be <0 or >0.
+                    const extension = offsetDistance / distance; //nb this could be <0 or >0.
                     if ( Math.abs(extension) > 0.001 )
                     {
                         //console.log( (extension>1 ? "Extending" : "Reducing" ) + " the control point lengths to " + (Math.round( extension * 1000)/10) + "%" );
-                        var outControlPointLine = new GeoLine( prevNewNode.point, prevNewNode.outControlPoint );
+                        const outControlPointLine = new GeoLine( prevNewNode.point, prevNewNode.outControlPoint );
                         prevNewNode.outAngle = outControlPointLine.angleDeg();
                         prevNewNode.outLength = outControlPointLine.getLength() * extension;
                         prevNewNode.outControlPoint = prevNewNode.point.pointAtDistanceAndAngleDeg( prevNewNode.outLength, prevNewNode.outAngle );
-                        var inControlPointLine = new GeoLine( newNode.point, newNode.inControlPoint );
+                        const inControlPointLine = new GeoLine( newNode.point, newNode.inControlPoint );
                         newNode.inAngle = inControlPointLine.angleDeg();
                         newNode.inLength = inControlPointLine.getLength() * extension;                        
                         newNode.inControlPoint = newNode.point.pointAtDistanceAndAngleDeg( newNode.inLength, newNode.inAngle );
@@ -877,38 +868,26 @@ class GeoSpline {
             prevNode = node;
             prevNewNode = newNode;
         }
-        var offsetCurve = new GeoSpline( newNodeData );
+        const offsetCurve = new GeoSpline( newNodeData );
 
-        var newNodeData = [];
-        var c1, c2, c3;
-        for ( var i=1; i<len; i++ )
+        newNodeData = [];
+        let c1, c2, c3;
+        for ( let i=1; i<len; i++ )
         {
-            var prevNode = this.nodeData[i-1];
-            var node = this.nodeData[i];
-            var thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
-            var offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
-            var worstError = 0.0;
-            var errorAtHalfway;
-
-            //var testPositions = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ];
-            // for ( var j in testPositions )
-            // {
-            //     var t = testPositions[j];
-            //     var toffset = thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, t, sa );
-            //     var error = Math.abs( toffset - sa );
-            //     //console.log( " Error at t:" + Math.round(t*100)/100 + " is " + Math.round( error/sa1*100 ) + "% actualError:" + error  );
-            //     if ( error > worstError )
-            //         worstError = error;
-            // }
-            errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
+            const prevNode = this.nodeData[i-1];
+            const node = this.nodeData[i];
+            const thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
+            const offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
+            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
             //console.log( "Worst:" + worstError + " Halfway:" + errorAtHalfway );
 
             //depending upon worstError decide if we're splitting this segment, if we're we can just copy it to the one we're creating
             //if we split any, then recurse. 
-            console.log( "Node " + i + " offset variance at t=0.5 " + Math.round( errorAtHalfway/sa*1000 )/10 + "%" );
+            if ( debug )
+                console.log( "Node " + i + " offset variance at t=0.5 " + Math.round( errorAtHalfway/sa*1000 )/10 + "%" );
+
             if ( ( isNaN( errorAtHalfway ) ) || ( (errorAtHalfway/sa) > 0.005 ) ) //0.01 would be plenty accurate enough for our purposes. 
             {
-                //var splineWithAddedNodes = 
                 const struts = thisSegmentAsGeoSpline.getStrutPoints( 0.5 );
 
                 if ( c3 )
@@ -943,9 +922,10 @@ class GeoSpline {
 
         if ( newNodeData.length > this.nodeData.length )
         {
-            for ( var i=0; i<newNodeData.length; i++ )
+            if ( debug )
+            for ( const i in newNodeData )
             {
-                var node = newNodeData[i];
+                const node = newNodeData[i];
 
                 if (( ! node.inControlPoint ) && ( i>0 ))
                     console.log("Error, node should have inControlPoint");
@@ -955,8 +935,11 @@ class GeoSpline {
 
             }
     
-            var thisWithMoreControlPoints = new GeoSpline( newNodeData );
-            console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
+            const thisWithMoreControlPoints = new GeoSpline( newNodeData );
+
+            if ( debug )
+                console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
+
             depth = depth === undefined ? 1 : depth + 1;
             if ( depth < 20 )
                 return thisWithMoreControlPoints.parallelCurve( sa, depth );
@@ -974,28 +957,28 @@ class GeoSpline {
     //what offset has actually been achieved at t?    
     getOffsetBetweenCurves( otherCurve, t, targetOffset )
     {
-        var pointOnThisCurve = this.getPointForT( t );
+        const pointOnThisCurve = this.getPointForT( t );
 
         //NOTE: we cannot simply do  otherCurve.getPointForT( t ) as the two points won't necessarily be tangential.
 
         //So, calculate a tangent from this curve to intersect the other. 
-        var anotherPointATinyBitFurtherOn = this.getPointForT( t + 0.0001 );
-        var angleAtThisPoint = (new GeoLine(pointOnThisCurve,anotherPointATinyBitFurtherOn )).angleDeg();
-        var tangentAngle = angleAtThisPoint + 90;
+        const anotherPointATinyBitFurtherOn = this.getPointForT( t + 0.0001 );
+        const angleAtThisPoint = (new GeoLine(pointOnThisCurve,anotherPointATinyBitFurtherOn )).angleDeg();
+        let tangentAngle = angleAtThisPoint + 90;
         if ( tangentAngle >= 360 ) 
             tangentAngle -= 360;
-        var tangentLineAtThisPoint = new GeoLine(pointOnThisCurve, pointOnThisCurve.pointAtDistanceAndAngleDeg( 10 * targetOffset, tangentAngle ) );
+        const tangentLineAtThisPoint = new GeoLine(pointOnThisCurve, pointOnThisCurve.pointAtDistanceAndAngleDeg( 10 * targetOffset, tangentAngle ) );
 
-        var otherCurveSI = otherCurve.asShapeInfo();
-        var tangentLineSI = tangentLineAtThisPoint.asShapeInfo();        
+        const otherCurveSI = otherCurve.asShapeInfo();
+        const tangentLineSI = tangentLineAtThisPoint.asShapeInfo();        
 
-        var intersections = Intersection.intersect(otherCurveSI, tangentLineSI);
+        const intersections = Intersection.intersect(otherCurveSI, tangentLineSI);
         if ( intersections.points.length === 0 )
             return undefined;
 
-        var pointOnOtherCurve = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        const pointOnOtherCurve = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
 
-        var line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
+        const line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
         return line.getLength();
     }
 
@@ -1010,7 +993,7 @@ class GeoSpline {
 
         if ( addition instanceof GeoPoint )
         {
-            var p = extendedNodeData.pop();
+            const p = extendedNodeData.pop();
 
             extendedNodeData.push( {inControlPoint:   p.inControlPoint,
                                     point:            p.point,

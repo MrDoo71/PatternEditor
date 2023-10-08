@@ -3801,6 +3801,7 @@ class Piece {
                     {
                         //we could measure the distance and say its the same point if it is very very close
                         console.log("Distance from previousP to thisP " + line.getLength() );
+//make this tolerance dependent on this.drawing.pattern.units?                        
                         if ( line.getLength() < 0.05 )
                             samePoint = true;
                     }
@@ -4220,7 +4221,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam line: ", this.name );
+        //console.log("Time to draw seam line: ", this.name );
 
         const p = g.append("path")
                  .attr("id","seam line - " + this.name )
@@ -4246,7 +4247,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam line labels: ", this.name );
+        //console.log("Time to draw seam line labels: ", this.name );
 
         let labelGroup;
 
@@ -4277,7 +4278,7 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        console.log("Time to draw seam allowance: ", this.name );
+        //console.log("Time to draw seam allowance: ", this.name );
 
         const p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
@@ -4397,7 +4398,6 @@ class Piece {
                     const tinyBitFurtherAlongLine = fractionAlongLine + 0.0001;
                     const p2 = n.curveSegment.pointAlongPathFraction( tinyBitFurtherAlongLine );
                     const tangentDeg = (new GeoLine( p, p2 )).angleDeg() + 90.0;
-                    //const tangentLine = new GeoLine( p, p.pointAtDistanceAndAngleDeg( sa, tangentDeg ) );
                     const pSA = n.curveSegmentSA === undefined ? undefined : p.pointAtDistanceAndAngleDeg( sa, tangentDeg );
                     drawNotch( p, pSA, tangentDeg, sa );
                 }
@@ -4545,10 +4545,8 @@ class Piece {
         let align = "start";
 
         if ( this.dataPanels )
-        for( let i in this.dataPanels )
+        for( const panel of this.dataPanels )
         {
-            const panel = this.dataPanels[i];
-
             if ( ! panel.dataItem )
                 continue;
 
@@ -4680,11 +4678,9 @@ class Piece {
         for (let a = 0; a < this.detailNodes.length+1; a++) {  //+1 because we circle right around to the start
 
             const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
-            //var pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
-            //var nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
          
-            if ( a == this.detailNodes.length )
-                console.log("Closing path");
+            //if ( a == this.detailNodes.length )
+            //    console.log("Closing path");
 
             if ( n.skipPoint )
                 continue;
@@ -4721,7 +4717,7 @@ class Piece {
 
         //TODO actually close the SVG path? 
 
-        console.log( "Path: " + path );
+        //console.log( "Path: " + path );
 
         return path;        
     }
@@ -4808,15 +4804,14 @@ class PatternDrawing {
             return;
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
-        for (var a = 0; a < this.drawingObjects.length; a++) {
+        for ( const a in this.drawingObjects ) {
             var dObj = this.drawingObjects[a];
             dObj = this.newDrawingObj(dObj);
+            
             if (dObj === null)
                 continue;
-            //    throw( "Unknown objectType:" + dObj.objectType );
+            
             this.drawingObjects[a] = dObj; //these are now the objects with methods
-
-
             this.drawing[dObj.data.name] = dObj;
             dObj.drawing = this;    
             this.calculateObj(dObj);
@@ -4825,12 +4820,12 @@ class PatternDrawing {
         //Take each group in the JSON and convert to an object. 
         //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
-            for (var a = 0; a < this.data.group.length; a++) {
+            for ( const a in this.data.group ) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
         if ( this.data.piece )
-            for (var a = 0; a < this.data.piece.length; a++) {
+            for ( const a in this.data.piece ) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
             }
 
@@ -4841,16 +4836,16 @@ class PatternDrawing {
         }
         else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
         {
-            for (var a = 0; a < this.pieces.length; a++) {
-                this.pieces[a].adjustBounds( this.visibleBounds, true );
+            for ( const p of this.pieces ) {
+                p.adjustBounds( this.visibleBounds, true );
             }
         }
         else
         {
             //This ensures the seam allowance is included in the bounds
             if (( this.data.piece ) && ( ! options.skipPieces ))
-                for (var a = 0; a < this.data.piece.length; a++) {
-                    this.pieces[a].adjustBounds( this.visibleBounds  );
+                for ( const p of this.data.piece ) {
+                    p.adjustBounds( this.visibleBounds  );
                 }
 
             //Calculate the visible bounds            
@@ -5071,7 +5066,7 @@ class PatternDrawing {
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
         //const d = this.data; //the original json data
-        fontSize = fontSize !== undefined ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
 
         if ( followPathDirection )
         {   
@@ -5212,8 +5207,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     //Remove the svg if called by graph_kill
     if ( dataAndConfig === null )
     {
-        var parent = document.getElementById(ptarget).parentNode;
-        var child = document.getElementById(ptarget);
+        const parent = document.getElementById(ptarget).parentNode;
+        const child = document.getElementById(ptarget);
         parent.removeChild(child);
         return ;
     } 
@@ -5223,15 +5218,15 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( ! dataAndConfig.options )
         dataAndConfig.options = {};
 
-    var options = dataAndConfig.options;
+    const options = dataAndConfig.options;
 
     options.interactionPrefix = graphOptions.interactionPrefix;
 
-    var targetdiv = d3.select( "#" + ptarget )
+    const targetdiv = d3.select( "#" + ptarget )
                        .append( "div" )
                        .attr( "class", "pattern-editor" );
 
-    var pattern;
+    let pattern;
     try {
         pattern = new Pattern( dataAndConfig, graphOptions );            
     } catch ( e ) {
@@ -5249,7 +5244,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                  && ( dataAndConfig.options.currentSVGhash !== failMessageHash )
                  && ( options.returnID ))
             {
-                var kvpSet = newkvpSet(true);
+                const kvpSet = newkvpSet(true);
                 kvpSet.add( 'svg', failMessage );
                 kvpSet.add( 'id', options.returnID ) ;
                 goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
@@ -5291,7 +5286,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                                 { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
 
     // show menu on right-click.
-    var contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
+    const contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
         if ( d.contextMenu )
         {
             d3.event.preventDefault() ;
@@ -5349,8 +5344,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             this.lastMixedSplit = drawingTableSplit;
         }
 
-        var availableWidth = ( options.maxWidth ) ? options.maxWidth : Math.round( window.innerWidth - 30 -32 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
-        var availableHeight = ( options.maxHeight ) ? options.maxHeight : Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
+        let availableWidth = ( options.maxWidth ) ? options.maxWidth : Math.round( window.innerWidth - 30 -32 ); //30 for resize bar & 32 for scroll bars as not all systems hide scroll bars
+        let availableHeight = ( options.maxHeight ) ? options.maxHeight : Math.round( window.innerHeight - targetdiv.node().getBoundingClientRect().top -60/*controlpanel buttons height*/);
         if ( this.fullWindow )
         {
             availableWidth -= 32; //left & right padding 
@@ -5362,11 +5357,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         this.layoutConfig.tableWidth   = availableWidth * (1-drawingTableSplit);
         this.layoutConfig.drawingHeight = availableHeight;
         this.layoutConfig.tableHeight = availableHeight;
-        console.log("setDrawingTableSplit split:" + drawingTableSplit + " availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
+        //console.log("setDrawingTableSplit split:" + drawingTableSplit + " availableWidth:" + availableWidth + " fullWindow:" + this.fullWindow + " drawingWidth:" + this.layoutConfig.drawingWidth );
         
         if ( this.sizeButtons )
         {
-            var drawingTableSplitMode = this.drawingTableSplitMode;
+            const drawingTableSplitMode = this.drawingTableSplitMode;
             this.sizeButtons.selectAll("button")
                         .data( this.viewOption )
                         //.enter()
@@ -5405,7 +5400,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
 
         console.log("Update server with pan: " + x + "," + y + " & zoom:" + k + " & options");
-        var kvpSet = newkvpSet(true) ;
+        const kvpSet = newkvpSet(true) ;
         kvpSet.add('fullWindow', options.fullWindow ) ;
         kvpSet.add('drawingTableSplit', options.drawingTableSplit ) ;
         kvpSet.add('scale', options.scale ) ;
@@ -5419,7 +5414,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
-    var focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
+    let focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
     {
         if (    ( d3.event) 
              && ( d3.event.originalTarget )
@@ -5444,11 +5439,10 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             selectedObject = d;
         }
 
-        for( var j=0; j< pattern.drawings.length; j++ )
-            for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
+        for( const drawing of pattern.drawings )
+            for( const a of drawing.drawingObjects )
             {
-                var a = pattern.drawings[j].drawingObjects[i];
-                var g = a.drawingSvg;
+                const g = a.drawingSvg;
                 if ( g )
                 {
                     var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
@@ -5466,7 +5460,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 //    console.log("No drawing object for " + a.data.name );
             }        
 
-        var graphdiv = targetdiv;
+        const graphdiv = targetdiv;
         //Remove any existing highlighting in the table. 
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active").removeClass("j-active-2s");
         $(graphdiv.node()).find( ".source" ).removeClass("source");
@@ -5524,7 +5518,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
              } );
 
         //Scroll the table to ensure that d.tableSvg is in view.    
-        if (( scrollTable ) && ( selectedObject ))
+        if ( scrollTable && selectedObject )
         {
             if ( selectedObject.tableSvg )
             {
@@ -5538,11 +5532,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         }
     };
 
-    var controls;
+    let controls;
     if (( ! options.hideControls ) && ( options.interactive ))
         controls = doControls( targetdiv, options, pattern );
 
-    var drawingAndTableDiv = targetdiv.append("div");
+    const drawingAndTableDiv = targetdiv.append("div");
     
     if ( ! options.thumbnail ) 
         drawingAndTableDiv.attr("class", "pattern-main")
@@ -5573,12 +5567,12 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     
     if (( options.returnSVG !== undefined ) && ( options.returnID ))
     {
-        var serializer = new XMLSerializer();
-        var xmlString = serializer.serializeToString( targetdiv.select('svg.pattern-drawing').node());        
-        var thisHash = CryptoJS.MD5( xmlString ).toString();
+        const serializer = new XMLSerializer();
+        const xmlString = serializer.serializeToString( targetdiv.select('svg.pattern-drawing').node());        
+        const thisHash = CryptoJS.MD5( xmlString ).toString();
         if ( options.currentSVGhash !== thisHash )
         {
-            var kvpSet = newkvpSet(true);
+            const kvpSet = newkvpSet(true);
             kvpSet.add( 'svg', xmlString );
             kvpSet.add( 'id', options.returnID ) ;
             goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
@@ -5592,14 +5586,12 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( ! options.interactive )
         return;
 
-    var errorFound = false;
-    var firstDrawingObject;
-    for( var j=0; j< pattern.drawings.length; j++ )
+    let errorFound = false;
+    let firstDrawingObject;
+    for( const drawing of pattern.drawings )
     {
-        for( var i=0; i< pattern.drawings[j].drawingObjects.length; i++ )
+        for( const a of drawing.drawingObjects )
         {
-            var a = pattern.drawings[j].drawingObjects[i];
-
             if (( firstDrawingObject === undefined ) && ( a.isVisible( options ) ))
                 firstDrawingObject = a;
 
@@ -5619,7 +5611,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     {
         if ( options.focus ) 
         {
-            var a = pattern.getObject( options.focus );
+            let a = pattern.getObject( options.focus );
 
             if ( ! a )
             try {
@@ -5643,8 +5635,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
 function doResizeBar( graphdiv, editorOptions )
 {
-    var layoutConfig = editorOptions.layoutConfig;
-    var drag = d3.drag()
+    const layoutConfig = editorOptions.layoutConfig;
+    const drag = d3.drag()
     .on("start", function(r) {
         console.log("dragStart");
         var rg = d3.select(this);        
@@ -5667,8 +5659,7 @@ function doResizeBar( graphdiv, editorOptions )
         doDrawingAndTable();
     });
 
-    var layoutConfig = editorOptions.layoutConfig;
-    var height = layoutConfig.drawingHeight;
+    const height = layoutConfig.drawingHeight;
 
     graphdiv.select( "div.pattern-editor-resize" ).remove();
     graphdiv.selectAll( "div.pattern-editor-resize" )
@@ -5686,7 +5677,7 @@ function doControls( graphdiv, editorOptions, pattern )
     if ( ! editorOptions )
         return;
 
-    var controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
+    const controls = graphdiv.append("div").attr("class", "pattern-editor-controls")
 
     if (    ( editorOptions.viewOption )
          && ( typeof editorOptions.viewOption === "object" ) //allow viewOption="drawing" to prevent display if these buttons
@@ -5711,7 +5702,7 @@ function doControls( graphdiv, editorOptions, pattern )
 
     if ( editorOptions.includeFullPageOption )
     {
-        var toggleFullScreen = function() {
+        const toggleFullScreen = function() {
             d3.event.preventDefault();
 
             if ( graphdiv.classed("full-page") ) 
@@ -5733,17 +5724,18 @@ function doControls( graphdiv, editorOptions, pattern )
             doDrawingAndTable();
         };
 
-        var fullPageButton = controls.append("button")
-                                     .attr("class", "btn btn-default toggle-full-page")
-                                     .html( '<i class="icon-fullscreen" />' )
-                                     .attr("title","Toggle full screen")
-                                     .on("click", toggleFullScreen );
+        //const fullPageButton = 
+        controls.append("button")
+                .attr("class", "btn btn-default toggle-full-page")
+                .html( '<i class="icon-fullscreen" />' )
+                .attr("title","Toggle full screen")
+                .on("click", toggleFullScreen );
     }
 
     //Zoom to fit. 
     if ( editorOptions.allowPanAndZoom )
     {
-        var zoomToFitButton = controls.append("button")
+        const zoomToFitButton = controls.append("button")
                                      .attr("class", "btn btn-default zoom-to-fit")
                                      .html( '<i class="icon-move" />' )
                                      .attr("title","Zoom to fit");
@@ -5752,20 +5744,19 @@ function doControls( graphdiv, editorOptions, pattern )
 
     if ( editorOptions.downloadOption )
     {
-        var downloadFunction = function() {
-            var serializer = new XMLSerializer();
-            var xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
+        const downloadFunction = function() {
+            const serializer = new XMLSerializer();
+            const xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
             //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
-            var imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
+            const imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
             
-
             d3.select(this)
                           .attr( "href-lang", "image/svg+xml; charset=utf-8" )
                           .attr( "href", imgData )
                           .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + " " + pattern.getDate() + ".svg" );
         };
 
-        var downloadLink = controls.append("a")
+        const downloadLink = controls.append("a")
                                      .attr("class", "btn btn-default download")
                                      .html( '<i class="icon-download"></i> Download' )
                                      .attr("title","Download")
@@ -5774,31 +5765,31 @@ function doControls( graphdiv, editorOptions, pattern )
 
     if ( editorOptions.interactive )
     {
-        var toggleShowFormulas = function() {
+        const toggleShowFormulas = function() {
             d3.event.preventDefault();
             editorOptions.showFormulas = ! editorOptions.showFormulas;
             $(this).children("i").attr("class",editorOptions.showFormulas ? "icon-check" : "icon-check-empty" );
             doDrawingAndTable( true /*retain focus*/ );
         };
 
-        var optionMenuToggle = function() {
+        const optionMenuToggle = function() {
             d3.event.preventDefault();
-            var $optionMenu = $( "#optionMenu");
+            const $optionMenu = $( "#optionMenu");
             if ( $optionMenu.is(":visible")) $optionMenu.hide(); else $optionMenu.show();
         }
 
-        var optionMenu = controls.append("div").attr("class","pattern-popup")
+        const optionMenu = controls.append("div").attr("class","pattern-popup")
                                  .append("div").attr("id","optionMenu" ); //.css("display","visible")
         optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
 
         pattern.drawings.forEach( function(pp) {
             if ( ! pp.groups.length )
                 return;
-            var groupOptionsForPiece = optionMenu.append("section");
+            const groupOptionsForPiece = optionMenu.append("section");
             groupOptionsForPiece.append("h2").text( pp.name );
             pp.groups.forEach( function(g) {
-                var groupOption = groupOptionsForPiece.append("div").attr("class","group-option");
-                var toggleGroup = function() {
+                const groupOption = groupOptionsForPiece.append("div").attr("class","group-option");
+                const toggleGroup = function() {
                     g.visible = ! g.visible;  
 
                     if(( typeof goGraph === "function" ) && ( g.update ))
@@ -5841,17 +5832,17 @@ function doControls( graphdiv, editorOptions, pattern )
     {
         initialiseWallpapers( pattern, editorOptions.interactionPrefix );
 
-        var wallpaperMenuToggle = function() {
+        const wallpaperMenuToggle = function() {
             d3.event.preventDefault();
-            var $wallpaperMenu = $( "#wallpapersMenu");
+            const $wallpaperMenu = $( "#wallpapersMenu");
             if ( $wallpaperMenu.is(":visible")) $wallpaperMenu.hide(); else $wallpaperMenu.show();
         }
 
-        var wallpaperMenu = controls.append("div").attr("class","pattern-popup")
+        const wallpaperMenu = controls.append("div").attr("class","pattern-popup")
                                     .append("div").attr("id","wallpapersMenu" ); 
         wallpaperMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", wallpaperMenuToggle );
             
-        var wallpaperListSection = wallpaperMenu.append("section");
+        let wallpaperListSection = wallpaperMenu.append("section");
         wallpaperListSection.append("h2").text( "Wallpapers" );
         wallpaperListSection = wallpaperListSection.append("ul");
         wallpaperListSection.selectAll("li")
@@ -5895,8 +5886,8 @@ function doControls( graphdiv, editorOptions, pattern )
 
 function initialiseWallpapers( pattern, interactionPrefix )
 {    
-    var updateServer = ( typeof goGraph === "function" ) ? function(e) {
-        var kvpSet = newkvpSet(true) ;
+    const updateServer = ( typeof goGraph === "function" ) ? function(e) {
+        const kvpSet = newkvpSet(true) ;
         kvpSet.add('offsetX', this.offsetX ) ;
         kvpSet.add('offsetY', this.offsetY ) ;
         kvpSet.add('scaleX', this.scaleX * defaultScale ) ;
@@ -5906,8 +5897,8 @@ function initialiseWallpapers( pattern, interactionPrefix )
         goGraph(interactionPrefix + ':' + this.update, fakeEvent(), kvpSet) ;    
     } : function(e){};
 
-    var wallpapers = pattern.wallpapers; 
-    for( var i=0; i<wallpapers.length; i++ )
+    const wallpapers = pattern.wallpapers; 
+    for( const i in wallpapers )
     {
         const w = wallpapers[i];
 
@@ -5983,7 +5974,7 @@ function initialiseWallpapers( pattern, interactionPrefix )
                             .data( drawing0.drawingObjects )
                             .enter()
                             .each( function(d,i) {
-                                var gd3 = d3.select( this );                        
+                                const gd3 = d3.select( this );                        
                                 if (   ( typeof d.draw === "function" ) 
                                     && ( ! d.error )
                                     && ( d.isVisible() ) )// editorOptions ) ) )
@@ -6028,7 +6019,7 @@ function initialiseWallpapers( pattern, interactionPrefix )
 function scrollTopTween(scrollTop) 
 {
     return function() {
-        var i = d3.interpolateNumber(this.scrollTop, scrollTop);
+        const i = d3.interpolateNumber(this.scrollTop, scrollTop);
         //console.log( "function1: ", this.scrollTop, " - ", scrollTop );
         return function(t) { 
             this.scrollTop = i(t); 
@@ -6041,8 +6032,8 @@ function scrollTopTween(scrollTop)
 //Do the drawing... (we've added draw() to each drawing object.
 function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
-    var layoutConfig = editorOptions.layoutConfig;
-    var margin = editorOptions.lifeSize ? pattern.getPatternEquivalentOfMM(5) : 0;
+    const layoutConfig = editorOptions.layoutConfig;
+    const margin = editorOptions.lifeSize ? pattern.getPatternEquivalentOfMM(5) : 0;
     if ( margin )
     {
         pattern.visibleBounds.minX = Math.round( ( pattern.visibleBounds.minX - margin ) * 1000 ) / 1000;
@@ -6050,19 +6041,19 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         pattern.visibleBounds.maxX = Math.round( ( pattern.visibleBounds.maxX + margin ) * 1000 ) / 1000;
         pattern.visibleBounds.maxY = Math.round( ( pattern.visibleBounds.maxY + margin ) * 1000 ) / 1000;
     }
-    var width =  layoutConfig.drawingWidth;
-    var height = layoutConfig.drawingHeight;
-    var patternWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
-    var patternHeight = pattern.visibleBounds.maxY - pattern.visibleBounds.minY;
+    const width =  layoutConfig.drawingWidth;
+    const height = layoutConfig.drawingHeight;
+    let patternWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
+    let patternHeight = pattern.visibleBounds.maxY - pattern.visibleBounds.minY;
 
     graphdiv.select("svg.pattern-drawing").remove();
 
-    var svg;
+    let svg;
     
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        var margin = pattern.getPatternEquivalentOfMM(5);
+        const margin = pattern.getPatternEquivalentOfMM(5);
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
@@ -6083,14 +6074,14 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             svg.attr("viewBox", 0 + " " + 0 + " " + (width + ( 2 * margin )) + " " + (height + ( 2 * margin )) );
     }
 
-    var transformGroup1 = svg.append("g"); //This gets used by d3.zoom
+    const transformGroup1 = svg.append("g"); //This gets used by d3.zoom
 
     //console.log( "Pattern bounds minX:" + pattern.bounds.minX + " maxX:" + pattern.bounds.maxX );
     //console.log( "Pattern bounds minY:" + pattern.bounds.minY + " maxY:" + pattern.bounds.maxY );
 
     //transformGroup2 scales from calculated positions in pattern-space (e.g. 10 representing 10cm) to
     //pixels available. So 10cm in a 500px drawing has a scale of 50. 
-    var transformGroup2;
+    let transformGroup2;
 
     if ( editorOptions.lifeSize )// || ( editorOptions.thumbnail ))
     {
@@ -6099,8 +6090,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     }
     else
     {
-        var scaleX = width / patternWidth;                   
-        var scaleY = height / patternHeight;           
+        const scaleX = width / patternWidth;                   
+        const scaleY = height / patternHeight;           
         
         if ( ( isFinite( scaleX ) ) && ( isFinite( scaleY ) ) )
             scale = scaleX > scaleY ? scaleY : scaleX;
@@ -6115,12 +6106,12 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     //console.log( "scale:" + scale + " patternWidth:" + patternWidth + " width:" + width );
 
     //centralise horizontally                            
-    var boundsWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
-    var availableWidth = width / scale;
-    var offSetX = ( availableWidth - boundsWidth ) /2;
+    const boundsWidth = pattern.visibleBounds.maxX - pattern.visibleBounds.minX;
+    const availableWidth = width / scale;
+    const offSetX = ( availableWidth - boundsWidth ) /2;
 
     //transformGroup3 shifts the position of the pattern, so that it is centered in the available space. 
-    var transformGroup3 = transformGroup2.append("g")                               
+    const transformGroup3 = transformGroup2.append("g")                               
                                          .attr("class", editorOptions.thumbnail ? "pattern thumbnail" : "pattern");                           
 
     if ( editorOptions.downloadOption )  
@@ -6131,7 +6122,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     if ( pattern.wallpapers )
     {
-        var wallpaperGroups = transformGroup2.append("g")
+        const wallpaperGroups = transformGroup2.append("g")
                                              .attr("class","wallpapers")
                                              .attr("transform", "translate(" + ( ( -1.0 * ( pattern.visibleBounds.minX - offSetX ) ) ) + "," + ( ( -1.0 * pattern.visibleBounds.minY ) ) + ")")   
                                              .lower();
@@ -6139,15 +6130,13 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     }
      
     //Clicking on an object in the drawing should highlight it in the table.
-    var onclick = ! editorOptions.interactive ? undefined : function(d) {
+    const onclick = ! editorOptions.interactive ? undefined : function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,true);
     };
 
-    for( var j=0; j< pattern.drawings.length; j++ )
+    for( const drawing of pattern.drawings )
     {
-        var drawing = pattern.drawings[j];
-
         var skipDrawing = editorOptions.skipDrawing;
 
         if ( ! skipDrawing )
@@ -6156,7 +6145,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
             const drawObject = function( d, g, drawingOptions ) {
-                var gd3 = d3.select( g );                        
+                const gd3 = d3.select( g );                        
                 if (   ( typeof d.draw === "function" ) 
                     && ( ! d.error )
                     && ( d.isVisible( editorOptions ) ) )
@@ -6173,9 +6162,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 const drawingOptions = { "outline": false, 
                                          "label": (! editorOptions.hideLabels),
                                          "dot":  (! editorOptions.hideLabels) };
-                var a = drawingGroup.selectAll("g");    
-                a = a.data( drawing.drawingObjects );
-                a.enter()
+                drawingGroup.selectAll("g")
+                .data( drawing.drawingObjects )
+                .enter()
                 .append("g")
                 .on("contextmenu", contextMenu)
                 .on("click", onclick)
@@ -6218,82 +6207,82 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
             if ( outlineGroup )
             {
                 outlineGroup.selectAll("g") 
-                .data( drawing.drawingObjects )
-                .enter()
-                .append("g")
-                .on("contextmenu", contextMenu)
-                .on("click", onclick)
-                .on('touchstart', function() { 
-                    this.touchStartTime = new Date(); 
-                    if ( event ) event.preventDefault();
-                })
-                .on('touchend',function(d) {    
-                    const endTime = new Date(); 
-                    const duration = endTime - this.touchStartTime;
-                    if ( event ) event.preventDefault();
-                    if (( duration > 400) || ( selectedObject === d ))
-                    { 
-                        //console.log("long touch, " + (duration) + " milliseconds long");
-                        contextMenu(d);
-                    }
-                    else {
-                        //console.log("regular touch, " + (duration) + " milliseconds long");
-                        onclick(d);
-                    }                    
-                })                
-                .each( function(d,i) {
-                    var g = d3.select( this );
-                    if (   ( typeof d.draw === "function" ) 
-                        && ( ! d.error )
-                        && ( d.isVisible( editorOptions ) ) )
-                    {
-                        d.draw( g, { "outline": true, "label": false, "dot":true } );
-                        d.outlineSvg = g;
-                    }
-                });
+                    .data( drawing.drawingObjects )
+                    .enter()
+                    .append("g")
+                    .on("contextmenu", contextMenu)
+                    .on("click", onclick)
+                    .on('touchstart', function() { 
+                        this.touchStartTime = new Date(); 
+                        if ( event ) event.preventDefault();
+                    })
+                    .on('touchend',function(d) {    
+                        const endTime = new Date(); 
+                        const duration = endTime - this.touchStartTime;
+                        if ( event ) event.preventDefault();
+                        if (( duration > 400) || ( selectedObject === d ))
+                        { 
+                            //console.log("long touch, " + (duration) + " milliseconds long");
+                            contextMenu(d);
+                        }
+                        else {
+                            //console.log("regular touch, " + (duration) + " milliseconds long");
+                            onclick(d);
+                        }                    
+                    })                
+                    .each( function(d,i) {
+                        const g = d3.select( this );
+                        if (   ( typeof d.draw === "function" ) 
+                            && ( ! d.error )
+                            && ( d.isVisible( editorOptions ) ) )
+                        {
+                            d.draw( g, { "outline": true, "label": false, "dot":true } );
+                            d.outlineSvg = g;
+                        }
+                    });
             }
         }
 
         if ( ! editorOptions.skipPieces )
         {
-            var pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
-            var pg = pieceGroup.selectAll("g");    
-            pg = pg.data( drawing.pieces );
-            pg.enter()
-            .append("g")        
+            const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
+            pieceGroup.selectAll("g")
+                      .data( drawing.pieces )
+                      .enter()
+                      .append("g")        
             //.on("contextmenu", contextMenu)
             //.on("click", onclick)
-            .each( function(p,i) {
-                var g = d3.select( this );
-                g.attr("id", p.name );
+              .each( function(p,i) {
+                    const g = d3.select( this );
+                    g.attr("id", p.name );
 
-                //if doing an export of multiple pieces then take the piece.mx/my into account
-                if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
-                {
-                    g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
-                }
-
-                if (   ( typeof p.drawSeamLine === "function" ) )
-                {
-                    const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
-                    const useExportStyles = editorOptions.downloadOption;
-
-                    p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
-                    p.drawSeamLine( g, editorOptions );
-                    p.drawInternalPaths( g, useExportStyles );
-                    if ( ! simplify )
+                    //if doing an export of multiple pieces then take the piece.mx/my into account
+                    if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
                     {
-                        p.drawNotches( g, useExportStyles );
-                        p.drawMarkings( g, useExportStyles );
-                        p.drawLabelsAlongSeamLine( g, useExportStyles );
+                        g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
                     }
-                    p.svg = g;
-                }
-            });
+
+                    if (   ( typeof p.drawSeamLine === "function" ) )
+                    {
+                        const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
+                        const useExportStyles = editorOptions.downloadOption;
+
+                        p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
+                        p.drawSeamLine( g, editorOptions );
+                        p.drawInternalPaths( g, useExportStyles );
+                        if ( ! simplify )
+                        {
+                            p.drawNotches( g, useExportStyles );
+                            p.drawMarkings( g, useExportStyles );
+                            p.drawLabelsAlongSeamLine( g, useExportStyles );
+                        }
+                        p.svg = g;
+                    }
+                });
         }
     };
 
-    var updateServerAfterDelay = function()
+    const updateServerAfterDelay = function()
     {
         //Lets only update the server if we've stopped panning and zooming for > 1s.
         timeOfLastTweak = (new Date()).getTime();
@@ -6306,7 +6295,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                 if ( (new Date()).getTime() >= ( timeOfLastTweak + 500 ) )
                 {
-                    var zt = d3.zoomTransform( transformGroup1.node() );
+                    const zt = d3.zoomTransform( transformGroup1.node() );
                     if ( editorOptions.updateServer )
                         editorOptions.updateServer( zt.k, zt.x, zt.y );
                 }
@@ -6318,10 +6307,10 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         }           
     };
 
-    var zoomed = function() {
+    const zoomed = function() {
         transformGroup1.attr("transform", d3.event.transform);
 
-        var currentScale = d3.zoomTransform( transformGroup1.node() ).k; //do we want to scale 1-10 to 1-5 for fonts and linewidths and dots?
+        const currentScale = d3.zoomTransform( transformGroup1.node() ).k; //do we want to scale 1-10 to 1-5 for fonts and linewidths and dots?
         if (   ( currentScale > (1.1*fontsSizedForScale) )
             || ( currentScale < (0.9*fontsSizedForScale) )
             || ( currentScale == 1 ) || ( currentScale == 8 ) )
@@ -6333,17 +6322,14 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
                     //console.log( "Resize for " + fontsSizedForScale);
 
-                    for( var j=0; j< pattern.drawings.length; j++ )
-                    {
-                        var drawing = pattern.drawings[j];
-                
-                        for( var i=0; i< drawing.drawingObjects.length; i++ )
+                    for( const drawing of pattern.drawings )
+                    {                
+                        for( const a of drawing.drawingObjects )
                         {
-                            var a = drawing.drawingObjects[i];
-                            var g = a.drawingSvg;                            
+                            let g = a.drawingSvg;                            
                             if ( g )
                             {
-                                var labelPosition = a.labelPosition();
+                                const labelPosition = a.labelPosition();
 
                                 if ( labelPosition )
                                 {
@@ -6382,7 +6368,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                             g = a.outlineSvg;
                             if ( g )
                             {
-                                var strokeWidth = a.getStrokeWidth( true );
+                                const strokeWidth = a.getStrokeWidth( true );
 
                                 g.selectAll( "line" )
                                  .attr( "stroke-width", strokeWidth );
@@ -6413,8 +6399,8 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     {
         //TODO just the fontsize needs setting initially to take editorOptions.scale into account
 
-        var transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
-        var zoom = d3.zoom()
+        const transform = d3.zoomIdentity.translate(editorOptions.translateX, editorOptions.translateY).scale(editorOptions.scale);
+        const zoom = d3.zoom()
                     .extent([[0, 0], [width, height]])
                     .scaleExtent([0.5, 32])
                     .on("zoom", zoomed);
@@ -6424,36 +6410,33 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         fontsSizedForScale = editorOptions.scale;
 
         if ( controls) 
-        controls.select( ".zoom-to-fit" ).on( "click", function() 
-        {
-            d3.event.preventDefault();
+            controls.select( ".zoom-to-fit" ).on( "click", function() {
+                d3.event.preventDefault();
 
-            //Reset transformGroup1 to 0,0 and scale 1
-            svg.call(zoom)
-               .call(zoom.transform, d3.zoomIdentity);
-            
-            if ( editorOptions.updateServer )
-            {
-                var zt = d3.zoomTransform( transformGroup1.node() );
-                editorOptions.updateServer( zt.k, zt.x, zt.y );
-            }
-        } );        
+                //Reset transformGroup1 to 0,0 and scale 1
+                svg.call(zoom)
+                .call(zoom.transform, d3.zoomIdentity);
+                
+                if ( editorOptions.updateServer )
+                {
+                    var zt = d3.zoomTransform( transformGroup1.node() );
+                    editorOptions.updateServer( zt.k, zt.x, zt.y );
+                }
+            } );
     }
 }
 
 
 function doWallpapers( wallpaperGroups, pattern )
 {
-    var visibleWallpapers = [];
-    for( var i=0; i<pattern.wallpapers.length; i++ )
+    const visibleWallpapers = [];
+    for( const w of pattern.wallpapers )
     {
-        var w = pattern.wallpapers[i];
-
         if ( ! w.hide )
             visibleWallpapers.push( w );
     }
 
-    var drag = d3.drag()
+    const drag = d3.drag()
         .on("start", function(wallpaper) {
             wallpaper.offsetXdragStart = wallpaper.offsetX - d3.event.x;
             wallpaper.offsetYdragStart = wallpaper.offsetY - d3.event.y;
@@ -6504,18 +6487,18 @@ function doWallpapers( wallpaperGroups, pattern )
     data.exit()
         .remove();
 
-    var resize = d3.drag()
+    const resize = d3.drag()
                     .on("start", function(wallpaper) {
                         wallpaper.offsetXdragStart = d3.event.x - wallpaper.width;
                         wallpaper.offsetYdragStart = d3.event.y - wallpaper.height;
                         //console.log("start offsetXdragStart:" + wallpaper.offsetXdragStart );
                     })
                     .on("end", function(wallpaper) {
-                        var wallpaperG = d3.select(this.parentNode);
-                        var circle = d3.select(this);
-                        var rect = wallpaperG.select("rect");
-                        var ratio = circle.attr("cx") / wallpaper.width;     
-                        var scaleXbefore = wallpaper.scaleX;                   
+                        const wallpaperG = d3.select(this.parentNode);
+                        const circle = d3.select(this);
+                        const rect = wallpaperG.select("rect");
+                        const ratio = circle.attr("cx") / wallpaper.width;     
+                        const scaleXbefore = wallpaper.scaleX;                   
                         wallpaper.scaleX = wallpaper.scaleX * ratio; //fixed aspect?
                         wallpaper.scaleY = wallpaper.scaleY * ratio;
                         //console.log( "cx:" + circle.attr("cx") + " image:" + wallpaper.width + "  ratio:" + ratio + "  scaleXbefore:" + scaleXbefore + "  scaleXNow:" + wallpaper.scaleX );
@@ -6527,22 +6510,22 @@ function doWallpapers( wallpaperGroups, pattern )
                         wallpaper.updateServer( d3.event );
                     } )
                     .on("drag", function(wallpaper) {
-                        var wallpaperG = d3.select(this.parentNode);
-                        var circle = d3.select(this);
-                        var rect = wallpaperG.select("rect");
-                        var newX = d3.event.x - wallpaper.offsetXdragStart;
-                        var newY = d3.event.y - wallpaper.offsetYdragStart;
+                        const wallpaperG = d3.select(this.parentNode);
+                        const circle = d3.select(this);
+                        const rect = wallpaperG.select("rect");
+                        let newX = d3.event.x - wallpaper.offsetXdragStart;
+                        let newY = d3.event.y - wallpaper.offsetYdragStart;
                         //console.log("drag d3.event.x:" + d3.event.x + "  newX:" + newX );
                         if ( true ) //fixed aspect
                         {
-                            var ratioX = newX / wallpaper.width;
-                            var ratioY = newY / wallpaper.height;
-                            var ratio = (ratioX+ratioY)/2.0;
+                            const ratioX = newX / wallpaper.width;
+                            const ratioY = newY / wallpaper.height;
+                            const ratio = (ratioX+ratioY)/2.0;
                             newX = ratio * wallpaper.width;
                             newY = ratio * wallpaper.height;
                         }
                         circle.attr("cx", newX )
-                                .attr("cy", newY );
+                              .attr("cy", newY );
                         rect.attr("width", newX )
                             .attr("height", newY );
                     });
@@ -6584,32 +6567,31 @@ function doWallpapers( wallpaperGroups, pattern )
                             g.on(".drag", null );
                         }
                     } );
-    //resize(wallpaperGroups.selectAll("g > circle"));            
 }
 
 
 function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
-    var drawing1 = pattern.drawings[0];
-    var layoutConfig = editorOptions.layoutConfig;
-    var margin = layoutConfig.tableMargin;//25; 
-    var width =  layoutConfig.tableWidth;//400;
-    var height = layoutConfig.tableHeight;//600;
-    var minItemHeight = 30; //should not be required
-    var itemMargin = 8;
-    var itemWidth = width *3/4;
-    var ypos = 0;
-    var seq = 1; //TODO get these in the XML as data?
-    var asFormula = editorOptions.showFormulas; 
+    const drawing1 = pattern.drawings[0];
+    const layoutConfig = editorOptions.layoutConfig;
+    const margin = layoutConfig.tableMargin;//25; 
+    const width =  layoutConfig.tableWidth;//400;
+    const height = layoutConfig.tableHeight;//600;
+    const minItemHeight = 30; //should not be required
+    const itemMargin = 8;
+    const itemWidth = width *3/4;
+    let ypos = 0;
+    let seq = 1; //TODO get these in the XML as data?
+    const asFormula = editorOptions.showFormulas; 
 
-    var onclick = function(d) {
+    const onclick = function(d) {
         d3.event.preventDefault();
         focusDrawingObject(d,false);
     }
 
     graphdiv.select("div.pattern-table").remove();
 
-    var combinedObjects = [];
+    let combinedObjects = [];
 
     //TODO ? a mode where we don't include measurements and variables in the table.
     if ( pattern.measurement )
@@ -6624,34 +6606,34 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             combinedObjects.push( pattern.variable[i] );
     }
 
-    for( var j=0; j< pattern.drawings.length; j++ )
+    for( const drawing of pattern.drawings )
     {
-        combinedObjects = combinedObjects.concat( pattern.drawings[j].drawingObjects);
+        combinedObjects = combinedObjects.concat( drawing.drawingObjects);
     }
 
     const sanitiseForHTML = function ( s ) {
             return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
-    var svg = graphdiv.append("div")
-                      .attr("class", "pattern-table")
-                      .style( "height", height +"px" )    
-                      .append("svg")
-                      .attr("width", width + ( 2 * margin ) )
-                      .attr("height", minItemHeight * combinedObjects.length );    
+    const svg = graphdiv.append("div")
+                        .attr("class", "pattern-table")
+                        .style( "height", height +"px" )    
+                        .append("svg")
+                        .attr("width", width + ( 2 * margin ) )
+                        .attr("height", minItemHeight * combinedObjects.length );    
 
-    var a = svg.selectAll("g");
-    a = a.data( combinedObjects );
-    a.enter()        
-    .append("g")
-    .each( function(d,i) {
+    svg.selectAll("g")
+       .data( combinedObjects )
+       .enter()        
+       .append("g")
+       .each( function(d,i) {
 
-        var divHeight = function(that) {
+        const divHeight = function(that) {
 
             //this - the dom svg element
             //that - the data object
 
-            var h = $(this).find( "div.outer" ).height();
+            const h = $(this).find( "div.outer" ).height();
             
             if ( h < minItemHeight )
                 return minItemHeight;
@@ -6659,9 +6641,9 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             return h;
         };
 
-        var g = d3.select( this );
+        const g = d3.select( this );
 
-        var classes = "j-item";
+        let classes = "j-item";
 
         if ( d.isMeasurement )
             classes += " j-measurement";
@@ -6674,14 +6656,14 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         d.tableSvgX = itemWidth;
         d.tableSvgY = ypos + ( 0.5 * minItemHeight );
 
-        var fo = g.append( "foreignObject" )
-        .attr( "x", 0 )
-        .attr( "y", function (d) { 
-             return ypos;
-         } )
-         .attr( "width", itemWidth  );
+        const fo = g.append( "foreignObject" )
+                    .attr( "x", 0 )
+                    .attr( "y", function (d) { 
+                                return ypos;
+                              } )
+                    .attr( "width", itemWidth  );
 
-        var html;
+        let html;
         try {
             html = d.html( asFormula );
             if ( d.data && d.data.comments )
@@ -6702,7 +6684,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         g.attr( "class", classes ) ;    
 
-         var div = fo.append( "xhtml:div" )
+        const div = fo.append( "xhtml:div" )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
@@ -6712,9 +6694,8 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         fo.attr( "height", divHeight );
 
         g.attr( "height", divHeight )
-        .attr( "y", function (d) { 
-                                    //Get the height of the foreignObject.
-                                    var h = this.childNodes[0].getBoundingClientRect().height;
+         .attr( "y", function (d) { //Get the height of the foreignObject.
+                                    const h = this.childNodes[0].getBoundingClientRect().height;
                                     ypos += h + itemMargin; 
                                     //console.log("y: " + ypos );
                                     return ypos } )
@@ -6754,21 +6735,21 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
 
 function drawLinks( pattern, linkScale ) {
-    var linkData = pattern.dependencies.dependencies;
+    const linkData = pattern.dependencies.dependencies;
     
     linksGroup.selectAll("path.link") //rename .link to .dependency
                     .data(linkData)
                     .enter().append("path")
                     .attr("class", "link" )
                     .attr("d", function( link ) {
-                        var x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
-                            x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
+                        const x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
+                              x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
                     
-                        var dx = x0 - x1,
-                            dy = y0 - y1,
-                            l = Math.log( Math.abs(dy /30 ) ) * linkScale;
+                        const dx = x0 - x1,
+                              dy = y0 - y1,
+                              l = Math.log( Math.abs(dy /30 ) ) * linkScale;
                     
-                        var path = d3.path();
+                        const path = d3.path();
                         path.moveTo( x0, y0 );
                         path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
                         return path;                      
@@ -6780,18 +6761,19 @@ function drawLinks( pattern, linkScale ) {
  * Curve that connects items in the table.
  */
 function curve(link) {
-    var x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
-        x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
+    const x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
+          x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
 
-    var dx = x0 - x1,
-        dy = y0 - y1,
-        l = Math.log( Math.abs(dy /30 ) ) * 50;
+    const dx = x0 - x1,
+          dy = y0 - y1,
+          l = Math.log( Math.abs(dy /30 ) ) * 50;
 
-    var path = d3.path();
+    const path = d3.path();
     path.moveTo( x0, y0 );
     path.bezierCurveTo( x0+l , y0, x1+l, y1, x1, y1 );
     return path;                      
 }
+
 
 //TODO move to kinodbglue
 function newkvpSet(noRefresh)
@@ -6808,10 +6790,8 @@ function newkvpSet(noRefresh)
     {
         var r = '' ;
 
-        for (var i = 0 ; i < this.kvps.length ; i++)
-        {
-            r += '&' + p + this.kvps[i].k + '=' + encodeURIComponent( this.kvps[i].v );
-        }
+        for ( const kvp of this.kvps )
+            r += '&' + p + kvp.k + '=' + encodeURIComponent( kvp.v );
 
         return r ;
     } ;
@@ -6825,7 +6805,7 @@ function newkvpSet(noRefresh)
 //TODO move to kinodbglue
 function fakeEvent(location, x, y)
 {
-    var pXY = {x: 0, y: 0} ;
+    let pXY = {x: 0, y: 0} ;
     
     if (location !== undefined)
     {
@@ -7508,7 +7488,7 @@ class Expression {
                 t += "(";
 
             var first = true;
-            for ( var p in this.params )
+            for ( const p of this.params )
             {
                 if ( ! first )
                 {
@@ -7517,7 +7497,7 @@ class Expression {
                     else
                         t += ",";
                 }
-                t += this.params[p].html( asFormula, currentLength, precedence );
+                t += p.html( asFormula, currentLength, precedence );
                 first = false;
             }
 
@@ -7555,8 +7535,7 @@ class Expression {
         //recurse into the expression parameters.
         if ( this.params )
         {       
-            for (var a = 0; a < this.params.length; a++) {
-                var p = this.params[a];
+            for ( const p of this.params ) {
                 p.addDependencies( source, dependencies );
             }
         }
@@ -8021,8 +8000,8 @@ class GeoEllipticalArc {
 
 
 
-        var d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
-        var path = "M" + d2.x + "," + d2.y;
+        const d2 = this.centeredToSVG( this.center.x, this.center.y, this.radius1, this.radius2, 360-(this.angle1), -(this.angle2 - this.angle1), -this.rotationAngle );
+        let path = "M" + d2.x + "," + d2.y;
         path += " A" + d2.rx + " " + d2.ry;
         path += " " + d2.xAxisAngle;
         path += " " + d2.largeArc + ",0";// + d2.sweep;
@@ -8052,16 +8031,16 @@ class GeoEllipticalArc {
         //Un-rotate this if it is rotated
         if ( this.rotationAngle !== 0 )
         {
-            var center = this.center;
-            var rotationAngle = this.rotationAngle;
-            var unrotator = function( p ) {
+            const center = this.center;
+            const rotationAngle = this.rotationAngle;
+            const unrotator = function( p ) {
                 return p.rotate( center, -rotationAngle );
             };
-            var unrotatedArc = this.applyOperation( unrotator );
+            const unrotatedArc = this.applyOperation( unrotator );
 
-            var unrotatedSplines = unrotatedArc.asGeoSpline();
+            const unrotatedSplines = unrotatedArc.asGeoSpline();
 
-            var rerotator = function( p ) {
+            const rerotator = function( p ) {
                 return p.rotate( center, rotationAngle );
             };
 
@@ -8292,10 +8271,10 @@ class GeoLine {
               ) //not an elliptical
         {
             try { 
-                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
+                const arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 );
                 return this.intersectArc( arc1 );
             } catch ( e ) {
-                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
+                const arc2 = new GeoArc( arc.center, arc.radius, arc.angle1 + 360, 360 );
                 return this.intersectArc( arc2 );
             }
         }
@@ -8304,10 +8283,10 @@ class GeoLine {
              && ( arc instanceof GeoArc ) ) //not an elliptical
         {
             try { 
-                var arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 -360 );
+                const arc1 = new GeoArc( arc.center, arc.radius, 0, arc.angle2 -360 );
                 return this.intersectArc( arc1 );
             } catch ( e ) {
-                var arc2 = new GeoArc( arc.center, arc.radius, arc.angle1, 360 );
+                const arc2 = new GeoArc( arc.center, arc.radius, arc.angle1, 360 );
                 return this.intersectArc( arc2 );
             }
         }
@@ -8415,12 +8394,12 @@ class GeoLine {
             else
             {
                 //choose the first point we get to along the line. 
-                var smallestDistance = undefined;
-                for (var i = 0; i < intersections.points.length; i++) 
+                let smallestDistance;
+                for (const i in intersections.points ) 
                 {
-                    var pi = intersections.points[i];
-                    var p1pi = new GeoLine( this.p1, pi );
-                    //console.log( i + " " + p1pi.length );
+                    const pi = intersections.points[i];
+                    const p1pi = new GeoLine( this.p1, pi );
+                    
                     if (    ( smallestDistance === undefined ) 
                          || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
                               && ( p1pi.length < smallestDistance ) ) )
@@ -8432,7 +8411,7 @@ class GeoLine {
             }
         }
 
-        var intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
+        let intersect = new GeoPoint( intersections.points[whichPoint].x, intersections.points[whichPoint].y );
 
         if (( arc instanceof GeoEllipticalArc ) && ( arc.rotationAngle !== 0 ))
         {
@@ -8445,8 +8424,8 @@ class GeoLine {
 
     //Return a GeoLine having applied the operationFlip or operationRotate to this GeoLine.
     applyOperation( pointTransformer ) {
-        var p1Transformed = pointTransformer( this.p1 );
-        var p2Transformed =  pointTransformer( this.p2 );
+        const p1Transformed = pointTransformer( this.p1 );
+        const p2Transformed =  pointTransformer( this.p2 );
         return new GeoLine( p1Transformed, p2Transformed );
     }    
 
@@ -8567,15 +8546,15 @@ class GeoPoint {
         const dx = Math.abs( this.x - p.x );
         const dy = Math.abs( this.y - p.y );
         
-        if (( dx < 0.001 ) && ( dy < 0.001 ))
+        if (( dx < 0.01 ) && ( dy < 0.01 ))
         {
             if (( dx < 0.001 ) && ( dy < 0.001 ))
             {
                 //console.warn("EQUALS - CLOSE! " + Math.max( dx, dy ) + " MATCHED");
                 return true;
             }
-
-            //console.warn("EQUALS - CLOSE! " + Math.max( dx, dy ) + " X");
+            //else
+            //    console.warn("EQUALS - CLOSE! " + Math.max( dx, dy ) + " X");
         }
 
         return this.x === p.x && this.y === p.y;
@@ -8603,10 +8582,6 @@ class GeoPoint {
 //import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 
 
-
-
-
-
 class GeoSpline {
 
     //nodeData - an array of
@@ -8621,10 +8596,8 @@ class GeoSpline {
     constructor( nodeData ) {
         this.nodeData = nodeData;
 
-        for( var i in this.nodeData )
+        for( const n of this.nodeData )
         {
-            var n = this.nodeData[i];
-
             if (( ! n.outControlPoint ) && ( typeof n.outAngle === "number" ) && ( typeof n.outLength === "number" ))
             {
                 n.outControlPoint = n.point.pointAtDistanceAndAngleDeg( n.outLength, n.outAngle );
@@ -8654,14 +8627,12 @@ class GeoSpline {
 
 
     applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoSpline
-        var nodeData = [];
-        for ( var i=0; i<this.nodeData.length; i++ )
+        const nodeData = [];
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             //Need a control point, not a length and angle. 
-            var inPoint = node.inControlPoint;
-            var outPoint = node.outControlPoint;
+            let inPoint = node.inControlPoint;
+            let outPoint = node.outControlPoint;
             
             if ( ( ! inPoint ) && ( node.inLength !== undefined ) )            
                 inPoint = node.point.pointAtDistanceAndAngleDeg( node.inLength, node.inAngle );
@@ -8669,8 +8640,8 @@ class GeoSpline {
             if ( ( ! outPoint ) && ( node.outLength !== undefined ) )
                 outPoint = node.point.pointAtDistanceAndAngleDeg( node.outLength, node.outAngle );
     
-            var inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
-            var outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
+            const inPointTransformed = inPoint === undefined ? undefined : pointTransformer( inPoint );
+            const outPointTransformed =  outPoint === undefined ? undefined : pointTransformer( outPoint );
 
             nodeData.push( {inControlPoint:   inPointTransformed,
                             point:            pointTransformer( node.point ),
@@ -8681,9 +8652,9 @@ class GeoSpline {
 
 
     svgPath( continuePath ) {
-        var nodeData = this.nodeData;
-        var path = continuePath ? continuePath : "";
-        for ( var i=0; i<nodeData.length; i++ )
+        const nodeData = this.nodeData;
+        let path = continuePath ? continuePath : "";
+        for ( let i=0; i<nodeData.length; i++ )
         {
             if ( i===0 )
             {
@@ -8691,10 +8662,10 @@ class GeoSpline {
             }
             else
             {
-                var controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
+                const controlPoint1 = ( typeof nodeData[i-1].outControlPoint !== "undefined" ) ? nodeData[i-1].outControlPoint
                                                                                              : nodeData[i-1].point.pointAtDistanceAndAngleDeg( nodeData[i-1].outLength, nodeData[i-1].outAngle );
 
-                var controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
+                const controlPoint2 = ( typeof nodeData[i].inControlPoint !== "undefined" ) ? nodeData[i].inControlPoint
                                                                                           : nodeData[i].point.pointAtDistanceAndAngleDeg( nodeData[i].inLength, nodeData[i].inAngle );
 
                 path += "C" + Math.round( controlPoint1.x * 1000 ) / 1000 + "," + Math.round( controlPoint1.y * 1000 ) / 1000 +
@@ -8709,11 +8680,11 @@ class GeoSpline {
 
     reverse()
     {
-        var len = this.nodeData.length;
-        var revNodeData = [len];
-        for ( var i=0; i<len; i++ )
+        const len = this.nodeData.length;
+        const revNodeData = [len];
+        for ( const i in this.nodeData )
         {
-            var node = this.nodeData[i];
+            const node = this.nodeData[i];
 
             revNodeData[len-i-1] =  { inControlPoint:   node.outControlPoint,
                                       point:            node.point,
@@ -8736,10 +8707,10 @@ class GeoSpline {
         if ( fraction == 1 )
             return this.nodeData[ this.nodeData.length-1 ].point;
 
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var l = path.getTotalLength();
-        var p = path.getPointAtLength( l * fraction );
+        const l = path.getTotalLength();
+        const p = path.getPointAtLength( l * fraction );
 
         //Note, we cannot, even if a single segment use this.getPointForT() because
         //length is not linear with t.
@@ -8753,10 +8724,10 @@ class GeoSpline {
 
 
     pointAlongPath( length ) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var xy = path.getPointAtLength( length );    
-        var p = new GeoPoint( xy.x, xy.y );
+        const xy = path.getPointAtLength( length );    
+        const p = new GeoPoint( xy.x, xy.y );
 
         //If we want to do the calculation ourselves: 
         //iterate over the segments, adding their length to the total
@@ -8775,14 +8746,14 @@ class GeoSpline {
         //let's cross check!
         if ( this.nodeData.length === 2 )
         {
-            var t = this.findTForPoint( p );
+            const t = this.findTForPoint( p );
 
             if ( t === undefined )
                 console.log("ERROR: Result of pointAlongPath() is not on path?" );
         }
         else
         {
-            var cut = this.cutAtPoint( p );
+            const cut = this.cutAtPoint( p );
             if ( cut === undefined )
                 console.log("ERROR: Result of pointAlongPath() is not on path?" );
         }
@@ -8794,17 +8765,17 @@ class GeoSpline {
     pathLengthAtPoint( p ) {
         //do a binary search on the length of the curve to find out best % along curve that is our intersection point. 
 
-        var firstNode = this.nodeData[0].point;
+        const firstNode = this.nodeData[0].point;
         if (    ( p.x === firstNode.x )
              && ( p.y === firstNode.y ) )
              return 0;
 
-        var lastNode = this.nodeData[ this.nodeData.length -1 ].point;
+        const lastNode = this.nodeData[ this.nodeData.length -1 ].point;
         if (    ( p.x === lastNode.x )
              && ( p.y === lastNode.y ) )
              return this.pathLength();
 
-        var cutSpline = this.cutAtPoint( p ).beforePoint;
+        const cutSpline = this.cutAtPoint( p ).beforePoint;
 
         return cutSpline.pathLength();
     }
@@ -8823,7 +8794,7 @@ class GeoSpline {
         //the polygon nodeDate[0].point, nodeData[0].outControlPoint, nodeData[1].inControlPoint, nodeData[1].point. 
         if ( this.nodeData.length !== 2 )
         {
-            for ( var i=0; i<(this.nodeData.length-1); i++ )
+            for ( let i=0; i<(this.nodeData.length-1); i++ )
             {
                 const node1 = this.nodeData[i];
                 const node2 = this.nodeData[i+1];
@@ -8842,10 +8813,12 @@ class GeoSpline {
                     continue;
 
                 console.log( "Segment " + i );
-                var t = segment.findTForPoint(p);
+                const t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
             }
+
+            //console.warn("Point not on curve. not in any segments bounding box");    
             return undefined;
         }
 
@@ -8858,35 +8831,33 @@ class GeoSpline {
         if ( this.nodeData[1].point.equals( p ) )
             return 1.0;        
 
-        var minT = 0.0,
+        let minT = 0.0,
             maxT = 1.0,
-            iter = 0,
-            threshold = this.pathLength() / 1000.0;
+            iter = 0;
 
-        var t;
-        var closestDistance;
-        var closestT;
+        const threshold = 0.0001;//this.pathLength() / 10000.0;
+
+        let t;
+        let closestDistance;
+        let closestT;
         while( iter < 20 ) { //after 20 iterations the interval will be tiny
             iter++;
             closestDistance = undefined;
             closestT = null;
-            var interval = (maxT - minT)/4; //0.25 first time around.
+            const interval = (maxT - minT)/4; //0.25 first time around.
             for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
-                var pt = this.getPointForT( t );
-                var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+                const pt = this.getPointForT( t );
+                const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
                 if (( closestDistance === undefined ) || ( d < closestDistance ))
                 {
                     closestT = t;
                     closestDistance = d;
                 }
 
-                if (( d === 0 ) || ( d < threshold )) 
+                if ( d < threshold )
                 {
-                    //console.log( "i:" + iter + " t:" + t + " d:" + d + " FOUND" );
-                    //if (( t > 1 ) || ( t < 0 ))
-                    //    return undefined; //they are probably on another segment
-
+                    //console.log( "findT i:" + iter + " t:" + t + " d:" + d + " FOUND" );
                     return t;
                 }
 
@@ -8895,17 +8866,22 @@ class GeoSpline {
             maxT = Math.min( closestT + (interval*1.001), 1.0 );
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
-        //console.log("Point not on curve." );
+        
         if (   ( closestT >= 0.0 ) 
             && ( closestT <= 1.0 ) )
-            //&& ( closestDistance < threshold ))
         {
-            var pt = this.getPointForT( closestT );
-            var d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+            const pt = this.getPointForT( closestT );
+            const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
 
-            if ( d <= (threshold*2) ) //Stocking top appears to need threshold*2
+            if ( d <= (threshold*10) ) //Stocking top appears to need threshold*2
+            {
+                //console.warn("Iter max reached. interval:" + (maxT-minT) + " d:" + d + " threshold:" + threshold + " closestT"+ closestT + " FOUND");    
                 return t; 
+            }
+
         }
+
+        //console.warn("Point not on curve. interval:" + (maxT-minT) + " d:" + closestDistance + " threshold:" + threshold + " closestT"+ closestT);    
 
         return undefined;
     }
@@ -8915,9 +8891,9 @@ class GeoSpline {
             return this;
 
         //Create a shorter path
-        var startNode = this.nodeData[ segment -1 ];
-        var endNode = this.nodeData[ segment ];
-        var shorterPath = new GeoSpline( [ startNode, endNode ] );
+        const startNode = this.nodeData[ segment -1 ];
+        const endNode = this.nodeData[ segment ];
+        const shorterPath = new GeoSpline( [ startNode, endNode ] );
         return shorterPath;
     }
 
@@ -8933,7 +8909,7 @@ class GeoSpline {
             return this.pathSegment(segment).pathLength();
         }
 
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
     }
@@ -8941,12 +8917,12 @@ class GeoSpline {
 
     splineBetweenPoints( p1, p2 )
     {
-        var t1 = this.findTForPoint(p1);
+        const t1 = this.findTForPoint(p1);
 
         if ( t1 === undefined )
             throw "p1 is not on spline;";
 
-        var t2 = this.findTForPoint(p2);
+        const t2 = this.findTForPoint(p2);
 
         if ( t2 === undefined )
             throw "p2 is not on spline;";
@@ -8957,10 +8933,10 @@ class GeoSpline {
         if ( t1 > t2 )
         {
             //Swap the parameters
-            var p = p1;
+            const p = p1;
             p1 = p2;
             p2 = p;
-            var t = t1;
+            const t = t1;
             t1 = t2;
             t2 = t;
         }
@@ -8969,8 +8945,8 @@ class GeoSpline {
              && Number.isInteger( t2 ) )
         {
             //An easy subset of the curve matching the nodes.
-            var nodeSubset = [];
-            for ( var i= t1; i<=t2; i++ )
+            const nodeSubset = [];
+            for ( let i= t1; i<=t2; i++ )
                 nodeSubset.push( this.nodeData[i] );
             return new GeoSpline( nodeSubset );
         } 
@@ -8988,12 +8964,12 @@ class GeoSpline {
         //1 less than t1, split and add part 2
         //2 greater than t2, split and add part 1;
         try{        
-            var alt = undefined;
+
             if (    ( Math.floor(t1) != Math.floor(t2) )
                  && ( Math.ceil(t1) != Math.ceil(t2) ) ) //e.g. 0.5 and 1 would fail the first test, but match this one. 
             {
-                var nodeSubset = [];
-                for ( var i= Math.floor(t1); i<=Math.ceil(t2); i++ )
+                const nodeSubset = [];
+                for ( let i= Math.floor(t1); i<=Math.ceil(t2); i++ )
                 {
                     if ( i < t1 )
                     {
@@ -9021,8 +8997,7 @@ class GeoSpline {
                     else
                         nodeSubset.push( this.nodeData[i] )
                 }
-                alt = new GeoSpline( nodeSubset );
-                return alt;
+                return new GeoSpline( nodeSubset );
             }
             
         } catch ( e ) {
@@ -9030,16 +9005,16 @@ class GeoSpline {
         }
 
         //The older way which works but needs to find t2 afresh
-        var c1 = this.cutAtPoint( p1 );
+        const c1 = this.cutAtPoint( p1 );
 
         if ( c1 === undefined )
             throw "p1 is not on spline;"
 
-        var splineAfterPoint = c1.afterPoint;
-        var c3 = splineAfterPoint.cutAtPoint( p2 );
+        const splineAfterPoint = c1.afterPoint;
+        const c3 = splineAfterPoint.cutAtPoint( p2 );
         if ( ! c3 )
             console.log("c3 not found"); //this is odd because c1 and c2 were found
-        var cut2 = c3 ? c3.beforePoint : splineAfterPoint;
+        const cut2 = c3 ? c3.beforePoint : splineAfterPoint;
         return cut2;
         //Compare the two approaches
         // if ( alt )
@@ -9090,21 +9065,19 @@ class GeoSpline {
         if ( this.nodeData.length !== 2 )
             throw( "applyDecasteljau only valid for a segment" );
 
-        var points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
-        var strutPoints = [];
+        let points = [ this.nodeData[0].point, this.nodeData[0].outControlPoint, this.nodeData[1].inControlPoint, this.nodeData[1].point ];
+        const strutPoints = [];
 
-        for( var i=0; i<points.length; i++ )
-            strutPoints.push( points[i] );
+        for( const p of points )
+            strutPoints.push( p );
 
         while( points.length > 1 )
         {
-            var newPoints = [];
-            for( var i=0; i<points.length-1; i++ )
+            const newPoints = [];
+            for( let i=0; i<points.length-1; i++ )
             {
-                if ( points[i+1] === undefined  )
-                    console.log("how?");
 
-                var newPoint = new GeoPoint( (1-t) * points[i].x + t * points[i+1].x,
+                const newPoint = new GeoPoint( (1-t) * points[i].x + t * points[i+1].x,
                                              (1-t) * points[i].y + t * points[i+1].y );
                 newPoints.push( newPoint );
                 strutPoints.push( newPoint );
@@ -9142,14 +9115,14 @@ class GeoSpline {
             }
         }
 
-        var nodesBeforeCut = [],
-            nodesAfterCut = [];
+        const nodesBeforeCut = [],
+              nodesAfterCut = [];
 
-        var cutMade = false;
-        for( var i=0; i<(nodeData.length-0); i++ )
+        let cutMade = false;
+        for( let i=0; i<nodeData.length; i++ )
         {
-            var n1 = nodeData[i];
-            var n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
+            const n1 = nodeData[i];
+            const n2 = i+1 < nodeData.length ? nodeData[i+1] : null;
 
             if ( cutMade ) 
             {
@@ -9161,7 +9134,7 @@ class GeoSpline {
                 nodesBeforeCut.push( n1 );
                 nodesAfterCut.push( n1 );
             }
-            else if ( n2 !== null &&  n2.point.equals(p) )
+            else if ( n2?.point.equals(p) )
             {
                 cutMade = true;
                 nodesBeforeCut.push( n1 );
@@ -9169,12 +9142,12 @@ class GeoSpline {
             }
             else if ( n2 != null )
             {
-                var segment = this.pathSegment( i+1 ); //so from i to i+1
+                const segment = this.pathSegment( i+1 ); //so from i to i+1
 
                 const bounds = new Bounds();
                 segment.adjustBounds( bounds );
 
-                var tWithinSegment = bounds.containsPoint(p,0.0002) ? segment.findTForPoint(p) : undefined;
+                const tWithinSegment = bounds.containsPoint(p,0.0002) ? segment.findTForPoint(p) : undefined;
 
                 if ( tWithinSegment === 0 ) //effectively ( n1.point.equals(p) ), it must have been a rounding issue that prevented an exact match.
                 {
@@ -9187,11 +9160,10 @@ class GeoSpline {
                     cutMade = true;
                     nodesBeforeCut.push( n1 );
                     nodesBeforeCut.push( n2 );
-                    //nodesAfterCut.push( n2 );    
                 }
                 else 
                 {
-                    var pointLiesInThisSegment = tWithinSegment !== undefined;
+                    const pointLiesInThisSegment = tWithinSegment !== undefined;
 
                     if ( ! pointLiesInThisSegment )
                     {
@@ -9203,7 +9175,7 @@ class GeoSpline {
                     }
                     else //point lies in this segment
                     {
-                        var splits = segment.cutAtT( tWithinSegment );
+                        const splits = segment.cutAtT( tWithinSegment );
 
                         splits.beforePoint.nodeData[0].inControlPoint = n1.inControlPoint;
                         splits.beforePoint.nodeData[0].inAngle = n1.inAngle;
@@ -9264,13 +9236,13 @@ class GeoSpline {
 
         if ( inControlPoint )
         {
-            var inControlPointLine = new GeoLine( point, inControlPoint );
+            const inControlPointLine = new GeoLine( point, inControlPoint );
             c.inAngle = inControlPointLine.angleDeg();
             c.inLength = inControlPointLine.getLength();
         }
         if ( outControlPoint )
         {
-            var outControlPointLine = new GeoLine( point, outControlPoint );    
+            const outControlPointLine = new GeoLine( point, outControlPoint );    
             c.outAngle = outControlPointLine.angleDeg();
             c.outLength = outControlPointLine.getLength();
         }
@@ -9284,10 +9256,8 @@ class GeoSpline {
         //It won't be a perfectly tight bounding box, but 
         //it should be ample to encompass the spline loosely. 
         
-        for ( var i=0; i<this.nodeData.length; i++ )
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             bounds.adjust( node.point );
 
             if ( node.inControlPoint )
@@ -9314,10 +9284,10 @@ class GeoSpline {
 
     angleEnteringNode( i )
     {
-        var n = this.nodeData[ i ];
-        var inControlPoint = n.inControlPoint;
-        var outControlPoint = n.outControlPoint;
-        var directionLine;
+        const n = this.nodeData[ i ];
+        let inControlPoint = n.inControlPoint;
+        let outControlPoint = n.outControlPoint;
+        let directionLine;
 
         if ( inControlPoint && inControlPoint.equals( n.point ) )
             inControlPoint = undefined;
@@ -9341,10 +9311,10 @@ class GeoSpline {
 
     angleLeavingNode( i )
     {
-        var n = this.nodeData[ i ];
-        var inControlPoint = n.inControlPoint;
-        var outControlPoint = n.outControlPoint;
-        var directionLine;
+        const n = this.nodeData[ i ];
+        let inControlPoint = n.inControlPoint;
+        let outControlPoint = n.outControlPoint;
+        let directionLine;
 
         //What if length2 == 0, the node's inControlPoint == point
         if (( i == 0 ) && ( outControlPoint ))
@@ -9381,11 +9351,9 @@ class GeoSpline {
 
     toString()
     {
-        var s = "GeoSpline[ ";
-        for ( var i=0; i<this.nodeData.length; i++ )
+        let s = "GeoSpline[ ";
+        for ( const node of this.nodeData )
         {
-            var node = this.nodeData[i];
-
             if ( node.inControlPoint )
                 s += " in:" + node.inControlPoint.toString();
 
@@ -9413,27 +9381,29 @@ class GeoSpline {
 
     parallelCurve( sa, depth )
     {
+        const debug = false;
+
         if ( sa === 0 )
         {
             return { baseCurve: this, offsetCurve: this }; 
         }
 
-        var newNodeData = [];
-        var len = this.nodeData.length;
-        var prevNode;
-        var prevNewNode;
-        for ( var i=0; i<len; i++ )
+        let newNodeData = [];
+        const len = this.nodeData.length;
+        let prevNode;
+        let prevNewNode;
+        for ( let i=0; i<len; i++ )
         {
-            var node = this.nodeData[i];
+            const node = this.nodeData[i];
 
-            var newNode = {};
+            const newNode = {};
             newNodeData[i] = newNode;
             
-            var tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
+            let tangentAfterDeg = this.angleLeavingNode(i) + 90; //TODO we could allow for pointy nodes by using angleArrivingNode for the inControlPoint
             if ( tangentAfterDeg > 360 )
                 tangentAfterDeg -= 360;
 
-            var tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately?
+            const tangentBeforeDeg = tangentAfterDeg; //TODO determine this separately?
 
             newNode.point = node.point.pointAtDistanceAndAngleDeg( sa, tangentAfterDeg );
             if ( node.inControlPoint )
@@ -9445,19 +9415,19 @@ class GeoSpline {
             {
                 //We can do slightly better still, for each step/simplespline how much bigger is the new curve (distance between start/end nodes), 
                 //and scale the length of the control points accordingly. 
-                var distance = (new GeoLine( prevNode.point, node.point )).getLength();
-                var offsetDistance = (new GeoLine( prevNewNode.point, newNode.point )).getLength();
+                const distance = (new GeoLine( prevNode.point, node.point )).getLength();
+                const offsetDistance = (new GeoLine( prevNewNode.point, newNode.point )).getLength();
                 if ( ( distance > 0 ) && ( offsetDistance > 0) && ( distance != offsetDistance ) )
                 {
-                    var extension = offsetDistance / distance; //nb this could be <0 or >0.
+                    const extension = offsetDistance / distance; //nb this could be <0 or >0.
                     if ( Math.abs(extension) > 0.001 )
                     {
                         //console.log( (extension>1 ? "Extending" : "Reducing" ) + " the control point lengths to " + (Math.round( extension * 1000)/10) + "%" );
-                        var outControlPointLine = new GeoLine( prevNewNode.point, prevNewNode.outControlPoint );
+                        const outControlPointLine = new GeoLine( prevNewNode.point, prevNewNode.outControlPoint );
                         prevNewNode.outAngle = outControlPointLine.angleDeg();
                         prevNewNode.outLength = outControlPointLine.getLength() * extension;
                         prevNewNode.outControlPoint = prevNewNode.point.pointAtDistanceAndAngleDeg( prevNewNode.outLength, prevNewNode.outAngle );
-                        var inControlPointLine = new GeoLine( newNode.point, newNode.inControlPoint );
+                        const inControlPointLine = new GeoLine( newNode.point, newNode.inControlPoint );
                         newNode.inAngle = inControlPointLine.angleDeg();
                         newNode.inLength = inControlPointLine.getLength() * extension;                        
                         newNode.inControlPoint = newNode.point.pointAtDistanceAndAngleDeg( newNode.inLength, newNode.inAngle );
@@ -9468,38 +9438,26 @@ class GeoSpline {
             prevNode = node;
             prevNewNode = newNode;
         }
-        var offsetCurve = new GeoSpline( newNodeData );
+        const offsetCurve = new GeoSpline( newNodeData );
 
-        var newNodeData = [];
-        var c1, c2, c3;
-        for ( var i=1; i<len; i++ )
+        newNodeData = [];
+        let c1, c2, c3;
+        for ( let i=1; i<len; i++ )
         {
-            var prevNode = this.nodeData[i-1];
-            var node = this.nodeData[i];
-            var thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
-            var offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
-            var worstError = 0.0;
-            var errorAtHalfway;
-
-            //var testPositions = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ];
-            // for ( var j in testPositions )
-            // {
-            //     var t = testPositions[j];
-            //     var toffset = thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, t, sa );
-            //     var error = Math.abs( toffset - sa );
-            //     //console.log( " Error at t:" + Math.round(t*100)/100 + " is " + Math.round( error/sa1*100 ) + "% actualError:" + error  );
-            //     if ( error > worstError )
-            //         worstError = error;
-            // }
-            errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
+            const prevNode = this.nodeData[i-1];
+            const node = this.nodeData[i];
+            const thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
+            const offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
+            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
             //console.log( "Worst:" + worstError + " Halfway:" + errorAtHalfway );
 
             //depending upon worstError decide if we're splitting this segment, if we're we can just copy it to the one we're creating
             //if we split any, then recurse. 
-            console.log( "Node " + i + " offset variance at t=0.5 " + Math.round( errorAtHalfway/sa*1000 )/10 + "%" );
+            if ( debug )
+                console.log( "Node " + i + " offset variance at t=0.5 " + Math.round( errorAtHalfway/sa*1000 )/10 + "%" );
+
             if ( ( isNaN( errorAtHalfway ) ) || ( (errorAtHalfway/sa) > 0.005 ) ) //0.01 would be plenty accurate enough for our purposes. 
             {
-                //var splineWithAddedNodes = 
                 const struts = thisSegmentAsGeoSpline.getStrutPoints( 0.5 );
 
                 if ( c3 )
@@ -9534,9 +9492,10 @@ class GeoSpline {
 
         if ( newNodeData.length > this.nodeData.length )
         {
-            for ( var i=0; i<newNodeData.length; i++ )
+            if ( debug )
+            for ( const i in newNodeData )
             {
-                var node = newNodeData[i];
+                const node = newNodeData[i];
 
                 if (( ! node.inControlPoint ) && ( i>0 ))
                     console.log("Error, node should have inControlPoint");
@@ -9546,8 +9505,11 @@ class GeoSpline {
 
             }
     
-            var thisWithMoreControlPoints = new GeoSpline( newNodeData );
-            console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
+            const thisWithMoreControlPoints = new GeoSpline( newNodeData );
+
+            if ( debug )
+                console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
+
             depth = depth === undefined ? 1 : depth + 1;
             if ( depth < 20 )
                 return thisWithMoreControlPoints.parallelCurve( sa, depth );
@@ -9565,28 +9527,28 @@ class GeoSpline {
     //what offset has actually been achieved at t?    
     getOffsetBetweenCurves( otherCurve, t, targetOffset )
     {
-        var pointOnThisCurve = this.getPointForT( t );
+        const pointOnThisCurve = this.getPointForT( t );
 
         //NOTE: we cannot simply do  otherCurve.getPointForT( t ) as the two points won't necessarily be tangential.
 
         //So, calculate a tangent from this curve to intersect the other. 
-        var anotherPointATinyBitFurtherOn = this.getPointForT( t + 0.0001 );
-        var angleAtThisPoint = (new GeoLine(pointOnThisCurve,anotherPointATinyBitFurtherOn )).angleDeg();
-        var tangentAngle = angleAtThisPoint + 90;
+        const anotherPointATinyBitFurtherOn = this.getPointForT( t + 0.0001 );
+        const angleAtThisPoint = (new GeoLine(pointOnThisCurve,anotherPointATinyBitFurtherOn )).angleDeg();
+        let tangentAngle = angleAtThisPoint + 90;
         if ( tangentAngle >= 360 ) 
             tangentAngle -= 360;
-        var tangentLineAtThisPoint = new GeoLine(pointOnThisCurve, pointOnThisCurve.pointAtDistanceAndAngleDeg( 10 * targetOffset, tangentAngle ) );
+        const tangentLineAtThisPoint = new GeoLine(pointOnThisCurve, pointOnThisCurve.pointAtDistanceAndAngleDeg( 10 * targetOffset, tangentAngle ) );
 
-        var otherCurveSI = otherCurve.asShapeInfo();
-        var tangentLineSI = tangentLineAtThisPoint.asShapeInfo();        
+        const otherCurveSI = otherCurve.asShapeInfo();
+        const tangentLineSI = tangentLineAtThisPoint.asShapeInfo();        
 
-        var intersections = Intersection.intersect(otherCurveSI, tangentLineSI);
+        const intersections = Intersection.intersect(otherCurveSI, tangentLineSI);
         if ( intersections.points.length === 0 )
             return undefined;
 
-        var pointOnOtherCurve = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+        const pointOnOtherCurve = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
 
-        var line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
+        const line = new GeoLine( pointOnThisCurve, pointOnOtherCurve );
         return line.getLength();
     }
 
@@ -9601,7 +9563,7 @@ class GeoSpline {
 
         if ( addition instanceof GeoPoint )
         {
-            var p = extendedNodeData.pop();
+            const p = extendedNodeData.pop();
 
             extendedNodeData.push( {inControlPoint:   p.inControlPoint,
                                     point:            p.point,

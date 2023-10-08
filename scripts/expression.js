@@ -661,7 +661,7 @@ class Expression {
                 t += "(";
 
             var first = true;
-            for ( var p in this.params )
+            for ( const p of this.params )
             {
                 if ( ! first )
                 {
@@ -670,7 +670,7 @@ class Expression {
                     else
                         t += ",";
                 }
-                t += this.params[p].html( asFormula, currentLength, precedence );
+                t += p.html( asFormula, currentLength, precedence );
                 first = false;
             }
 
@@ -708,8 +708,7 @@ class Expression {
         //recurse into the expression parameters.
         if ( this.params )
         {       
-            for (var a = 0; a < this.params.length; a++) {
-                var p = this.params[a];
+            for ( const p of this.params ) {
                 p.addDependencies( source, dependencies );
             }
         }
