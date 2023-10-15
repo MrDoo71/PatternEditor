@@ -5045,7 +5045,8 @@ class PatternDrawing {
     //Add a label (to svg group g) positioned midway along path
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
-        fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        fontSize = fontSize ? fontSize 
+                            : Math.round( 1300 / scale / fontsSizedForScale )/100; //if both scale == 1 then 13.0 underlying units
 
         if ( followPathDirection )
         {   
@@ -5057,7 +5058,7 @@ class PatternDrawing {
                                     path.p2.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ) );
 
             const pathSVG = path.svgPath();
-            const pathID = "tp" + CryptoJS.MD5( pathSVG ).toString(); //this.textPathSeq++;
+            const pathID = "tp" + CryptoJS.MD5( pathSVG ).toString();
             g.append("path")
                 .attr( "id", pathID )
                 .attr( "visibility", "hidden" )
@@ -5170,13 +5171,13 @@ class PatternDrawing {
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-var selectedObject;
-var linksGroup;
-var fontsSizedForScale = 1;
-var fontResizeTimer;
-var updateServerTimer;
-var timeOfLastTweak;
-var doDrawingAndTable;
+let selectedObject;
+let linksGroup;
+let fontsSizedForScale = 1;
+let fontResizeTimer;
+let updateServerTimer;
+let timeOfLastTweak;
+let doDrawingAndTable;
 
 function drawPattern( dataAndConfig, ptarget, graphOptions ) 
 {
@@ -6296,7 +6297,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 fontResizeTimer = setTimeout(function () {      
                     fontResizeTimer = null;          
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
-                    //console.log( "Resize for " + fontsSizedForScale);
+                    //console.log( "Zoomed - fontsSizedForScale " + fontsSizedForScale );
 
                     for( const drawing of pattern.drawings )
                     {                
@@ -6319,26 +6320,26 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                     .attr("y2", labelPosition.labelLineY );
                                 }
 
-                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100; //13 at scale 1
                                 g.selectAll( "text.length" )
                                  .attr("font-size", fontSize + "px");
 
+                                 g.selectAll( "text.alongPath" )
+                                 .attr("font-size", fontSize + "px");
                        
                                 g.selectAll( "circle" )
-                                .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 
-                                {
-                                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                                const strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
 
-                                    g.selectAll( "line" )
-                                        .attr( "stroke-width", strokeWidth );
+                                g.selectAll( "line" )
+                                    .attr( "stroke-width", strokeWidth );
 
-                                    g.selectAll( "path" )
-                                        .attr( "stroke-width", strokeWidth );            
+                                g.selectAll( "path" )
+                                    .attr( "stroke-width", strokeWidth );
 
-                                    g.selectAll( "ellipse" )
-                                        .attr( "stroke-width", strokeWidth );            
-                                }
+                                g.selectAll( "ellipse" )
+                                    .attr( "stroke-width", strokeWidth );
                             }
 
                             g = a.outlineSvg;
@@ -6371,6 +6372,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     };           
 
     fontsSizedForScale = 1; //the starting scale of transformGroup1.
+
     if ( editorOptions.allowPanAndZoom )
     {
         //TODO just the fontsize needs setting initially to take editorOptions.scale into account
@@ -8730,7 +8732,7 @@ class GeoSpline {
                 if ( ! bounds.containsPoint(p, 0.0002 ) )
                     continue;
 
-                console.log( "Segment " + i );
+                //console.log( "Segment " + i );
                 const t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i

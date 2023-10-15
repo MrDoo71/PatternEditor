@@ -7,13 +7,13 @@
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-var selectedObject;
-var linksGroup;
-var fontsSizedForScale = 1;
-var fontResizeTimer;
-var updateServerTimer;
-var timeOfLastTweak;
-var doDrawingAndTable;
+let selectedObject;
+let linksGroup;
+let fontsSizedForScale = 1;
+let fontResizeTimer;
+let updateServerTimer;
+let timeOfLastTweak;
+let doDrawingAndTable;
 
 function drawPattern( dataAndConfig, ptarget, graphOptions ) 
 {
@@ -1133,7 +1133,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 fontResizeTimer = setTimeout(function () {      
                     fontResizeTimer = null;          
                     fontsSizedForScale = d3.zoomTransform( transformGroup1.node() ).k;
-                    //console.log( "Resize for " + fontsSizedForScale);
+                    //console.log( "Zoomed - fontsSizedForScale " + fontsSizedForScale );
 
                     for( const drawing of pattern.drawings )
                     {                
@@ -1156,26 +1156,26 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                     .attr("y2", labelPosition.labelLineY );
                                 }
 
-                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100;
+                                const fontSize = Math.round( 1300 / scale / fontsSizedForScale )/100; //13 at scale 1
                                 g.selectAll( "text.length" )
                                  .attr("font-size", fontSize + "px");
 
+                                 g.selectAll( "text.alongPath" )
+                                 .attr("font-size", fontSize + "px");
                        
                                 g.selectAll( "circle" )
-                                .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
+                                 .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 
-                                {
-                                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                                const strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
 
-                                    g.selectAll( "line" )
-                                        .attr( "stroke-width", strokeWidth );
+                                g.selectAll( "line" )
+                                    .attr( "stroke-width", strokeWidth );
 
-                                    g.selectAll( "path" )
-                                        .attr( "stroke-width", strokeWidth );            
+                                g.selectAll( "path" )
+                                    .attr( "stroke-width", strokeWidth );
 
-                                    g.selectAll( "ellipse" )
-                                        .attr( "stroke-width", strokeWidth );            
-                                }
+                                g.selectAll( "ellipse" )
+                                    .attr( "stroke-width", strokeWidth );
                             }
 
                             g = a.outlineSvg;
@@ -1208,6 +1208,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
     };           
 
     fontsSizedForScale = 1; //the starting scale of transformGroup1.
+
     if ( editorOptions.allowPanAndZoom )
     {
         //TODO just the fontsize needs setting initially to take editorOptions.scale into account

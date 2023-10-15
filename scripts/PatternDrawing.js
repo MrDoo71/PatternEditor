@@ -298,7 +298,8 @@ class PatternDrawing {
     //Add a label (to svg group g) positioned midway along path
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
-        fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
+        fontSize = fontSize ? fontSize 
+                            : Math.round( 1300 / scale / fontsSizedForScale )/100; //if both scale == 1 then 13.0 underlying units
 
         if ( followPathDirection )
         {   
@@ -310,7 +311,7 @@ class PatternDrawing {
                                     path.p2.pointAtDistanceAndAngleDeg( -fontSize, path.angleDeg() + 90 ) );
 
             const pathSVG = path.svgPath();
-            const pathID = "tp" + CryptoJS.MD5( pathSVG ).toString(); //this.textPathSeq++;
+            const pathID = "tp" + CryptoJS.MD5( pathSVG ).toString();
             g.append("path")
                 .attr( "id", pathID )
                 .attr( "visibility", "hidden" )

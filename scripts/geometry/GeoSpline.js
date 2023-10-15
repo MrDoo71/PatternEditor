@@ -239,7 +239,7 @@ class GeoSpline {
                 if ( ! bounds.containsPoint(p, 0.0002 ) )
                     continue;
 
-                console.log( "Segment " + i );
+                //console.log( "Segment " + i );
                 const t = segment.findTForPoint(p);
                 if ( t !== undefined )
                     return t+i
