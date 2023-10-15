@@ -9,9 +9,6 @@
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
-
-
 //A line
 class GeoLine {
 
@@ -26,8 +23,8 @@ class GeoLine {
         if ( ! p2 )
             throw "GeoLine p2 not defined.";
 
-        this.p1 = p1;//new GeoPoint( x1, y1 );
-        this.p2 = p2;//new GeoPoint( x2, y2 );
+        this.p1 = p1;
+        this.p2 = p2;
     
         this.deltaX = ( this.p2.x - this.p1.x ); //nb. +ve to the east from p1 to p2
         this.deltaY = ( this.p2.y - this.p1.y ); //nb +ve to the south from p1 to p2
@@ -40,8 +37,6 @@ class GeoLine {
         if ( this.angle < 0 )
             this.angle = this.angle + (2 * Math.PI);          
     
-        //alert( "Line angle:" + this.angle + " (" + ( this.angle / (2*Math.PI) * 360) + "deg anti clockwise from east" );
-    
         this.slope  = ( this.deltaY / this.deltaX );
         this.offset = this.p1.y - ( this.p1.x * this.slope ); //the y values where x = 0; the intersection of the line with the y-axis
         //this line is generically: y = offset + ( x * slope )
@@ -52,11 +47,11 @@ class GeoLine {
         //intersection
         //  // offset - line2.offset / ( line2.slope - slope ) = x
 
-        var swap = Math.abs( this.deltaX ) > Math.abs( line2.deltaX );
-        var line1s = swap ? this : line2; //this.p1.x < this.p2.x ? this : new GeoLine( this.p2, this.p1 );
-        var line2s = swap ? line2 : this; //line2.p1.x < line2.p2.x ? line2 : new GeoLine( line2.p2, line2.p1 );
+        const swap = Math.abs( this.deltaX ) > Math.abs( line2.deltaX );
+        const line1s = swap ? this : line2;
+        const line2s = swap ? line2 : this;
 
-        var x, y;
+        let x, y;
 
         if (    ( line2s.slope === Infinity ) 
              || ( line2s.slope === -Infinity )  )
@@ -110,7 +105,7 @@ class GeoLine {
             }
         }
 
-        var arcSI,lineSI;
+        let arcSI,lineSI;
 
         //nb there is a special case for GeoEllipticalArc where this.p1 == arc.center in 
         //which case a simple formula gives the intersect.
@@ -122,57 +117,45 @@ class GeoLine {
             //create an equivalent arc that is not rotated.
             //create a new line, rotate the startpoint by -rotationAngle, the new lines angle should also be less by -rotationAngle
             //finally rotate the intersect point back
-            var nrArc = new GeoEllipticalArc( arc.center,
+            const nrArc = new GeoEllipticalArc( arc.center,
                                               arc.radius1,
                                               arc.radius2, 
                                               arc.angle1, 
                                               arc.angle2,
                                               0 );
-            var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
-            //var p2rotated = this.p2.rotate( arc.center, -arc.rotationAngle );
-            var bounds = new Bounds();
+            const p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
+            const bounds = new Bounds();
             bounds.adjust( p1rotated );
             arc.adjustBounds( bounds );
-            maxLineLength = bounds.diagonaglLength() * 1.25;
-            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( maxLineLength/*infinite*/, (this.angleDeg() - arc.rotationAngle) ) );     
-            //var lineRotated = new GeoLine( p1rotated, p2rotated );
+            const maxLineLength = bounds.diagonaglLength() * 1.25;
+            const lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( maxLineLength/*infinite*/, (this.angleDeg() - arc.rotationAngle) ) );
             lineSI = lineRotated.asShapeInfo();
             arcSI = nrArc.asShapeInfo();
-            
-            //var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
-            //lineSI = extendedLine.asShapeInfo();    
         }
         else
         {
-            var bounds = new Bounds();
+            const bounds = new Bounds();
             bounds.adjust( this.p1 );
-            //bounds.adjust( this.p2 );
             arc.adjustBounds( bounds );
-            var maxLineLength = bounds.diagonaglLength() * 1.25;
+            const maxLineLength = bounds.diagonaglLength() * 1.25;
             
             //This should be sufficient, extend our line forward enough that it should intersect...
-            //var extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength*10, this.angle ));
-
             //Ensure that the line is long enough to intersect. 
-            //var extendedLine = new GeoLine(  this.p1.pointAtDistanceAndAngleRad( -maxLineLength, this.angle ), this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
-            var extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
+            const extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
 
             arcSI = arc.asShapeInfo();
             lineSI = extendedLine.asShapeInfo();    
         }
     
-        var intersections = Intersection.intersect(arcSI, lineSI);
+        let intersections = Intersection.intersect(arcSI, lineSI);
         
-        //console.log( "Intersections:" );
-        //intersections.points.forEach(console.log);    
-
         if ( intersections.points.length === 0 )
         { 
             if ( ! alreadyTweaked )
             {
                 //console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
-                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.00000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
+                const lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.00000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
 
                 try {
                     //This should be no different, but sometimes this works when arc-line intersect fails
@@ -191,42 +174,23 @@ class GeoLine {
             throw "No intersection with arc. ";
         }
 
-        var whichPoint = 0;
+        let whichPoint = 0;
         if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
         {            
-            if ( false )
+            //choose the first point we get to along the line. 
+            let smallestDistance;
+            for (const i in intersections.points ) 
             {
-                //choose the point with the smallest angle. 
-                var smallestAngle = 361;
-                for (var i = 0; i < intersections.points.length; i++) 
+                const pi = intersections.points[i];
+                const p1pi = new GeoLine( this.p1, pi );
+                
+                if (    ( smallestDistance === undefined ) 
+                        || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
+                            && ( p1pi.length < smallestDistance ) ) )
                 {
-                    var pi = intersections.points[i];
-                    var p1pi = new GeoLine( arc.center, pi );
-                    console.log( i + " " + p1pi.angleDeg() );
-                    if ( p1pi.angleDeg() < smallestAngle )
-                    {
-                        smallestAngle = p1pi.angleDeg();
-                        whichPoint = i;
-                    }
+                    smallestDistance = p1pi.length;
+                    whichPoint = i;
                 }
-            }
-            else
-            {
-                //choose the first point we get to along the line. 
-                let smallestDistance;
-                for (const i in intersections.points ) 
-                {
-                    const pi = intersections.points[i];
-                    const p1pi = new GeoLine( this.p1, pi );
-                    
-                    if (    ( smallestDistance === undefined ) 
-                         || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
-                              && ( p1pi.length < smallestDistance ) ) )
-                    {
-                        smallestDistance = p1pi.length;
-                        whichPoint = i;
-                    }
-                }            
             }
         }
 

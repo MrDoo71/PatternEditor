@@ -14,7 +14,7 @@ class SplineUsingControlPoints extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.startPoint === "undefined")
             this.startPoint = this.drawing.getObject(d.point1);

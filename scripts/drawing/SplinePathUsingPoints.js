@@ -22,7 +22,7 @@ class SplinePathUsingPoints extends DrawingObject {
                 pathNode.point = this.drawing.getObject( pathNode.point );
             }
 
-            for( var i=0; i< d.pathNode.length; i+=3 )
+            for( let i=0; i< d.pathNode.length; i+=3 )
             {
                 this.nodes.push( { 
                                    inControlPoint:   (i-1)>0 ? this.data.pathNode[i-1].point.p : undefined,
@@ -76,7 +76,7 @@ class SplinePathUsingPoints extends DrawingObject {
 
         html += "<table><tbody>";
 
-        for( var i=0; i< d.pathNode.length; i+=3 )
+        for( let i=0; i< d.pathNode.length; i+=3 )
         {
             html += "<tr><td>";
 
@@ -103,9 +103,9 @@ class SplinePathUsingPoints extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( var i=0; i< this.data.pathNode.length; i++ )
+        for( const n of this.data.pathNode )
         {
-            dependencies.add( this, this.data.pathNode[i].point );
+            dependencies.add( this, n.point );
         }        
     }    
 }

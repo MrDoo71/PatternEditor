@@ -98,7 +98,7 @@ class Expression {
                                    || ( ( curve.data.pathNode ) && ( curve.data.pathNode[curve.data.pathNode.length-1].point === other ) );
                         };
 
-                        var drawingObjectCuttingSpline;
+                        let drawingObjectCuttingSpline;
 
                         if (    (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
                                   || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
@@ -176,18 +176,18 @@ class Expression {
     measurementValue() {
         //console.log("Measurement units " + this.variable.units );
         //console.log("Pattern units " + this.pattern.units );
-        var measurementUnits = this.variable.units;
-        var patternUnits = this.pattern.units;
+        const measurementUnits = this.variable.units;
+        const patternUnits = this.pattern.units;
         if ( measurementUnits === patternUnits )
             return this.variable.value();
 
-        var mm = 1;
+        let mm = 1;
         if ( measurementUnits === "cm" )
             mm = 10;
         else if ( measurementUnits === "inch" )
             mm = 25.4;
 
-        var pp = mm;
+        let pp = mm;
 
         if ( patternUnits === "cm" )
             pp = mm / 10;
@@ -494,13 +494,13 @@ class Expression {
 
         else if  ( this.operation === "^" )
         {
-            var p1 = this.params[0].value(currentLength);
-            var p2 = this.params[1].value(currentLength);
+            const p1 = this.params[0].value(currentLength);
+            const p2 = this.params[1].value(currentLength);
             return Math.pow( p1, p2 );
         }    
         else if (this.operation === "?")
         {
-            var conditionTestResult = this.params[0].value(currentLength);
+            const conditionTestResult = this.params[0].value(currentLength);
             if ( conditionTestResult )
                 return this.params[1].value(currentLength);
             else
@@ -625,8 +625,8 @@ class Expression {
         }
         else if ( this.operation ) 
         {
-            var useOperatorNotation = false;
-            var precedence = 0;
+            let useOperatorNotation = false;
+            let precedence = 0;
 
             if (    (this.operation === "+") 
                  || (this.operation === "-") )
@@ -653,14 +653,14 @@ class Expression {
             //power = 5
             //ternary = 2
 
-            var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
+            let t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
             
-            var useParenthesis = ( ( this.operation === "()" ) || ( precedence < parentPrecedence ) || (!useOperatorNotation) );
+            const useParenthesis = ( ( this.operation === "()" ) || ( precedence < parentPrecedence ) || (!useOperatorNotation) );
 
             if ( useParenthesis )
                 t += "(";
 
-            var first = true;
+            let first = true;
             for ( const p of this.params )
             {
                 if ( ! first )

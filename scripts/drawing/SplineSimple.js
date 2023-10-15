@@ -11,7 +11,6 @@ class SplineSimple extends DrawingObject {
     constructor(data) {
         super(data);
 
-        //TODO output a useful spline ID
         if ( typeof this.data.name === "undefined" )
             this.data.name = this.data.derivedName;        
     }

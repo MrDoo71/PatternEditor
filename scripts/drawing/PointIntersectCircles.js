@@ -95,7 +95,6 @@ class PointIntersectCircles extends DrawingObject {
 
 
     html( asFormula ) {
-        //TODO use a better name for this.arc, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect circles ' + this.refOf( this.center1 ) 
                 + " radius " + this.radius1.htmlAngle( asFormula ) 

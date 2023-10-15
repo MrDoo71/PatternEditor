@@ -13,9 +13,6 @@
 //A point
 class GeoPoint {
 
-    //x;
-    //y;
-
     constructor( x, y ) {
         this.x = x;
         this.y = y;
@@ -27,6 +24,7 @@ class GeoPoint {
             throw "GeoPoint y not a number.";
     }
 
+    
     line( point2 ) {    
         throw "this looks broken, two params, not four";
         return new GeoLine( this.x, this.y, point2.x, point2.y );

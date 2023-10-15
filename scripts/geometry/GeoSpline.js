@@ -9,9 +9,6 @@
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
-
-
 class GeoSpline {
 
     //nodeData - an array of
@@ -265,7 +262,7 @@ class GeoSpline {
             maxT = 1.0,
             iter = 0;
 
-        const threshold = 0.0001;//this.pathLength() / 10000.0;
+        const threshold = 0.0001;
 
         let t;
         let closestDistance;

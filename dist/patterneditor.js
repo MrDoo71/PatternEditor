@@ -1711,7 +1711,6 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
             this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
-        //this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
 
         this.adjustBounds( bounds );
     }
@@ -2093,7 +2092,6 @@ class PointIntersectCircles extends DrawingObject {
 
 
     html( asFormula ) {
-        //TODO use a better name for this.arc, e.g. Arc_A_nn
         return '<span class="ps-name">' + this.data.name + '</span>: '
                 + 'intersect circles ' + this.refOf( this.center1 ) 
                 + " radius " + this.radius1.htmlAngle( asFormula ) 
@@ -2814,7 +2812,7 @@ class SplinePathUsingPoints extends DrawingObject {
                 pathNode.point = this.drawing.getObject( pathNode.point );
             }
 
-            for( var i=0; i< d.pathNode.length; i+=3 )
+            for( let i=0; i< d.pathNode.length; i+=3 )
             {
                 this.nodes.push( { 
                                    inControlPoint:   (i-1)>0 ? this.data.pathNode[i-1].point.p : undefined,
@@ -2868,7 +2866,7 @@ class SplinePathUsingPoints extends DrawingObject {
 
         html += "<table><tbody>";
 
-        for( var i=0; i< d.pathNode.length; i+=3 )
+        for( let i=0; i< d.pathNode.length; i+=3 )
         {
             html += "<tr><td>";
 
@@ -2895,9 +2893,9 @@ class SplinePathUsingPoints extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( var i=0; i< this.data.pathNode.length; i++ )
+        for( const n of this.data.pathNode )
         {
-            dependencies.add( this, this.data.pathNode[i].point );
+            dependencies.add( this, n.point );
         }        
     }    
 }
@@ -2915,7 +2913,6 @@ class SplineSimple extends DrawingObject {
     constructor(data) {
         super(data);
 
-        //TODO output a useful spline ID
         if ( typeof this.data.name === "undefined" )
             this.data.name = this.data.derivedName;        
     }
@@ -3016,7 +3013,7 @@ class SplineUsingControlPoints extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.startPoint === "undefined")
             this.startPoint = this.drawing.getObject(d.point1);
@@ -3100,7 +3097,7 @@ class TrueDart extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.point1 === "undefined")
             this.point1 = this.drawing.getObject(d.point1);
@@ -3114,16 +3111,13 @@ class TrueDart extends DrawingObject {
         if (typeof this.p2Line1 === "undefined")
             this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
-        //var lineD2A1 = new GeoLine( this.point2.p, this.p1Line1.p );
-        //var lineD2A2 = new GeoLine( this.point2.p, this.p2Line1.p );
+        const lineD2D1 = new GeoLine( this.point2.p, this.point1.p ); 
+        const lineD2D3 = new GeoLine( this.point2.p, this.point3.p );    
 
-        var lineD2D1 = new GeoLine( this.point2.p, this.point1.p ); 
-        var lineD2D3 = new GeoLine( this.point2.p, this.point3.p );    
+        let angleD2D1 = lineD2D1.angleDeg();
+        let angleD2D3 = lineD2D3.angleDeg();
 
-        var angleD2D1 = lineD2D1.angleDeg();
-        var angleD2D3 = lineD2D3.angleDeg();
-
-        var totalDartAngle = angleD2D1 - angleD2D3;
+        let totalDartAngle = angleD2D1 - angleD2D3;
 
         //edge case:
         //if D2D1 angle is 10 and D2D3 is 350 (or vice versa) then it would be better to consider D2D3 to be -10. 
@@ -3138,30 +3132,20 @@ class TrueDart extends DrawingObject {
             totalDartAngle = angleD2D1 - angleD2D3;
         }
 
-        var halfDartAngle = totalDartAngle /2;
+        const halfDartAngle = totalDartAngle /2;
 
-        var pointA1rotated = this.p1Line1.p.rotate( this.point2.p, -halfDartAngle );
-        var pointD1rotated = this.point1.p.rotate( this.point2.p, -halfDartAngle );
-        var pointA2rotated = this.p2Line1.p.rotate( this.point2.p, halfDartAngle );
-        var pointD2rotated = this.point3.p.rotate( this.point2.p, halfDartAngle );
+        const pointA1rotated = this.p1Line1.p.rotate( this.point2.p, -halfDartAngle );
+        const pointD1rotated = this.point1.p.rotate( this.point2.p, -halfDartAngle );
+        const pointA2rotated = this.p2Line1.p.rotate( this.point2.p, halfDartAngle );
+        //const pointD2rotated = this.point3.p.rotate( this.point2.p, halfDartAngle );
 
-        var lineA1RA2R = new GeoLine( pointA1rotated, pointA2rotated );
+        const lineA1RA2R = new GeoLine( pointA1rotated, pointA2rotated );
         this.line = lineA1RA2R; //TEMP
-        var pointClosure = lineA1RA2R.intersect( new GeoLine( this.point2.p, pointD1rotated ) ); //could equally use pointD2rotated
+        const pointClosure = lineA1RA2R.intersect( new GeoLine( this.point2.p, pointD1rotated ) ); //could equally use pointD2rotated
         this.p = pointClosure; //TEMP
 
         this.td1 = pointClosure.rotate( this.point2.p, halfDartAngle );
         this.td3 = pointClosure.rotate( this.point2.p, -halfDartAngle );
-
-        //Only works where D2 is perpendicular to the midpoint of D1D3
-        //var angleA1D2D1 = lineD2A1.angleRad() - lineD2D1.angleRad();
-        //var lengthD2TD1 = Math.cos( angleA1D2D1 ) * lineD2A1.length;
-        //this.td1 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD1, lineD2D1.angleRad() );    
-        //var angleA1D2D3 = lineD2D3.angleRad() - lineD2A2.angleRad();
-        //var lengthD2TD3 = Math.cos( angleA1D2D3 ) * lineD2A2.length;
-        //this.td3 = this.point2.p.pointAtDistanceAndAngleRad( lengthD2TD3, lineD2D3.angleRad() );
-
-        //Nb. this.data.trueDartResult1 and trueDartResult2 give the names of the dart points generated.
 
         this.adjustBounds( bounds );
     }
@@ -3193,7 +3177,6 @@ class TrueDart extends DrawingObject {
 
     setDependencies( dependencies )
     {
-        //TODO these could get captured automaticallly if, in calculate, we did getObjectAndSetDependency( blah, this )
         dependencies.add( this, this.point1 );
         dependencies.add( this, this.point2 );
         dependencies.add( this, this.point3 );
@@ -3214,7 +3197,7 @@ class TrueDartResult extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.drawing.getObject(d.fromOperation);
@@ -3274,9 +3257,6 @@ class TrueDartResult extends DrawingObject {
 
         if ( this.p )
             this.drawDot( g, drawOptions );
-
-        //if ( this.line )
-        //    this.drawLine( g, drawOptions ); 
             
         if ( this.p )
             this.drawLabel( g, drawOptions );
@@ -3290,9 +3270,6 @@ class TrueDartResult extends DrawingObject {
 
 
     setDependencies( dependencies ) {
-        //dependencies.add( this, this.basePoint );
-
-        //TODO add a dependency on D1/D3 depeending on
         dependencies.add( this, this.fromOperation );
     }    
 
@@ -3397,9 +3374,12 @@ class Pattern {
     //Return the pattern local equivalent of this number of mm
     getPatternEquivalentOfMM( mm )
     {
-        return this.units === "mm" ? mm 
-                                   : this.units === "cm" ? mm/10 
-                                                         : mm/25.4;
+        switch( this.units )
+        {
+            case "mm" : return mm; 
+            case "cm" : return mm/10;
+            default: return mm/25.4;
+        }
     }
 
 
@@ -5065,7 +5045,6 @@ class PatternDrawing {
     //Add a label (to svg group g) positioned midway along path
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
-        //const d = this.data; //the original json data
         fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
 
         if ( followPathDirection )
@@ -5100,7 +5079,7 @@ class PatternDrawing {
         
         try {
             const p = path.pointAlongPathFraction(0.5);
-            var a = 0; //horizontal, unless we get an angle. 
+            let a = 0; //horizontal, unless we get an angle. 
             if ( path instanceof GeoLine  )
             {
                 a = path.angleDeg();
@@ -5116,10 +5095,10 @@ class PatternDrawing {
                 throw "Failed to determine position for label";
 
             {
-                var baseline = "middle";
-                var align = "middle";
-                var ta = 0;
-                var dy = 0;
+                let baseline = "middle";
+                let align = "middle";
+                let ta = 0;
+                let dy = 0;
                 //const patternUnits = this.drawing.pattern.units;
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
@@ -5128,7 +5107,6 @@ class PatternDrawing {
                 {
                     baseline = "hanging"; //For Safari, handing doesn't work once rotated
                     ta = -a;
-                    //p.y += spacing;
                     dy = spacing;
                 }
                 else
@@ -5138,7 +5116,6 @@ class PatternDrawing {
                     {
                         baseline = "hanging"; //For Safari, handing doesn't work once rotated
                         ta = - a;
-                        //p.y += spacing;
                         dy = spacing;
                     }
                     // West(ish)
@@ -5147,7 +5124,6 @@ class PatternDrawing {
                     {
                         baseline = "hanging";
                         ta = - (a-180);
-                        //p.y += spacing;
                         dy = spacing;
                     }
                     //North(ish)
@@ -6925,7 +6901,7 @@ class Expression {
                                    || ( ( curve.data.pathNode ) && ( curve.data.pathNode[curve.data.pathNode.length-1].point === other ) );
                         };
 
-                        var drawingObjectCuttingSpline;
+                        let drawingObjectCuttingSpline;
 
                         if (    (    ( this.drawingObject1.data.objectType === "pointIntersectArcAndAxis" )               
                                   || ( this.drawingObject1.data.objectType === "pointCutSplinePath" ) 
@@ -7003,18 +6979,18 @@ class Expression {
     measurementValue() {
         //console.log("Measurement units " + this.variable.units );
         //console.log("Pattern units " + this.pattern.units );
-        var measurementUnits = this.variable.units;
-        var patternUnits = this.pattern.units;
+        const measurementUnits = this.variable.units;
+        const patternUnits = this.pattern.units;
         if ( measurementUnits === patternUnits )
             return this.variable.value();
 
-        var mm = 1;
+        let mm = 1;
         if ( measurementUnits === "cm" )
             mm = 10;
         else if ( measurementUnits === "inch" )
             mm = 25.4;
 
-        var pp = mm;
+        let pp = mm;
 
         if ( patternUnits === "cm" )
             pp = mm / 10;
@@ -7321,13 +7297,13 @@ class Expression {
 
         else if  ( this.operation === "^" )
         {
-            var p1 = this.params[0].value(currentLength);
-            var p2 = this.params[1].value(currentLength);
+            const p1 = this.params[0].value(currentLength);
+            const p2 = this.params[1].value(currentLength);
             return Math.pow( p1, p2 );
         }    
         else if (this.operation === "?")
         {
-            var conditionTestResult = this.params[0].value(currentLength);
+            const conditionTestResult = this.params[0].value(currentLength);
             if ( conditionTestResult )
                 return this.params[1].value(currentLength);
             else
@@ -7452,8 +7428,8 @@ class Expression {
         }
         else if ( this.operation ) 
         {
-            var useOperatorNotation = false;
-            var precedence = 0;
+            let useOperatorNotation = false;
+            let precedence = 0;
 
             if (    (this.operation === "+") 
                  || (this.operation === "-") )
@@ -7480,14 +7456,14 @@ class Expression {
             //power = 5
             //ternary = 2
 
-            var t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
+            let t = ( useOperatorNotation || this.operation === "()" ? "" : this.operation );
             
-            var useParenthesis = ( ( this.operation === "()" ) || ( precedence < parentPrecedence ) || (!useOperatorNotation) );
+            const useParenthesis = ( ( this.operation === "()" ) || ( precedence < parentPrecedence ) || (!useOperatorNotation) );
 
             if ( useParenthesis )
                 t += "(";
 
-            var first = true;
+            let first = true;
             for ( const p of this.params )
             {
                 if ( ! first )
@@ -7635,7 +7611,6 @@ class Bounds {
 //https://github.com/DmitryBaranovskiy/raphael/blob/v2.1.1/dev/raphael.core.js#L1837
 //https://github.com/jarek-foksa/path-data-polyfill/blob/master/path-data-polyfill.js
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
 import { Intersection, Point2D, ShapeInfo } from '../node_modules/kld-intersections/dist/index-esm.js';
 
 
@@ -7662,25 +7637,24 @@ class GeoArc {
     //Hashed together from https://stackoverflow.com/questions/30277646/svg-convert-arcs-to-cubic-bezier and https://github.com/BigBadaboom/androidsvg/blob/5db71ef0007b41644258c1f139f941017aef7de3/androidsvg/src/main/java/com/caverock/androidsvg/utils/SVGAndroidRenderer.java#L2889
     asGeoSpline() {
 
-        var angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
-        var angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
-        var angleExtentRad = angleEndRad - angleStartRad;
-        var numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
-        var angleIncrement = angleExtentRad / numSegments;
+        const angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
+        const angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
+        const angleExtentRad = angleEndRad - angleStartRad;
+        const numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
+        const angleIncrement = angleExtentRad / numSegments;
 
-        var controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
+        const controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
 
-        var nodeData = [];
+        const nodeData = [];
 
-        var node = {};
+        let node = {};
         nodeData.push( node );
 
-        for (var i=0; i<numSegments; i++)
+        for (let i=0; i<numSegments; i++)
         {
-            var angle = angleStartRad + i * angleIncrement;
-
-            var dx = Math.cos(angle) * this.radius;
-            var dy = Math.sin(angle) * this.radius;
+            let angle = angleStartRad + i * angleIncrement;
+            let dx = Math.cos(angle) * this.radius;
+            let dy = Math.sin(angle) * this.radius;
 
             if ( ! node.point )
                 node.point = new GeoPoint( this.center.x + dx , this.center.y - dy );
@@ -7718,14 +7692,13 @@ class GeoArc {
         //hypotenous is the line tangent-arc.center - known length
         //lines tangent-p and p-center form a right angle.   p-center has length arc.radius
         //cos(i) = arc.radius / tangent-arc.center
-        var radius  = this.radius;
-        var h       = new GeoLine( this.center, pointOnTangent );
-        var hLength = h.length;
-        var angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
-        var totalAngleR;
+        const radius  = this.radius;
+        const h       = new GeoLine( this.center, pointOnTangent );
+        const hLength = h.length;
+        const angle   = Math.acos( radius/hLength ); //Would be an error if hLength < radius, as this means pointOnTangent is within the circle. 
 
-        var tangentTouchPoints = [ this.center.pointAtDistanceAndAngleRad( radius, h.angle - angle ),
-                                   this.center.pointAtDistanceAndAngleRad( radius, h.angle + angle ) ];        
+        const tangentTouchPoints = [ this.center.pointAtDistanceAndAngleRad( radius, h.angle - angle ),
+                                     this.center.pointAtDistanceAndAngleRad( radius, h.angle + angle ) ];        
         
         return tangentTouchPoints;
     }
@@ -7735,13 +7708,9 @@ class GeoArc {
 
         //TODO if this is a full circle we should really generate an svg circle rather than using a path
 
-        var arcPath = d3.path();
+        const arcPath = d3.path();
 
-        //arcPath.arc( this.center.x, this.center.y, 
-        //             this.radius, 
-        //             -this.angle1 * Math.PI / 180, -this.angle2 * Math.PI / 180, true );        
-
-        var a2 = this.angle2;
+        let a2 = this.angle2;
 
         if ( a2 < this.angle1 )
             a2 += 360;
@@ -7772,12 +7741,11 @@ class GeoArc {
 
     
     pointAlongPath( length ) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         if ( length > path.getTotalLength() )
             length = path.getTotalLength();
-        var p = path.getPointAtLength( length );
-        //console.log(p);      
+        const p = path.getPointAtLength( length );
         return new GeoPoint( p.x, p.y );
     }        
 
@@ -7794,17 +7762,16 @@ class GeoArc {
             return this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
         }
 
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var l = path.getTotalLength();
-        var p = path.getPointAtLength( l * fraction );
-        //console.log(p);      
+        const l = path.getTotalLength();
+        const p = path.getPointAtLength( l * fraction );
         return new GeoPoint( p.x, p.y );
-    }         
+    }
     
     
     pathLength() {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
     }             
@@ -7815,8 +7782,8 @@ class GeoArc {
             return ShapeInfo.circle( this.center.x, this.center.y, this.radius );
 
         //ShapeInfo angles seem to go clockwise from East, rather than our anti-clickwise angles
-        var angle1 = 360-this.angle2;
-        var angle2 = 360-this.angle1;
+        let angle1 = 360-this.angle2;
+        let angle2 = 360-this.angle1;
 
         if ( angle1 < 0 )
         {
@@ -7854,19 +7821,19 @@ class GeoArc {
 
 
     applyOperation( pointTransformer ) {//apply a operationFlip or operationRotate to this GeoArc
-        var center2 = pointTransformer( this.center );
+        const center2 = pointTransformer( this.center );
 
         //s = the point on the arc that we start drawing
-        var s = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle1 );
-        var s2 = pointTransformer( s );
-        var s2line = new GeoLine( center2, s2 );
-        var startAngle2 = s2line.angleDeg();
+        const s = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle1 );
+        const s2 = pointTransformer( s );
+        const s2line = new GeoLine( center2, s2 );
+        const startAngle2 = s2line.angleDeg();
 
         //f = the point on the arc that we finish drawing
-        var f = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
-        var f2 = pointTransformer( f );
-        var f2line = new GeoLine( center2, f2 );
-        var finishAngle2 = f2line.angleDeg();
+        const f = this.center.pointAtDistanceAndAngleDeg( this.radius, this.angle2 );
+        const f2 = pointTransformer( f );
+        const f2line = new GeoLine( center2, f2 );
+        const finishAngle2 = f2line.angleDeg();
 
         //Because we've flipped the start angle becomes the finish angle and vice verasa.
         return new GeoArc(  center2, this.radius, finishAngle2 /*deg*/, startAngle2 /*deg*/  );
@@ -7909,8 +7876,6 @@ class GeoArc {
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
-
 class GeoEllipticalArc {
 
     constructor( center, radius1, radius2, angle1, angle2, rotationAngle ) {
@@ -7936,11 +7901,11 @@ class GeoEllipticalArc {
     //http://xahlee.info/js/svg_path_ellipse_arc.html
     //https://observablehq.com/@toja/ellipse-and-elliptical-arc-conversion
     getEllipsePointForAngle(cx, cy, rx, ry, phi, theta) {
-        const { abs, sin, cos } = Math;
+        const { sin, cos, sqrt, pow } = Math;
         
         //https://en.wikipedia.org/wiki/Ellipse#Polar_form_relative_to_focus
         const radius=   ( rx * ry )
-                      / Math.sqrt( Math.pow( rx * Math.sin( theta ),2 ) + Math.pow( ry * Math.cos( theta ), 2 ) ); 
+                      / sqrt( pow( rx * sin( theta ),2 ) + pow( ry * cos( theta ), 2 ) ); 
 
         const M = radius * cos(theta),
               N = radius * sin(theta);  
@@ -7952,25 +7917,24 @@ class GeoEllipticalArc {
 
     //TODO based on SVG book, but corrected
     centeredToSVG( cx, cy, rx, ry, thetaDeg/*arcStart*/, deltaDeg/*arcExtent*/, phiDeg/*x axis rotation*/ ) {
-        var theta, endTheta, phiRad;
-        var largeArc, sweep;
-        theta = thetaDeg * Math.PI / 180;
-        endTheta = ( thetaDeg + deltaDeg ) * Math.PI / 180;
-        phiRad = phiDeg * Math.PI / 180;
+        
+        const theta = thetaDeg * Math.PI / 180;
+        const endTheta = ( thetaDeg + deltaDeg ) * Math.PI / 180;
+        const phiRad = phiDeg * Math.PI / 180;
 
         //console.log( "centeredToSVG thetaDeg: " + thetaDeg );
         //console.log( "centeredToSVG deltaDeg: " + deltaDeg );
         //console.log( "centeredToSVG endThetaDeg: " + ( thetaDeg + deltaDeg ) );
         //console.log( "centeredToSVG endTheta: " + endTheta );
 
-        var start = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, theta);
-        var end = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, endTheta);
+        const start = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, theta);
+        const end = this.getEllipsePointForAngle(cx, cy, rx, ry, phiRad, endTheta);
 
         //console.log( "3. centeredToSVG x0,y0: " + x0 + "," + y0 );
         //console.log( "3. centeredToSVG x1,y1: " + x1 + "," + y1 );
 
-        largeArc = ( deltaDeg > 180 ) || ( deltaDeg < -180 ) ? 1 : 0;
-        sweep = ( deltaDeg > 0 ) ? 0 : 1;
+        const largeArc = ( deltaDeg > 180 ) || ( deltaDeg < -180 ) ? 1 : 0;
+        const sweep = ( deltaDeg > 0 ) ? 0 : 1;
          
         return { x: start.x,
                  y: start.y,
@@ -7986,11 +7950,8 @@ class GeoEllipticalArc {
 
     useSvgEllipse() {
         //we can use <ellipse> if it is a full ellipse, otherwise we need to use an elliptical arc path
-        if (    ( this.angle1 === 0 ) 
-             && ( this.angle2 === 360 ) )
-            return true;
-
-        return false;
+        return (    ( this.angle1 === 0 ) 
+                 && ( this.angle2 === 360 ) );
     }
 
 
@@ -8020,7 +7981,7 @@ class GeoEllipticalArc {
         if ( this.rotationAngle === 0 )
             return ShapeInfo.arc( this.center.x, this.center.y, this.radius1, this.radius2, this.angle1/180*Math.PI, this.angle2/180*Math.PI)
 
-        var svgPath = this.svgPath();
+        const svgPath = this.svgPath();
         //console.log( "EllipticalArc.asShapeInfo() this might not work for intersections... " + svgPath );
         return ShapeInfo.path( svgPath );
     }
@@ -8049,27 +8010,27 @@ class GeoEllipticalArc {
 
         //We won't be a rotated elipse. 
 
-        var angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
-        var angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
-        var angleExtentRad = angleEndRad - angleStartRad;
-        var numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
-        var angleIncrement = angleExtentRad / numSegments;
+        const angleStartRad = this.angle1 / 360.0 * 2.0 * Math.PI;
+        const angleEndRad = this.angle2 / 360.0 * 2.0 * Math.PI;
+        const angleExtentRad = angleEndRad - angleStartRad;
+        const numSegments =  Math.ceil( Math.abs(angleExtentRad) * 2.0 / Math.PI); 
+        const angleIncrement = angleExtentRad / numSegments;
 
-        var controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
+        const controlLength = 4.0 / 3.0 * Math.sin(angleIncrement / 2.0) / (1.0 + Math.cos(angleIncrement / 2.0));
 
-        var nodeData = [];
+        const nodeData = [];
 
-        var node = {};
+        let node = {};
         nodeData.push( node );
 
-        for (var i=0; i<numSegments; i++)
+        for (let i=0; i<numSegments; i++)
         {
-            var angle = angleStartRad + i * angleIncrement;
+            let angle = angleStartRad + i * angleIncrement;
 
-            var dxr1 = Math.cos(angle) * this.radius1;
-            var dxr2 = Math.cos(angle) * this.radius2;
-            var dyr1 = Math.sin(angle) * this.radius1;
-            var dyr2 = Math.sin(angle) * this.radius2;
+            let dxr1 = Math.cos(angle) * this.radius1;
+            let dxr2 = Math.cos(angle) * this.radius2;
+            let dyr1 = Math.sin(angle) * this.radius1;
+            let dyr2 = Math.sin(angle) * this.radius2;
 
             if ( ! node.point )
                 node.point = new GeoPoint( this.center.x + dxr1 , this.center.y - dyr2 );
@@ -8093,26 +8054,24 @@ class GeoEllipticalArc {
 
 
     pointAlongPathFraction( fraction ) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var l = path.getTotalLength();
-        var p = path.getPointAtLength( l * fraction );
-        //console.log(p);      
+        const l = path.getTotalLength();
+        const p = path.getPointAtLength( l * fraction );
         return new GeoPoint( p.x, p.y );
     }       
 
 
     pointAlongPath( length ) {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
-        var p = path.getPointAtLength( length );
-        //console.log(p);      
+        const p = path.getPointAtLength( length );
         return new GeoPoint( p.x, p.y );
     }       
 
 
     pathLength() {
-        var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute( "d", this.svgPath() );
         return path.getTotalLength();
     }             
@@ -8120,22 +8079,22 @@ class GeoEllipticalArc {
 
     applyOperation( pointTransformer ) { //apply a operationFlip or operationRotate to this GeoEllipticalArc
 
-        var center2 = pointTransformer( this.center );
+        const center2 = pointTransformer( this.center );
 
         //Converted start and finishing angles are calculated identically to a circle
         //It doesn't matter from this perspective whether we use radius1 or radius2
 
         //s = the point on the arc that we start drawing
-        var s = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle1 + this.rotationAngle );
-        var s2 = pointTransformer( s );
-        var s2line = new GeoLine( center2, s2 );
-        var startAngle2 = s2line.angleDeg();
+        const s = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle1 + this.rotationAngle );
+        const s2 = pointTransformer( s );
+        const s2line = new GeoLine( center2, s2 );
+        let startAngle2 = s2line.angleDeg();
 
         //f = the point on the arc that we finish drawing
-        var f = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle2 + this.rotationAngle );
-        var f2 = pointTransformer( f );
-        var f2line = new GeoLine( center2, f2 );
-        var finishAngle2 = f2line.angleDeg();
+        const f = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.angle2 + this.rotationAngle );
+        const f2 = pointTransformer( f );
+        const f2line = new GeoLine( center2, f2 );
+        let finishAngle2 = f2line.angleDeg();
 
         //don't abritrarily convert 360 to 0. 
         if (( finishAngle2 === 0 ) && ( this.angle2 === 360 ))
@@ -8145,13 +8104,13 @@ class GeoEllipticalArc {
             startAngle2 = 360;
 
         //Is this a good enough test?
-        var isFlip = ( this.angle1 < this.angle2 ) != ( startAngle2 < finishAngle2 );
+        const isFlip = ( this.angle1 < this.angle2 ) != ( startAngle2 < finishAngle2 );
 
         //This is an ellipse, so we also need to adjust the ellipse rotation. 
-        var r = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.rotationAngle );
-        var r2 = pointTransformer( r );
-        var r2line = new GeoLine( center2, r2 );
-        var rotationAngle2 = r2line.angleDeg() + ( isFlip ? 180 : 0 );
+        const r = this.center.pointAtDistanceAndAngleDeg( this.radius1, this.rotationAngle );
+        const r2 = pointTransformer( r );
+        const r2line = new GeoLine( center2, r2 );
+        let rotationAngle2 = r2line.angleDeg() + ( isFlip ? 180 : 0 );
 
         // + 180;
         if ( rotationAngle2 >= 360 )
@@ -8190,9 +8149,6 @@ class GeoEllipticalArc {
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
 
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
-
-
 //A line
 class GeoLine {
 
@@ -8207,8 +8163,8 @@ class GeoLine {
         if ( ! p2 )
             throw "GeoLine p2 not defined.";
 
-        this.p1 = p1;//new GeoPoint( x1, y1 );
-        this.p2 = p2;//new GeoPoint( x2, y2 );
+        this.p1 = p1;
+        this.p2 = p2;
     
         this.deltaX = ( this.p2.x - this.p1.x ); //nb. +ve to the east from p1 to p2
         this.deltaY = ( this.p2.y - this.p1.y ); //nb +ve to the south from p1 to p2
@@ -8221,8 +8177,6 @@ class GeoLine {
         if ( this.angle < 0 )
             this.angle = this.angle + (2 * Math.PI);          
     
-        //alert( "Line angle:" + this.angle + " (" + ( this.angle / (2*Math.PI) * 360) + "deg anti clockwise from east" );
-    
         this.slope  = ( this.deltaY / this.deltaX );
         this.offset = this.p1.y - ( this.p1.x * this.slope ); //the y values where x = 0; the intersection of the line with the y-axis
         //this line is generically: y = offset + ( x * slope )
@@ -8233,11 +8187,11 @@ class GeoLine {
         //intersection
         //  // offset - line2.offset / ( line2.slope - slope ) = x
 
-        var swap = Math.abs( this.deltaX ) > Math.abs( line2.deltaX );
-        var line1s = swap ? this : line2; //this.p1.x < this.p2.x ? this : new GeoLine( this.p2, this.p1 );
-        var line2s = swap ? line2 : this; //line2.p1.x < line2.p2.x ? line2 : new GeoLine( line2.p2, line2.p1 );
+        const swap = Math.abs( this.deltaX ) > Math.abs( line2.deltaX );
+        const line1s = swap ? this : line2;
+        const line2s = swap ? line2 : this;
 
-        var x, y;
+        let x, y;
 
         if (    ( line2s.slope === Infinity ) 
              || ( line2s.slope === -Infinity )  )
@@ -8291,7 +8245,7 @@ class GeoLine {
             }
         }
 
-        var arcSI,lineSI;
+        let arcSI,lineSI;
 
         //nb there is a special case for GeoEllipticalArc where this.p1 == arc.center in 
         //which case a simple formula gives the intersect.
@@ -8303,57 +8257,45 @@ class GeoLine {
             //create an equivalent arc that is not rotated.
             //create a new line, rotate the startpoint by -rotationAngle, the new lines angle should also be less by -rotationAngle
             //finally rotate the intersect point back
-            var nrArc = new GeoEllipticalArc( arc.center,
+            const nrArc = new GeoEllipticalArc( arc.center,
                                               arc.radius1,
                                               arc.radius2, 
                                               arc.angle1, 
                                               arc.angle2,
                                               0 );
-            var p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
-            //var p2rotated = this.p2.rotate( arc.center, -arc.rotationAngle );
-            var bounds = new Bounds();
+            const p1rotated = this.p1.rotate( arc.center, -arc.rotationAngle );
+            const bounds = new Bounds();
             bounds.adjust( p1rotated );
             arc.adjustBounds( bounds );
-            maxLineLength = bounds.diagonaglLength() * 1.25;
-            var lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( maxLineLength/*infinite*/, (this.angleDeg() - arc.rotationAngle) ) );     
-            //var lineRotated = new GeoLine( p1rotated, p2rotated );
+            const maxLineLength = bounds.diagonaglLength() * 1.25;
+            const lineRotated = new GeoLine( p1rotated, p1rotated.pointAtDistanceAndAngleDeg( maxLineLength/*infinite*/, (this.angleDeg() - arc.rotationAngle) ) );
             lineSI = lineRotated.asShapeInfo();
             arcSI = nrArc.asShapeInfo();
-            
-            //var extendedLine = new GeoLine( lineRotated.p1.pointAtDistanceAndAngleRad( -1000/*infinite*/, lineRotated.angle ), lineRotated.p2 );
-            //lineSI = extendedLine.asShapeInfo();    
         }
         else
         {
-            var bounds = new Bounds();
+            const bounds = new Bounds();
             bounds.adjust( this.p1 );
-            //bounds.adjust( this.p2 );
             arc.adjustBounds( bounds );
-            var maxLineLength = bounds.diagonaglLength() * 1.25;
+            const maxLineLength = bounds.diagonaglLength() * 1.25;
             
             //This should be sufficient, extend our line forward enough that it should intersect...
-            //var extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength*10, this.angle ));
-
             //Ensure that the line is long enough to intersect. 
-            //var extendedLine = new GeoLine(  this.p1.pointAtDistanceAndAngleRad( -maxLineLength, this.angle ), this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
-            var extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
+            const extendedLine = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( maxLineLength, this.angle ));  
 
             arcSI = arc.asShapeInfo();
             lineSI = extendedLine.asShapeInfo();    
         }
     
-        var intersections = Intersection.intersect(arcSI, lineSI);
+        let intersections = Intersection.intersect(arcSI, lineSI);
         
-        //console.log( "Intersections:" );
-        //intersections.points.forEach(console.log);    
-
         if ( intersections.points.length === 0 )
         { 
             if ( ! alreadyTweaked )
             {
                 //console.log( "Failed for angle ", this.angle );
                 //console.log( "PI:", this.angle/Math.PI );
-                var lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.00000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
+                const lineTweaked = new GeoLine( this.p1, this.p1.pointAtDistanceAndAngleRad( this.length, this.angle + (Math.PI/180 * 0.00000001) )); //Adding a billionth of a degree fixes the broken intersection issue.
 
                 try {
                     //This should be no different, but sometimes this works when arc-line intersect fails
@@ -8372,42 +8314,23 @@ class GeoLine {
             throw "No intersection with arc. ";
         }
 
-        var whichPoint = 0;
+        let whichPoint = 0;
         if ( intersections.points.length > 1 )//-1;//0; //0 for G1 in headpattern. //intersections.points.length -1; //TODO do this properly
         {            
-            if ( false )
+            //choose the first point we get to along the line. 
+            let smallestDistance;
+            for (const i in intersections.points ) 
             {
-                //choose the point with the smallest angle. 
-                var smallestAngle = 361;
-                for (var i = 0; i < intersections.points.length; i++) 
+                const pi = intersections.points[i];
+                const p1pi = new GeoLine( this.p1, pi );
+                
+                if (    ( smallestDistance === undefined ) 
+                        || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
+                            && ( p1pi.length < smallestDistance ) ) )
                 {
-                    var pi = intersections.points[i];
-                    var p1pi = new GeoLine( arc.center, pi );
-                    console.log( i + " " + p1pi.angleDeg() );
-                    if ( p1pi.angleDeg() < smallestAngle )
-                    {
-                        smallestAngle = p1pi.angleDeg();
-                        whichPoint = i;
-                    }
+                    smallestDistance = p1pi.length;
+                    whichPoint = i;
                 }
-            }
-            else
-            {
-                //choose the first point we get to along the line. 
-                let smallestDistance;
-                for (const i in intersections.points ) 
-                {
-                    const pi = intersections.points[i];
-                    const p1pi = new GeoLine( this.p1, pi );
-                    
-                    if (    ( smallestDistance === undefined ) 
-                         || (    ( Math.abs( p1pi.angle - this.angle ) < 0.0001 ) //rather than 180 deg the other way (allowing for rounding errors)
-                              && ( p1pi.length < smallestDistance ) ) )
-                    {
-                        smallestDistance = p1pi.length;
-                        whichPoint = i;
-                    }
-                }            
             }
         }
 
@@ -8486,9 +8409,6 @@ class GeoLine {
 //A point
 class GeoPoint {
 
-    //x;
-    //y;
-
     constructor( x, y ) {
         this.x = x;
         this.y = y;
@@ -8500,6 +8420,7 @@ class GeoPoint {
             throw "GeoPoint y not a number.";
     }
 
+    
     line( point2 ) {    
         throw "this looks broken, two params, not four";
         return new GeoLine( this.x, this.y, point2.x, point2.y );
@@ -8578,9 +8499,6 @@ class GeoPoint {
 //(e.g. intersection of lines with splines).
 //
 //Source maintained at: https://github.com/MrDoo71/PatternEditor
-
-//import { Intersection, Point2D, ShapeInfo } from 'kld-intersections/dist/index-esm.js';
-
 
 class GeoSpline {
 
@@ -8835,7 +8753,7 @@ class GeoSpline {
             maxT = 1.0,
             iter = 0;
 
-        const threshold = 0.0001;//this.pathLength() / 10000.0;
+        const threshold = 0.0001;
 
         let t;
         let closestDistance;

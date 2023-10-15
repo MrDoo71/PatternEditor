@@ -9,7 +9,7 @@ class TrueDartResult extends DrawingObject {
 
 
     calculate(bounds) {
-        var d = this.data;
+        const d = this.data;
 
         if (typeof this.fromOperation === "undefined")
             this.fromOperation = this.drawing.getObject(d.fromOperation);
@@ -69,9 +69,6 @@ class TrueDartResult extends DrawingObject {
 
         if ( this.p )
             this.drawDot( g, drawOptions );
-
-        //if ( this.line )
-        //    this.drawLine( g, drawOptions ); 
             
         if ( this.p )
             this.drawLabel( g, drawOptions );
@@ -85,9 +82,6 @@ class TrueDartResult extends DrawingObject {
 
 
     setDependencies( dependencies ) {
-        //dependencies.add( this, this.basePoint );
-
-        //TODO add a dependency on D1/D3 depeending on
         dependencies.add( this, this.fromOperation );
     }    
 

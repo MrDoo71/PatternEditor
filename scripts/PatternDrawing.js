@@ -298,7 +298,6 @@ class PatternDrawing {
     //Add a label (to svg group g) positioned midway along path
     drawLabelAlongPath( g, path, label, fontSize, followPathDirection )
     {
-        //const d = this.data; //the original json data
         fontSize = fontSize ? fontSize : Math.round( 1300 / scale / fontsSizedForScale )/100;
 
         if ( followPathDirection )
@@ -333,7 +332,7 @@ class PatternDrawing {
         
         try {
             const p = path.pointAlongPathFraction(0.5);
-            var a = 0; //horizontal, unless we get an angle. 
+            let a = 0; //horizontal, unless we get an angle. 
             if ( path instanceof GeoLine  )
             {
                 a = path.angleDeg();
@@ -349,10 +348,10 @@ class PatternDrawing {
                 throw "Failed to determine position for label";
 
             {
-                var baseline = "middle";
-                var align = "middle";
-                var ta = 0;
-                var dy = 0;
+                let baseline = "middle";
+                let align = "middle";
+                let ta = 0;
+                let dy = 0;
                 //const patternUnits = this.drawing.pattern.units;
                 // /const spacing = (fontSize * 0.2);
                 const spacing = this.pattern.getPatternEquivalentOfMM(1);
@@ -361,7 +360,6 @@ class PatternDrawing {
                 {
                     baseline = "hanging"; //For Safari, handing doesn't work once rotated
                     ta = -a;
-                    //p.y += spacing;
                     dy = spacing;
                 }
                 else
@@ -371,7 +369,6 @@ class PatternDrawing {
                     {
                         baseline = "hanging"; //For Safari, handing doesn't work once rotated
                         ta = - a;
-                        //p.y += spacing;
                         dy = spacing;
                     }
                     // West(ish)
@@ -380,7 +377,6 @@ class PatternDrawing {
                     {
                         baseline = "hanging";
                         ta = - (a-180);
-                        //p.y += spacing;
                         dy = spacing;
                     }
                     //North(ish)
