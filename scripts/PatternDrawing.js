@@ -38,7 +38,7 @@ class PatternDrawing {
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
         for ( const a in this.drawingObjects ) {
-            var dObj = this.drawingObjects[a];
+            let dObj = this.drawingObjects[a];
             dObj = this.newDrawingObj(dObj);
             
             if (dObj === null)
@@ -53,16 +53,16 @@ class PatternDrawing {
         //Take each group in the JSON and convert to an object. 
         //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
-            for ( const a in this.data.group ) {
+            for ( let a=0; a<this.data.group.length; a++ ) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
         if ( this.data.piece )
-            for ( const a in this.data.piece ) {
+            for ( let a=0; a<this.data.piece.length; a++ ) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
             }
 
-        var options = this.pattern.data.options; 
+        const options = this.pattern.data.options; 
         if ( options && ( typeof options.targetPiece === "object" ) )
         {
             options.targetPiece.adjustBounds( this.visibleBounds );
@@ -100,7 +100,7 @@ class PatternDrawing {
         if (typeof name === "object")
             return name;
 
-        var objOnThisPiece = this.drawing[name];
+        const objOnThisPiece = this.drawing[name];
         if ( objOnThisPiece )
             return objOnThisPiece;
 
@@ -113,94 +113,56 @@ class PatternDrawing {
 
     //TODO make this a static method of DrawingObject
     newDrawingObj(dObj) {
-        if (dObj.objectType === "pointSingle")
-            return new PointSingle(dObj);
-        else if (dObj.objectType === "pointEndLine")
-            return new PointEndLine(dObj);
-        else if (dObj.objectType === "pointAlongLine")
-            return new PointAlongLine(dObj);
-        else if (dObj.objectType === "pointAlongPerpendicular")
-            return new PointAlongPerpendicular(dObj);
-        else if (dObj.objectType === "pointAlongBisector")
-            return new PointAlongBisector(dObj);            
-        else if (dObj.objectType === "pointFromXandYOfTwoOtherPoints")
-            return new PointFromXandYOfTwoOtherPoints(dObj);
-        else if (dObj.objectType === "pointIntersectLineAndAxis")
-            return new PointIntersectLineAndAxis(dObj);
-        else if (dObj.objectType === "line")
-            return new Line(dObj);
-        else if (dObj.objectType === "pointLineIntersect")
-            return new PointLineIntersect(dObj);
-        else if (dObj.objectType === "pointIntersectArcAndAxis")
-            return new PointIntersectArcAndAxis(dObj);
-        else if (dObj.objectType === "pointIntersectArcAndLine")
-            return new PointIntersectArcAndLine(dObj);
-        else if (dObj.objectType === "perpendicularPointAlongLine")
-            return new PerpendicularPointAlongLine(dObj);
-        else if (dObj.objectType === "pointOfTriangle")
-            return new PointOfTriangle(dObj);            
-        else if (dObj.objectType === "pointShoulder")
-            return new PointShoulder(dObj);            
-        else if (dObj.objectType === "arcSimple")
-            return new ArcSimple(dObj);
-        else if (dObj.objectType === "arcElliptical")
-            return new ArcElliptical(dObj);
-        else if (dObj.objectType === "splineSimple")
-            return new SplineSimple(dObj);
-        else if (dObj.objectType === "splineUsingPoints")
-            return new SplineUsingControlPoints(dObj);
-        else if (dObj.objectType === "splinePathInteractive")
-            return new SplinePathInteractive(dObj);
-        else if (dObj.objectType === "splinePathUsingPoints")
-            return new SplinePathUsingPoints(dObj);
-        else if (dObj.objectType === "cutSpline")   //SHOULD THIS BE pointCutSpline for consistency?
-            return new CutSpline(dObj);
-        else if (dObj.objectType === "pointCutSplinePath")
-            return new PointCutSplinePath(dObj);      
-        else if (dObj.objectType === "pointCutArc")
-            return new PointCutArc(dObj);                              
-        else if (dObj.objectType === "pointIntersectCurves")
-            return new PointIntersectCurves(dObj);      
-        else if (dObj.objectType === "pointIntersectCurveAndAxis")
-            return new PointIntersectCurveAndAxis(dObj);      
-        else if (dObj.objectType === "pointIntersectArcs")
-            return new PointIntersectArcs(dObj);      
-        else if (dObj.objectType === "pointIntersectCircles")
-            return new PointIntersectCircles(dObj);                  
-        else if (dObj.objectType === "operationMove")
-            return new OperationMove(dObj);                  
-        else if (dObj.objectType === "operationRotate")
-            return new OperationRotate(dObj);                  
-        else if (dObj.objectType === "operationFlipByAxis")
-            return new OperationFlipByAxis(dObj);                  
-        else if (dObj.objectType === "operationFlipByLine")
-            return new OperationFlipByLine(dObj);                  
-        else if (dObj.objectType === "operationResult")
-            return new OperationResult(dObj);                  
-        else if (dObj.objectType === "pointFromArcAndTangent")
-            return new PointFromArcAndTangent(dObj);                  
-        else if (dObj.objectType === "pointFromCircleAndTangent")
-            return new PointFromCircleAndTangent(dObj);                  
-        else if (dObj.objectType === "trueDart")
-            return new TrueDart(dObj);                              
-        else if (dObj.objectType === "trueDartResult")
-            return new TrueDartResult(dObj);                              
-        else if (dObj.objectType === "arcWithLength")
-            return new ArcWithLength(dObj);                              
-        else 
+        switch( dObj.objectType )
         {
-            var fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
+            case "pointSingle":               return new PointSingle(dObj);
+            case "pointEndLine":              return new PointEndLine(dObj);
+            case "pointAlongLine":            return new PointAlongLine(dObj);
+            case "pointAlongPerpendicular":   return new PointAlongPerpendicular(dObj);
+            case "pointAlongBisector":        return new PointAlongBisector(dObj);            
+            case "pointFromXandYOfTwoOtherPoints": return new PointFromXandYOfTwoOtherPoints(dObj);
+            case "pointIntersectLineAndAxis": return new PointIntersectLineAndAxis(dObj);
+            case "line":                      return new Line(dObj);
+            case "pointLineIntersect":        return new PointLineIntersect(dObj);
+            case "pointIntersectArcAndAxis":  return new PointIntersectArcAndAxis(dObj);
+            case "pointIntersectArcAndLine":  return new PointIntersectArcAndLine(dObj);
+            case "perpendicularPointAlongLine": return new PerpendicularPointAlongLine(dObj);
+            case "pointOfTriangle":           return new PointOfTriangle(dObj);            
+            case "pointShoulder":             return new PointShoulder(dObj);            
+            case "arcSimple":                 return new ArcSimple(dObj);
+            case "arcElliptical":             return new ArcElliptical(dObj);
+            case "splineSimple":              return new SplineSimple(dObj);
+            case "splineUsingPoints":         return new SplineUsingControlPoints(dObj);
+            case "splinePathInteractive":     return new SplinePathInteractive(dObj);
+            case "splinePathUsingPoints":     return new SplinePathUsingPoints(dObj);
+            case "cutSpline":                 return new CutSpline(dObj);
+            case "pointCutSplinePath":        return new PointCutSplinePath(dObj);      
+            case "pointCutArc":               return new PointCutArc(dObj);                              
+            case "pointIntersectCurves":      return new PointIntersectCurves(dObj);      
+            case "pointIntersectCurveAndAxis":return new PointIntersectCurveAndAxis(dObj);      
+            case "pointIntersectArcs":        return new PointIntersectArcs(dObj);      
+            case "pointIntersectCircles":     return new PointIntersectCircles(dObj);                  
+            case "operationMove":             return new OperationMove(dObj);                  
+            case "operationRotate":           return new OperationRotate(dObj);                  
+            case "operationFlipByAxis":       return new OperationFlipByAxis(dObj);                  
+            case "operationFlipByLine":       return new OperationFlipByLine(dObj);                  
+            case "operationResult":           return new OperationResult(dObj);                  
+            case "pointFromArcAndTangent":    return new PointFromArcAndTangent(dObj);                  
+            case "pointFromCircleAndTangent": return new PointFromCircleAndTangent(dObj);                  
+            case "trueDart":                  return new TrueDart(dObj);                              
+            case "trueDartResult":            return new TrueDartResult(dObj);                              
+            case "arcWithLength":             return new ArcWithLength(dObj);                              
+        default:
+            const fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
             fail.error =  "Unsupported drawing object type:" + dObj.objectType;
             return fail;
         }
-
-        return null;
     }
 
     newFormula(formula) {
 
-        var patternUnits = this.pattern.units;
-        var f = formula;
+        const patternUnits = this.pattern.units;
+        const f = formula;
         if (typeof formula.constant !== "undefined") {
             f.value = function () {
                 return this.constant;
@@ -209,12 +171,12 @@ class PatternDrawing {
                 return this.constant;
             };
             f.htmlLength = function() {
-                var precision = patternUnits === "mm" ? 10.0 : 100.0;
-                var s = Math.round( precision * this.constant ) / precision;
+                const precision = patternUnits === "mm" ? 10.0 : 100.0;
+                const s = Math.round( precision * this.constant ) / precision;
                 return '<span class="const">' + s + " " + patternUnits + '</span>';
             };
             f.htmlAngle = function() {
-                var s = Math.round( 10.0 * this.constant ) / 10.0;
+                const s = Math.round( 10.0 * this.constant ) / 10.0;
                 return '<span class="const">' + s + "&#176;" + '</span>';
             };
         }
@@ -230,17 +192,17 @@ class PatternDrawing {
                 return f.expression.html( asFormula, currentLength );
             };
             f.htmlLength = function( asFormula, currentLength ) {
-                var s = f.expression.html( asFormula, currentLength );
+                let s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
                 {
-                    var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                    const precision = patternUnits === "mm" ? 10.0 : 100.0;
                     s = Math.round( precision * s ) / precision;
                     s += " " + patternUnits;
                 }
                 return s;
             };
             f.htmlAngle = function( asFormula, currentLength ) {
-                var s = f.expression.html( asFormula, currentLength );
+                let s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
                 {
                     s = Math.round( 10.0 * s ) / 10.0;
@@ -268,7 +230,7 @@ class PatternDrawing {
 
     pointSingle(data) {
         data.objectType = "pointSingle";
-        var dObj = this.add( data );
+        const dObj = this.add( data );
         return dObj;
     }
 
@@ -276,12 +238,12 @@ class PatternDrawing {
         console.log("Add() is this used anywhere?");
 
         if (this.defaults) {
-            for (var d in this.defaults) {
+            for (const d in this.defaults) {
                 if (typeof data[d] === "undefined")
                     data[d] = this.defaults[d];
             }
         }
-        var dObj = this.newDrawingObj(data);
+        const dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
         this.drawing[dObj.data.name] = dObj;
         dObj.drawing = this;

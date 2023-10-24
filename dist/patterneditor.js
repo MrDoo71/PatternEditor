@@ -4785,7 +4785,7 @@ class PatternDrawing {
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
         for ( const a in this.drawingObjects ) {
-            var dObj = this.drawingObjects[a];
+            let dObj = this.drawingObjects[a];
             dObj = this.newDrawingObj(dObj);
             
             if (dObj === null)
@@ -4800,16 +4800,16 @@ class PatternDrawing {
         //Take each group in the JSON and convert to an object. 
         //After this the isVisible() method on the drawingObject will work. 
         if ( this.data.group )
-            for ( const a in this.data.group ) {
+            for ( let a=0; a<this.data.group.length; a++ ) {
                 this.groups[a] = new Group( this.data.group[a], this );
             }
         
         if ( this.data.piece )
-            for ( const a in this.data.piece ) {
+            for ( let a=0; a<this.data.piece.length; a++ ) {
                 this.pieces[a] = new Piece( this.data.piece[a], this );
             }
 
-        var options = this.pattern.data.options; 
+        const options = this.pattern.data.options; 
         if ( options && ( typeof options.targetPiece === "object" ) )
         {
             options.targetPiece.adjustBounds( this.visibleBounds );
@@ -4847,7 +4847,7 @@ class PatternDrawing {
         if (typeof name === "object")
             return name;
 
-        var objOnThisPiece = this.drawing[name];
+        const objOnThisPiece = this.drawing[name];
         if ( objOnThisPiece )
             return objOnThisPiece;
 
@@ -4860,94 +4860,56 @@ class PatternDrawing {
 
     //TODO make this a static method of DrawingObject
     newDrawingObj(dObj) {
-        if (dObj.objectType === "pointSingle")
-            return new PointSingle(dObj);
-        else if (dObj.objectType === "pointEndLine")
-            return new PointEndLine(dObj);
-        else if (dObj.objectType === "pointAlongLine")
-            return new PointAlongLine(dObj);
-        else if (dObj.objectType === "pointAlongPerpendicular")
-            return new PointAlongPerpendicular(dObj);
-        else if (dObj.objectType === "pointAlongBisector")
-            return new PointAlongBisector(dObj);            
-        else if (dObj.objectType === "pointFromXandYOfTwoOtherPoints")
-            return new PointFromXandYOfTwoOtherPoints(dObj);
-        else if (dObj.objectType === "pointIntersectLineAndAxis")
-            return new PointIntersectLineAndAxis(dObj);
-        else if (dObj.objectType === "line")
-            return new Line(dObj);
-        else if (dObj.objectType === "pointLineIntersect")
-            return new PointLineIntersect(dObj);
-        else if (dObj.objectType === "pointIntersectArcAndAxis")
-            return new PointIntersectArcAndAxis(dObj);
-        else if (dObj.objectType === "pointIntersectArcAndLine")
-            return new PointIntersectArcAndLine(dObj);
-        else if (dObj.objectType === "perpendicularPointAlongLine")
-            return new PerpendicularPointAlongLine(dObj);
-        else if (dObj.objectType === "pointOfTriangle")
-            return new PointOfTriangle(dObj);            
-        else if (dObj.objectType === "pointShoulder")
-            return new PointShoulder(dObj);            
-        else if (dObj.objectType === "arcSimple")
-            return new ArcSimple(dObj);
-        else if (dObj.objectType === "arcElliptical")
-            return new ArcElliptical(dObj);
-        else if (dObj.objectType === "splineSimple")
-            return new SplineSimple(dObj);
-        else if (dObj.objectType === "splineUsingPoints")
-            return new SplineUsingControlPoints(dObj);
-        else if (dObj.objectType === "splinePathInteractive")
-            return new SplinePathInteractive(dObj);
-        else if (dObj.objectType === "splinePathUsingPoints")
-            return new SplinePathUsingPoints(dObj);
-        else if (dObj.objectType === "cutSpline")   //SHOULD THIS BE pointCutSpline for consistency?
-            return new CutSpline(dObj);
-        else if (dObj.objectType === "pointCutSplinePath")
-            return new PointCutSplinePath(dObj);      
-        else if (dObj.objectType === "pointCutArc")
-            return new PointCutArc(dObj);                              
-        else if (dObj.objectType === "pointIntersectCurves")
-            return new PointIntersectCurves(dObj);      
-        else if (dObj.objectType === "pointIntersectCurveAndAxis")
-            return new PointIntersectCurveAndAxis(dObj);      
-        else if (dObj.objectType === "pointIntersectArcs")
-            return new PointIntersectArcs(dObj);      
-        else if (dObj.objectType === "pointIntersectCircles")
-            return new PointIntersectCircles(dObj);                  
-        else if (dObj.objectType === "operationMove")
-            return new OperationMove(dObj);                  
-        else if (dObj.objectType === "operationRotate")
-            return new OperationRotate(dObj);                  
-        else if (dObj.objectType === "operationFlipByAxis")
-            return new OperationFlipByAxis(dObj);                  
-        else if (dObj.objectType === "operationFlipByLine")
-            return new OperationFlipByLine(dObj);                  
-        else if (dObj.objectType === "operationResult")
-            return new OperationResult(dObj);                  
-        else if (dObj.objectType === "pointFromArcAndTangent")
-            return new PointFromArcAndTangent(dObj);                  
-        else if (dObj.objectType === "pointFromCircleAndTangent")
-            return new PointFromCircleAndTangent(dObj);                  
-        else if (dObj.objectType === "trueDart")
-            return new TrueDart(dObj);                              
-        else if (dObj.objectType === "trueDartResult")
-            return new TrueDartResult(dObj);                              
-        else if (dObj.objectType === "arcWithLength")
-            return new ArcWithLength(dObj);                              
-        else 
+        switch( dObj.objectType )
         {
-            var fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
+            case "pointSingle":               return new PointSingle(dObj);
+            case "pointEndLine":              return new PointEndLine(dObj);
+            case "pointAlongLine":            return new PointAlongLine(dObj);
+            case "pointAlongPerpendicular":   return new PointAlongPerpendicular(dObj);
+            case "pointAlongBisector":        return new PointAlongBisector(dObj);            
+            case "pointFromXandYOfTwoOtherPoints": return new PointFromXandYOfTwoOtherPoints(dObj);
+            case "pointIntersectLineAndAxis": return new PointIntersectLineAndAxis(dObj);
+            case "line":                      return new Line(dObj);
+            case "pointLineIntersect":        return new PointLineIntersect(dObj);
+            case "pointIntersectArcAndAxis":  return new PointIntersectArcAndAxis(dObj);
+            case "pointIntersectArcAndLine":  return new PointIntersectArcAndLine(dObj);
+            case "perpendicularPointAlongLine": return new PerpendicularPointAlongLine(dObj);
+            case "pointOfTriangle":           return new PointOfTriangle(dObj);            
+            case "pointShoulder":             return new PointShoulder(dObj);            
+            case "arcSimple":                 return new ArcSimple(dObj);
+            case "arcElliptical":             return new ArcElliptical(dObj);
+            case "splineSimple":              return new SplineSimple(dObj);
+            case "splineUsingPoints":         return new SplineUsingControlPoints(dObj);
+            case "splinePathInteractive":     return new SplinePathInteractive(dObj);
+            case "splinePathUsingPoints":     return new SplinePathUsingPoints(dObj);
+            case "cutSpline":                 return new CutSpline(dObj);
+            case "pointCutSplinePath":        return new PointCutSplinePath(dObj);      
+            case "pointCutArc":               return new PointCutArc(dObj);                              
+            case "pointIntersectCurves":      return new PointIntersectCurves(dObj);      
+            case "pointIntersectCurveAndAxis":return new PointIntersectCurveAndAxis(dObj);      
+            case "pointIntersectArcs":        return new PointIntersectArcs(dObj);      
+            case "pointIntersectCircles":     return new PointIntersectCircles(dObj);                  
+            case "operationMove":             return new OperationMove(dObj);                  
+            case "operationRotate":           return new OperationRotate(dObj);                  
+            case "operationFlipByAxis":       return new OperationFlipByAxis(dObj);                  
+            case "operationFlipByLine":       return new OperationFlipByLine(dObj);                  
+            case "operationResult":           return new OperationResult(dObj);                  
+            case "pointFromArcAndTangent":    return new PointFromArcAndTangent(dObj);                  
+            case "pointFromCircleAndTangent": return new PointFromCircleAndTangent(dObj);                  
+            case "trueDart":                  return new TrueDart(dObj);                              
+            case "trueDartResult":            return new TrueDartResult(dObj);                              
+            case "arcWithLength":             return new ArcWithLength(dObj);                              
+        default:
+            const fail = new PointSingle( {x:0, y:0, contextMenu:dObj.contextMenu } );
             fail.error =  "Unsupported drawing object type:" + dObj.objectType;
             return fail;
         }
-
-        return null;
     }
 
     newFormula(formula) {
 
-        var patternUnits = this.pattern.units;
-        var f = formula;
+        const patternUnits = this.pattern.units;
+        const f = formula;
         if (typeof formula.constant !== "undefined") {
             f.value = function () {
                 return this.constant;
@@ -4956,12 +4918,12 @@ class PatternDrawing {
                 return this.constant;
             };
             f.htmlLength = function() {
-                var precision = patternUnits === "mm" ? 10.0 : 100.0;
-                var s = Math.round( precision * this.constant ) / precision;
+                const precision = patternUnits === "mm" ? 10.0 : 100.0;
+                const s = Math.round( precision * this.constant ) / precision;
                 return '<span class="const">' + s + " " + patternUnits + '</span>';
             };
             f.htmlAngle = function() {
-                var s = Math.round( 10.0 * this.constant ) / 10.0;
+                const s = Math.round( 10.0 * this.constant ) / 10.0;
                 return '<span class="const">' + s + "&#176;" + '</span>';
             };
         }
@@ -4977,17 +4939,17 @@ class PatternDrawing {
                 return f.expression.html( asFormula, currentLength );
             };
             f.htmlLength = function( asFormula, currentLength ) {
-                var s = f.expression.html( asFormula, currentLength );
+                let s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
                 {
-                    var precision = patternUnits === "mm" ? 10.0 : 100.0;
+                    const precision = patternUnits === "mm" ? 10.0 : 100.0;
                     s = Math.round( precision * s ) / precision;
                     s += " " + patternUnits;
                 }
                 return s;
             };
             f.htmlAngle = function( asFormula, currentLength ) {
-                var s = f.expression.html( asFormula, currentLength );
+                let s = f.expression.html( asFormula, currentLength );
                 if ( ! asFormula )
                 {
                     s = Math.round( 10.0 * s ) / 10.0;
@@ -5015,7 +4977,7 @@ class PatternDrawing {
 
     pointSingle(data) {
         data.objectType = "pointSingle";
-        var dObj = this.add( data );
+        const dObj = this.add( data );
         return dObj;
     }
 
@@ -5023,12 +4985,12 @@ class PatternDrawing {
         console.log("Add() is this used anywhere?");
 
         if (this.defaults) {
-            for (var d in this.defaults) {
+            for (const d in this.defaults) {
                 if (typeof data[d] === "undefined")
                     data[d] = this.defaults[d];
             }
         }
-        var dObj = this.newDrawingObj(data);
+        const dObj = this.newDrawingObj(data);
         this.drawingObjects.push(dObj);
         this.drawing[dObj.data.name] = dObj;
         dObj.drawing = this;
@@ -5267,7 +5229,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         if ( d.contextMenu )
         {
             d3.event.preventDefault() ;
-            var v = newkvpSet(false) ;
+            const v = newkvpSet(false) ;
             v.add("x", d.x) ;   
             v.add("y", d.y) ;    
             goGraph( graphOptions.interactionPrefix + ':' + d.contextMenu ,
@@ -5344,10 +5306,10 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                         //.enter()
                         //.append("button")
                         .attr( "class",  function(d) { 
-                            return d.mode == drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } );
+                            return d.mode === drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } );
         }
 
-        if ( this.drawingTableSplit != drawingTableSplit )
+        if ( this.drawingTableSplit !== drawingTableSplit )
         {
             this.drawingTableSplit = drawingTableSplit; //so we can call this without a parameter when toggling full size. 
             if ( this.updateServer ) 
@@ -5358,11 +5320,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     options.updateServer = graphOptions.interactionPrefix && options.update ? function( k, x, y ) {
         if ( k )
         {
-//TODO shouldn't this be this. rather than options.  ???
-
-            if (    (options.translateX == x)
-                 && (options.translateY == y)
-                 && (options.scale == k) )
+            if (    (options.translateX === x)
+                 && (options.translateY === y)
+                 && (options.scale === k) )
                  return;
 
             options.translateX = x;
@@ -5393,19 +5353,15 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     let focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
     {
-        if (    ( d3.event) 
-             && ( d3.event.originalTarget )
-             && ( d3.event.originalTarget.className === "ps-ref" )
-             && ( selectedObject == d )
+        if (    ( d3.event?.originalTarget?.className === "ps-ref" )
+             && ( selectedObject === d )
              )
         {
             selectedObject = d.drawing.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
         }
-        else if (    ( d3.event) 
-                  && ( d3.event.srcElement )
-                  && ( d3.event.srcElement.className === "ps-ref" )
-                  && ( selectedObject == d )
+        else if (    ( d3.event?.srcElement?.className === "ps-ref" )
+                  && ( selectedObject === d )
              )
         {
             selectedObject = d.drawing.getObject( d3.event.srcElement.innerHTML );
@@ -5422,7 +5378,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 const g = a.drawingSvg;
                 if ( g )
                 {
-                    var strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                    const strokeWidth = a.getStrokeWidth( false, (selectedObject===a) );
 
                     g.selectAll( "line" )
                      .attr("stroke-width", strokeWidth );
@@ -5442,8 +5398,6 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active").removeClass("j-active-2s");
         $(graphdiv.node()).find( ".source" ).removeClass("source");
         $(graphdiv.node()).find( ".target" ).removeClass("target");
-        //$(graphdiv.node()).find( ".j-outline.j-outline-active" ).removeClass("j-outline-active");
-        //$(this).addClass("j-active"); //highlight the object in the drawing
 
         //d, the drawing object we clicked on, has a direct reference to its representation in the table
         if ( selectedObject )
@@ -5457,7 +5411,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             if ( selectedObject.outlineSvg )
             {
                 selectedObject.outlineSvg.node().classList.add("j-active");
-                var selectedObjectToAdjustAfter2Secs = selectedObject; //The user may have clicked on something else within 2 seconds
+                const selectedObjectToAdjustAfter2Secs = selectedObject; //The user may have clicked on something else within 2 seconds
                 //the blush will only last 2 seconds anyway, but if we don't do this then a second click whilst it is the active one doesn't repeat the blush
                 setTimeout( function(){ selectedObjectToAdjustAfter2Secs.outlineSvg.node().classList.add("j-active-2s");}, 2000 );
             }
@@ -5467,30 +5421,28 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         if ( linksGroup )
             linksGroup.selectAll("path.link") //rename .link to .dependency
             .attr("class", function( d ) {                         
-                if ( d.source == selectedObject ) 
+                if ( d.source === selectedObject ) 
                 {
                     d.target.tableSvg.node().classList.add("source");
 
                     if ( d.target.outlineSvg ) //if it errored this will be undefined
                         d.target.outlineSvg.node().classList.add("source");
 
-                    //d.target.tableSvg.each( function() { $(this).addClass("source"); } );
                     return "source link";
                 }
-                if ( d.target == selectedObject ) 
+                if ( d.target === selectedObject ) 
                 {
                     d.source.tableSvg.node().classList.add("target");
 
                     if ( d.source.outlineSvg ) //if it errored this will be undefined
                         d.source.outlineSvg.node().classList.add("target");
 
-                    //d.source.tableSvg.each( function() { $(this).addClass("target"); } );
                     return "target link";
                 }
                 return "link"; 
             } )
             .each( function( d ) { 
-                if (( d.source == selectedObject ) || ( d.target == selectedObject ))
+                if (( d.source === selectedObject ) || ( d.target === selectedObject ))
                     d3.select(this).raise();
              } );
 
@@ -5499,7 +5451,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         {
             if ( selectedObject.tableSvg )
             {
-                var table = d3.select("div.pattern-table");
+                const table = d3.select("div.pattern-table");
                 table.transition()
                      .duration(500)
                      .tween("uniquetweenname", scrollTopTween( selectedObject.tableSvg.node().__data__.tableSvgY - ( table.node().getBoundingClientRect().height /2) ));
@@ -5616,22 +5568,22 @@ function doResizeBar( graphdiv, editorOptions )
     const drag = d3.drag()
     .on("start", function(r) {
         console.log("dragStart");
-        var rg = d3.select(this);        
+        const rg = d3.select(this);        
         r.initialX = d3.event.x;
         r.resizeBarBaseStyle = rg.attr("style");
     })
     .on("drag", function(r) {
         console.log("drag");
-        var rg = d3.select(this);       
+        const rg = d3.select(this);       
         rg.attr("style", r.resizeBarBaseStyle + " left:" + ( d3.event.x - r.initialX ) + "px;" ); 
     })
     .on("end", function(r){
         console.log("dragEnd: " + d3.event.x + " (" + ( d3.event.x - r.initialX ) + ")" );
         console.log( "layoutConfig:" + layoutConfig ); 
-        var rg = d3.select(this);       
+        const rg = d3.select(this);       
         rg.attr("style", r.resizeBarBaseStyle ); 
-        var newDrawingWidth = layoutConfig.drawingWidth + ( d3.event.x - r.initialX );
-        var newTableWidth  = layoutConfig.tableWidth - ( d3.event.x - r.initialX );
+        const newDrawingWidth = layoutConfig.drawingWidth + ( d3.event.x - r.initialX );
+        const newTableWidth  = layoutConfig.tableWidth - ( d3.event.x - r.initialX );
         editorOptions.setDrawingTableSplit( newDrawingWidth / ( newDrawingWidth + newTableWidth) );
         doDrawingAndTable();
     });
@@ -5665,16 +5617,13 @@ function doControls( graphdiv, editorOptions, pattern )
                     .data( editorOptions.viewOption )
                     .enter()
                     .append("button")
-                    .attr( "class",  function(d) { return d.mode == editorOptions.drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } )
+                    .attr( "class",  function(d) { return d.mode === editorOptions.drawingTableSplitMode ? "btn btn-primary" : "btn btn-default" } )
                     .html(function(d) { return '<i class="' + d.icon + '"></i>'; })
                     .on("click", function(d) {
                         d3.event.preventDefault();
                         editorOptions.setDrawingTableSplit( d.mode );
                         doDrawingAndTable();
-                        //$(this).parent().find("button").removeClass("btn-primary").addClass("btn-default");
-                        //$(this).addClass("btn-primary");
                     } );
-                    //TODO set the selected button to button-primary
     }
 
     if ( editorOptions.includeFullPageOption )
@@ -5701,7 +5650,6 @@ function doControls( graphdiv, editorOptions, pattern )
             doDrawingAndTable();
         };
 
-        //const fullPageButton = 
         controls.append("button")
                 .attr("class", "btn btn-default toggle-full-page")
                 .html( '<i class="icon-fullscreen" />' )
@@ -5712,11 +5660,11 @@ function doControls( graphdiv, editorOptions, pattern )
     //Zoom to fit. 
     if ( editorOptions.allowPanAndZoom )
     {
-        const zoomToFitButton = controls.append("button")
-                                     .attr("class", "btn btn-default zoom-to-fit")
-                                     .html( '<i class="icon-move" />' )
-                                     .attr("title","Zoom to fit");
-                                     //.on("click", zoomToFit );
+        //zoomToFitButton
+        controls.append("button")
+            .attr("class", "btn btn-default zoom-to-fit")
+            .html( '<i class="icon-move" />' )
+            .attr("title","Zoom to fit");
     }    
 
     if ( editorOptions.downloadOption )
@@ -5724,20 +5672,20 @@ function doControls( graphdiv, editorOptions, pattern )
         const downloadFunction = function() {
             const serializer = new XMLSerializer();
             const xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
-            //var imgData = 'data:image/svg+xml;base64,\n' + btoa(xmlString);
             const imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
             
             d3.select(this)
-                          .attr( "href-lang", "image/svg+xml; charset=utf-8" )
-                          .attr( "href", imgData )
-                          .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + " " + pattern.getDate() + ".svg" );
+                .attr( "href-lang", "image/svg+xml; charset=utf-8" )
+                .attr( "href", imgData )
+                .attr( "download", pattern.patternNumberAndName +  ( editorOptions.targetPiece.name ? " - " + editorOptions.targetPiece.name : "" ) + " " + pattern.getDate() + ".svg" );
         };
 
-        const downloadLink = controls.append("a")
-                                     .attr("class", "btn btn-default download")
-                                     .html( '<i class="icon-download"></i> Download' )
-                                     .attr("title","Download")
-                                     .on("click", downloadFunction );
+        //downloadLink
+        controls.append("a")
+                .attr("class", "btn btn-default download")
+                .html( '<i class="icon-download"></i> Download' )
+                .attr("title","Download")
+                .on("click", downloadFunction );
     }    
 
     if ( editorOptions.interactive )
@@ -5771,7 +5719,7 @@ function doControls( graphdiv, editorOptions, pattern )
 
                     if(( typeof goGraph === "function" ) && ( g.update ))
                     {
-                        var kvpSet = newkvpSet(true) ;
+                        const kvpSet = newkvpSet(true) ;
                         kvpSet.add('visible', g.visible ) ;
                         goGraph(editorOptions.interactionPrefix + ':' + g.update, fakeEvent(), kvpSet) ;    
                     }
@@ -5781,7 +5729,7 @@ function doControls( graphdiv, editorOptions, pattern )
                 groupOption.append( "i" ).attr("class",  g.visible ? 'icon-eye-open' :'icon-eye-close' )
                            .on( "click", function() { 
                                             d3.event.preventDefault();
-                                            var visible = toggleGroup();
+                                            const visible = toggleGroup();
                                             d3.select(this).attr("class",visible ? "icon-eye-open" : "icon-eye-close" );
                                             doDrawingAndTable( true /*retain focus*/ );
                                 } );
@@ -5791,7 +5739,7 @@ function doControls( graphdiv, editorOptions, pattern )
                 groupOption.append( "i" ).attr("class",  "icon-ellipsis-horizontal k-icon-button" )           
                            .on( "click", function() { 
                             d3.event.preventDefault();
-                            var v = newkvpSet(false) ;
+                            const v = newkvpSet(false) ;
                             goGraph( editorOptions.interactionPrefix + ':' + g.contextMenu, d3.event, v );
                             } );
             });
@@ -5828,7 +5776,7 @@ function doControls( graphdiv, editorOptions, pattern )
             .append("li")
             .attr( "class", function(w) { return w.hide ? 'wallpaper-hidden' : null; } )
             .each( function(wallpaper,i){                
-                var wallpaperDiv = d3.select(this);
+                const wallpaperDiv = d3.select(this);
 
                 
                 wallpaperDiv.append( "span" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
@@ -5837,7 +5785,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                                                       d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
                                                                       w.updateServer();
-                                                                      var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                      const wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
                 wallpaperDiv.append( "span" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
@@ -5846,7 +5794,7 @@ function doControls( graphdiv, editorOptions, pattern )
                                                                       {
                                                                         w.editable = ! w.editable; 
                                                                         d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
-                                                                        var wallpaperGroups = graphdiv.select( "g.wallpapers");
+                                                                        const wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
                                                                       }
                                                                      } );
@@ -5891,17 +5839,20 @@ function initialiseWallpapers( pattern, interactionPrefix )
             }
             else
             {
-                if ( pattern.units === "cm" )
-                    defaultScale = 72.0 / 2.54;
-                else if ( pattern.units === "mm" )
-                    defaultScale = 72.0 / 25.4;
+                switch( pattern.units ) {
+                    case "cm":
+                        defaultScale = 72.0 / 2.54;
+                        break;
+                    case "mm":
+                        defaultScale = 72.0 / 25.4;
+                        break;
+                }
             }
             w.scaleX = w.scaleX / defaultScale /*dpi*/; //And adjust by pattern.units
             w.scaleY = w.scaleY / defaultScale /*dpi*/;
             w.hide = ( w.visible !== undefined ) && (! w.visible );
             w.allowEdit = ( w.allowEdit === undefined ) || ( w.allowEdit );
             
-            //w.dimensionsKnown = dimensionsKnown;
             if ( w.imageurl )
             {
                 w.displayName = w.filename ? w.filename : w.imageurl;
@@ -5997,10 +5948,9 @@ function scrollTopTween(scrollTop)
 {
     return function() {
         const i = d3.interpolateNumber(this.scrollTop, scrollTop);
-        //console.log( "function1: ", this.scrollTop, " - ", scrollTop );
+
         return function(t) { 
             this.scrollTop = i(t); 
-            //console.log( "function2: ", this.scrollTop );
         };
     }
 }
@@ -6077,7 +6027,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         else
             scale = 1;
 
-        transformGroup2 = transformGroup2 = transformGroup1.append("g").attr("transform", "scale(" + scale + "," + scale + ")");
+        transformGroup2 = transformGroup1.append("g").attr("transform", "scale(" + scale + "," + scale + ")");
     }
 
     //console.log( "scale:" + scale + " patternWidth:" + patternWidth + " width:" + width );
@@ -6114,12 +6064,12 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
     for( const drawing of pattern.drawings )
     {
-        var skipDrawing = editorOptions.skipDrawing;
+        const skipDrawing = editorOptions.skipDrawing;
 
         if ( ! skipDrawing )
         {
-            var outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
-            var drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+            const outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
+            const drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
 
             const drawObject = function( d, g, drawingOptions ) {
                 const gd3 = d3.select( g );                        
@@ -6246,9 +6196,9 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
 
                         p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
                         p.drawSeamLine( g, editorOptions );
-                        p.drawInternalPaths( g, useExportStyles );
                         if ( ! simplify )
                         {
+                            p.drawInternalPaths( g, useExportStyles );
                             p.drawNotches( g, useExportStyles );
                             p.drawMarkings( g, useExportStyles );
                             p.drawLabelsAlongSeamLine( g, useExportStyles );
@@ -6257,7 +6207,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                     }
                 });
         }
-    };
+    }
 
     const updateServerAfterDelay = function()
     {
@@ -6265,7 +6215,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         timeOfLastTweak = (new Date()).getTime();
         if ( ! updateServerTimer )
         {
-            var updateServerTimerExpired = function () {
+            const updateServerTimerExpired = function () {
 
                 updateServerTimer = null;          
                 //console.log("Zoom update server timer activated. TimeOfLastTweak:" + timeOfLastTweak + " Now:" + (new Date()).getTime());
@@ -6290,7 +6240,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         const currentScale = d3.zoomTransform( transformGroup1.node() ).k; //do we want to scale 1-10 to 1-5 for fonts and linewidths and dots?
         if (   ( currentScale > (1.1*fontsSizedForScale) )
             || ( currentScale < (0.9*fontsSizedForScale) )
-            || ( currentScale == 1 ) || ( currentScale == 8 ) )
+            || ( currentScale === 1 ) || ( currentScale === 8 ) )
         {
             if ( ! fontResizeTimer )
             {
@@ -6330,7 +6280,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                                 g.selectAll( "circle" )
                                  .attr("r", Math.round(400 / scale / fontsSizedForScale)/100 );
 
-                                const strokeWidth = a.getStrokeWidth( false, (selectedObject==a) );
+                                const strokeWidth = a.getStrokeWidth( false, (selectedObject===a) );
 
                                 g.selectAll( "line" )
                                     .attr( "stroke-width", strokeWidth );
@@ -6397,7 +6347,7 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 
                 if ( editorOptions.updateServer )
                 {
-                    var zt = d3.zoomTransform( transformGroup1.node() );
+                    const zt = d3.zoomTransform( transformGroup1.node() );
                     editorOptions.updateServer( zt.k, zt.x, zt.y );
                 }
             } );
@@ -6420,7 +6370,7 @@ function doWallpapers( wallpaperGroups, pattern )
             wallpaper.offsetYdragStart = wallpaper.offsetY - d3.event.y;
         })
         .on("drag", function(wallpaper) {
-            var wallpaperG = d3.select(this);        
+            const wallpaperG = d3.select(this);        
             wallpaper.offsetX = wallpaper.offsetXdragStart + d3.event.x;
             wallpaper.offsetY = wallpaper.offsetYdragStart + d3.event.y;
             wallpaperG.attr("transform", "translate(" + wallpaper.offsetX + "," + wallpaper.offsetY + ") " + " scale(" + wallpaper.scaleX + "," + wallpaper.scaleY + " )" );
@@ -6476,7 +6426,7 @@ function doWallpapers( wallpaperGroups, pattern )
                         const circle = d3.select(this);
                         const rect = wallpaperG.select("rect");
                         const ratio = circle.attr("cx") / wallpaper.width;     
-                        const scaleXbefore = wallpaper.scaleX;                   
+                        //const scaleXbefore = wallpaper.scaleX;                   
                         wallpaper.scaleX = wallpaper.scaleX * ratio; //fixed aspect?
                         wallpaper.scaleY = wallpaper.scaleY * ratio;
                         //console.log( "cx:" + circle.attr("cx") + " image:" + wallpaper.width + "  ratio:" + ratio + "  scaleXbefore:" + scaleXbefore + "  scaleXNow:" + wallpaper.scaleX );
@@ -6494,14 +6444,14 @@ function doWallpapers( wallpaperGroups, pattern )
                         let newX = d3.event.x - wallpaper.offsetXdragStart;
                         let newY = d3.event.y - wallpaper.offsetYdragStart;
                         //console.log("drag d3.event.x:" + d3.event.x + "  newX:" + newX );
-                        if ( true ) //fixed aspect
-                        {
-                            const ratioX = newX / wallpaper.width;
-                            const ratioY = newY / wallpaper.height;
-                            const ratio = (ratioX+ratioY)/2.0;
-                            newX = ratio * wallpaper.width;
-                            newY = ratio * wallpaper.height;
-                        }
+
+                        //fixed aspect
+                        const ratioX = newX / wallpaper.width;
+                        const ratioY = newY / wallpaper.height;
+                        const ratio = (ratioX+ratioY)/2.0;
+                        newX = ratio * wallpaper.width;
+                        newY = ratio * wallpaper.height;
+
                         circle.attr("cx", newX )
                               .attr("cy", newY );
                         rect.attr("width", newX )
@@ -6512,7 +6462,7 @@ function doWallpapers( wallpaperGroups, pattern )
     wallpaperGroups.selectAll("g")
                     .data( visibleWallpapers ,function(d){return d.patternurl || d.imageurl} )
                     .each( function(w,i) {
-                        var g = d3.select(this);
+                        const g = d3.select(this);
                         //This worked on Firefox and Chrome, but not Safari.
                         //var box = g.node().getBBox();
                         //w.width = box.width;
@@ -6550,7 +6500,6 @@ function doWallpapers( wallpaperGroups, pattern )
 
 function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObject )
 {
-    const drawing1 = pattern.drawings[0];
     const layoutConfig = editorOptions.layoutConfig;
     const margin = layoutConfig.tableMargin;//25; 
     const width =  layoutConfig.tableWidth;//400;
@@ -6559,7 +6508,6 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
     const itemMargin = 8;
     const itemWidth = width *3/4;
     let ypos = 0;
-    let seq = 1; //TODO get these in the XML as data?
     const asFormula = editorOptions.showFormulas; 
 
     const onclick = function(d) {
@@ -6644,12 +6592,11 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         let html;
         try {
             html = d.html( asFormula );
-            if ( d.data && d.data.comments )
+            if ( d.data?.comments )
                 html = '<div class="comments">' + sanitiseForHTML( d.data.comments ) + '</div>' + html;
             if (d.error)
                 html += '<div class="error">' + sanitiseForHTML( d.error ) + '</div>' ;
         } catch ( e ) {
-            html = '<div class="error">Failed to generate description.</div>';
 
             if ( ! d.error )
                 d.error = "Failed to generate description.";
@@ -6662,7 +6609,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
         g.attr( "class", classes ) ;    
 
-        const div = fo.append( "xhtml:div" )
+        fo.append( "xhtml:div" )
            .attr("class","outer")
            .append( "xhtml:div" )
            .attr("class","desc")
@@ -6706,7 +6653,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
                     .attr("class", "links");
 
     //Links area is width/4 by ypos.            
-    var linkScale = (width/4) / Math.log( Math.abs( ypos /30 ) );   
+    const linkScale = (width/4) / Math.log( Math.abs( ypos /30 ) );   
 
     drawLinks( pattern, linkScale );
 }
@@ -6723,8 +6670,7 @@ function drawLinks( pattern, linkScale ) {
                         const x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
                               x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
                     
-                        const dx = x0 - x1,
-                              dy = y0 - y1,
+                        const dy = y0 - y1,
                               l = Math.log( Math.abs(dy /30 ) ) * linkScale;
                     
                         const path = d3.path();
@@ -6742,8 +6688,7 @@ function curve(link) {
     const x0 = link.source.tableSvgX, y0 = link.source.tableSvgY,
           x1 = link.target.tableSvgX, y1 = link.target.tableSvgY;
 
-    const dx = x0 - x1,
-          dy = y0 - y1,
+    const dy = y0 - y1,
           l = Math.log( Math.abs(dy /30 ) ) * 50;
 
     const path = d3.path();
@@ -6756,7 +6701,7 @@ function curve(link) {
 //TODO move to kinodbglue
 function newkvpSet(noRefresh)
 {
-    var kvp = { } ;
+    const kvp = { } ;
     kvp.kvps = new Array() ;
 
     kvp.add = function (k, v)
@@ -6766,7 +6711,7 @@ function newkvpSet(noRefresh)
 
     kvp.toString = function (p)
     {
-        var r = '' ;
+        let r = '' ;
 
         for ( const kvp of this.kvps )
             r += '&' + p + kvp.k + '=' + encodeURIComponent( kvp.v );
