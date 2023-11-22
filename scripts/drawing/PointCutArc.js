@@ -35,7 +35,7 @@ class PointCutArc extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+        return this.nameOf() + ': '
                 + this.data.length.htmlLength( asFormula ) 
                 + " along arc " + this.refOf( this.arc );
     }

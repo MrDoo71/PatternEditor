@@ -82,7 +82,7 @@ class TrueDart extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+        return this.nameOf() + ': '
                 + " True darts baseline " + this.refOf( this.p1Line1 )
                 + "-" + this.refOf( this.p2Line1 )
                 + " original dart " + this.refOf( this.point1 )

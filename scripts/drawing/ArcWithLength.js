@@ -40,7 +40,7 @@ class ArcWithLength extends ArcSimple {
 
     
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: '
+        return this.nameOf() + ': '
                 + 'arc with center ' + this.refOf( this.center )
                 + " radius " + this.radius.htmlLength( asFormula ) 
                 + " from angle " + this.angle.htmlAngle( asFormula ) 

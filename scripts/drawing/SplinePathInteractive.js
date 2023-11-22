@@ -74,7 +74,7 @@ class SplinePathInteractive extends DrawingObject {
 
 
     html( asFormula ) {
-        let html = '<span class="ps-name">' + this.data.name + '</span>: '
+        let html = this.nameOf() + ': '
                     +'curved path:';
 
         const d = this.data;

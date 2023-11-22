@@ -245,8 +245,18 @@ s
     }
 
 
+    sanitiseForHTML ( s ) {
+        return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+    };
+
+
     ref() {
-        return '<a class="ps-ref">' + this.data.name + '</a>';
+        return '<a class="ps-ref">' + this.sanitiseForHTML( this.data.name ) + '</a>';
+    }
+
+
+    nameOf() {
+        return '<span class="ps-name">' + this.sanitiseForHTML( this.data.name ) + '</span>'
     }
 
 
@@ -389,5 +399,10 @@ s
         }
 
         return true;
+    }
+
+    escapeHtml(unsafe) 
+    {
+        return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
 }

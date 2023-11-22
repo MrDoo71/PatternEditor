@@ -66,7 +66,7 @@ class SplineUsingControlPoints extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: '
+        return this.nameOf() + ': '
             + 'spline from ' + this.refOf( this.startPoint )
             + " using control point " + this.refOf( this.startControlPoint )
             + " to " + this.refOf( this.endPoint )

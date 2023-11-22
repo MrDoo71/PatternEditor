@@ -44,7 +44,7 @@ class PerpendicularPointAlongLine extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: '
+        return this.nameOf() + ': '
                 + 'Point along line ' + this.refOf( this.firstPoint ) + ' - ' + this.refOf( this.secondPoint )
                 + ' where it is perpendicular to ' + this.refOf( this.basePoint );
     }

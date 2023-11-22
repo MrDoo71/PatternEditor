@@ -46,7 +46,7 @@ class PointAlongPerpendicular extends DrawingObject {
 
 
     html( asFormula ) {
-        let h = '<span class="ps-name">' + this.data.name + '</span>: ' 
+        let h = this.nameOf() + ': '
                 + this.data.length.htmlLength( asFormula ) 
                 + " from " + this.refOf( this.firstPoint ) 
                 + " perpendicular to the line to " + this.refOf( this.secondPoint );

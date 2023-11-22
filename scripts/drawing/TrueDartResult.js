@@ -76,7 +76,7 @@ class TrueDartResult extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: '
+        return this.nameOf() + ': '
                 + 'Dart point from ' + this.refOf( this.fromOperation );
     }
 

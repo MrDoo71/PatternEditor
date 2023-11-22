@@ -69,7 +69,7 @@ class ArcElliptical extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: '
+        return this.nameOf() + ': '
                 + 'elliptical arc with center ' + this.refOf( this.center )
                 + " radius-x " + this.radius1.htmlLength( asFormula ) 
                 + " radius-y " + this.radius2.htmlLength( asFormula ) 

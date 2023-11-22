@@ -285,7 +285,6 @@ class PatternDrawing {
                 .attr("font-size", fontSize )
                 .append( "textPath" )
                 .attr( "xlink:href", "#" + pathID )
-                //.attr( "path", pathSVG )
                 .attr( "startOffset", "50%" )
                 .attr( "text-anchor", "middle" )
                 .attr( "side", "left" )

@@ -44,7 +44,7 @@ class OperationFlipByLine extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+        return this.nameOf() + ': '
                 + 'Flip over line ' + this.refOf( this.p1Line1 ) 
                 + "-" + this.refOf( this.p2Line1 ) 
                 + " applying suffix '" + this.data.suffix + "'";

@@ -43,7 +43,7 @@ class PointAlongLine extends DrawingObject {
 
     html( asFormula ) {
         
-        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+        return this.nameOf() + ': '
                 + this.data.length.htmlLength( asFormula, this.baseLine? this.baseLine.length : 0 ) 
                 + " along line from " + this.refOf( this.firstPoint )
                 + " to " + this.refOf( this.secondPoint );

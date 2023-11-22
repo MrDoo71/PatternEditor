@@ -35,7 +35,7 @@ class PointCutSplinePath extends DrawingObject {
 
 
     html( asFormula ) {
-        return '<span class="ps-name">' + this.data.name + '</span>: ' 
+        return this.nameOf() + ': '
                 + this.data.length.htmlLength( asFormula ) 
                 + " along path " + this.refOf( this.curve );
     }
