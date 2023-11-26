@@ -226,11 +226,12 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
     let focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
-    {
+    {        
         if (    ( d3.event?.originalTarget?.className === "ps-ref" )
              && ( selectedObject === d )
              )
         {
+            //Clicking on a reference to another drawing object, scroll to it. 
             selectedObject = d.drawing.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
         }
@@ -238,14 +239,17 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                   && ( selectedObject === d )
              )
         {
+            //Clicking on a reference to another drawing object, scroll to it. 
             selectedObject = d.drawing.getObject( d3.event.srcElement.innerHTML );
             scrollTable = true;
         }
         else
         {
+            //Not clicking on a reference, so we've selected what we clicked on
             selectedObject = d;
         }
 
+        //Adjust the stoke width of related items in the drawing
         for( const drawing of pattern.drawings )
             for( const a of drawing.drawingObjects )
             {
@@ -263,11 +267,10 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                     g.selectAll( "ellipse" )
                      .attr("stroke-width", strokeWidth );
                 }
-                //else //this can happen e.g. because a group is hidden
-                //    console.log("No drawing object for " + a.data.name );
             }        
 
         const graphdiv = targetdiv;
+
         //Remove any existing highlighting in the table. 
         $(graphdiv.node()).find( ".j-active" ).removeClass("j-active").removeClass("j-active-2s");
         $(graphdiv.node()).find( ".source" ).removeClass("source");
@@ -294,31 +297,35 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         //Set the css class of all links to "link" "source link" or "target link" as appropriate.
         if ( linksGroup )
             linksGroup.selectAll("path.link") //rename .link to .dependency
-            .attr("class", function( d ) {                         
-                if ( d.source === selectedObject ) 
-                {
-                    d.target.tableSvg.node().classList.add("source");
+                      .attr("class", function( d ) {
+                        let classes = "link";
+                        if ( d.source === selectedObject ) 
+                        {
+                            d.target.tableSvg.node().classList.add("source");
 
-                    if ( d.target.outlineSvg ) //if it errored this will be undefined
-                        d.target.outlineSvg.node().classList.add("source");
+                            if ( d.target.outlineSvg ) //if it errored this will be undefined
+                                d.target.outlineSvg.node().classList.add("source");
 
-                    return "source link";
-                }
-                if ( d.target === selectedObject ) 
-                {
-                    d.source.tableSvg.node().classList.add("target");
+                            classes += " source";
+                        }
+                        if ( d.target === selectedObject ) 
+                        {
+                            d.source.tableSvg.node().classList.add("target");
 
-                    if ( d.source.outlineSvg ) //if it errored this will be undefined
-                        d.source.outlineSvg.node().classList.add("target");
+                            if ( d.source.outlineSvg ) //if it errored this will be undefined
+                                d.source.outlineSvg.node().classList.add("target");
 
-                    return "target link";
-                }
-                return "link"; 
-            } )
-            .each( function( d ) { 
-                if (( d.source === selectedObject ) || ( d.target === selectedObject ))
-                    d3.select(this).raise();
-             } );
+                            classes += " target";
+                        }
+                        if ( d.source instanceof Piece )
+                            classes += " piece";
+
+                        return classes; 
+                      } )
+                      .each( function( d ) { 
+                        if (( d.source === selectedObject ) || ( d.target === selectedObject ))
+                            d3.select(this).raise();
+                      } );
 
         //Scroll the table to ensure that d.tableSvg is in view.    
         if ( scrollTable && selectedObject )
@@ -333,7 +340,41 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             else
                 console.log( "Cannot scroll table, no tableSvg - " + selectedObject.data.name );
         }
-    };
+
+        if ( selectedObject instanceof Piece )
+        {
+            const piece = selectedObject;
+            if ( piece.shown )
+                piece.shown = false
+            else
+                piece.shown = true;
+
+            //Toggle visibility of piece in the table
+            if ( selectedObject.tableSvg ) //should always be set unless there has been a problem
+            {
+                const n = selectedObject.tableSvg.node();
+                if (( piece.shown ) && ( ! n.classList.contains("shown")))
+                    n.classList.add("shown");
+                else if (( ! piece.shown ) && ( n.classList.contains("shown")))
+                    n.classList.remove("shown");
+            }
+
+            //Toggle visibility of the piece in the drawing
+            if ( selectedObject.svg ) //should always be set unless there has been a problem
+            {
+                const n = selectedObject.svg.node();
+                if ( piece.shown )
+                {  
+                    piece.drawPiece( options );
+                }
+                else
+                {
+                    selectedObject.svg.selectAll( "path" ).remove();
+                    selectedObject.svg.selectAll( "g" ).remove();
+                }
+            }
+        }
+    }; //focusDrawingObject
 
     let controls;
     if (( ! options.hideControls ) && ( options.interactive ))
@@ -346,7 +387,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
-                                        doDrawing( drawingAndTableDiv, pattern, options, contextMenu, controls, focusDrawingObject );
+                                        doDrawings( drawingAndTableDiv, pattern, options, contextMenu, controls, focusDrawingObject );
                                     else
                                         drawingAndTableDiv.select("svg.pattern-drawing").remove();
                                                                             
@@ -831,7 +872,7 @@ function scrollTopTween(scrollTop)
   
 
 //Do the drawing... (we've added draw() to each drawing object.
-function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
+function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, focusDrawingObject )
 {
     const layoutConfig = editorOptions.layoutConfig;
     const margin = editorOptions.lifeSize ? pattern.getPatternEquivalentOfMM(5) : 0;
@@ -936,150 +977,21 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
         focusDrawingObject(d,true);
     };
 
+
     for( const drawing of pattern.drawings )
     {
-        const skipDrawing = editorOptions.skipDrawing;
+        //TODO depending upon use case, do the pieces or drawing first? 
 
-        if ( ! skipDrawing )
+        //Even if we're not going to drawing pieces lets create the svg placeholders for them so they are ready 
+        //if they are clicked in the table. 
+        //if ( ! editorOptions.skipPieces )
+        //{
+            doPieces( drawing, transformGroup3, editorOptions );
+        //}
+
+        if ( ! editorOptions.skipDrawing )
         {
-            const outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
-            const drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
-
-            const drawObject = function( d, g, drawingOptions ) {
-                const gd3 = d3.select( g );                        
-                if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
-                try {
-                    d.draw( gd3, drawingOptions );
-                    d.drawingSvg = gd3; //not necessary if this is thumbnail
-                } catch ( e ) {
-                    d.error = "Drawing failed. " + e;
-                }
-            };
-
-            if ( editorOptions.interactive )
-            {
-                const drawingOptions = { "outline": false, 
-                                         "label": (! editorOptions.hideLabels),
-                                         "dot":  (! editorOptions.hideLabels) };
-                drawingGroup.selectAll("g")
-                .data( drawing.drawingObjects )
-                .enter()
-                .append("g")
-                .on("contextmenu", contextMenu)
-                .on("click", onclick)
-                .on('touchstart', function() { 
-                    this.touchStartTime = new Date(); 
-                    if ( event ) event.preventDefault();
-                })
-                .on('touchend',function(d) {    
-                    const endTime = new Date(); 
-                    const duration = endTime - this.touchStartTime;
-                    if ( event ) event.preventDefault();
-                    if (( duration > 400) || ( selectedObject === d ))
-                    { 
-                        //console.log("long touch, " + (duration) + " milliseconds long");
-                        contextMenu(d);
-                    }
-                    else {
-                        //console.log("regular touch, " + (duration) + " milliseconds long");
-                        onclick(d);
-                    }                    
-                })
-                .each( function(d,i) {
-                    drawObject( d, this, drawingOptions );
-                });
-            }
-            else //thumbnail
-            {
-                //In order to have the minimum SVG then don't create a group for each drawing object. 
-                const drawingOptions = { "outline": false, 
-                                         "label": (! editorOptions.hideLabels),
-                                         "dot":  (! editorOptions.hideLabels) };
-                drawingGroup.selectAll("g")
-                    .data( drawing.drawingObjects )
-                    .enter()
-                    .each( function(d,i) {
-                        drawObject( d, this, drawingOptions );
-                    });
-            }
-
-            if ( outlineGroup )
-            {
-                outlineGroup.selectAll("g") 
-                    .data( drawing.drawingObjects )
-                    .enter()
-                    .append("g")
-                    .on("contextmenu", contextMenu)
-                    .on("click", onclick)
-                    .on('touchstart', function() { 
-                        this.touchStartTime = new Date(); 
-                        if ( event ) event.preventDefault();
-                    })
-                    .on('touchend',function(d) {    
-                        const endTime = new Date(); 
-                        const duration = endTime - this.touchStartTime;
-                        if ( event ) event.preventDefault();
-                        if (( duration > 400) || ( selectedObject === d ))
-                        { 
-                            //console.log("long touch, " + (duration) + " milliseconds long");
-                            contextMenu(d);
-                        }
-                        else {
-                            //console.log("regular touch, " + (duration) + " milliseconds long");
-                            onclick(d);
-                        }                    
-                    })                
-                    .each( function(d,i) {
-                        const g = d3.select( this );
-                        if (   ( typeof d.draw === "function" ) 
-                            && ( ! d.error )
-                            && ( d.isVisible( editorOptions ) ) )
-                        {
-                            d.draw( g, { "outline": true, "label": false, "dot":true } );
-                            d.outlineSvg = g;
-                        }
-                    });
-            }
-        }
-
-        if ( ! editorOptions.skipPieces )
-        {
-            const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
-            pieceGroup.selectAll("g")
-                      .data( drawing.pieces )
-                      .enter()
-                      .append("g")        
-            //.on("contextmenu", contextMenu)
-            //.on("click", onclick)
-              .each( function(p,i) {
-                    const g = d3.select( this );
-                    g.attr("id", p.name );
-
-                    //if doing an export of multiple pieces then take the piece.mx/my into account
-                    if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
-                    {
-                        g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
-                    }
-
-                    if (   ( typeof p.drawSeamLine === "function" ) )
-                    {
-                        const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );
-                        const useExportStyles = editorOptions.downloadOption;
-
-                        p.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
-                        p.drawSeamLine( g, editorOptions );
-                        if ( ! simplify )
-                        {
-                            p.drawInternalPaths( g, useExportStyles );
-                            p.drawNotches( g, useExportStyles );
-                            p.drawMarkings( g, useExportStyles );
-                            p.drawLabelsAlongSeamLine( g, useExportStyles );
-                        }
-                        p.svg = g;
-                    }
-                });
+            doDrawing( drawing, transformGroup3, editorOptions, contextMenu );
         }
     }
 
@@ -1226,6 +1138,146 @@ function doDrawing( graphdiv, pattern, editorOptions, contextMenu, controls, foc
                 }
             } );
     }
+}
+
+
+function doDrawing( drawing, transformGroup3, editorOptions, contextMenu ) 
+{
+    const outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
+    const drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
+
+    const drawObject = function( d, g, drawingOptions ) {
+        const gd3 = d3.select( g );                        
+        if (   ( typeof d.draw === "function" ) 
+            && ( ! d.error )
+            && ( d.isVisible( editorOptions ) ) )
+        try {
+            d.draw( gd3, drawingOptions );
+            d.drawingSvg = gd3; //not necessary if this is thumbnail
+        } catch ( e ) {
+            d.error = "Drawing failed. " + e;
+        }
+    };
+
+    if ( editorOptions.interactive )
+    {
+        const drawingOptions = { "outline": false, 
+                                    "label": (! editorOptions.hideLabels),
+                                    "dot":  (! editorOptions.hideLabels) };
+        drawingGroup.selectAll("g")
+        .data( drawing.drawingObjects )
+        .enter()
+        .append("g")
+        .on("contextmenu", contextMenu)
+        .on("click", onclick)
+        .on('touchstart', function() { 
+            this.touchStartTime = new Date(); 
+            if ( event ) event.preventDefault();
+        })
+        .on('touchend',function(d) {    
+            const endTime = new Date(); 
+            const duration = endTime - this.touchStartTime;
+
+            if ( event ) 
+                event.preventDefault();
+
+            if (( duration > 400) || ( selectedObject === d ))
+            { 
+                //console.log("long touch, " + (duration) + " milliseconds long");
+                contextMenu(d);
+            }
+            else {
+                //console.log("regular touch, " + (duration) + " milliseconds long");
+                onclick(d);
+            }                    
+        })
+        .each( function(d,i) {
+            drawObject( d, this, drawingOptions );
+        });
+    }
+    else //thumbnail
+    {
+        //In order to have the minimum SVG then don't create a group for each drawing object. 
+        const drawingOptions = { "outline": false, 
+                                    "label": (! editorOptions.hideLabels),
+                                    "dot":  (! editorOptions.hideLabels) };
+        drawingGroup.selectAll("g")
+            .data( drawing.drawingObjects )
+            .enter()
+            .each( function(d,i) {
+                drawObject( d, this, drawingOptions );
+            });
+    }
+
+    if ( outlineGroup )
+    {
+        outlineGroup.selectAll("g") 
+            .data( drawing.drawingObjects )
+            .enter()
+            .append("g")
+            .on("contextmenu", contextMenu)
+            .on("click", onclick)
+            .on('touchstart', function() { 
+                this.touchStartTime = new Date(); 
+                if ( event ) event.preventDefault();
+            })
+            .on('touchend',function(d) {    
+                const endTime = new Date(); 
+                const duration = endTime - this.touchStartTime;
+                if ( event ) event.preventDefault();
+                if (( duration > 400) || ( selectedObject === d ))
+                { 
+                    //console.log("long touch, " + (duration) + " milliseconds long");
+                    contextMenu(d);
+                }
+                else {
+                    //console.log("regular touch, " + (duration) + " milliseconds long");
+                    onclick(d);
+                }                    
+            })                
+            .each( function(d,i) {
+                const g = d3.select( this );
+                if (   ( typeof d.draw === "function" ) 
+                    && ( ! d.error )
+                    && ( d.isVisible( editorOptions ) ) )
+                {
+                    d.draw( g, { "outline": true, "label": false, "dot":true } );
+                    d.outlineSvg = g;
+                }
+            });
+    }
+}
+
+
+function doPieces( drawing, transformGroup3, editorOptions )
+{
+    const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
+    pieceGroup.selectAll("g")
+                .data( drawing.pieces )
+                .enter()
+                .append("g")        
+    //.on("contextmenu", contextMenu)
+    //.on("click", onclick)
+                .each( function(p,i) {
+                    const g = d3.select( this );
+                    g.attr("id", p.name );
+
+                    //if doing an export of multiple pieces then take the piece.mx/my into account
+                    if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
+                    {
+                        g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+                    }
+
+                    p.svg = g;
+
+                    if ( ! editorOptions.skipPieces )
+                    {
+                        if ( typeof p.drawSeamLine === "function" )
+                        {                            
+                            p.drawPiece( editorOptions );
+                        }
+                    }
+            });
 }
 
 
@@ -1393,7 +1445,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     let combinedObjects = [];
 
-    //TODO ? a mode where we don't include measurements and variables in the table.
+    //TODO quick jump to start of pattern, variatble, pieces
     if ( pattern.measurement )
     {
         for( const m in pattern.measurement )
@@ -1408,11 +1460,13 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     for( const drawing of pattern.drawings )
     {
-        combinedObjects = combinedObjects.concat( drawing.drawingObjects);
+        combinedObjects = combinedObjects.concat( drawing.drawingObjects );
+        combinedObjects = combinedObjects.concat( drawing.pieces );
     }
 
     const sanitiseForHTML = function ( s ) {
-            return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+            //return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
     const svg = graphdiv.append("div")
@@ -1449,8 +1503,13 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             classes += " j-measurement";
         else if ( d.isVariable )
             classes += " j-variable";
-        else if ( ! d.isVisible( editorOptions ) ) //is a drawing object
-            classes += " group-hidden"; //hidden because of groups
+        else if ( d instanceof DrawingObject )
+        {   
+            if ( ! d.isVisible( editorOptions ) ) //is a drawing object
+                classes += " group-hidden"; //hidden because of groups
+        }
+        else if ( d instanceof Piece )
+            classes += " j-piece";
 
         d.tableSvg = g;
         d.tableSvgX = itemWidth;
@@ -1621,4 +1680,4 @@ function fakeEvent(location, x, y)
 }
 
 
-export{ PatternDrawing, doDrawing, doTable, drawPattern  };
+export{ PatternDrawing, doDrawings, doTable, drawPattern  };

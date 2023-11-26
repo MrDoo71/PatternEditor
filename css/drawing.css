@@ -9,13 +9,14 @@ pattern sharing website https://my-pattern.cloud/ .
 Source maintained at: https://github.com/MrDoo71/PatternEditor
 */
 
+/* references and text within table */
+
 span.ps-name,
 a.ps-ref {
     font-weight: bold;
 }
 
 g.j-item.j-active a.ps-ref {
-    /*text-decoration: underline; try dotted */
     color:#2b7cb3; /*text hyperlink to other drawing objects in the table*/
     cursor: pointer;
 }
@@ -28,6 +29,8 @@ g.j-item span.const {
 g.j-item span.const {
     color: #ee60ee; 
 }
+
+/* drawing line styles */
 
 g.j-drawing line.dotLine,
 g.j-drawing path.dotLine,
@@ -61,6 +64,8 @@ g.j-drawing path.hair  /*deprecated*/
     stroke:solid;
 }
 
+/* drawing circles & text  */
+
 g.j-drawing circle {
     fill:#999; 
     stroke-width: 0px;
@@ -82,7 +87,6 @@ g.j-drawing text {
     fill:#d8d8d8;
 }
 
-
 g.j-drawing g.j-active > circle {
     fill:#000;
 }
@@ -92,10 +96,14 @@ g.j-drawing g.j-active > circle {
     fill:#67cdff;
 }
 
+/* table */
+
 g.j-item div.desc {
     padding: 4px 8px;
     border:1px solid #ccc;
 }
+
+/* table - measurements */
 
 g.j-item.j-measurement div.desc {
     background-color: #ffe7ef;
@@ -106,6 +114,8 @@ g.j-item.j-measurement div.desc {
     color:#000;
 }
 
+/* table - variables */
+
 g.j-item.j-variable div.desc {
     background-color:#e7faff;
 }
@@ -115,7 +125,27 @@ g.j-item.j-variable div.desc {
     color:#000;
 }
 
-g.j-item.j-active div.desc {    
+/* table - pieces */
+
+g.j-item.j-piece div.desc {
+    background-color:#ae81db;
+    opacity: 0.5;
+}
+
+body.k-dark-mode g.j-item.j-piece div.desc {
+    color: white !important;
+}
+
+g.j-item.j-piece.shown div.desc {
+    opacity: 1;
+}
+
+body.k-dark-mode
+g.j-item.j-piece div.desc {
+    color:#000;
+}
+
+g.j-item.j-active:not(.j-piece) div.desc {    
     padding: 3px 7px;
     border:2px solid #333;
     background-color: #ffc;
@@ -164,6 +194,8 @@ g.j-item.group-hidden {
     opacity: 0.5;
 }
 
+/* table - dependency links */
+
 path.link {
     fill:none;
     stroke: #ddd;
@@ -177,7 +209,6 @@ path.link {
 
 path.link.source,
 body.k-dark-mode path.link.source {
-    fill:none;
     stroke:#449fdc;
     stroke-width: 3px;    
 }
@@ -185,9 +216,16 @@ body.k-dark-mode path.link.source {
 path.link.target, 
 body.k-dark-mode path.link.target
 {
-    fill:none;
     stroke:#4ddc44;
     stroke-width: 3px;    
+}
+
+path.link.source.piece,
+path.link.target.piece,
+body.k-dark-mode path.link.source.piece,
+body.k-dark-mode path.link.target.piece
+{
+    stroke:#ba85e5;
 }
 
 g.j-item.source div.desc {
@@ -202,6 +240,8 @@ g.j-item.target div.desc {
     padding: 3px 7px;
 }
 
+/* drawing - outline */
+
 g.j-outline circle {
     fill: #fff;
     opacity: 0.01; /* like none, but clickable*/
@@ -213,12 +253,6 @@ g.j-outline line {
     stroke: #fff;
     opacity: 0.01; /*like none, but clickable*/
 }
-
-/*
-g.j-outline.target > circle {
-    fill: #4ddc44;
-    opacity: 1;
-}*/
 
 g.j-outline g.source > circle {
     fill: #449fdc80;
@@ -261,6 +295,7 @@ g.j-outline g.j-active:not(.j-active-2s) > line {
 }
 
 /*Remember, these won't apply to exported SVG*/
+
 g.j-pieces path.seamline {
     fill: white;
     stroke:#929292;
@@ -314,6 +349,7 @@ body.k-dark-mode g.j-pieces text.alongPath {
 }
 
 /* the line from a point to its label positioned at mx,my */
+
 line.labelLine {
     stroke:#d0d0d0;
 }
@@ -322,6 +358,8 @@ body.k-dark-mode
 line.labelLine {
     stroke:#999;
 }
+
+/* overall patternn editor window */
 
 div.pattern-editor-controls {    
     margin-bottom:15px;
@@ -406,14 +444,7 @@ div.pattern-editor.full-page div.pattern-main {
         position: static;
 }
 
-/*TODO change the js to put the colour as a class, not directly set the stroke
-path.darkRed
-{
-    stroke: darkred;
-}
-Then we can tweak the colour for dark mode. 
-body.k-dark-mode 
-*/
+/* pattern popup */
 
 div.pattern-popup {
     position: relative;

@@ -1,5 +1,5 @@
 
-import  { PatternDrawing, doDrawing, doTable } from '../dist/patterneditor.js';
+import  { PatternDrawing, doDrawings, doTable } from '../dist/patterneditor.js';
 
 function v343110_graph1_init()
 {
@@ -58,7 +58,7 @@ function v343110_graph1_init()
 
     //drawing1.analyseDependencies();
     
-    doDrawing( targetdiv, drawing1, null );
+    doDrawings( targetdiv, drawing1, null );
     
     doTable( targetdiv, drawing1, null );
 

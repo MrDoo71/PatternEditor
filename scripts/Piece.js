@@ -1239,4 +1239,62 @@ class Piece {
         return Math.round( n * 1000 ) / 1000;
     }
 
+
+    setDependencies( dependencies ) {
+        for ( const d of  this.detailNodes ) 
+        {
+            dependencies.add( this, d.dObj );
+
+            //TODO also drawing objects used by expressions used as node seam allowances
+        }
+
+        if ( this.internalPaths )
+            for( const ip of this.internalPaths )
+            {
+                if ( ! ip.nodes )
+                    return; 
+
+                for( const n of ip.nodes )
+                {
+                    dependencies.add( this, n );
+                }
+            }
+
+        //TODO also nodes used as anchors for data. 
+    }    
+
+
+    sanitiseForHTML ( s ) {
+        return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+    };
+
+
+    html() 
+    {
+        //for the table
+        return "piece: <span class=\"ps-name\">" + this.sanitiseForHTML( this.name ) + "</span>";
+    }
+
+
+    drawPiece( editorOptions )
+    {
+        if ( ! this.calculated )
+            this.calculate();
+
+        const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );        
+        const g = this.svg;
+        g.selectAll().remove();
+        this.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
+        this.drawSeamLine( g, editorOptions );
+
+        if ( ! simplify )
+        {
+            const useExportStyles = editorOptions.downloadOption;
+
+            this.drawInternalPaths( g, useExportStyles );
+            this.drawNotches( g, useExportStyles );
+            this.drawMarkings( g, useExportStyles );
+            this.drawLabelsAlongSeamLine( g, useExportStyles );
+        }
+    }
 }

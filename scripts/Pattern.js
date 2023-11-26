@@ -156,6 +156,11 @@ class Pattern {
             {
                 dObj.setDependencies( this.dependencies );
             }
+
+            for ( const p of drawing.pieces ) 
+            {
+                p.setDependencies( this.dependencies );
+            }
         }
         //TODO use a d3.map of a d3.set when we build up the data and then convert it to an array
         //so that we can remove duplicates.
