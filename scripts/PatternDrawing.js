@@ -76,10 +76,10 @@ class PatternDrawing {
         else
         {
             //This ensures the seam allowance is included in the bounds
-            if (( this.data.piece ) && ( ! options.skipPieces ))
-                for ( const p of this.data.piece ) {
-                    p.adjustBounds( this.visibleBounds  );
-                }
+            if ( this.pieces )
+                for ( const p of this.pieces ) {
+                    p.adjustBounds( this.visibleBounds );
+                }    
 
             //Calculate the visible bounds            
             this.drawingObjects.forEach( function(dObj){

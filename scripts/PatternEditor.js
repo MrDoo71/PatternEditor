@@ -416,10 +416,17 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         const thisHash = CryptoJS.MD5( xmlString ).toString();
         if ( options.currentSVGhash !== thisHash )
         {
-            const kvpSet = newkvpSet(true);
-            kvpSet.add( 'svg', xmlString );
-            kvpSet.add( 'id', options.returnID ) ;
-            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
+            if ( xmlString.length > 64000 )
+            {
+                console.log("Thumnbnail SVG will be rejected as it is too large." );
+            }
+            else
+            {
+                const kvpSet = newkvpSet(true);
+                kvpSet.add( 'svg', xmlString );
+                kvpSet.add( 'id', options.returnID ) ;
+                goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
+            }
         }
         else
         {
@@ -977,7 +984,6 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         focusDrawingObject(d,true);
     };
 
-
     for( const drawing of pattern.drawings )
     {
         //TODO depending upon use case, do the pieces or drawing first? 
@@ -991,7 +997,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
 
         if ( ! editorOptions.skipDrawing )
         {
-            doDrawing( drawing, transformGroup3, editorOptions, contextMenu );
+            doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMenu );
         }
     }
 
@@ -1141,7 +1147,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
 }
 
 
-function doDrawing( drawing, transformGroup3, editorOptions, contextMenu ) 
+function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMenu ) 
 {
     const outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
     const drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
@@ -1465,6 +1471,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
     }
 
     const sanitiseForHTML = function ( s ) {
+
+            if ( ! typeof s === "string" )
+                s = "" + s;
+                    
             return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
             //return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };

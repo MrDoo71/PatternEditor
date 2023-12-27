@@ -246,6 +246,10 @@ s
 
 
     sanitiseForHTML ( s ) {
+
+        if ( ! typeof s === "string" )
+            s = "" + s;
+
         return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
     };
 
@@ -456,7 +460,9 @@ class ArcElliptical extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
-        this.arc.adjustBounds( bounds );
+
+        if ( this.arc )
+            this.arc.adjustBounds( bounds );
     }
 
 
@@ -536,7 +542,9 @@ class ArcSimple extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p ); //not necessarily
-        this.arc.adjustBounds( bounds );
+
+        if ( this.arc )
+            this.arc.adjustBounds( bounds );
     }
 
 
@@ -3584,7 +3592,7 @@ class Piece {
             for( const ip of this.internalPaths )
             {
                 if ( ! ip.node )
-                    return; 
+                    continue; 
 
                 ip.nodes = [];
                 for( const n of ip.node )
@@ -4901,10 +4909,10 @@ class PatternDrawing {
         else
         {
             //This ensures the seam allowance is included in the bounds
-            if (( this.data.piece ) && ( ! options.skipPieces ))
-                for ( const p of this.data.piece ) {
-                    p.adjustBounds( this.visibleBounds  );
-                }
+            if ( this.pieces )
+                for ( const p of this.pieces ) {
+                    p.adjustBounds( this.visibleBounds );
+                }    
 
             //Calculate the visible bounds            
             this.drawingObjects.forEach( function(dObj){
@@ -5619,10 +5627,17 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         const thisHash = CryptoJS.MD5( xmlString ).toString();
         if ( options.currentSVGhash !== thisHash )
         {
-            const kvpSet = newkvpSet(true);
-            kvpSet.add( 'svg', xmlString );
-            kvpSet.add( 'id', options.returnID ) ;
-            goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
+            if ( xmlString.length > 64000 )
+            {
+                console.log("Thumnbnail SVG will be rejected as it is too large." );
+            }
+            else
+            {
+                const kvpSet = newkvpSet(true);
+                kvpSet.add( 'svg', xmlString );
+                kvpSet.add( 'id', options.returnID ) ;
+                goGraph( options.interactionPrefix + ':' + options.returnSVG, fakeEvent(), kvpSet);
+            }
         }
         else
         {
@@ -6180,7 +6195,6 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         focusDrawingObject(d,true);
     };
 
-
     for( const drawing of pattern.drawings )
     {
         //TODO depending upon use case, do the pieces or drawing first? 
@@ -6194,7 +6208,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
 
         if ( ! editorOptions.skipDrawing )
         {
-            doDrawing( drawing, transformGroup3, editorOptions, contextMenu );
+            doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMenu );
         }
     }
 
@@ -6344,7 +6358,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
 }
 
 
-function doDrawing( drawing, transformGroup3, editorOptions, contextMenu ) 
+function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMenu ) 
 {
     const outlineGroup = ! editorOptions.interactive ? undefined : transformGroup3.append("g").attr("class","j-outline");
     const drawingGroup = transformGroup3.append("g").attr("class","j-drawing");
@@ -6668,6 +6682,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
     }
 
     const sanitiseForHTML = function ( s ) {
+
+            if ( ! typeof s === "string" )
+                s = "" + s;
+                    
             return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
             //return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
@@ -8497,10 +8515,10 @@ class GeoPoint {
         this.y = y;
 
         if ( isNaN( this.x ) )
-            throw "GeoPoint x not a number.";
+            throw new Error( "GeoPoint x not a number." );
             
         if ( isNaN( this.y ) )
-            throw "GeoPoint y not a number.";
+            throw new Error( "GeoPoint y not a number." );
     }
 
     
@@ -9449,7 +9467,7 @@ class GeoSpline {
             const node = this.nodeData[i];
             const thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
             const offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
-            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
+            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - Math.abs(sa) );
             //console.log( "Worst:" + worstError + " Halfway:" + errorAtHalfway );
 
             //depending upon worstError decide if we're splitting this segment, if we're we can just copy it to the one we're creating
@@ -9512,7 +9530,7 @@ class GeoSpline {
                 console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
 
             depth = depth === undefined ? 1 : depth + 1;
-            if ( depth < 20 )
+            if (( depth < 8 ) && ( thisWithMoreControlPoints.nodeData.length < 10000))
                 return thisWithMoreControlPoints.parallelCurve( sa, depth );
         }
 

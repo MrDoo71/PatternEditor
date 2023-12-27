@@ -47,7 +47,9 @@ class ArcElliptical extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
-        this.arc.adjustBounds( bounds );
+
+        if ( this.arc )
+            this.arc.adjustBounds( bounds );
     }
 
 

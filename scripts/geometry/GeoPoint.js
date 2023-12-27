@@ -18,10 +18,10 @@ class GeoPoint {
         this.y = y;
 
         if ( isNaN( this.x ) )
-            throw "GeoPoint x not a number.";
+            throw new Error( "GeoPoint x not a number." );
             
         if ( isNaN( this.y ) )
-            throw "GeoPoint y not a number.";
+            throw new Error( "GeoPoint y not a number." );
     }
 
     

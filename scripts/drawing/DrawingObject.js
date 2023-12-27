@@ -246,6 +246,10 @@ s
 
 
     sanitiseForHTML ( s ) {
+
+        if ( ! typeof s === "string" )
+            s = "" + s;
+
         return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
     };
 

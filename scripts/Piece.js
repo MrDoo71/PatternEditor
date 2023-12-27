@@ -59,7 +59,7 @@ class Piece {
             for( const ip of this.internalPaths )
             {
                 if ( ! ip.node )
-                    return; 
+                    continue; 
 
                 ip.nodes = [];
                 for( const n of ip.node )

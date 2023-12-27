@@ -875,7 +875,7 @@ class GeoSpline {
             const node = this.nodeData[i];
             const thisSegmentAsGeoSpline = new GeoSpline( [ prevNode, node ] );
             const offsetSegmentAsGeoSpline = new GeoSpline( [ offsetCurve.nodeData[i-1], offsetCurve.nodeData[i]] );
-            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - sa );
+            const errorAtHalfway = Math.abs( thisSegmentAsGeoSpline.getOffsetBetweenCurves( offsetSegmentAsGeoSpline, 0.5, sa ) - Math.abs(sa) );
             //console.log( "Worst:" + worstError + " Halfway:" + errorAtHalfway );
 
             //depending upon worstError decide if we're splitting this segment, if we're we can just copy it to the one we're creating
@@ -938,7 +938,7 @@ class GeoSpline {
                 console.log("Recursing, now has " + thisWithMoreControlPoints.nodeData.length + " nodes...");
 
             depth = depth === undefined ? 1 : depth + 1;
-            if ( depth < 20 )
+            if (( depth < 8 ) && ( thisWithMoreControlPoints.nodeData.length < 10000))
                 return thisWithMoreControlPoints.parallelCurve( sa, depth );
         }
 

@@ -36,7 +36,9 @@ class ArcSimple extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p ); //not necessarily
-        this.arc.adjustBounds( bounds );
+
+        if ( this.arc )
+            this.arc.adjustBounds( bounds );
     }
 
 

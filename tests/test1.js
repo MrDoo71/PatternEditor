@@ -54,7 +54,7 @@ function v343110_graph1_init()
                                       "p2Line2": a3 } );
                     
 
-    var targetdiv = d3.select( "#v343110_graph1" );
+    const targetdiv = d3.select( "#v343110_graph1" );
 
     //drawing1.analyseDependencies();
     
