@@ -3644,19 +3644,27 @@ class Piece {
         if ( this.ignore )
             return;
 
+        for( const a of this.detailNodes )
+        {
+            const o = a.dObj;
+            if (( ! o?.p ) && ( ! o?.arc ) && ( ! o?.curve ))
+            {
+                console.log("Skipping piece calculations " + this.name + ". Point not known for node " + a );
+                return;
+            }
+        }
+
         this.calculated = true;
         console.log("*********");
         console.log("Prepare piece: " + this.name );
-        let nObj;
-        let previousP; //not adjusted for seam allowance
-        let previousDirectionDeg; //same for SA and not SA        
+        let previousP; //not adjusted for seam allowance    
 
         console.log("Pass 1 - direction and skipped nodes" );
         //Initial preparation, cut up any curves at notches, reverse curves if necessary, work out
         //which points don't lead to any progress around the curve. 
         for (let a = 0; a < this.detailNodes.length+1; a++)   //+1 because we circle right around to the start
         {  
-            const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
+            const n = this.detailNodes[ ( a === this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
             const pn = this.detailNodes[ a-1 < 0 ? a-1+this.detailNodes.length : a-1 ]; 
             const nn = this.detailNodes[ a+1 >= this.detailNodes.length ? a+1-this.detailNodes.length : a+1 ];
             const dObj = n.dObj;
