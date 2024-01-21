@@ -705,6 +705,7 @@ class Line extends DrawingObject {
 
     constructor(data) {
         super(data);
+        this.data.name = data.derivedName;
     }
 
 
