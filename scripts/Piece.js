@@ -792,18 +792,13 @@ class Piece {
         console.log("*********");
         console.log("notches: " + this.name );
 
-       // let pn = this.detailNodes[ this.detailNodes.length -1 ];
-
         const strokeWidth = this.getStrokeWidth();
 
         for (const n of this.detailNodes) 
         {
-            //const n = this.detailNodes[ a ];
-
             if ( typeof n.notch === "undefined" )
                 continue;
 
-            //const notchType = n.notch;
             const notchAngle = n.notchAngle === undefined ? 0 : n.notchAngle;
             const notchCount = n.notchCount === undefined ? 1 : n.notchCount;
             const notchLength = n.notchLength === undefined ? 0.25 : n.notchLength;
@@ -905,8 +900,7 @@ class Piece {
         const strokeWidth = Math.round( this.getStrokeWidth()/2 * 10000 )/10000;
 
         if ( this.internalPaths )
-            //this.internalPaths.forEach( 
-            //    function(ip) { 
+        {
             for( const ip of this.internalPaths )
             {
                 if ( internalPathsGroup === undefined )
@@ -916,7 +910,7 @@ class Piece {
                 if ( ip.nodes )
                     this.drawInternalPath( internalPathsGroup, ip, strokeWidth, useExportStyles );
             }
-            //    }, this );   
+        }
     }
 
 
@@ -994,7 +988,6 @@ class Piece {
             .attr("d", path )
             .attr("class", "internalpath" )
             .attr("fill", "none")
-            //.attr("class", internalPath.lineStyle )
             .attr("stroke-width", strokeWidth); //TODO this has to be set according to scale
 
         if ( useExportStyles )
@@ -1149,6 +1142,9 @@ class Piece {
 
     svgPath( withSeamAllowance )
     {
+        if ( this.ignore )
+            return;
+
         if ( ! this.detailNodes )
             return;
 
@@ -1162,9 +1158,6 @@ class Piece {
 
             const n = this.detailNodes[ ( a == this.detailNodes.length ) ? 0 : a ]; //circle back to the first object at the end. 
          
-            //if ( a == this.detailNodes.length )
-            //    console.log("Closing path");
-
             if ( n.skipPoint )
                 continue;
 
@@ -1219,6 +1212,9 @@ class Piece {
 
     adjustBounds( bounds, includeOffset )
     {
+        if ( this.ignore )
+            return;
+
         if ( ! this.detailNodes )
             return;
 
@@ -1248,7 +1244,11 @@ class Piece {
     }
 
 
-    setDependencies( dependencies ) {
+    setDependencies( dependencies ) 
+    {
+        if ( this.ignore )
+            return;
+
         for ( const d of  this.detailNodes ) 
         {
             dependencies.add( this, d.dObj );
