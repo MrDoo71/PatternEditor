@@ -180,7 +180,7 @@ class Pattern {
         const m = this.measurement[name];
 
         if ( !m )
-            throw "Measurment not found:" + name;
+            throw new Error( "Measurment not found:" + name );
 
         return m;
     }

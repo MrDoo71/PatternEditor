@@ -344,15 +344,15 @@ class GeoSpline {
 
     splineBetweenPoints( p1, p2 )
     {
-        const t1 = this.findTForPoint(p1);
+        let t1 = this.findTForPoint(p1);
 
         if ( t1 === undefined )
-            throw "p1 is not on spline;";
+            throw new Error( "p1 is not on spline." );
 
-        const t2 = this.findTForPoint(p2);
+        let t2 = this.findTForPoint(p2);
 
         if ( t2 === undefined )
-            throw "p2 is not on spline;";
+            throw new Error( "p2 is not on spline." );
 
         if (( t1 === 0 ) && ( t2 === this.nodeData.length ))
             return this;
@@ -435,7 +435,7 @@ class GeoSpline {
         const c1 = this.cutAtPoint( p1 );
 
         if ( c1 === undefined )
-            throw "p1 is not on spline;"
+            throw new Error( "p1 is not on spline." );
 
         const splineAfterPoint = c1.afterPoint;
         const c3 = splineAfterPoint.cutAtPoint( p2 );
@@ -1010,7 +1010,7 @@ class GeoSpline {
             } 
         }
         else 
-            throw "Unexpected type of addition. ";
+            throw new Error( "Unexpected type of addition. " );
             
         return new GeoSpline( extendedNodeData );
     }

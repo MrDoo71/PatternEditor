@@ -1,4 +1,4 @@
-import  { drawPattern } from '../dist/patterneditor.js?v=32';
+import  { drawPattern } from '../dist/patterneditor.js?v=33';
 
 console.log( "kinodbglue2.js?v=5 module");
 

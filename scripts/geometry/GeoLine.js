@@ -18,10 +18,10 @@ class GeoLine {
     constructor( p1, p2 ) {
 
         if ( ! p1 )
-            throw "GeoLine p1 not defined.";
+            throw new Error( "GeoLine p1 not defined." );
 
         if ( ! p2 )
-            throw "GeoLine p2 not defined.";
+            throw new Error( "GeoLine p2 not defined." );
 
         this.p1 = p1;
         this.p2 = p2;
@@ -171,7 +171,7 @@ class GeoLine {
                         throw e;
                 }
             }
-            throw "No intersection with arc. ";
+            throw new Error( "No intersection with arc. " );
         }
 
         let whichPoint = 0;

@@ -73,7 +73,7 @@ class DrawingObject /*abstract*/ {
         else if ( this.arc )
             path = this.arc;
         else 
-            throw "Unknown type to add length along line";
+            throw new Error( "Unknown type to add length along line" );
 
         const lengthAndUnits = this.getLengthAndUnits();
 
@@ -149,7 +149,7 @@ s
             return l + " " + patternUnits;    
         }
             
-        throw "Unknown length";
+        throw new Error( "Unknown length" );
     }
 
 

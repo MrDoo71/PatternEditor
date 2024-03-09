@@ -73,7 +73,7 @@ class DrawingObject /*abstract*/ {
         else if ( this.arc )
             path = this.arc;
         else 
-            throw "Unknown type to add length along line";
+            throw new Error( "Unknown type to add length along line" );
 
         const lengthAndUnits = this.getLengthAndUnits();
 
@@ -149,7 +149,7 @@ s
             return l + " " + patternUnits;    
         }
             
-        throw "Unknown length";
+        throw new Error( "Unknown length" );
     }
 
 
@@ -1951,7 +1951,7 @@ class PointIntersectArcs extends DrawingObject {
 
         if ( intersections.points.length === 0 )
         {
-            throw "No intersections found. ";
+            throw new Error( "No intersections found. " );
         }
         else if ( intersections.points.length === 1 )
         {
@@ -2057,7 +2057,7 @@ class PointIntersectCircles extends DrawingObject {
         
         if ( intersections.points.length === 0 )
         {
-            throw "No intersections found. ";
+            throw new Error( "No intersections found. " );
         }
         else if ( intersections.points.length === 1 )
         {
@@ -2182,7 +2182,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
 
         if ( intersections.points.length === 0 )
         {
-            throw "No intersections found. ";
+            throw new Error( "No intersections found. " );
         }
         else
         {
@@ -3481,7 +3481,7 @@ class Pattern {
         const m = this.measurement[name];
 
         if ( !m )
-            throw "Measurment not found:" + name;
+            throw new Error( "Measurment not found:" + name );
 
         return m;
     }
@@ -3562,6 +3562,14 @@ class Piece {
             {
                 this.nodesByName[ n.obj ] = n;
                 n.dObj = dObj;
+
+                if ( dObj.error )
+                {
+                    //Don't try to calculate() this piece if any node has an error (or we could just skip broken nodes?)
+                    this.ignore = true;
+                    return;
+                }
+
                 if ( ! n.reverse )
                     n.reverse = false;
 
@@ -4877,6 +4885,7 @@ class PatternDrawing {
     init() {
         if (!this.data)
             return;
+        
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
         for ( const a in this.drawingObjects ) {
@@ -5027,7 +5036,7 @@ class PatternDrawing {
             f.value = function (currentLength) {
                 const v = f.expression.value(currentLength);
                 if ( Number.isNaN( v ) )
-                    throw "Formula result is not a number. ";
+                    throw new Error( "Formula result is not a number. " );
                 return v;
             };
             f.html = function( asFormula, currentLength ) {
@@ -5149,7 +5158,7 @@ class PatternDrawing {
             }
 
             if ( ! p )
-                throw "Failed to determine position for label";
+                throw new Error( "Failed to determine position for label." );
 
             {
                 let baseline = "middle";
@@ -7000,15 +7009,17 @@ class Expression {
                             else if ( d.curve )                             
                                 return d.curve;
                             else
-                                throw "Path not found.";                
+                                throw new Error( "Path not found." ); 
                         };
 
                         //Return true if 'other' is the start or end of this curve. 
                         const checkRelevant = function( curve, other ) {
-                            return    ( ( curve.startPoint ) && ( curve.startPoint === other ) )
-                                   || ( ( curve.endPoint ) && ( curve.endPoint === other ) )
-                                   || ( ( curve.data.pathNode ) && ( curve.data.pathNode[0].point === other ) )
-                                   || ( ( curve.data.pathNode ) && ( curve.data.pathNode[curve.data.pathNode.length-1].point === other ) );
+                            return    ( curve?.startPoint === other ) 
+                                   || ( curve?.endPoint === other )
+                                   || ( curve?.data?.pathNode?.[0].point === other )
+                                   || ( curve?.data?.pathNode?.[curve?.data?.pathNode?.length-1]?.point === other )
+                                   || ( curve?.curve?.nodeData?.[0].point.equals( other.p ) ) //curve is itself an operation result
+                                   || ( curve?.curve?.nodeData?.[ curve?.curve?.nodeData?.length -1 ].point.equals( other.p ) )
                         };
 
                         let drawingObjectCuttingSpline;
@@ -7024,6 +7035,9 @@ class Expression {
                                        || ( this.drawingObject2.data.objectType === "cutSpline" ) )
                                  && checkRelevant( curveBeingCut( this.drawingObject2 ), this.drawingObject1 ) )
                                  drawingObjectCuttingSpline = this.drawingObject2;
+
+                        if ( ! drawingObjectCuttingSpline )
+                            throw new Error( "No object cutting spline. " );
 
                         this.splineDrawingObject = curveBeingCut( drawingObjectCuttingSpline );
 
@@ -7062,7 +7076,7 @@ class Expression {
                 this.value = this.functionValue;
             }            
             else if ( typeof data.variableType !== "undefined" )
-                throw "Unsupported variableType:" + data.variableType;
+                throw new Error( "Unsupported variableType:" + data.variableType );
         //}
         else if ( typeof data.functionName !== "undefined" )
         {
@@ -7346,11 +7360,11 @@ class Expression {
                 break;
             }        
             default:
-                throw ("Unknown function: " + this.function );
+                throw new Error ("Unknown function: " + this.function );
         }
 
         if ( r === undefined || Number.isNaN( r ) )
-            throw this.function + " - result not a number. ";
+            throw new Error( this.function + " - result not a number. " );
 
         return r;
     }
@@ -7364,12 +7378,12 @@ class Expression {
     operationValue(currentLength) {
 
         if (typeof this.params[0].value !== "function")
-            throw "expression p1 not valid";
+            throw new Error( "expression p1 not valid." );
 
         if ( this.operation !== "()" )    
         {
             if (typeof this.params[1].value !== "function")
-                throw "expression p2 not valid";
+                throw new Error(  "expression p2 not valid." );
         }
 
         if (this.operation === "+")
@@ -7421,14 +7435,14 @@ class Expression {
         }
 
 
-        throw ("Unknown operation: " + this.operation);
+        throw new Error( "Unknown operation: " + this.operation );
     }
 
 
     keywordValue(currentLength) {
         if (this.variable === "CurrentLength")
             return currentLength;
-        throw ("Unknown keyword: " + this.variable);
+        throw new Error( "Unknown keyword: " + this.variable );
     }
 
 
@@ -8268,10 +8282,10 @@ class GeoLine {
     constructor( p1, p2 ) {
 
         if ( ! p1 )
-            throw "GeoLine p1 not defined.";
+            throw new Error( "GeoLine p1 not defined." );
 
         if ( ! p2 )
-            throw "GeoLine p2 not defined.";
+            throw new Error( "GeoLine p2 not defined." );
 
         this.p1 = p1;
         this.p2 = p2;
@@ -8421,7 +8435,7 @@ class GeoLine {
                         throw e;
                 }
             }
-            throw "No intersection with arc. ";
+            throw new Error( "No intersection with arc. " );
         }
 
         let whichPoint = 0;
@@ -8945,15 +8959,15 @@ class GeoSpline {
 
     splineBetweenPoints( p1, p2 )
     {
-        const t1 = this.findTForPoint(p1);
+        let t1 = this.findTForPoint(p1);
 
         if ( t1 === undefined )
-            throw "p1 is not on spline;";
+            throw new Error( "p1 is not on spline." );
 
-        const t2 = this.findTForPoint(p2);
+        let t2 = this.findTForPoint(p2);
 
         if ( t2 === undefined )
-            throw "p2 is not on spline;";
+            throw new Error( "p2 is not on spline." );
 
         if (( t1 === 0 ) && ( t2 === this.nodeData.length ))
             return this;
@@ -9036,7 +9050,7 @@ class GeoSpline {
         const c1 = this.cutAtPoint( p1 );
 
         if ( c1 === undefined )
-            throw "p1 is not on spline;"
+            throw new Error( "p1 is not on spline." );
 
         const splineAfterPoint = c1.afterPoint;
         const c3 = splineAfterPoint.cutAtPoint( p2 );
@@ -9611,7 +9625,7 @@ class GeoSpline {
             } 
         }
         else 
-            throw "Unexpected type of addition. ";
+            throw new Error( "Unexpected type of addition. " );
             
         return new GeoSpline( extendedNodeData );
     }

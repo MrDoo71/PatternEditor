@@ -36,7 +36,7 @@ class PointIntersectCircles extends DrawingObject {
         
         if ( intersections.points.length === 0 )
         {
-            throw "No intersections found. ";
+            throw new Error( "No intersections found. " );
         }
         else if ( intersections.points.length === 1 )
         {

@@ -35,6 +35,7 @@ class PatternDrawing {
     init() {
         if (!this.data)
             return;
+        
         //Take each drawingObject in the JSON and convert to the appropriate 
         //type of object.
         for ( const a in this.drawingObjects ) {
@@ -185,7 +186,7 @@ class PatternDrawing {
             f.value = function (currentLength) {
                 const v = f.expression.value(currentLength);
                 if ( Number.isNaN( v ) )
-                    throw "Formula result is not a number. ";
+                    throw new Error( "Formula result is not a number. " );
                 return v;
             };
             f.html = function( asFormula, currentLength ) {
@@ -307,7 +308,7 @@ class PatternDrawing {
             }
 
             if ( ! p )
-                throw "Failed to determine position for label";
+                throw new Error( "Failed to determine position for label." );
 
             {
                 let baseline = "middle";

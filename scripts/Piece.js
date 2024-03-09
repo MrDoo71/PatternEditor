@@ -28,6 +28,14 @@ class Piece {
             {
                 this.nodesByName[ n.obj ] = n;
                 n.dObj = dObj;
+
+                if ( dObj.error )
+                {
+                    //Don't try to calculate() this piece if any node has an error (or we could just skip broken nodes?)
+                    this.ignore = true;
+                    return;
+                }
+
                 if ( ! n.reverse )
                     n.reverse = false;
 
