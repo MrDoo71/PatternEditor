@@ -20,7 +20,17 @@ class PointIntersectArcs extends DrawingObject {
         const arc1SI = this.firstArc.asShapeInfo();
         const arc2SI = this.secondArc.asShapeInfo();
 
-        const intersections = Intersection.intersect(arc1SI, arc2SI);
+        let intersections = Intersection.intersect(arc1SI, arc2SI);
+
+        const myIntersections = this.firstArc.arc.intersect( this.secondArc.arc );
+
+        //This is just a conservative switchover to our own intersection code. 
+        //Need to test more widely for first and second intersection points, and arcs that span 0 deg.
+        if (( intersections.points.length === 0 ) && ( myIntersections.length !== 0 ))
+        {
+            intersections = { status: "Intersection", points: myIntersections };
+            console.log( "Using alternative intersect method.");
+        }
 
         if ( intersections.points.length === 0 )
         {

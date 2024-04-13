@@ -26,8 +26,7 @@ class PointIntersectCurves extends DrawingObject {
         if ( intersections.points.length === 0 )
         {
             this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "No intersections found. PointIntersectCurves: " + d.name );
+            throw new Error( "No intersections found. " );
         }        
         else if ( intersections.points.length === 1 )
         {

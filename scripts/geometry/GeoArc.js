@@ -35,6 +35,65 @@ class GeoArc {
             this.angle2+=360;
     }
 
+    intersect( arc2 )
+    {
+        //https://mathworld.wolfram.com/Circle-CircleIntersection.html
+        //consider this arc to be centred at 0,0 and re-base arc 2 so that its origin is relative to this
+        const a1 = new GeoArc( new GeoPoint(0,0), this.radius, this.angle1, this.angle2 );
+        const a2 = new GeoArc( new GeoPoint( arc2.center.x - this.center.x, arc2.center.y - this.center.y), arc2.radius, arc2.angle1, arc2.angle2 );
+
+        //rotate both arcs to be on the x axis. 
+        const currentAngle = (new GeoLine( a1.center, a2.center )).angleDeg();
+        a1.angle1 -= currentAngle;
+        a1.angle2 -= currentAngle;
+        a2.angle1 -= currentAngle;
+        a2.angle2 -= currentAngle;
+        //rotate a2's center.
+        a2.center = a2.center.rotate( a1.center, -currentAngle );
+
+        //Now both a1 and a2 have been shift and rotated such that a1 is at 0,0 an a2 is at x,0.
+        //d - distance between centers
+        const d = Math.abs( a2.center.x );
+        if ( d > ( a1.radius + a2.radius ) )
+            return []; //circles are too far apart, they don't intersect.
+
+        const x =  ( Math.pow( d, 2 ) - Math.pow( a2.radius, 2 ) + Math.pow( a1.radius, 2 ) ) / ( 2 * d );
+        const y = Math.sqrt( Math.pow( a1.radius, 2 ) - Math.pow( x, 2 ) );  //the other point is -y
+
+        let i1 = new GeoPoint( x, y );
+        let i2 = new GeoPoint( x, -y );
+
+        const intersects = [ i1, i2 ];
+        const goodIntersects = [];
+
+        for( let n in intersects )
+        {
+            let i = intersects[n];
+
+            //Rotate back
+            i = i.rotate( a1.center, currentAngle );
+
+            //Translate back onto the original coordinate system
+            i.x = i.x + this.center.x;
+            i.y = i.y + this.center.y;
+
+            //Finally check whether either or both of these intersections are within the angles of the arc.
+            if (   ( this.isPointOnArc( i ) )
+                && ( arc2.isPointOnArc( i ) ) )
+                goodIntersects.push( i );    
+        }
+
+        return goodIntersects;
+    }
+
+    //nb for this use we don't need to check radius. 
+    isPointOnArc( p )
+    {
+        //nb, what about arcs spanning 0 ?  +360?
+        const line1 = new GeoLine( this.center, p )
+        return ( line1.angleDeg() >= this.angle1 ) && ( line1.angleDeg() <= this.angle2); 
+    }
+
     //https://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes F.6.4 Conversion from center to endpoint parameterization
     //Hashed together from https://stackoverflow.com/questions/30277646/svg-convert-arcs-to-cubic-bezier and https://github.com/BigBadaboom/androidsvg/blob/5db71ef0007b41644258c1f139f941017aef7de3/androidsvg/src/main/java/com/caverock/androidsvg/utils/SVGAndroidRenderer.java#L2889
     asGeoSpline() {
