@@ -1052,7 +1052,7 @@ class OperationResult extends DrawingObject {
         if ( this.curve )
             return this.curve.pointAlongPath( length );
             
-        throw "pointAlongPath not implemented for this operation result. ";
+        throw new Error( "pointAlongPath not implemented for this operation result. " );
     }
 
 
@@ -1947,7 +1947,17 @@ class PointIntersectArcs extends DrawingObject {
         const arc1SI = this.firstArc.asShapeInfo();
         const arc2SI = this.secondArc.asShapeInfo();
 
-        const intersections = Intersection.intersect(arc1SI, arc2SI);
+        let intersections = Intersection.intersect(arc1SI, arc2SI);
+
+        const myIntersections = this.firstArc.arc.intersect( this.secondArc.arc );
+
+        //This is just a conservative switchover to our own intersection code. 
+        //Need to test more widely for first and second intersection points, and arcs that span 0 deg.
+        if (( intersections.points.length === 0 ) && ( myIntersections.length !== 0 ))
+        {
+            intersections = { status: "Intersection", points: myIntersections };
+            console.log( "Using alternative intersect method.");
+        }
 
         if ( intersections.points.length === 0 )
         {
@@ -2053,7 +2063,17 @@ class PointIntersectCircles extends DrawingObject {
         const arc1SI = circle1.asShapeInfo();
         const arc2SI = circle2.asShapeInfo();
 
-        const intersections = Intersection.intersect(arc1SI, arc2SI);
+        let intersections = Intersection.intersect(arc1SI, arc2SI);
+
+        const myIntersections = circle1.intersect( circle2 );
+
+        //This is just a conservative switchover to our own intersection code. 
+        //Need to test more widely for first and second intersection points. 
+        if (( intersections.points.length === 0 ) && ( myIntersections.length !== 0 ))
+        {
+            intersections = { status: "Intersection", points: myIntersections };
+            console.log( "Using alternative intersect method.");
+        }        
         
         if ( intersections.points.length === 0 )
         {
@@ -2253,8 +2273,9 @@ class PointIntersectCurves extends DrawingObject {
         if ( intersections.points.length === 0 )
         {
             this.p = new GeoPoint(0,0);
-            this.error = "No intersections found.";
-            console.log( "No intersections found. PointIntersectCurves: " + d.name );
+            throw new Error( "No intersections found. " );
+            //this.error = "No intersections found.";
+            //console.log( "No intersections found. PointIntersectCurves: " + d.name );
         }        
         else if ( intersections.points.length === 1 )
         {
@@ -4933,15 +4954,20 @@ class PatternDrawing {
                 }    
 
             //Calculate the visible bounds            
-            this.drawingObjects.forEach( function(dObj){
+            //this.drawingObjects.forEach( function(dObj) {
+            for ( const dObj of this.drawingObjects )
+            {
                 if (   ( dObj.isVisible( options ) )
                     && ( dObj.data.lineStyle !== "none" ) )         
+                {
                     try {
                         dObj.adjustBounds( this.visibleBounds );
                     } catch ( e ) {
                         console.log("Error adjusting bounds for " + dObj.name + " ", e );
                     }
-            }, this) ;
+                }
+            }
+            //}, this) ;
         }
 
     }
@@ -5823,7 +5849,7 @@ function doControls( graphdiv, editorOptions, pattern )
         const downloadFunction = function() {
             const serializer = new XMLSerializer();
             const xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
-            const imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
+            const imgData = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xmlString);
             
             d3.select(this)
                 .attr( "href-lang", "image/svg+xml; charset=utf-8" )
@@ -6701,11 +6727,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     const sanitiseForHTML = function ( s ) {
 
-            if ( ! typeof s === "string" )
+            if ( typeof s !== "string" )
                 s = "" + s;
                     
             return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
-            //return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
     const svg = graphdiv.append("div")
@@ -7755,6 +7780,65 @@ class GeoArc {
         //Correct 180-0 to 180-360
         if ( this.angle2 < this.angle1 )
             this.angle2+=360;
+    }
+
+    intersect( arc2 )
+    {
+        //https://mathworld.wolfram.com/Circle-CircleIntersection.html
+        //consider this arc to be centred at 0,0 and re-base arc 2 so that its origin is relative to this
+        const a1 = new GeoArc( new GeoPoint(0,0), this.radius, this.angle1, this.angle2 );
+        const a2 = new GeoArc( new GeoPoint( arc2.center.x - this.center.x, arc2.center.y - this.center.y), arc2.radius, arc2.angle1, arc2.angle2 );
+
+        //rotate both arcs to be on the x axis. 
+        const currentAngle = (new GeoLine( a1.center, a2.center )).angleDeg();
+        a1.angle1 -= currentAngle;
+        a1.angle2 -= currentAngle;
+        a2.angle1 -= currentAngle;
+        a2.angle2 -= currentAngle;
+        //rotate a2's center.
+        a2.center = a2.center.rotate( a1.center, -currentAngle );
+
+        //Now both a1 and a2 have been shift and rotated such that a1 is at 0,0 an a2 is at x,0.
+        //d - distance between centers
+        const d = Math.abs( a2.center.x );
+        if ( d > ( a1.radius + a2.radius ) )
+            return []; //circles are too far apart, they don't intersect.
+
+        const x =  ( Math.pow( d, 2 ) - Math.pow( a2.radius, 2 ) + Math.pow( a1.radius, 2 ) ) / ( 2 * d );
+        const y = Math.sqrt( Math.pow( a1.radius, 2 ) - Math.pow( x, 2 ) );  //the other point is -y
+
+        let i1 = new GeoPoint( x, y );
+        let i2 = new GeoPoint( x, -y );
+
+        const intersects = [ i1, i2 ];
+        const goodIntersects = [];
+
+        for( let n in intersects )
+        {
+            let i = intersects[n];
+
+            //Rotate back
+            i = i.rotate( a1.center, currentAngle );
+
+            //Translate back onto the original coordinate system
+            i.x = i.x + this.center.x;
+            i.y = i.y + this.center.y;
+
+            //Finally check whether either or both of these intersections are within the angles of the arc.
+            if (   ( this.isPointOnArc( i ) )
+                && ( arc2.isPointOnArc( i ) ) )
+                goodIntersects.push( i );    
+        }
+
+        return goodIntersects;
+    }
+
+    //nb for this use we don't need to check radius. 
+    isPointOnArc( p )
+    {
+        //nb, what about arcs spanning 0 ?  +360?
+        const line1 = new GeoLine( this.center, p )
+        return ( line1.angleDeg() >= this.angle1 ) && ( line1.angleDeg() <= this.angle2); 
     }
 
     //https://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes F.6.4 Conversion from center to endpoint parameterization

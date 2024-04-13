@@ -594,7 +594,7 @@ function doControls( graphdiv, editorOptions, pattern )
         const downloadFunction = function() {
             const serializer = new XMLSerializer();
             const xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
-            const imgData = 'data:image/svg+xml;charset=utf-8,\n' + encodeURIComponent(xmlString);
+            const imgData = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xmlString);
             
             d3.select(this)
                 .attr( "href-lang", "image/svg+xml; charset=utf-8" )
@@ -1472,11 +1472,10 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     const sanitiseForHTML = function ( s ) {
 
-            if ( ! typeof s === "string" )
+            if ( typeof s !== "string" )
                 s = "" + s;
                     
             return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
-            //return s.replace( /&/g, "&amp;" ).replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
     const svg = graphdiv.append("div")

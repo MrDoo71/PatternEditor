@@ -83,15 +83,18 @@ class PatternDrawing {
                 }    
 
             //Calculate the visible bounds            
-            this.drawingObjects.forEach( function(dObj){
+            for ( const dObj of this.drawingObjects )
+            {
                 if (   ( dObj.isVisible( options ) )
                     && ( dObj.data.lineStyle !== "none" ) )         
+                {
                     try {
                         dObj.adjustBounds( this.visibleBounds );
                     } catch ( e ) {
                         console.log("Error adjusting bounds for " + dObj.name + " ", e );
                     }
-            }, this) ;
+                }
+            }
         }
 
     }

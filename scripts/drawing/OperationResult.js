@@ -75,7 +75,7 @@ class OperationResult extends DrawingObject {
         if ( this.curve )
             return this.curve.pointAlongPath( length );
             
-        throw "pointAlongPath not implemented for this operation result. ";
+        throw new Error( "pointAlongPath not implemented for this operation result. " );
     }
 
 
