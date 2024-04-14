@@ -33,7 +33,9 @@ class OperationResult extends DrawingObject {
             this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
         }
 
-        if ( this.basePoint.line instanceof GeoLine ) //untested?
+        //If the basePoint is a Point that is showing its construction line, then don't perform
+        //the operation on that construction line.
+        if ( ( this.basePoint instanceof Line ) && ( this.basePoint.line instanceof GeoLine ) ) //untested?
         {
             this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
         }

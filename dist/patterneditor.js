@@ -1010,7 +1010,9 @@ class OperationResult extends DrawingObject {
             this.curve = this.basePoint.curve.applyOperation( applyOperationToPointFunc );
         }
 
-        if ( this.basePoint.line instanceof GeoLine ) //untested?
+        //If the basePoint is a Point that is showing its construction line, then don't perform
+        //the operation on that construction line.
+        if ( ( this.basePoint instanceof Line ) && ( this.basePoint.line instanceof GeoLine ) ) //untested?
         {
             this.line = this.basePoint.line.applyOperation( applyOperationToPointFunc );
         }
@@ -2274,8 +2276,6 @@ class PointIntersectCurves extends DrawingObject {
         {
             this.p = new GeoPoint(0,0);
             throw new Error( "No intersections found. " );
-            //this.error = "No intersections found.";
-            //console.log( "No intersections found. PointIntersectCurves: " + d.name );
         }        
         else if ( intersections.points.length === 1 )
         {
@@ -3568,6 +3568,12 @@ class Piece {
         this.nodesByName = {};
         this.calculated = false;
         this.ignore = false;
+
+        if ( this.data.mx === undefined )
+            this.data.mx = 0;
+
+        if ( this.data.my === undefined )
+            this.data.my = 0;
 
         if (( ! this.detailNodes ) || ( this.detailNodes.length < 2 ) )
         {
@@ -4954,7 +4960,6 @@ class PatternDrawing {
                 }    
 
             //Calculate the visible bounds            
-            //this.drawingObjects.forEach( function(dObj) {
             for ( const dObj of this.drawingObjects )
             {
                 if (   ( dObj.isVisible( options ) )
@@ -4967,7 +4972,6 @@ class PatternDrawing {
                     }
                 }
             }
-            //}, this) ;
         }
 
     }
