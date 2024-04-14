@@ -14,6 +14,12 @@ class Piece {
         this.calculated = false;
         this.ignore = false;
 
+        if ( this.data.mx === undefined )
+            this.data.mx = 0;
+
+        if ( this.data.my === undefined )
+            this.data.my = 0;
+
         if (( ! this.detailNodes ) || ( this.detailNodes.length < 2 ) )
         {
             console.log("Piece " + this.name + " has 0-1 nodes and is therefore invalid." );
