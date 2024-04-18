@@ -2267,8 +2267,8 @@ class PointIntersectCurves extends DrawingObject {
         if (typeof this.curve2 === "undefined")
             this.curve2 = this.drawing.getObject(d.curve2);
 
-        const curve1SI = this.curve1.asShapeInfo();
-        const curve2SI = this.curve2.asShapeInfo();
+        const curve1SI = this.curve1.curve.asShapeInfo();
+        const curve2SI = this.curve2.curve.asShapeInfo();
 
         const intersections = Intersection.intersect(curve1SI, curve2SI);
         
@@ -3428,6 +3428,18 @@ class Pattern {
     }
 
 
+    //Return the pattern local equivalent of this number of pts
+    getPatternEquivalentOfPT( pt )
+    {
+        switch( this.units )
+        {
+            case "mm" : return pt/72*25.4; 
+            case "cm" : return pt/72*2.54;
+            default: return pt/72; //inch
+        }
+    }    
+
+
     analyseDependencies() {
         //Now build up dependency links
         this.dependencies = { 
@@ -3644,6 +3656,7 @@ class Piece {
             }
                 
         if ( this.dataPanels )
+        {
             for( const panel of this.dataPanels )
             {
                 if ( panel.center ) 
@@ -3663,6 +3676,7 @@ class Piece {
                 if ( panel.foldPosition === undefined )
                     panel.foldPosition = "";
             }
+        }
 
         this.defaultSeamAllowance = this.drawing.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
@@ -3722,9 +3736,6 @@ class Piece {
                     n.sa2 = this.defaultSeamAllowance;
             }
          
-            //if ( a == this.detailNodes.length )
-            //    console.log("Closing path");
-
             if ( a === 0 ) //Note if first node is curve, then it could be done at the start. 
             {
                 if ( dObj.curve instanceof GeoSpline )
@@ -3896,17 +3907,6 @@ class Piece {
                         n.skipPoint = true; 
                     }
                 }
-                // else if ( dObj.line instanceof GeoLine )
-                // {
-                //     //TODO! this needs testing, is this even allowed? 
-                //     console.log("Line in piece, not allowed! " + n.obj );
-                //     n.line = dObj.line;
-                //     n.point = dObj.line.p2;
-                //     n.directionBeforeDeg = n.line.angleDeg();
-                //     n.directionAfterDeg = n.directionBeforeDeg
-                //     n.skipPoint = false; 
-                // }
-
 
                 if ( pn.directionAfterDeg === undefined )
                 {
@@ -3997,7 +3997,6 @@ class Piece {
                          " directionAfterDeg:" + ( n.directionAfterDeg === undefined ? "undefined" : Math.round(n.directionAfterDeg) ) +
                          " sa:" + ( currentSeamAllowance ) +
                          ( n.curveSegment ? " curvesegment" : n.line ? " line" : " UNKNOWN" ) + " " + debugSA);
-            //pn = n;
 
             if ( typeof n.sa1 === "undefined" )
                 n.sa1 = currentSeamAllowance;
@@ -4330,8 +4329,6 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        //console.log("Time to draw seam allowance: ", this.name );
-
         const p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
                  .attr("class", "seamallowance" )
@@ -4586,7 +4583,7 @@ class Piece {
             return;
 
         const lineSpacing = 1.2;
-        const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+        let fontSize = this.drawing.pattern.getPatternEquivalentOfPT( 16 ); 
         let align = "start";
 
         if ( this.dataPanels )
@@ -4594,6 +4591,9 @@ class Piece {
         {
             if ( ! panel.dataItem )
                 continue;
+
+            if ( panel.fontSize )
+                fontSize = this.drawing.pattern.getPatternEquivalentOfPT( panel.fontSize );
 
             let x;
             let y;
@@ -6108,6 +6108,22 @@ function initialiseWallpapers( pattern, interactionPrefix )
                     w.pattern = new Pattern( data );
                     w.width  = w.pattern.visibleBounds.maxX - w.pattern.visibleBounds.minX;
                     w.height = w.pattern.visibleBounds.maxY - w.pattern.visibleBounds.minY;
+
+                    //OR... default the scale in kino when you save the record? 
+                    const unitScale = function( units ) {
+                        switch( units )
+                        {
+                            case "inch" : return 25.4;
+                            case "cm" : return 10;
+                            case "mm" :
+                            default: return 1;
+                        }
+                    };                
+    
+                    const scaleAdjust = unitScale( w.pattern.units ) / unitScale( pattern.units );
+                    w.scaleX += scaleAdjust;
+                    w.scaleY += scaleAdjust;
+
                     if ( w.g )
                         w.drawPatternWallpaper(); //otherwise we'll do it when we create w.g
                   }

@@ -106,6 +106,18 @@ class Pattern {
     }
 
 
+    //Return the pattern local equivalent of this number of pts
+    getPatternEquivalentOfPT( pt )
+    {
+        switch( this.units )
+        {
+            case "mm" : return pt/72*25.4; 
+            case "cm" : return pt/72*2.54;
+            default: return pt/72; //inch
+        }
+    }    
+
+
     analyseDependencies() {
         //Now build up dependency links
         this.dependencies = { 

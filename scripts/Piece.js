@@ -89,6 +89,7 @@ class Piece {
             }
                 
         if ( this.dataPanels )
+        {
             for( const panel of this.dataPanels )
             {
                 if ( panel.center ) 
@@ -108,6 +109,7 @@ class Piece {
                 if ( panel.foldPosition === undefined )
                     panel.foldPosition = "";
             }
+        }
 
         this.defaultSeamAllowance = this.drawing.newFormula( data.seamAllowanceWidth );
         if ( typeof this.defaultSeamAllowance === "object" )
@@ -167,9 +169,6 @@ class Piece {
                     n.sa2 = this.defaultSeamAllowance;
             }
          
-            //if ( a == this.detailNodes.length )
-            //    console.log("Closing path");
-
             if ( a === 0 ) //Note if first node is curve, then it could be done at the start. 
             {
                 if ( dObj.curve instanceof GeoSpline )
@@ -341,17 +340,6 @@ class Piece {
                         n.skipPoint = true; 
                     }
                 }
-                // else if ( dObj.line instanceof GeoLine )
-                // {
-                //     //TODO! this needs testing, is this even allowed? 
-                //     console.log("Line in piece, not allowed! " + n.obj );
-                //     n.line = dObj.line;
-                //     n.point = dObj.line.p2;
-                //     n.directionBeforeDeg = n.line.angleDeg();
-                //     n.directionAfterDeg = n.directionBeforeDeg
-                //     n.skipPoint = false; 
-                // }
-
 
                 if ( pn.directionAfterDeg === undefined )
                 {
@@ -442,7 +430,6 @@ class Piece {
                          " directionAfterDeg:" + ( n.directionAfterDeg === undefined ? "undefined" : Math.round(n.directionAfterDeg) ) +
                          " sa:" + ( currentSeamAllowance ) +
                          ( n.curveSegment ? " curvesegment" : n.line ? " line" : " UNKNOWN" ) + " " + debugSA);
-            //pn = n;
 
             if ( typeof n.sa1 === "undefined" )
                 n.sa1 = currentSeamAllowance;
@@ -775,8 +762,6 @@ class Piece {
         if ( ! this.calculated )
             this.calculate();
 
-        //console.log("Time to draw seam allowance: ", this.name );
-
         const p = g.append("path")
                  .attr("id","seam allowance - " + this.name )
                  .attr("class", "seamallowance" )
@@ -1031,7 +1016,7 @@ class Piece {
             return;
 
         const lineSpacing = 1.2;
-        const fontSize = this.drawing.pattern.getPatternEquivalentOfMM(6); //6mm equiv
+        let fontSize = this.drawing.pattern.getPatternEquivalentOfPT( 16 ); 
         let align = "start";
 
         if ( this.dataPanels )
@@ -1039,6 +1024,9 @@ class Piece {
         {
             if ( ! panel.dataItem )
                 continue;
+
+            if ( panel.fontSize )
+                fontSize = this.drawing.pattern.getPatternEquivalentOfPT( panel.fontSize );
 
             let x;
             let y;
