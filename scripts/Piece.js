@@ -1294,8 +1294,12 @@ class Piece {
         const simplify = ( editorOptions.thumbnail ) && ( editorOptions.targetPiece === "all" );        
         const g = this.svg;
         g.selectAll().remove();
-        this.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
-        this.drawSeamLine( g, editorOptions );
+
+        if ( this.data.seamAllowance )
+            this.drawSeamAllowance( g, editorOptions ); //do this first as it is bigger and we want it underneath in case we fill 
+
+        if ( ! this.data.hideMainPath )    
+            this.drawSeamLine( g, editorOptions );
 
         if ( ! simplify )
         {
