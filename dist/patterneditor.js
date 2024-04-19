@@ -4898,7 +4898,7 @@ class PatternDrawing {
         this.bounds = new Bounds();
         this.visibleBounds = new Bounds();
         this.groups = [];
-        this.pieces = []; //aka details
+        this.pieces = [];
 
         if ( pattern ) //always true, except in some test harnesses
         {
@@ -4948,6 +4948,11 @@ class PatternDrawing {
         else if ( options && ( options.targetPiece === "all" ) ) //TODO also an array with specific multiple pieces specified
         {
             for ( const p of this.pieces ) {
+
+                //Skip non-default pieces when making thumbnail
+                if ( options.thumbnail && ! p.data.inLayout )
+                    continue;
+
                 p.adjustBounds( this.visibleBounds, true );
             }
         }
@@ -4955,9 +4960,11 @@ class PatternDrawing {
         {
             //This ensures the seam allowance is included in the bounds
             if ( this.pieces )
+            {
                 for ( const p of this.pieces ) {
                     p.adjustBounds( this.visibleBounds );
                 }    
+            }
 
             //Calculate the visible bounds            
             for ( const dObj of this.drawingObjects )
@@ -6532,9 +6539,23 @@ function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMen
 
 function doPieces( drawing, transformGroup3, editorOptions )
 {
+    let piecesToDraw = drawing.pieces;
+
+    if ( editorOptions.thumbnail )
+    {
+        piecesToDraw = [];
+        for( const p of drawing.pieces )
+        {
+            if ( p.data.inLayout )
+                piecesToDraw.push( p );
+        }
+        if ( piecesToDraw.length === 0)
+            piecesToDraw = drawing.pieces; //revert back to all pieces
+    }
+
     const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
     pieceGroup.selectAll("g")
-                .data( drawing.pieces )
+                .data( piecesToDraw )
                 .enter()
                 .append("g")        
     //.on("contextmenu", contextMenu)

@@ -849,6 +849,22 @@ function initialiseWallpapers( pattern, interactionPrefix )
                     w.pattern = new Pattern( data );
                     w.width  = w.pattern.visibleBounds.maxX - w.pattern.visibleBounds.minX;
                     w.height = w.pattern.visibleBounds.maxY - w.pattern.visibleBounds.minY;
+
+                    //This however does lead to lines being scaled for thickness too. 
+                    const unitScale = function( units ) {
+                        switch( units )
+                        {
+                            case "inch" : return 25.4;
+                            case "cm" : return 10;
+                            case "mm" :
+                            default: return 1;
+                        }
+                    };                
+    
+                    const scaleAdjust = unitScale( w.pattern.units ) / unitScale( pattern.units );
+                    w.scaleX += scaleAdjust;
+                    w.scaleY += scaleAdjust;
+
                     if ( w.g )
                         w.drawPatternWallpaper(); //otherwise we'll do it when we create w.g
                   }
@@ -1257,9 +1273,24 @@ function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMen
 
 function doPieces( drawing, transformGroup3, editorOptions )
 {
+    let piecesToDraw = drawing.pieces;
+
+    //Skip non-default pieces when making thumbnail
+    if ( editorOptions.thumbnail )
+    {
+        piecesToDraw = [];
+        for( const p of drawing.pieces )
+        {
+            if ( p.data.inLayout )
+                piecesToDraw.push( p );
+        }
+        if ( piecesToDraw.length === 0)
+            piecesToDraw = drawing.pieces; //revert back to all pieces
+    }
+
     const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
     pieceGroup.selectAll("g")
-                .data( drawing.pieces )
+                .data( piecesToDraw )
                 .enter()
                 .append("g")        
     //.on("contextmenu", contextMenu)
