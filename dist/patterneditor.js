@@ -1045,6 +1045,17 @@ class OperationResult extends DrawingObject {
         bounds.adjust( this.p );
     }
 
+
+    asShapeInfo()
+    {
+        if ( this.curve )
+            return this.curve.asShapeInfo();
+        else if ( this.arc )
+            return this.arc.asShapeInfo();
+        else    
+            throw new Error( "asShapeInfo() not implemented. " );
+    }    
+
     
     pointAlongPath( length ) {
 
@@ -2267,8 +2278,8 @@ class PointIntersectCurves extends DrawingObject {
         if (typeof this.curve2 === "undefined")
             this.curve2 = this.drawing.getObject(d.curve2);
 
-        const curve1SI = this.curve1.curve.asShapeInfo();
-        const curve2SI = this.curve2.curve.asShapeInfo();
+        const curve1SI = this.curve1.asShapeInfo();
+        const curve2SI = this.curve2.asShapeInfo();
 
         const intersections = Intersection.intersect(curve1SI, curve2SI);
         
@@ -6116,7 +6127,7 @@ function initialiseWallpapers( pattern, interactionPrefix )
                     w.width  = w.pattern.visibleBounds.maxX - w.pattern.visibleBounds.minX;
                     w.height = w.pattern.visibleBounds.maxY - w.pattern.visibleBounds.minY;
 
-                    //OR... default the scale in kino when you save the record? 
+                    //This however does lead to lines being scaled for thickness too. 
                     const unitScale = function( units ) {
                         switch( units )
                         {
@@ -6541,6 +6552,7 @@ function doPieces( drawing, transformGroup3, editorOptions )
 {
     let piecesToDraw = drawing.pieces;
 
+    //Skip non-default pieces when making thumbnail
     if ( editorOptions.thumbnail )
     {
         piecesToDraw = [];

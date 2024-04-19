@@ -68,6 +68,17 @@ class OperationResult extends DrawingObject {
         bounds.adjust( this.p );
     }
 
+
+    asShapeInfo()
+    {
+        if ( this.curve )
+            return this.curve.asShapeInfo();
+        else if ( this.arc )
+            return this.arc.asShapeInfo();
+        else    
+            throw new Error( "asShapeInfo() not implemented. " );
+    }    
+
     
     pointAlongPath( length ) {
 
