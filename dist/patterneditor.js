@@ -4378,14 +4378,15 @@ class Piece {
 
             const notchAngle = n.notchAngle === undefined ? 0 : n.notchAngle;
             const notchCount = n.notchCount === undefined ? 1 : n.notchCount;
-            const notchLength = n.notchLength === undefined ? 0.25 : n.notchLength;
-            const notchWidth  = n.notchWidth === undefined ? 0.25 : n.notchWidth;      
+            //default length of 0.25 is presumably 1/4 inch, not 0.25mm!. We treat 0.25 in the binding as not-set and not marshalled,
+            //so if we get undefined here it means use the default notch length. 
+            const notchLength = n.notchLength === undefined ? this.drawing.pattern.getPatternEquivalentOfMM( 0.25*25.4 ) : n.notchLength; 
+            const notchWidth  = n.notchWidth === undefined ? this.drawing.pattern.getPatternEquivalentOfMM( 0.25*25.4 ) : n.notchWidth;      
 
             const roundForSVG = this.roundForSVG;
 
             const drawNotch = function( point, pointSA, tangentDeg, sa ) {
 
-                //TODO if no SA, then create a point at an internal tangent
                 let path = "";
 
                 //One notch : 0    
@@ -4415,9 +4416,13 @@ class Piece {
                     }
 
                     //In deliberate variation to Seamly2D, if notchLength < seamAllowance, and notchAngle == 0 then draw the notch from the seam
-                    //allowance line to the seam line. 
-
-                    if (( pointSA ) && ( notchAngle === 0 ) && (notchLength < sa ))
+                    //allowance line to the seam line, but only if...
+                    //there is a non-zero seam allowance, and there isn't specified 
+                    //notch length.
+                    if (     ( pointSA ) 
+                          && ( sa > 0 )
+                          && ( notchAngle === 0 ) 
+                          && ( n.notchLength === undefined ||  notchLength < sa ) )
                     {
                         drawNotchMark( pointSA, undefined, point );
                     }
