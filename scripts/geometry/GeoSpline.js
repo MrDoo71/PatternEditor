@@ -678,20 +678,21 @@ class GeoSpline {
     }    
 
 
-    adjustBounds( bounds ) {
+    //if offset {mx, my} are specified then add these
+    adjustBounds( bounds, offset ) {
 
         //It won't be a perfectly tight bounding box, but 
         //it should be ample to encompass the spline loosely. 
         
         for ( const node of this.nodeData )
         {
-            bounds.adjust( node.point );
+            bounds.adjust( node.point, offset );
 
             if ( node.inControlPoint )
-                bounds.adjust( node.inControlPoint );
+                bounds.adjust( node.inControlPoint, offset );
 
             if ( node.outControlPoint )
-                bounds.adjust( node.outControlPoint );
+                bounds.adjust( node.outControlPoint, offset );
         }
     }
 

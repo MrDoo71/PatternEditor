@@ -10,12 +10,15 @@ class Bounds {
         this.maxY = undefined;
     }
 
-    adjust(p) {
+    //offset is optinoal
+    adjust( p, offset ) {
 
         if (!p)
             return; //e.g. an error
 
-        this.adjustToIncludeXY( p.x, p.y );
+        const mx = offset?.mx;
+        const my = offset?.my;
+        this.adjustToIncludeXY( p.x + ( mx !== undefined ? mx : 0 ) , p.y + ( my !== undefined ? my : 0 ) );
     }
 
     adjustToIncludeXY( x, y ) {
@@ -38,13 +41,13 @@ class Bounds {
             this.parent.adjustToIncludeXY( x,y );
     }
 
-    adjustForLine(line) {
+    adjustForLine(line, offset) {
 
         if (!line)
             return;
 
-        this.adjust(line.p1);
-        this.adjust(line.p2);
+        this.adjust(line.p1, offset);
+        this.adjust(line.p2, offset);
     }
 
     diagonaglLength() {

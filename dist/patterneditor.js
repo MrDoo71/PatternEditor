@@ -3934,6 +3934,11 @@ class Piece {
             }                    
         };
 
+        //If we're not drawing the seamAllowance line, then no need
+        //to calculate it. 
+        if ( ! this.data.seamAllowance )
+            return;
+
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
         let currentSeamAllowance = this.defaultSeamAllowance;        
@@ -4808,6 +4813,7 @@ class Piece {
 
         const mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         const my = includeOffset && this.data.my ? this.data.my : 0.0;
+        const offset = { mx: mx, my: my };
 
         for ( const n of this.detailNodes ) {
 
@@ -4818,7 +4824,13 @@ class Piece {
                 bounds.adjustToIncludeXY( n.pointStartSA.x + mx, n.pointStartSA.y + my );
 
             if ( n.curveSegmentSA )
-                n.curveSegmentSA.adjustBounds( bounds );
+                n.curveSegmentSA.adjustBounds( bounds, offset ); 
+
+            //In case we're not drawing the seam allowance.     
+            if ( n.point )
+                bounds.adjustToIncludeXY( n.point.x + mx, n.point.y + my );
+            else if ( n.curveSegment )
+                n.curveSegment.adjustBounds( bounds, offset );
         }
     }
 
@@ -7743,12 +7755,15 @@ class Bounds {
         this.maxY = undefined;
     }
 
-    adjust(p) {
+    //offset is optinoal
+    adjust( p, offset ) {
 
         if (!p)
             return; //e.g. an error
 
-        this.adjustToIncludeXY( p.x, p.y );
+        const mx = offset?.mx;
+        const my = offset?.my;
+        this.adjustToIncludeXY( p.x + ( mx !== undefined ? mx : 0 ) , p.y + ( my !== undefined ? my : 0 ) );
     }
 
     adjustToIncludeXY( x, y ) {
@@ -7771,13 +7786,13 @@ class Bounds {
             this.parent.adjustToIncludeXY( x,y );
     }
 
-    adjustForLine(line) {
+    adjustForLine(line, offset) {
 
         if (!line)
             return;
 
-        this.adjust(line.p1);
-        this.adjust(line.p2);
+        this.adjust(line.p1, offset);
+        this.adjust(line.p2, offset);
     }
 
     diagonaglLength() {
@@ -9439,20 +9454,21 @@ class GeoSpline {
     }    
 
 
-    adjustBounds( bounds ) {
+    //if offset {mx, my} are specified then add these
+    adjustBounds( bounds, offset ) {
 
         //It won't be a perfectly tight bounding box, but 
         //it should be ample to encompass the spline loosely. 
         
         for ( const node of this.nodeData )
         {
-            bounds.adjust( node.point );
+            bounds.adjust( node.point, offset );
 
             if ( node.inControlPoint )
-                bounds.adjust( node.inControlPoint );
+                bounds.adjust( node.inControlPoint, offset );
 
             if ( node.outControlPoint )
-                bounds.adjust( node.outControlPoint );
+                bounds.adjust( node.outControlPoint, offset );
         }
     }
 

@@ -356,6 +356,11 @@ class Piece {
             }                    
         };
 
+        //If we're not drawing the seamAllowance line, then no need
+        //to calculate it. 
+        if ( ! this.data.seamAllowance )
+            return;
+
         console.log("**********************");
         console.log("Pass 2 - add seam allowance");
         let currentSeamAllowance = this.defaultSeamAllowance;        
@@ -1230,6 +1235,7 @@ class Piece {
 
         const mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         const my = includeOffset && this.data.my ? this.data.my : 0.0;
+        const offset = { mx: mx, my: my };
 
         for ( const n of this.detailNodes ) {
 
@@ -1240,7 +1246,13 @@ class Piece {
                 bounds.adjustToIncludeXY( n.pointStartSA.x + mx, n.pointStartSA.y + my );
 
             if ( n.curveSegmentSA )
-                n.curveSegmentSA.adjustBounds( bounds );
+                n.curveSegmentSA.adjustBounds( bounds, offset ); 
+
+            //In case we're not drawing the seam allowance.     
+            if ( n.point )
+                bounds.adjustToIncludeXY( n.point.x + mx, n.point.y + my );
+            else if ( n.curveSegment )
+                n.curveSegment.adjustBounds( bounds, offset );
         }
     }
 
