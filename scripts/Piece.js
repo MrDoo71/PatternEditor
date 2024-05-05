@@ -76,9 +76,14 @@ class Piece {
                     continue; 
 
                 ip.nodes = [];
+
+                // ip.nodes is not an array, then make it an array of the one thing
+                if ( ! Array.isArray( ip.node ) )
+                    ip.node = [ ip.node ];
+
                 for( const n of ip.node )
                 {
-                    var dObj = resolve( n, true );
+                    const dObj = resolve( n, true );
                     if ( dObj ) 
                         ip.nodes.push( dObj );
                     else
@@ -1276,16 +1281,18 @@ class Piece {
         }
 
         if ( this.internalPaths )
+        {
             for( const ip of this.internalPaths )
             {
                 if ( ! ip.nodes )
                     return; 
-
+                
                 for( const n of ip.nodes )
                 {
                     dependencies.add( this, n );
                 }
             }
+        }
 
         //TODO also nodes used as anchors for data. 
     }    
