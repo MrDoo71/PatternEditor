@@ -168,21 +168,25 @@ s
 
     drawLine( g, drawingOptions ) {
 
+        if ( this.lineVisible() && this.line ) 
+            this.drawALine( g, drawingOptions, this.line );
+    }
+
+
+    drawALine( g, drawingOptions, line ) {
+
         const isOutline = drawingOptions.outline;
         
-        if ( this.lineVisible() && this.line ) //If there was an error, line may not be set. 
-        {
-            const l = g.append("line")
-                     .attr("x1", this.line.p1.x)
-                     .attr("y1", this.line.p1.y)
-                     .attr("x2", this.line.p2.x)
-                     .attr("y2", this.line.p2.y)
-                     .attr("stroke-width", this.getStrokeWidth( isOutline ) );
+        const l = g.append("line")
+                    .attr("x1", line.p1.x)
+                    .attr("y1", line.p1.y)
+                    .attr("x2", line.p2.x)
+                    .attr("y2", line.p2.y)
+                    .attr("stroke-width", this.getStrokeWidth( isOutline ) );
 
-            if ( ! isOutline )
-                l.attr("stroke", drawingOptions.overrideLineColour ? drawingOptions.overrideLineColour : this.getColor() )
-                 .attr("class", drawingOptions.overrideLineStyle ? drawingOptions.overrideLineStyle : this.getLineStyle() );
-        }
+        if ( ! isOutline )
+            l.attr("stroke", drawingOptions.overrideLineColour ? drawingOptions.overrideLineColour : this.getColor() )
+                .attr("class", drawingOptions.overrideLineStyle ? drawingOptions.overrideLineStyle : this.getLineStyle() );
     }
 
 
@@ -1749,6 +1753,9 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );
 
+        this.line1 = new GeoLine( this.firstPoint.p, this.p );
+        this.line2 = new GeoLine( this.secondPoint.p, this.p );
+
         this.adjustBounds( bounds );
     }
 
@@ -1759,8 +1766,22 @@ class PointFromXandYOfTwoOtherPoints extends DrawingObject {
     }
 
 
+    drawLine( g, drawingOptions ) 
+    {
+        if ( this.lineVisible() )
+        {
+            if ( this.line1 ) 
+                this.drawALine( g, drawingOptions, this.line1 );
+
+            if ( this.line2 ) 
+                this.drawALine( g, drawingOptions, this.line2 );
+        }
+    }
+
+
     draw( g, drawOptions ) {
         //TODO check that there is no option to draw a line as part of this tool. 
+        this.drawLine( g, drawOptions );
         this.drawDot( g, drawOptions );
         this.drawLabel( g, drawOptions );
     }
