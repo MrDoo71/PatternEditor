@@ -721,8 +721,10 @@ class Piece {
                  .attr("id","seam line - " + this.name )
                  .attr("class", "seamline" )
                  .attr("d", this.svgPath( false ) )
-                 .attr("stroke-dasharray", "2,0.2" )
                  .attr("stroke-width", ( this.getStrokeWidth()/2) ); //TODO this has to be set according to scale;
+        
+        if ( p.seamAllowance )
+            p.attr("stroke-dasharray", "2,0.2" );
 
         if ( editorOptions.downloadOption)
             p.attr("fill", "none" )
