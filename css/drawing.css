@@ -324,6 +324,25 @@ g.j-pieces path.seamallowance {
     stroke: #f8f8f8;
 }
 
+g.j-pieces line.grainline {
+    stroke: black;
+}
+
+body.k-dark-mode
+g.j-pieces line.grainline {
+    stroke: white;
+}
+
+.arrow path{
+    stroke: black;    
+}
+
+body.k-dark-mode 
+.arrow path
+{
+    stroke: white;
+}
+
 g.j-pieces path.internalpath,
 g.j-pieces path.notch,
 g.j-drawing line[stroke="white"],

@@ -67,7 +67,6 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         
         return;
     }
-        
 
     if ( options.allowPanAndZoom === undefined )
         options.allowPanAndZoom = true;
@@ -938,6 +937,31 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         if ( editorOptions.thumbnail )
             svg.attr("viewBox", 0 + " " + 0 + " " + (width + ( 2 * margin )) + " " + (height + ( 2 * margin )) );
     }
+
+    //Arrow head for grainline. 
+    const forExport = editorOptions.downloadOption;
+    //The id we use for the markers must be unique within the page, but repeatable where we are comparing SVG by hash. 
+    editorOptions.arrowId = "arrow" + forExport + editorOptions.fullWindow;
+    const markerpath = svg.append("svg:defs")
+       .append("marker")
+       .attr("class","arrow" ) //must be unique even amongst hidden views in the strand
+       .attr("id", editorOptions.arrowId ) 
+       .attr("viewBox", "0 -5 12 10")     //0 -5 10 10  //0 0 10 10
+       .attr("refX", 8)                  //15 //5
+       .attr("refY", 0)                  //-1.5 //5
+       .attr("markerWidth", 4)  //6  
+       .attr("markerHeight", 4)  //6
+       .attr("orient", "auto-start-reverse")
+       .append("svg:path") 
+       .attr("fill", "none" )
+       .attr("stroke-width","2")
+       .attr("stroke","black")
+       .attr("stroke-linejoin","round")
+       .attr("d", "M0,-5L10,0L0,5"); //M0,-5L10,0L0,5 M0,0L10,5L0,10z
+
+//    if ( forExport )
+  //      markerpath.attr("stroke", "black").attr("fill","none");  //fill
+
 
     const transformGroup1 = svg.append("g"); //This gets used by d3.zoom
 

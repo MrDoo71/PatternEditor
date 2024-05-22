@@ -3696,12 +3696,11 @@ class Piece {
         {
             for( const panel of this.dataPanels )
             {
-                if ( panel.center ) 
-                    panel.center = resolve( panel.center, true );
-                if ( panel.topLeft ) 
-                    panel.topLeft = resolve( panel.topLeft, true );
-                if ( panel.bottomRight ) 
-                    panel.bottomRight = resolve( panel.bottomRight, true );
+                const pinsToResolve = ["center", "topLeft", "bottomRight", "top", "bottom"];
+                for ( const s of pinsToResolve )
+                    if ( panel[s] ) 
+                        panel[s] = resolve( panel[s], true );
+
                 if ( panel.orientation === undefined )
                     panel.orientation = "";
                 if ( panel.quantity === undefined )
@@ -3712,6 +3711,17 @@ class Piece {
                     panel.onFold = false;
                 if ( panel.foldPosition === undefined )
                     panel.foldPosition = "";
+
+                //type===Grainline doesn't have height or width
+                if ( panel.type === "Grainline" )
+                {
+                    panel.length = panel.length ? drawing.newFormula( panel.length ) : undefined;
+                }
+                else
+                {                
+                    panel.height = panel.height ? drawing.newFormula( panel.height ) : 0;
+                    panel.width = panel.width ? drawing.newFormula( panel.width ) : 0;
+                }
             }
         }
 
@@ -4626,114 +4636,279 @@ class Piece {
     }
 
 
-    drawMarkings( g, useExportStyles )
+    drawMarkings( g, editorOptions )
     {
+        const useExportStyles = editorOptions.downloadOption;
+
         if ( this.ignore )
             return;
-
-        const lineSpacing = 1.2;
-        let fontSize = this.drawing.pattern.getPatternEquivalentOfPT( 16 ); 
-        let align = "start";
+        
 
         if ( this.dataPanels )
-        for( const panel of this.dataPanels )
         {
-            if ( ! panel.dataItem )
-                continue;
+            for( const panel of this.dataPanels )
+            {
+                if ( panel.type === "Grainline" )
+                    this.drawGrainLine( g, editorOptions, panel );
+                else
+                    this.drawDataPanel( g, useExportStyles, panel );
+            }
+        }
+    }
 
-            if ( panel.fontSize )
-                fontSize = this.drawing.pattern.getPatternEquivalentOfPT( panel.fontSize );
 
-            let x;
-            let y;
-            if ( typeof panel.topLeft === "object" )
-            {
-                x = panel.topLeft.p.x;
-                y = panel.topLeft.p.y;
+    drawGrainLine( g, editorOptions, grainline )
+    {
+        //Rotation
+        //CenterPin
+        //Length
+        //TopLeft / BottomRight ?????
+        //Arrows Front Both ????
+        //Visible TODO
+        //MX/MY not needed
+        const useExportStyles = editorOptions.downloadOption;
+        let end1, end2;
+
+        if (( typeof grainline.top === "object" ) && ( typeof grainline.bottom === "object" ))
+        {
+            end1 = grainline.bottom.p;
+            end2 = grainline.top.p; //Front
+        }
+        else
+        {
+            const length = ( typeof grainline.length === "object" ) ? grainline.length.value() : undefined;    
+            if ( ! length )
+                return;
+
+            let x,y;
+            if ( typeof grainline.center === "object" )
+            {   
+                x = grainline.center.p.x;
+                y = grainline.center.p.y;
             }
-            if ( typeof panel.center === "object" )
-            {
-                //TODO we need to center it!!
-                x = panel.center.p.x;
-                y = panel.center.p.y;
-                align = "middle";
-            }
-            if ( typeof panel.bottomRight === "object" )
-            {
-                x = panel.bottomRight.p.x;
-                y = panel.bottomRight.p.y;
-                align = "end";
-            }
+        
+            //If nothing useful, then center the panel in the piece's bounds
             if ( x === undefined ) 
             {
                 const bounds = new Bounds();
                 this.adjustBounds( bounds );
                 x = ( bounds.minX + bounds.maxX ) / 2;
                 y = ( bounds.minY + bounds.maxY ) / 2;
-                align = "middle";
-                y = y + (panel.dataItem.length * fontSize * lineSpacing / 2)
             }
 
-            if ( align === "middle" )
-                y -= panel.dataItem.length * fontSize * lineSpacing / 2;
-            else if ( align === "bottom" )
-                y -= panel.dataItem.length * fontSize * lineSpacing;
+            const center = new GeoPoint( x, y );
+            end1 = center.pointAtDistanceAndAngleDeg( length/2, grainline.rotation + 180 );
+            end2 = center.pointAtDistanceAndAngleDeg( length/2, grainline.rotation );
+        }
 
-            const dataPanelGroup = g.append("text")
-                                  .attr("id","data panel:" + panel.letter )
-                                  .attr("class","patternlabel")
-                                  .attr("transform", "translate(" + x + "," + y + ")" )
-                                  //.attr("text-anchor", align ) //dominant-baseline="middle"
-                                  .attr("font-size", fontSize );
+        const l = g.append("line")
+                    .attr("class","grainline")
+                    .attr("x1", end1.x)
+                    .attr("y1", end1.y)
+                    .attr("x2", end2.x)
+                    .attr("y2", end2.y)
+                    .attr("stroke-width", this.getStrokeWidth() );
+        
+        const arrowurl = "url(#" + editorOptions.arrowId + ")";
+        const arrows = grainline.arrows ? grainline.arrows : "Both";
+        if (    ( arrows === "Rear" ) 
+             || ( arrows === "Both" ) )
+            l.attr( "marker-start", arrowurl );
 
-            for( const dataItem of panel.dataItem )
+        if (    ( arrows === "Front" ) 
+             || ( arrows === "Both" ) )
+             l.attr( "marker-end", arrowurl );
+
+        if ( useExportStyles )
+            l.attr("stroke", "black");
+    }
+
+
+    drawDataPanel( g, useExportStyles, panel )
+    {
+        const lineSpacing = 1.2;
+        const dataItems = panel.type === "Info" ? this.drawing.pattern.patternData.labelline : panel.dataItem;        
+
+        if (    ( ! dataItems )
+             || ( dataItems.length === 0 ) )
+            return; 
+
+        //Note: the fontSize specified by the pattern will act as a max
+        //font size if the available width is greater than the text needs.
+        //But if there is too much text for the width and size then the 
+        //text will be shrunk. 
+        const baseFontSizePts = panel.fontSize == 0 ? 16 : panel.fontSize;
+
+        //in pattern units
+        let fontSize = this.drawing.pattern.getPatternEquivalentOfPT( baseFontSizePts ); 
+
+        let width = ( typeof panel.width === "object" ) ? panel.width.value() : undefined;        
+        let height = ( typeof panel.height === "object" ) ? panel.height.value() : undefined;        
+    
+        let align = "start";                
+
+        let x;
+        let y;
+
+        //Specify two corners, overrides specified height/width
+        if (( typeof panel.topLeft === "object" ) && ( typeof panel.bottomRight === "object" ))
+        {
+            x = panel.topLeft.p.x;
+            y = panel.topLeft.p.y;
+
+            width = panel.bottomRight.p.x - x;
+            height = panel.bottomRight.p.y - y;
+        }
+        else if ( typeof panel.topLeft === "object" ) 
+        {   
+            x = panel.topLeft.p.x;
+            y = panel.topLeft.p.y;
+            //nb we'll use the specified width/height if populated
+        }        
+        else if ( typeof panel.center === "object" )
+        {   
+            x = panel.center.p.x;
+            y = panel.center.p.y;
+            //nb we'll use the specified width/height if populated
+            align = "middle"; //We'll center align text
+        }
+        else if ( typeof panel.bottomRight === "object" )
+        {
+            x = panel.bottomRight.p.x;
+            y = panel.bottomRight.p.y;
+            //nb we'll use the specified width/height if populated
+            align = "end"; 
+        }
+
+        //If nothing useful, then center the panel in the piece's bounds
+        if ( x === undefined ) 
+        {
+            const bounds = new Bounds();
+            this.adjustBounds( bounds );
+            x = ( bounds.minX + bounds.maxX ) / 2;
+            y = ( bounds.minY + bounds.maxY ) / 2;
+            align = "middle";
+            y = y + (dataItems.length * fontSize * lineSpacing / 2)
+        }
+
+        //Panel has a fontsize specfieid in points.  This is the em for the font, and we'll 
+        //approximate this as the width of an m, even though thats not quite what it means. 
+
+        const dataLines = [];
+        let minFontSize = panel.fontSize;
+        let maxFontSize = panel.fontSize; 
+        let maxLineLengthPts = 0;
+        let labelHeightPts = 0;
+        
+        for( const dataItem of dataItems )
+        {
+            let text = dataItem.text;
+
+            if ( text.includes( "%date%" ) )
+                text = text.replace("%date%", this.drawing.pattern.getDate() );
+
+            if ( text.includes( "%pLetter%" ) )
+                text=text.replace( "%pLetter%", panel.letter );
+            
+            if ( text.includes( "%pName%" ) )
+                text=text.replace( "%pName%", this.name );
+
+            if ( text.includes( "%pOrientation%" ) )
+                text=text.replace( "%pOrientation%", panel.orientation );
+
+            if ( text.includes( "%pQuantity%" ) )
+                text=text.replace( "%pQuantity%", panel.quantity );
+
+            if ( text.includes( "%pAnnotation%" ) )
+                text=text.replace( "%pAnnotation%", panel.annotation );
+
+            if ( text.includes( "%wOnFold%" ) )
+                text=text.replace( "%wOnFold%", panel.onFold ? "on fold" : "" );
+
+            if ( text.includes( "%pFoldPosition%" ) )
+                text=text.replace( "%pFoldPosition%", panel.foldPosition );
+
+            if ( text.includes( "%patternNumber%" ) )
             {
-                let text = dataItem.text;
-
-                if ( text.includes( "%date%" ) )
-                    text = text.replace("%date%", this.drawing.pattern.getDate() );
-
-                if ( text.includes( "%pLetter%" ) )
-                    text=text.replace( "%pLetter%", panel.letter );
-                
-                if ( text.includes( "%pName%" ) )
-                    text=text.replace( "%pName%", this.name );
-
-                if ( text.includes( "%pOrientation%" ) )
-                    text=text.replace( "%pOrientation%", panel.orientation );
-
-                if ( text.includes( "%pQuantity%" ) )
-                    text=text.replace( "%pQuantity%", panel.quantity );
-
-                if ( text.includes( "%pAnnotation%" ) )
-                    text=text.replace( "%pAnnotation%", panel.annotation );
-
-                if ( text.includes( "%wOnFold%" ) )
-                    text=text.replace( "%wOnFold%", panel.onFold ? "on fold" : "" );
-
-                if ( text.includes( "%pFoldPosition%" ) )
-                    text=text.replace( "%pFoldPosition%", panel.foldPosition );
-
-                if ( text.includes( "%patternNumber%" ) )
-                {
-                    let patternNumber = this.drawing.pattern.patternData.patternNumber;
-                    if ( patternNumber === undefined )
-                        patternNumber = "";
-                    text=text.replace( "%patternNumber%", patternNumber );
-                }
-
-                if ( text.includes( "%patternName%" ) )
-                    text=text.replace( "%patternName%", this.drawing.pattern.patternData.name );
-
-                dataPanelGroup.append("tspan")
-                              .attr("x", "0" )
-                              .attr("dy", lineSpacing*fontSize )
-                              .attr("text-anchor", align )
-                              //textLength - specify a size and the text will scale? 
-                              //style="font-weight: bold;"
-                              .text( text );
-                ;
+                let patternNumber = this.drawing.pattern.patternData.patternNumber;
+                if ( patternNumber === undefined )
+                    patternNumber = "";
+                text=text.replace( "%patternNumber%", patternNumber );
             }
+
+            if ( text.includes( "%patternName%" ) )
+                text=text.replace( "%patternName%", this.drawing.pattern.patternData.name );
+
+            dataItem.processedText = text;
+            dataItem.fontSizePts = baseFontSizePts + ( dataItem.fontSizeIncrement ? dataItem.fontSizeIncrement : 0 );
+            dataItem.lineHeightPts = dataItem.fontSizePts * lineSpacing;
+
+            const lineLengthPts = text?.length * dataItem.fontSizePts * 0.5; //TODO + sfIncrement
+            if ( lineLengthPts > maxLineLengthPts )
+                maxLineLengthPts = lineLengthPts;
+
+            labelHeightPts += dataItem.lineHeightPts;
+        }
+
+        //panel with pts
+        const maxLineWidthPatternUnits = this.drawing.pattern.getPatternEquivalentOfPT( maxLineLengthPts );
+        //console.log( "Max line length (local): " + maxLineWidthPatternUnits );
+
+        //So if we have a data panel with of 4inch, but long text in a large font size, then something
+        //has to give. So scale the fontsize. 
+        let panelScaleX = 1;
+        let panelScaleY = 1;
+        if (    width > 0
+             && maxLineWidthPatternUnits > 0 )
+            panelScaleX = width / maxLineWidthPatternUnits;
+
+        //TODO update this with sfIncrement
+        const heightInPatternUnits = this.drawing.pattern.getPatternEquivalentOfPT( labelHeightPts );
+        if (   height > 0
+            && heightInPatternUnits > 0 )
+           panelScaleY = height / heightInPatternUnits;
+
+        const fontSizeScaling = Math.min( 1, panelScaleX, panelScaleY );
+        fontSize *= fontSizeScaling;
+
+        if ( align === "middle" )
+        {
+            y -= dataItems.length * fontSize * lineSpacing / 2;
+            x -= fontSizeScaling * maxLineWidthPatternUnits / 2;
+        }
+
+        let transform = "translate(" + x + "," + y + ")";
+
+        //for better compatibility we should rotate around the centre point
+        //at least if "middle"
+        if ( panel.rotation )
+            transform += " rotate(" + ( -1 * panel.rotation ) + ")";
+
+        const dataPanelGroup = g.append("text")
+                                .attr("id","data panel:" + panel.letter )
+                                .attr("class","patternlabel")
+                                .attr("transform", transform )
+                                .attr("font-size", fontSize );
+
+        for( const dataItem of dataItems )
+        {
+            let text = dataItem.processedText;
+
+            const tspan = dataPanelGroup.append("tspan")
+                            .attr("x", "0" )
+                            .attr("dy", this.drawing.pattern.getPatternEquivalentOfPT( dataItem.lineHeightPts * fontSizeScaling ) )
+                          //TODO  dataItem.alignmentType left/right/center/default
+                          //  .attr("text-anchor", align )
+                            .text( text );
+
+            if ( dataItem.bold )
+                tspan.attr( "font-weight", "bold" );
+
+            if ( dataItem.italic )
+                tspan.attr( "font-style", "italic" );
+
+            if ( dataItem.fontSizeIncrement )
+                tspan.attr( "font-size", this.drawing.pattern.getPatternEquivalentOfPT( dataItem.fontSizePts * fontSizeScaling ) );
         }
     }
 
@@ -4932,7 +5107,7 @@ class Piece {
 
             this.drawInternalPaths( g, useExportStyles );
             this.drawNotches( g, useExportStyles );
-            this.drawMarkings( g, useExportStyles );
+            this.drawMarkings( g, editorOptions ); //label, grainline
             this.drawLabelsAlongSeamLine( g, useExportStyles );
         }
     }
@@ -5395,7 +5570,6 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         
         return;
     }
-        
 
     if ( options.allowPanAndZoom === undefined )
         options.allowPanAndZoom = true;
@@ -6266,6 +6440,31 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         if ( editorOptions.thumbnail )
             svg.attr("viewBox", 0 + " " + 0 + " " + (width + ( 2 * margin )) + " " + (height + ( 2 * margin )) );
     }
+
+    //Arrow head for grainline. 
+    const forExport = editorOptions.downloadOption;
+    //The id we use for the markers must be unique within the page, but repeatable where we are comparing SVG by hash. 
+    editorOptions.arrowId = "arrow" + forExport + editorOptions.fullWindow;
+    const markerpath = svg.append("svg:defs")
+       .append("marker")
+       .attr("class","arrow" ) //must be unique even amongst hidden views in the strand
+       .attr("id", editorOptions.arrowId ) 
+       .attr("viewBox", "0 -5 12 10")     //0 -5 10 10  //0 0 10 10
+       .attr("refX", 8)                  //15 //5
+       .attr("refY", 0)                  //-1.5 //5
+       .attr("markerWidth", 4)  //6  
+       .attr("markerHeight", 4)  //6
+       .attr("orient", "auto-start-reverse")
+       .append("svg:path") 
+       .attr("fill", "none" )
+       .attr("stroke-width","2")
+       .attr("stroke","black")
+       .attr("stroke-linejoin","round")
+       .attr("d", "M0,-5L10,0L0,5"); //M0,-5L10,0L0,5 M0,0L10,5L0,10z
+
+//    if ( forExport )
+  //      markerpath.attr("stroke", "black").attr("fill","none");  //fill
+
 
     const transformGroup1 = svg.append("g"); //This gets used by d3.zoom
 
