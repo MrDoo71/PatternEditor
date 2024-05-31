@@ -1229,6 +1229,25 @@ class Piece {
             if ( text.includes( "%pFoldPosition%" ) )
                 text=text.replace( "%pFoldPosition%", panel.foldPosition );
 
+            if ( text.includes( "%pFileName%" ) )
+            {
+                //We don't have the concept of a filename 
+                text=text.replace( "%pFileName%", "" );
+                if ( text.length === 0 )
+                    continue; //omit line if it would now be empty
+            }
+
+            if ( text.includes( "%mFileName%" ) )
+                text=text.replace( "%mFileName%", this.drawing.pattern.patternData.measurementsName ); 
+
+            if ( text.includes( "%author%" ) )
+            {
+                const author = this.drawing.pattern.patternData.author;
+                text=text.replace( "%author%", author ? author : "" );
+                if ( text.length === 0 )
+                    continue; //omit line if it would now be empty 
+            }
+    
             if ( text.includes( "%patternNumber%" ) )
             {
                 let patternNumber = this.drawing.pattern.patternData.patternNumber;
