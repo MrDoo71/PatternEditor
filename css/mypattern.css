@@ -7,7 +7,8 @@ div.mp-mini-pattern {
     padding: 0px 8px 8px 0px;
 }
 
-div.mp-mini-pattern > button {    
+div.mp-mini-pattern > button,
+div.mp-mini-pattern > div {    
     border-width: 1px;
     border-color: #c0c0c0;
     border-style: solid;
@@ -18,6 +19,20 @@ div.mp-mini-pattern > button {
     width: 100%;
     position: relative;
     height: 200px;
+}
+
+div.mp-mini-pattern > div {    
+    border-style: dashed;
+}
+
+div.mp-mini-pattern > div > div > button {    
+    background-color: transparent;
+    border-style: none;
+}
+
+div.mp-mini-pattern > div > div > button:hover
+{
+    color:#449fdc ;
 }
 
 div.mp-mini-pattern > button > div {
