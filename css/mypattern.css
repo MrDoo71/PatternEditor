@@ -7,6 +7,11 @@ div.mp-mini-pattern {
     padding: 0px 8px 8px 0px;
 }
 
+.navbar-header.d-flex .navbar-brand {
+    height:60px;
+    margin-top: -15px;
+}
+
 div.mp-mini-pattern > button,
 div.mp-mini-pattern > div {    
     border-width: 1px;
@@ -25,7 +30,8 @@ div.mp-mini-pattern > div {
     border-style: dashed;
 }
 
-div.mp-mini-pattern > div > div > button {    
+div.mp-mini-pattern > div > div > button,
+div.mp-mini-pattern > div > div > div > button {    
     background-color: transparent;
     border-style: none;
 }
@@ -97,7 +103,7 @@ div.mp-mini-pattern-filename {
     font-size: 10px;
 }
 
-div.mp-mini-pattern-filename i.icon-circle {
+div.mp-mini-pattern-filename i.fa-circle {
     display: inline-block;
     margin-left: 4px;
     font-size: 8px;

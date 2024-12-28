@@ -11,6 +11,10 @@ Source maintained at: https://github.com/MrDoo71/PatternEditor
 
 /* references and text within table */
 
+.btn-group {
+    z-index: initial; /*Undo a BS3 carry over to BS5 that causes issues with full-page mode 
+}
+
 span.ps-name,
 a.ps-ref {
     font-weight: bold;
@@ -411,6 +415,7 @@ div.pattern-editor-resize:hover{
 
 svg.pattern-drawing { 
     display: inline-block;
+    vertical-align: top;
 }
 
 div.pattern-table { 
@@ -436,14 +441,6 @@ div.pattern-editor div.pattern-main {
 }
 
 div.pattern-editor.full-page {
-    /* better, but is then on top of any callouts! also adjust availeble width/height by 30 
-    position:fixed; z-index: 2000;
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom: 0px;
-    padding: 15px;
-    */
     position:absolute;
     top:0px;
     left:0px;
@@ -458,6 +455,10 @@ div.pattern-editor.full-page {
     background-color:#222222;
 }
 
+div.isBS5 
+div.pattern-editor.full-page {
+    background-color: var(--bs-body-bg); /*works for BS5 light or dark mode*/
+}
 
 div.pattern-editor.full-page div.pattern-main {
         position: static;
@@ -525,7 +526,8 @@ div.pattern-popup i {
     display: inline-block;
 }
 
-div.pattern-popup i.icon-ellipsis-horizontal {
+div.pattern-popup i.icon-ellipsis-horizontal,
+div.pattern-popup i.fa-ellipsis {
     margin-left: 6px;
     display: inline-block;
 }
@@ -537,4 +539,11 @@ div.pattern-popup #wallpapersMenu ul  {
 div.pattern-popup #wallpapersMenu li  {
     display: block;
     white-space: nowrap;
+}
+
+div.pattern-popup #wallpapersMenu i.fa-regular,
+div.pattern-popup #optionMenu i.fa-regular,
+div.pattern-popup #optionMenu i.fa-solid {
+    padding-right: 4px;
+    width: 1.4em;
 }

@@ -5031,7 +5031,13 @@ class Piece {
             return;
 
         if ( ! this.calculated )
-            this.calculate();
+        {
+            try {
+                this.calculate();
+            } catch ( e ) {
+                console.log("Error adjusting bounds for " + this.name + ". ", e );
+            }
+        }
 
         const mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         const my = includeOffset && this.data.my ? this.data.my : 0.0;
@@ -5615,9 +5621,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         options.lastMixedSplit = options.drawingTableSplit > 0.0 && options.drawingTableSplit < 1.0 ? options.drawingTableSplit : 0.66;
 
     if ( ! options.viewOption )
-        options.viewOption = [  { "mode":"drawing", "icon": "icon-picture",       "drawingTableSplit": 1.0 },
-                                { "mode":"mixed",   "icon": "icon-columns",       "drawingTableSplit": 0.5 },
-                                { "mode":"table",   "icon": "icon-align-justify", "drawingTableSplit": 0 } ];
+        options.viewOption = [  { "mode":"drawing", "icon": "fa-regular fa-image",       "drawingTableSplit": 1.0 },
+                                { "mode":"mixed",   "icon": "fa-solid fa-table-columns",       "drawingTableSplit": 0.5 },
+                                { "mode":"table",   "icon": "fa-solid fa-align-justify", "drawingTableSplit": 0 } ];
 
     // show menu on right-click.
     const contextMenu = options.interactive && typeof goGraph === "function" ? function(d) {
@@ -6095,7 +6101,7 @@ function doControls( graphdiv, editorOptions, pattern )
 
         controls.append("button")
                 .attr("class", "btn btn-default toggle-full-page")
-                .html( '<i class="icon-fullscreen" />' )
+                .html( '<i class="fa-solid fa-maximize" />' )
                 .attr("title","Toggle full screen")
                 .on("click", toggleFullScreen );
     }
@@ -6106,7 +6112,7 @@ function doControls( graphdiv, editorOptions, pattern )
         //zoomToFitButton
         controls.append("button")
             .attr("class", "btn btn-default zoom-to-fit")
-            .html( '<i class="icon-move" />' )
+            .html( '<i class="fa-solid fa-arrows-up-down-left-right" />' )
             .attr("title","Zoom to fit");
     }    
 
@@ -6126,7 +6132,7 @@ function doControls( graphdiv, editorOptions, pattern )
         //downloadLink
         controls.append("a")
                 .attr("class", "btn btn-default download")
-                .html( '<i class="icon-download"></i> Download' )
+                .html( '<i class="fa-solid fa-download"></i> Download' )
                 .attr("title","Download")
                 .on("click", downloadFunction );
     }    
@@ -6136,7 +6142,7 @@ function doControls( graphdiv, editorOptions, pattern )
         const toggleShowFormulas = function() {
             d3.event.preventDefault();
             editorOptions.showFormulas = ! editorOptions.showFormulas;
-            $(this).children("i").attr("class",editorOptions.showFormulas ? "icon-check" : "icon-check-empty" );
+            $(this).children("i").attr("class",editorOptions.showFormulas ? "fa-regular fa-square-check" : "fa-regular fa-square" );
             doDrawingAndTable( true /*retain focus*/ );
         };
 
@@ -6148,7 +6154,7 @@ function doControls( graphdiv, editorOptions, pattern )
 
         const optionMenu = controls.append("div").attr("class","pattern-popup")
                                  .append("div").attr("id","optionMenu" ); //.css("display","visible")
-        optionMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", optionMenuToggle );
+        optionMenu.append("button").html( '<i class="fa-solid fa-xmark"></i>' ).on("click", optionMenuToggle );
 
         pattern.drawings.forEach( function(pp) {
             if ( ! pp.groups.length )
@@ -6169,17 +6175,17 @@ function doControls( graphdiv, editorOptions, pattern )
 
                     return g.visible;
                 };
-                groupOption.append( "i" ).attr("class",  g.visible ? 'icon-eye-open' :'icon-eye-close' )
+                groupOption.append( "i" ).attr("class",  g.visible ? 'fa-regular fa-eye' :'fa-regular fa-eye-slash' )
                            .on( "click", function() { 
                                             d3.event.preventDefault();
                                             const visible = toggleGroup();
-                                            d3.select(this).attr("class",visible ? "icon-eye-open" : "icon-eye-close" );
+                                            d3.select(this).attr("class",visible ? "fa-regular fa-eye" : "fa-regular fa-eye-slash" );
                                             doDrawingAndTable( true /*retain focus*/ );
                                 } );
                 groupOption.append( 'span' )
-                           .text(g.name );
+                           .text( g.name );
                 if (( g.contextMenu ) && ( typeof goGraph === "function" ))
-                groupOption.append( "i" ).attr("class",  "icon-ellipsis-horizontal k-icon-button" )           
+                groupOption.append( "i" ).attr("class",  "fa-solid fa-ellipsis k-icon-button" )           
                            .on( "click", function() { 
                             d3.event.preventDefault();
                             const v = newkvpSet(false) ;
@@ -6188,11 +6194,11 @@ function doControls( graphdiv, editorOptions, pattern )
             });
         });
 
-        optionMenu.append("div").attr("class","formula-option").html( '<i class="icon-check"></i>show formulas' ).on("click", toggleShowFormulas );
+        optionMenu.append("div").attr("class","formula-option").html( '<i class="fa-regular fa-square-check"></i>show formulas' ).on("click", toggleShowFormulas );
 
         if ( ! ( editorOptions.targetPiece && editorOptions.lifeSize ) ) //&& ! downloadOption ? 
             controls.append("button")
-                    .attr("class","btn btn-default toggle-options").html( '<i class="icon-adjust"></i>' )
+                    .attr("class","btn btn-default toggle-options").html( '<i class="fa-solid fa-circle-half-stroke"></i>' )
                     .attr("title","Group/formula visibility").on("click", optionMenuToggle );
     } //options menu to show/hide groups and show/hide formula
 
@@ -6208,7 +6214,7 @@ function doControls( graphdiv, editorOptions, pattern )
 
         const wallpaperMenu = controls.append("div").attr("class","pattern-popup")
                                     .append("div").attr("id","wallpapersMenu" ); 
-        wallpaperMenu.append("button").html( '<i class="icon-remove"></i>' ).on("click", wallpaperMenuToggle );
+        wallpaperMenu.append("button").html( '<i class="fa-solid fa-xmark"></i>' ).on("click", wallpaperMenuToggle );
             
         let wallpaperListSection = wallpaperMenu.append("section");
         wallpaperListSection.append("h2").text( "Wallpapers" );
@@ -6222,30 +6228,30 @@ function doControls( graphdiv, editorOptions, pattern )
                 const wallpaperDiv = d3.select(this);
 
                 
-                wallpaperDiv.append( "span" ).html( function(w) { return w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' } )
+                wallpaperDiv.append( "span" ).html( function(w) { return w.hide ? '<i class="fa-regular fa-eye-slash"/>' : '<i class="fa-regular fa-eye"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
                                                                       w.hide = ! w.hide; 
-                                                                      d3.select(this).html( w.hide ? '<i class="icon-eye-close"/>' : '<i class="icon-eye-open"/>' );
+                                                                      d3.select(this).html( w.hide ? '<i class="fa-regular fa-eye-slash"/>' : '<i class="fa-regular fa-eye"/>' );
                                                                       d3.select(this.parentNode).attr( "class", w.hide ? 'wallpaper-hidden' : null );
                                                                       w.updateServer();
                                                                       const wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                       doWallpapers( wallpaperGroups, pattern );                                                              
                                                                      } );
-                wallpaperDiv.append( "span" ).html( function(w) { return w.editable ? '<i class="icon-unlock"/>' : w.allowEdit ? '<i class="icon-lock"/>' : '<i class="icon-lock disabled"/>' } )
+                wallpaperDiv.append( "span" ).html( function(w) { return w.editable ? '<i class="fa-solid fa-lock-open"/>' : w.allowEdit ? '<i class="fa-solid fa-lock"/>' : '<i class="fa-solid fa-lock disabled"/>' } )
                                            .on("click", function(w) { d3.event.preventDefault(); d3.event.stopPropagation();
                                                                       if ( w.allowEdit )
                                                                       {
                                                                         w.editable = ! w.editable; 
-                                                                        d3.select(this).html( w.editable ? '<i class="icon-unlock"/>' : '<i class="icon-lock"/>' );
+                                                                        d3.select(this).html( w.editable ? '<i class="fa-solid fa-lock-open"/>' : '<i class="fa-solid fa-lock"/>' );
                                                                         const wallpaperGroups = graphdiv.select( "g.wallpapers");
                                                                         doWallpapers( wallpaperGroups, pattern );                                                              
                                                                       }
                                                                      } );
                 wallpaperDiv.append( "span" ).text( wallpaper.displayName );
-                                                                     //icon-lock icon-unlock icon-move icon-eye-open icon-eye-close
+                                                                     //fa-lock fa-lock-open fa-arrows-up-down-left-right fa-regular fa-eye fa-regular fa-eye-slash
             });            
 
-        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="icon-camera-retro"></i>' ).attr("title","Wallpapers").on("click", wallpaperMenuToggle );
+        controls.append("button").attr("class","btn btn-default toggle-options").html( '<i class="fa-solid fa-camera-retro"></i>' ).attr("title","Wallpapers").on("click", wallpaperMenuToggle );
     } //wallpapers button    
 
     return controls;
@@ -6254,6 +6260,8 @@ function doControls( graphdiv, editorOptions, pattern )
 
 function initialiseWallpapers( pattern, interactionPrefix )
 {    
+    let defaultScale = 72.0;
+
     const updateServer = ( typeof goGraph === "function" ) ? function(e) {
         const kvpSet = newkvpSet(true) ;
         kvpSet.add('offsetX', this.offsetX ) ;
@@ -6275,7 +6283,7 @@ function initialiseWallpapers( pattern, interactionPrefix )
             //A 720px image is naturally 10in (at 72dpi)
             //If our pattern as 10in across then our image should be 10 units.
             //If our pattern was 10cm across then our image should be 25.4 units and we would expect to need to specify a scale of 1/2.54
-            var defaultScale = 72.0;
+            defaultScale = 72.0;
             if ( w.patternurl )
             {
                 defaultScale = 1.0;

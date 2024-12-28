@@ -1432,7 +1432,13 @@ class Piece {
             return;
 
         if ( ! this.calculated )
-            this.calculate();
+        {
+            try {
+                this.calculate();
+            } catch ( e ) {
+                console.log("Error adjusting bounds for " + this.name + ". ", e );
+            }
+        }
 
         const mx = includeOffset && this.data.mx ? this.data.mx : 0.0;
         const my = includeOffset && this.data.my ? this.data.my : 0.0;
