@@ -6451,7 +6451,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
-                      .attr("class", "pattern-drawing" )
+                      .attr("class", "pattern-drawing " + pattern.units )
                       .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight )
                       .attr("width", patternWidth + pattern.units )
                       .attr("height", patternHeight + pattern.units )
@@ -6460,7 +6460,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     else
     {
         svg = graphdiv.append("svg")
-                       .attr("class", "pattern-drawing" )
+                       .attr("class", "pattern-drawing " + pattern.units )
                        .attr("width", width + ( 2 * margin ) )
                        .attr("height", height + ( 2 * margin ));
 
