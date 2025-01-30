@@ -919,12 +919,12 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     if ( editorOptions.lifeSize )
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
-        const margin = pattern.getPatternEquivalentOfMM(5);
+        const margin = pattern.getPatternEquivalentOfMM(10); //to allow for rulers
         patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
         patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing " + pattern.units )
-                      .attr("viewBox", pattern.visibleBounds.minX + " " + pattern.visibleBounds.minY + " " + patternWidth + " " + patternHeight )
+                      .attr("viewBox", (pattern.visibleBounds.minX-margin) + " " + (pattern.visibleBounds.minY-margin) + " " + patternWidth + " " + patternHeight )
                       .attr("width", patternWidth + pattern.units )
                       .attr("height", patternHeight + pattern.units )
                       .attr("xmlns:xlink", "http://www.w3.org/1999/xlink" );
@@ -978,6 +978,8 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     {
         scale = 1;
         transformGroup2 = transformGroup1; //we don't need another group
+
+        drawRulers( pattern, patternWidth, patternHeight, transformGroup2 );
     }
     else
     {
@@ -1186,6 +1188,80 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                 }
             } );
     }
+}
+
+
+function drawRulers( pattern, patternWidth, patternHeight, transformGroup2 )
+{
+    const rulers = transformGroup2.append("g");
+    rulers.attr("id","rulers");
+    const xAxis = rulers.append("g");
+    xAxis.attr("class","ruler")
+    //add scale marks 
+    //units:cm - 1 mark per cm, so patternWidth marks every 10th mark add a label "10cm"
+    const strokeWidth = pattern.getPatternEquivalentOfMM(0.5);
+    const colour = "#808080";
+    const fontSize = pattern.getPatternEquivalentOfMM(5);
+    const tickSize = pattern.getPatternEquivalentOfMM(10);
+    const step = pattern.units === "mm" ? 5 : 1;
+    xAxis.append("line")
+        .attr("x1", pattern.visibleBounds.minX )
+        .attr("y1", pattern.visibleBounds.minY - tickSize )
+        .attr("x2", pattern.visibleBounds.minX + patternWidth )
+        .attr("y2", pattern.visibleBounds.minY - tickSize )
+        .attr("stroke", colour)
+        .attr("stroke-width", strokeWidth );
+    for( let i=0; i<patternWidth; i+=step )
+    {
+        const l = xAxis.append("line")
+                .attr("x1", i + pattern.visibleBounds.minX )
+                .attr("y1", pattern.visibleBounds.minY - tickSize )
+                .attr("x2", i + pattern.visibleBounds.minX )
+                .attr("y2", pattern.visibleBounds.minY - tickSize + tickSize * ( i % (10*step) == 0 ? 1 : i % (5*step) == 0 ? 0.75 : 0.5 ))
+                .attr("stroke", colour)
+                .attr("stroke-width", strokeWidth );
+        if ( i % (10*step) === 0 )
+        {
+            const t = xAxis.append("text")
+                        .attr("class","labl")
+                        .attr("x", i + pattern.visibleBounds.minX + 0.25 * tickSize )
+                        .attr("y", pattern.visibleBounds.minY )
+                        .attr("font-size", fontSize )
+                        .attr("fill", colour)
+                        .text( i + ( i == 10*step ? " " + pattern.units : "" ) );
+        }
+    }  
+    const yAxis = rulers.append("g");
+    yAxis.attr("class","ruler")
+    //add scale marks 
+    //units:cm - 1 mark per cm, so patternWidth marks every 10th mark add a label "10cm"
+    yAxis.append("line")
+        .attr("x1", pattern.visibleBounds.minX - tickSize )
+        .attr("y1", pattern.visibleBounds.minY )
+        .attr("x2", pattern.visibleBounds.minX - tickSize )
+        .attr("y2", pattern.visibleBounds.minY + patternHeight )
+        .attr("stroke",colour)
+        .attr("stroke-width", strokeWidth );
+    for( let i=0; i<patternHeight; i+=step )
+    {
+        const l = yAxis.append("line")
+                .attr("x1", pattern.visibleBounds.minX - tickSize )
+                .attr("y1", i + pattern.visibleBounds.minY )
+                .attr("x2", pattern.visibleBounds.minX - tickSize + tickSize * ( i % (10*step) == 0 ? 1 : i % (5*step) == 0 ? 0.75 : 0.5 ) )
+                .attr("y2", i + pattern.visibleBounds.minY )
+                .attr("stroke",colour)
+                .attr("stroke-width", strokeWidth );
+        if ( ( i % (10*step) === 0 ) && ( i !== 0 ) )
+            {
+                const t = xAxis.append("text")
+                            .attr("class","labl")
+                            .attr("x", pattern.visibleBounds.minX - 0.25 * tickSize )
+                            .attr("y", i + pattern.visibleBounds.minY - 0.25 * tickSize )
+                            .attr("font-size", fontSize )
+                            .attr("fill", colour)
+                            .text( i + ( i == 10*step ? " " + pattern.units : "" ) );
+            }                
+    }      
 }
 
 
