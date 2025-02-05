@@ -5960,6 +5960,15 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             console.log("Current thumbnail is still valid.");
         }
     }
+    
+    //If we have a download button, then add dimensions information for the download
+    //Must be done after doing the drawing. 
+    if ( options.downloadOption )
+    {
+        const svg = targetdiv.select("svg.pattern-drawing").node();
+        controls.append("span")
+            .text( " " + svg.getAttribute("width") + " x " + svg.getAttribute("height") );
+    }        
 
     if ( ! options.interactive )
         return;
@@ -6130,7 +6139,7 @@ function doControls( graphdiv, editorOptions, pattern )
         };
 
         //downloadLink
-        controls.append("a")
+        controls.append("a") //"button" does not work
                 .attr("class", "btn btn-default download")
                 .html( '<i class="fa-solid fa-download"></i> Download' )
                 .attr("title","Download")
@@ -6448,8 +6457,9 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     {
         //The margin needs to at least be 0.5 * strokewidth so tha that strokes arnt clipped. 
         const margin = pattern.getPatternEquivalentOfMM(10); //to allow for rulers
-        patternWidth = Math.round( ( patternWidth + margin ) * 1000 ) / 1000;
-        patternHeight = Math.round( ( patternHeight + margin ) * 1000 ) / 1000;
+        const rounding = pattern.units === "mm" ? 1 : 10;
+        patternWidth = Math.ceil( ( patternWidth + margin ) * rounding ) / rounding;
+        patternHeight = Math.ceil( ( patternHeight + margin ) * rounding ) / rounding;
         svg = graphdiv.append("svg")
                       .attr("class", "pattern-drawing " + pattern.units )
                       .attr("viewBox", (pattern.visibleBounds.minX-margin) + " " + (pattern.visibleBounds.minY-margin) + " " + patternWidth + " " + patternHeight )
