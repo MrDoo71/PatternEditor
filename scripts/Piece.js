@@ -1335,9 +1335,9 @@ class Piece {
 
     convertMMtoPatternUnits( mm )
     {
-        if ( this.drawing.pattern.units = "cm" )
+        if ( this.drawing.pattern.units === "cm" )
             return mm/10;
-        else if ( this.drawing.pattern.units = "mm" )
+        else if ( this.drawing.pattern.units === "mm" )
             return mm;
         else //inches
             return mm/25.4;

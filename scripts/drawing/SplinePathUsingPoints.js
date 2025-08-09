@@ -103,9 +103,12 @@ class SplinePathUsingPoints extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( const n of this.data.pathNode )
+        if ( this?.data?.pathNode )
         {
-            dependencies.add( this, n.point );
-        }        
+            for( const n of this.data.pathNode )
+            {
+                dependencies.add( this, n.point );
+            }        
+        }
     }    
 }

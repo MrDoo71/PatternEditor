@@ -3,6 +3,12 @@
     Author     : jase
 */
 
+img#borderpic,
+img#borderpicDark,
+img#borderpicLight {
+    max-height: initial;
+}
+
 div.mp-mini-pattern {
     padding: 0px 8px 8px 0px;
 }
@@ -142,6 +148,7 @@ i.mp-mini-pattern-pinned {
     font-size: 14px;
 }
 
+/*Pushpin*/
 i.mp-mini-pattern-notpinned {
     color: #c0c0c0;
     display: inline-block !important;

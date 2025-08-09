@@ -166,7 +166,11 @@ class Pattern {
         {
             for ( const dObj of drawing.drawingObjects ) 
             {
-                dObj.setDependencies( this.dependencies );
+                try {                
+                    dObj.setDependencies( this.dependencies );
+                } catch ( e ) {
+                    dObj.error = "Dependencies failed. " + e;
+                }
             }
 
             for ( const p of drawing.pieces ) 

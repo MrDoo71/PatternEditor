@@ -53,7 +53,16 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         try {
             const failMessage = 'FAIL:' + e.message;
             const failMessageHash = CryptoJS.MD5( failMessage ).toString();
-            if (    ( options.returnSVG !== undefined ) 
+
+            if (    ( options.reportFailure ) 
+                 && ( options.returnID ) )
+            {
+                const kvpSet = newkvpSet(true);
+                kvpSet.add( 'failureJSON', JSON.stringify( { error: e.message, lineNumber: e.lineNumber } ) );
+                kvpSet.add( 'id', options.returnID ) ;
+                goGraph( options.interactionPrefix + ':' + options.reportFailure, fakeEvent(), kvpSet);
+            }
+            else if (    ( options.returnSVG !== undefined ) 
                  && ( dataAndConfig.options.currentSVGhash !== failMessageHash )
                  && ( options.returnID ))
             {

@@ -2970,10 +2970,13 @@ class SplinePathUsingPoints extends DrawingObject {
     
     setDependencies( dependencies )
     {
-        for( const n of this.data.pathNode )
+        if ( this?.data?.pathNode )
         {
-            dependencies.add( this, n.point );
-        }        
+            for( const n of this.data.pathNode )
+            {
+                dependencies.add( this, n.point );
+            }        
+        }
     }    
 }
 
@@ -3520,7 +3523,11 @@ class Pattern {
         {
             for ( const dObj of drawing.drawingObjects ) 
             {
-                dObj.setDependencies( this.dependencies );
+                try {                
+                    dObj.setDependencies( this.dependencies );
+                } catch ( e ) {
+                    dObj.error = "Dependencies failed. " + e;
+                }
             }
 
             for ( const p of drawing.pieces ) 
@@ -4934,9 +4941,9 @@ class Piece {
 
     convertMMtoPatternUnits( mm )
     {
-        if ( this.drawing.pattern.units = "cm" )
+        if ( this.drawing.pattern.units === "cm" )
             return mm/10;
-        else if ( this.drawing.pattern.units = "mm" )
+        else if ( this.drawing.pattern.units === "mm" )
             return mm;
         else //inches
             return mm/25.4;
@@ -5581,7 +5588,16 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
         try {
             const failMessage = 'FAIL:' + e.message;
             const failMessageHash = CryptoJS.MD5( failMessage ).toString();
-            if (    ( options.returnSVG !== undefined ) 
+
+            if (    ( options.reportFailure ) 
+                 && ( options.returnID ) )
+            {
+                const kvpSet = newkvpSet(true);
+                kvpSet.add( 'failureJSON', JSON.stringify( { error: e.message } ) );
+                kvpSet.add( 'id', options.returnID ) ;
+                goGraph( options.interactionPrefix + ':' + options.reportFailure, fakeEvent(), kvpSet);
+            }
+            else if (    ( options.returnSVG !== undefined ) 
                  && ( dataAndConfig.options.currentSVGhash !== failMessageHash )
                  && ( options.returnID ))
             {
