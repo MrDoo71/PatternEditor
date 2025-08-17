@@ -3410,11 +3410,24 @@ class Pattern {
                 v.isVariable = true;
             }
 
+            const escapeHtml = function(unsafe) 
+            {
+                return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+            }
+
             //Now the variable are all registered, calculate their values.
             for ( const v of this.patternData.variable ) { 
-                 
-                //TODO test this variable that is a simple value...            
-                if (typeof v.constant !== "undefined") 
+                                
+                if ( ( typeof v.variationConstant !== "undefined" ) && ( ! v.isOverridden ) )
+                {
+                    v.value = function () {
+                        return this.variationConstant;
+                    };
+                    v.html = function() {
+                        return this.name + " (" + escapeHtml(this.variation) + "): " + this.variationConstant + " (original " + this.constant + ")" + ( this.isOverridden ? " (custom)" : "" ); 
+                    };
+                }
+                else if ( typeof v.constant !== "undefined" )
                 {
                     v.value = function () {
                         return this.constant;
@@ -3422,6 +3435,18 @@ class Pattern {
                     v.html = function() {
                         return this.name + ": " + this.constant + ( this.isOverridden ? " (custom)" : "" ) 
                     };
+                }
+                else if ( v.variationExpression )
+                {
+                    v.variationExpression = new Expression( v.variationExpression, this, null );
+                    v.expression = new Expression( v.expression, this, null );
+                    v.value = function () {
+                        return this.variationExpression.value();
+                    };
+                    v.html = function(asFormula) {
+                        return this.name + " (" + escapeHtml( this.variation ) + "): " + this.variationExpression.html( asFormula ) + " = " + Number.parseFloat( this.value() ).toPrecision(4) 
+                               + " (originally " + this.expression.html( asFormula ) + ")";                               
+                    };                    
                 }
                 else
                 {
@@ -5593,7 +5618,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                  && ( options.returnID ) )
             {
                 const kvpSet = newkvpSet(true);
-                kvpSet.add( 'failureJSON', JSON.stringify( { error: e.message } ) );
+                kvpSet.add( 'failureJSON', JSON.stringify( { error: e.message, lineNumber: e.lineNumber } ) );
                 kvpSet.add( 'id', options.returnID ) ;
                 goGraph( options.interactionPrefix + ':' + options.reportFailure, fakeEvent(), kvpSet);
             }
