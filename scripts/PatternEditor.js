@@ -314,6 +314,9 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                             if ( d.target.outlineSvg ) //if it errored this will be undefined
                                 d.target.outlineSvg.node().classList.add("source");
 
+                            if ( d.target.drawingSvg ) //if it errored this will be undefined
+                                d.target.drawingSvg.node().classList.add("source");
+
                             classes += " source";
                         }
                         if ( d.target === selectedObject ) 
@@ -1292,11 +1295,16 @@ function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMen
     const drawObject = function( d, g, drawingOptions ) {
         const gd3 = d3.select( g );                        
         if (   ( typeof d.draw === "function" ) 
-            && ( ! d.error )
-            && ( d.isVisible( editorOptions ) ) )
+            && ( ! d.error )            
+            && (    d.isVisible( editorOptions ) 
+                 || editorOptions.interactive ) ) //For interactive, we'll draw items from hidden groups, so that we can show them if the user clicks on them in the table.
         try {
             d.draw( gd3, drawingOptions );
             d.drawingSvg = gd3; //not necessary if this is thumbnail
+
+            if ( ! d.isVisible( editorOptions ) )
+                d.drawingSvg.attr( "class", "group-hidden" );
+
         } catch ( e ) {
             d.error = "Drawing failed. " + e;
         }
@@ -1381,11 +1389,13 @@ function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMen
             .each( function(d,i) {
                 const g = d3.select( this );
                 if (   ( typeof d.draw === "function" ) 
-                    && ( ! d.error )
-                    && ( d.isVisible( editorOptions ) ) )
+                    && ( ! d.error ) )
                 {
                     d.draw( g, { "outline": true, "label": false, "dot":true } );
                     d.outlineSvg = g;
+
+                    if ( ! d.isVisible( editorOptions ) )
+                        d.outlineSvg.attr( "class", "group-hidden" );
                 }
             });
     }

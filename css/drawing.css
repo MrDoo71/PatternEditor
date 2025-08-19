@@ -196,11 +196,6 @@ g.j-item.j-piece.shown div.desc {
     opacity: 1;
 }
 
-body.k-dark-mode
-g.j-item.j-piece div.desc {
-    color:#000;
-}
-
 g.j-item.j-active:not(.j-piece) div.desc {    
     padding: 3px 7px;
     border:2px solid #333;
@@ -248,6 +243,16 @@ g.j-item div.comments {
 
 g.j-item.group-hidden {
     opacity: 0.5;
+}
+
+/* hidden drawing items should be displayed if selected, or source of selected */
+g.j-drawing g.group-hidden {
+    display:none;
+}
+
+g.j-drawing g.group-hidden.j-active,
+g.j-drawing g.group-hidden.source {
+    display:initial;
 }
 
 /* table - dependency links */
@@ -342,7 +347,6 @@ g.j-outline g.j-active > circle {
 
 g.j-outline g.j-active:not(.j-active-2s) > path,
 g.j-outline g.j-active:not(.j-active-2s) > line {
-    /*stroke: #ff8;*/
     animation-name: k-throb-stroke;
     animation-duration: 2s;
     animation-iteration-count: 1;
