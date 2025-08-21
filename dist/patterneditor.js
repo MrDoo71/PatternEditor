@@ -6562,6 +6562,9 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         transformGroup2 = transformGroup1; //we don't need another group
 
         drawRulers( pattern, patternWidth, patternHeight, transformGroup2 );
+
+        if ( editorOptions.targetPiece === "all" )
+            drawMeasurementsTable( pattern, transformGroup2 );
     }
     else
     {
@@ -6770,6 +6773,65 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                 }
             } );
     }
+}
+
+
+function drawMeasurementsTable( pattern, transformGroup2 )
+{
+    const fontSize = pattern.getPatternEquivalentOfMM(4);
+    const margin = fontSize;
+    const colour = "#808080";
+    const measurementsTable = transformGroup2.append("g");
+    measurementsTable.attr("id","measurements");
+
+    const fo = measurementsTable.append( "foreignObject" )
+    fo.attr( "x", pattern.visibleBounds.minX + 20 )
+      .attr( "y", pattern.visibleBounds.minY + 20 )
+      .attr( "width", pattern.getPatternEquivalentOfMM(100) )
+      .attr( "height", pattern.getPatternEquivalentOfMM(100) )
+      .attr( "font-size", fontSize )
+      .attr("color", colour ) //not working
+
+    fo.append( "xhtml:div" )
+    .attr("class","measurementsPanel")
+    .html( "<table id=\"measurementsTable\"><tbody></tbody></table>" );
+
+    const tbody = $('#measurementsTable > tbody' );
+
+    const escapeHtml = function(unsafe) 
+    {
+        return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    //How hard would it be to only include the measurements and variables used by the pieces we're displaying? 
+    //for each piece, navigate up the link lines that we have, all the way to the measurements and variables.
+
+    for( const mname in pattern.measurement )
+    {
+        const m = pattern.measurement[mname];
+        tbody.append( "<tr><td>" + escapeHtml(mname) + "</td><td>" + m.value() + " " +  m.units + "</td></tr>" );
+    }
+
+    for( const vname in pattern.variable )
+    {
+        const v = pattern.variable[vname];
+        let c = v.constant;
+        if ( typeof c === "undefined" )
+            continue;
+        else if ( typeof c === "string" )
+            c = escapeHtml( c );
+        tbody.append( "<tr><td>" + escapeHtml(vname) + "</td><td>" + c + "</td></tr>" );
+    }
+
+    const tableWidth = $(fo.node()).find( 'div.measurementsPanel > table ').width(); 
+    const tableHeight = $(fo.node()).find( 'div.measurementsPanel > table ').height();
+
+    fo.attr( "height", 1 ); //required by firefox otherwise bounding rects returns nonsense
+    fo.attr( "height", tableHeight + 2 * margin );
+    fo.attr( "width", tableWidth + 2 * margin );
+
+    fo.attr( "x", pattern.visibleBounds.maxX - tableWidth - margin );
+    fo.attr( "y", pattern.visibleBounds.maxY - tableHeight - margin );
 }
 
 
@@ -7283,7 +7345,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         fo.attr( "height", divHeight );
 
         g.attr( "height", divHeight )
-         .attr( "y", function (d) { //Get the height of the foreignObject.
+         .attr( "y", function (d) { //Get the height of the Object.
                                     const h = this.childNodes[0].getBoundingClientRect().height;
                                     ypos += h + itemMargin; 
                                     //console.log("y: " + ypos );

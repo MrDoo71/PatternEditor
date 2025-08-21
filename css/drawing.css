@@ -603,3 +603,12 @@ div.pattern-popup #optionMenu i.fa-solid {
     padding-right: 4px;
     width: 1.4em;
 }
+
+table#measurementsTable {
+    width:auto;
+}
+
+table#measurementsTable td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
