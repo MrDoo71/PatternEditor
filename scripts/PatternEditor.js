@@ -1215,6 +1215,51 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     }
 }
 
+/**
+ * Given a piece, drawing object (etc) and a set
+ * populate the set with the object, and its 
+ * dependencies recursively.
+ * @param {*} o 
+ * @param {*} visited 
+ * @returns 
+ */
+function captureRecursiveDependencies( o, visited )
+{
+    visited.add( o );
+
+    if ( typeof o.setDependencies === "undefined" )
+        return;
+    
+    const dependencies = { 
+            dependencies: [], 
+            add: function ( source, target ) { 
+
+                if (( ! source ) || ( ! target ))
+                    return;
+
+                if (   ( target && typeof target.expression === "object" )
+                    && ( ! target.isMeasurement )
+                    && ( ! target.isVariable ) )  //why?
+                {
+                    if ( target.expression.addDependencies )
+                        target.expression.addDependencies( source, this );
+                }
+                else if (   ( target instanceof DrawingObject )
+                         || ( target.isMeasurement )
+                         || ( target.isIncrement ) 
+                         || ( target.isVariable ) 
+                         )
+                    this.dependencies.push( target ); 
+            }  
+        };    
+
+    o.setDependencies( dependencies );
+    for ( const d of dependencies.dependencies )
+    {
+        if ( ! visited.has( d ) )
+            captureRecursiveDependencies( d, visited );
+    }
+}
 
 function drawMeasurementsTable( pattern, transformGroup2 )
 {
@@ -1243,19 +1288,36 @@ function drawMeasurementsTable( pattern, transformGroup2 )
         return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
 
-    //How hard would it be to only include the measurements and variables used by the pieces we're displaying? 
-    //for each piece, navigate up the link lines that we have, all the way to the measurements and variables.
-    //but we haven't analysed the links as we haven't drawn the table. 
+    //We only want to show the measurements and variables that the pieces
+    //we're displaying use
+    let dependencies;
+    try {
+        const visited = new Set();
+        for( const d of pattern.drawings )
+            for( const p of d.pieces )
+                captureRecursiveDependencies( p, visited );
+        dependencies = visited;
+    } catch ( e ) {
+        console.log( e ); //We'll revert to showing all 
+    }
 
     for( const mname in pattern.measurement )
     {
         const m = pattern.measurement[mname];
+        if (    dependencies 
+             && ( ! dependencies.has( m ) ) )
+            continue;
         tbody.append( "<tr><td>" + escapeHtml(mname) + "</td><td>" + m.value() + " " +  m.units + "</td></tr>" );
     }
 
     for( const vname in pattern.variable )
     {
         const v = pattern.variable[vname];
+
+        if  ( dependencies
+              && ( ! dependencies.has( v ) ) )
+            continue;
+
         let c = v.constant;
         if ( typeof c === "undefined" )
             continue;
