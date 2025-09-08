@@ -385,6 +385,106 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 }
             }
         }
+        
+        //TODO only if editable
+        if (    ( selectedObject instanceof SplineSimple ) 
+             || ( selectedObject instanceof SplinePathInteractive ) )
+        {
+            const controlPoints = selectedObject.getControlPoints();
+        //TODO have a flag on a control point to indicate whether it is free in length and angle, angle only, or not at all 
+        //based on whether the current value is a constant, or a formula
+
+            selectedObject.controlPointData = controlPoints;
+
+            const drag = d3.drag()
+                .on("start", function (r) {
+                    console.log("dragStart x " + d3.event.x + " y " + d3.event.y );                    
+                    d3.select(this).raise();
+                    d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
+                })
+                .on("drag", function (r) {
+                    //r is the data, this is the svg
+                    const x = d3.event.x;
+                    const y = d3.event.y;
+
+                    //TODO if the angle was a formula, and the length wasn't then keep the angle
+                    //whilst allowing the length to be changed
+
+                    d3.select(this)
+                        .attr("cx", x )
+                        .attr("cy", y );
+
+                    d3.select( this.parentNode )
+                      .select( "line" )
+                      .attr( "x2", x )
+                      .attr( "y2", y );
+
+                    const d3drawingG = d3.select( this.parentNode.parentNode );
+                    d3drawingG.select( "path.edited-curve" ).remove(); 
+
+                    r.cp.x = x;
+                    r.cp.y = y;
+                    r.obj.setCurve();
+                    r.obj.draw( d3drawingG, { overrideLineStyle : "edited-curve" } );
+                })
+                .on("end", function (d) {
+                    const funcYes = function() {
+                        console.log("funcYes!*************" );
+                        console.log(d);
+                        const o = d.obj;                   
+                        const dataJSON = JSON.stringify( o.getControlPointDataForUpdate() );
+                        console.log( dataJSON );
+                        const kvpSet = newkvpSet(false);
+                        kvpSet.add( 'json', dataJSON );
+                        goGraph( options.interactionPrefix + ':' + o.data.directUpdate, fakeEvent(), kvpSet);                        
+                    };
+
+                    const funcNo = function() {
+                        console.log("funcNo!*************" );
+                        console.log(d);
+                        //restore the original curve.  
+                        const o = d.obj;
+                        o.revert();
+                        o.drawingSvg.select( "path.edited-curve" ).remove();  
+                        o.drawingSvg.selectAll( ".curve-control-point" ).remove();
+                        o.draw( o.drawingSvg, {} );
+                    };
+                    drawConfirmationLozenge( d3.select(this.parentNode.parentNode), d3.event.x, d3.event.y, funcYes, funcNo );
+                });
+
+            const selectedD3 = selectedObject.drawingSvg;
+
+            selectedD3.each(function(dp, i) {
+                d3.select(this)
+                    .selectAll( "g.curve-control-point" )
+                    .data(dp.controlPointData)
+                    .enter()
+                    .append("g")
+                    .attr("class", "curve-control-point" );
+                });
+
+            selectedD3
+                .selectAll( "g.curve-control-point" )
+                .each( function(d,i) { 
+                    const d3this = d3.select(this);
+                    
+                    if ( d3this.select("line").size() === 0 )
+                    {
+                        d3this.append("line")
+                            .attr("x1", d.bp.x )
+                            .attr("y1", d.bp.y )
+                            .attr("x2", d.cp.x )
+                            .attr("y2", d.cp.y )
+                            .attr("stroke-width", d.obj.getStrokeWidth( true, true ) );
+
+                        d3this.append("circle")
+                            .attr( "cx", d.cp.x )
+                            .attr( "cy", d.cp.y )
+                            .attr( "r", Math.round( 400  / scale ) /100 )
+                            .call( drag );    
+                    }
+                } );
+        }
     }; //focusDrawingObject
 
     let controls;
@@ -501,6 +601,85 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             focusDrawingObject(firstDrawingObject, true);
         }
     }
+}
+
+
+function drawConfirmationLozenge( svg, x, y, funcyes, funcno )
+{    
+  d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
+
+  const lozenge = svg.append("g")
+                     .attr("class", "confirmation-lozenge")
+                     .attr("transform", "translate(" + x + "," + y + ") scale("+ (0.3/scale/fontsSizedForScale) + ")" );
+  lozenge.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("rx", 25)
+    .attr("ry", 25)
+    .attr("width", 160)
+    .attr("height", 80)
+    .attr("fill", "#f0f0f0")
+    .attr("stroke", "#333")
+    .attr("stroke-width", 2);
+
+  // Tick icon (checkmark)
+  const tickGroup = lozenge.append("g")
+    .attr("transform", "translate(0, 0)")
+    .on( "click", function(d,i) {
+        console.log(  d );
+        console.log( "i "  +i );
+        console.log( "this "  + this );
+        d3.event.preventDefault(); d3.event.stopPropagation();
+        d3.select(this.parentNode).remove();
+        d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
+        funcyes();
+     });
+  const crossGroup = lozenge.append("g")
+    .attr("transform", "translate(0, 0)")
+    .on( "click", function(d,i) {
+        d3.event.preventDefault(); d3.event.stopPropagation();         
+        d3.select(this.parentNode).remove();
+        d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
+        funcno();
+    });
+  tickGroup.append("rect")
+    .attr("x", 10)
+    .attr("y", 5)
+    .attr("width", 65)
+    .attr("height", 70)
+    .attr("fill", "transparent");  
+  tickGroup.append("path")
+    .attr("d", "M30 40 L40 50 L60 30")
+    .attr("stroke", "green")
+    .attr("stroke-width", 8)
+    .attr("fill", "none")
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")    
+
+  // Cross icon
+crossGroup.append("rect")
+  .attr("x", 80)
+  .attr("y", 5)
+  .attr("width", 70)
+  .attr("height", 70)
+  .attr("fill", "transparent");  
+  crossGroup.append("line")
+    .attr("x1", 110)
+    .attr("y1", 30)
+    .attr("x2", 130)
+    .attr("y2", 50)
+    .attr("stroke", "red")
+    .attr("stroke-width", 8)
+    .attr("stroke-linecap", "round");
+
+  crossGroup.append("line")
+    .attr("x1", 130)
+    .attr("y1", 30)
+    .attr("x2", 110)
+    .attr("y2", 50)
+    .attr("stroke", "red")
+    .attr("stroke-width", 8)
+    .attr("stroke-linecap", "round");    
 }
 
 
@@ -1360,7 +1539,7 @@ function drawRulers( pattern, patternWidth, patternHeight, transformGroup2 )
         .attr("stroke-width", strokeWidth );
     for( let i=0; i<patternWidth; i+=step )
     {
-        const l = xAxis.append("line")
+        xAxis.append("line")
                 .attr("x1", i + pattern.visibleBounds.minX )
                 .attr("y1", pattern.visibleBounds.minY - tickSize )
                 .attr("x2", i + pattern.visibleBounds.minX )
@@ -1369,7 +1548,7 @@ function drawRulers( pattern, patternWidth, patternHeight, transformGroup2 )
                 .attr("stroke-width", strokeWidth );
         if ( i % (10*step) === 0 )
         {
-            const t = xAxis.append("text")
+            xAxis.append("text")
                         .attr("class","labl")
                         .attr("x", i + pattern.visibleBounds.minX + 0.25 * tickSize )
                         .attr("y", pattern.visibleBounds.minY )
@@ -1391,7 +1570,7 @@ function drawRulers( pattern, patternWidth, patternHeight, transformGroup2 )
         .attr("stroke-width", strokeWidth );
     for( let i=0; i<patternHeight; i+=step )
     {
-        const l = yAxis.append("line")
+        yAxis.append("line")
                 .attr("x1", pattern.visibleBounds.minX - tickSize )
                 .attr("y1", i + pattern.visibleBounds.minY )
                 .attr("x2", pattern.visibleBounds.minX - tickSize + tickSize * ( i % (10*step) == 0 ? 1 : i % (5*step) == 0 ? 0.75 : 0.5 ) )
@@ -1400,7 +1579,7 @@ function drawRulers( pattern, patternWidth, patternHeight, transformGroup2 )
                 .attr("stroke-width", strokeWidth );
         if ( ( i % (10*step) === 0 ) && ( i !== 0 ) )
             {
-                const t = xAxis.append("text")
+                xAxis.append("text")
                             .attr("class","labl")
                             .attr("x", pattern.visibleBounds.minX - 0.25 * tickSize )
                             .attr("y", i + pattern.visibleBounds.minY - 0.25 * tickSize )

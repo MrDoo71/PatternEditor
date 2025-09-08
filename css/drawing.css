@@ -132,6 +132,26 @@ g.j-drawing circle {
     fill:#4992b6; 
 }
 
+g.curve-control-point circle,
+g.curve-control-point line {
+    display: none;
+}
+
+g.j-drawing g.j-active g.curve-control-point circle {
+    fill:orange; 
+    stroke-width: 0px;
+    display:initial;
+}
+
+g.j-drawing g.j-active g.curve-control-point line {
+    stroke:orange; 
+    display:initial;
+}
+
+path.edited-curve {
+    stroke:orange !important; 
+}
+
 g.j-drawing text {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     fill:#000;

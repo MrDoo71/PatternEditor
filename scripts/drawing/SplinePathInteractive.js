@@ -26,11 +26,16 @@ class SplinePathInteractive extends DrawingObject {
                     pathNode.angle2  = this.drawing.newFormula( pathNode.angle2 ); 
                     pathNode.length2 = this.drawing.newFormula( pathNode.length2 );
 
-                    this.nodes.push( { inAngle:   pathNode.angle1.value(),
-                                       inLength:  pathNode.length1.value(),
-                                       point:     pathNode.point.p,
-                                       outAngle:  pathNode.angle2.value(),
-                                       outLength: pathNode.length2.value() } );
+                    pathNode.controlPoint1 = pathNode.point.p.pointAtDistanceAndAngleDeg( pathNode.length1.value(), pathNode.angle1.value() );
+                    pathNode.controlPoint2 = pathNode.point.p.pointAtDistanceAndAngleDeg( pathNode.length2.value(), pathNode.angle2.value() );
+
+                    pathNode.original = { controlPoint1 : { ...pathNode.controlPoint1 }, 
+                                          controlPoint2 : { ...pathNode.controlPoint2 } };        
+
+                    this.nodes.push( { inControlPoint: pathNode.controlPoint1,
+                                       point: pathNode.point.p,
+                                       outControlPoint: pathNode.controlPoint2
+                                       } );
                 }
             } catch ( e ) {
                 this.error = e;
@@ -38,11 +43,19 @@ class SplinePathInteractive extends DrawingObject {
             }
         }
 
-        this.curve = new GeoSpline( this.nodes );
+        this.setCurve();
+
+        this.originalNodes = //TODO a deep copy of this.nodes
 
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
         this.adjustBounds( bounds );
+    }
+
+
+    setCurve()
+    {
+        this.curve = new GeoSpline( this.nodes );
     }
 
 
@@ -124,4 +137,64 @@ class SplinePathInteractive extends DrawingObject {
             dependencies.add( this, pathNode.length2 );
         }        
     }    
+
+
+    revert()
+    {
+        const d = this.data;
+        this.nodes = [];
+        for( const pathNode of d.pathNode ) 
+        {
+            pathNode.controlPoint1 = { ...pathNode.original.controlPoint1 };
+            pathNode.controlPoint2 = { ...pathNode.original.controlPoint2 };
+
+            this.nodes.push( {  inControlPoint: pathNode.controlPoint1,
+                                point:     pathNode.point.p,
+                                outControlPoint: pathNode.controlPoint2
+                                } );            
+        }
+        this.setCurve();
+    }
+
+//TODO keep in and out control points linked to 180deg difference if already 180 deg diff and not shift pressed
+    getControlPoints() 
+    {
+        const controlPoints = [];
+        //let seq = 0;
+        for( const n of this.nodes )
+        {
+            controlPoints.push( { //seq: seq++, 
+                obj: this, bp: n.point, cp: n.inControlPoint } );
+            controlPoints.push( { //seq: seq++, 
+                obj: this, bp: n.point, cp: n.outControlPoint } );
+        }
+        return controlPoints;
+    }
+
+
+    getControlPointDataForUpdate() 
+    {
+        //calculate length and angle of the modified control points
+
+        const data = {
+            ControlPoints: [] };
+
+        //let seq = 0; //TODO do we actually need seq? 
+        for( const n of this.nodes )
+        {
+
+            const line1 = new GeoLine( n.point, n.inControlPoint );
+            const line2 = new GeoLine( n.point, n.outControlPoint );
+        
+            data.ControlPoints.push( 
+                {
+                    //Sequence: ++seq, 
+                    inAngle: Number( line1.angleDeg().toPrecision(8) ),
+                    inLength: Number( line1.getLength().toPrecision(8) ), 
+                    outAngle: Number( line2.angleDeg().toPrecision(8) ),
+                    outLength: Number( line2.getLength().toPrecision(8) ) 
+                } );                
+        }
+        return data;
+    }        
 }
