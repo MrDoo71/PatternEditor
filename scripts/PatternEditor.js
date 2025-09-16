@@ -535,7 +535,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                             const c = d3this.append("circle")
                                 .attr( "cx", d.cp.x )
                                 .attr( "cy", d.cp.y )
-                                .attr( "r", Math.round( 600  / scale ) /100 );
+                                .attr( "r", Math.round(500 / scale / fontsSizedForScale)/100 );
 
                             if ( options.editable )    
                                 c.call( drag );    
