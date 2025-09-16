@@ -37,16 +37,13 @@ class SplineSimple extends DrawingObject {
         if (typeof this.length2 === "undefined")
             this.length2 = this.drawing.newFormula(d.length2);
 
-        this.controlPoint1 = this.startPoint.p.pointAtDistanceAndAngleDeg( this.length1.value(), this.angle1.value() );
-        this.controlPoint2 = this.endPoint.p.pointAtDistanceAndAngleDeg( this.length2.value(), this.angle2.value() );
+        this.controlPoint1 = this.getControlPoint( this.startPoint.p, this.length1, this.angle1 );
+        this.controlPoint2 = this.getControlPoint( this.endPoint.p, this.length2, this.angle2 );
 
         this.setCurve();
 
         this.original = { controlPoint1 : { ...this.controlPoint1 }, 
                           controlPoint2 : { ...this.controlPoint2 } };        
-
-        //this.curve = new GeoSpline( [ { inAngle: undefined, inLength: undefined, point: this.startPoint.p, outAngle: this.angle1.value(), outLength: this.length1.value() },
-        //                               { inAngle: this.angle2.value(), inLength: this.length2.value(), point: this.endPoint.p, outAngle: undefined, outLength: undefined } ] );
 
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
@@ -138,13 +135,11 @@ class SplineSimple extends DrawingObject {
         const data = {
             ControlPoints: [ 
                 {
-                    //Sequence: 1, 
-                    outAngle: Number( line1.angleDeg().toPrecision(8) ),
+                    outAngle: this.controlPoint1.fixedAngle ? null : Number( line1.angleDeg().toPrecision(8) ),
                     outLength: Number( line1.getLength().toPrecision(8) ) 
                 },
                 {
-                    //Sequence: 2,
-                    inAngle: Number( line2.angleDeg().toPrecision(8) ),
+                    inAngle: this.controlPoint2.fixedAngle ? null : Number( line2.angleDeg().toPrecision(8) ),
                     inLength: Number( line2.getLength().toPrecision(8) ) 
                 }
             ]

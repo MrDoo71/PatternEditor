@@ -26,11 +26,27 @@ class SplinePathInteractive extends DrawingObject {
                     pathNode.angle2  = this.drawing.newFormula( pathNode.angle2 ); 
                     pathNode.length2 = this.drawing.newFormula( pathNode.length2 );
 
-                    pathNode.controlPoint1 = pathNode.point.p.pointAtDistanceAndAngleDeg( pathNode.length1.value(), pathNode.angle1.value() );
-                    pathNode.controlPoint2 = pathNode.point.p.pointAtDistanceAndAngleDeg( pathNode.length2.value(), pathNode.angle2.value() );
+                    pathNode.controlPoint1 = this.getControlPoint( pathNode.point.p, pathNode.length1, pathNode.angle1 );
+                    pathNode.controlPoint2 = this.getControlPoint( pathNode.point.p, pathNode.length2, pathNode.angle2 );
+
+                    const divergenceFromStraightLine = Math.abs( pathNode.angle1.value() - pathNode.angle2.value() ) - 180;
+                    const controlPointsInAStraightLine = Math.abs( divergenceFromStraightLine ) < 1;
+
+                    console.log( divergenceFromStraightLine + " " + controlPointsInAStraightLine );
+
+                    if ( controlPointsInAStraightLine )
+                    {
+                        pathNode.controlPoint1.straightLineWith = pathNode.controlPoint2;
+                        pathNode.controlPoint2.straightLineWith = pathNode.controlPoint1;
+                    }
 
                     pathNode.original = { controlPoint1 : { ...pathNode.controlPoint1 }, 
-                                          controlPoint2 : { ...pathNode.controlPoint2 } };        
+                                          controlPoint2 : { ...pathNode.controlPoint2 } };
+                                          
+                    if ( pathNode.original.controlPoint1.straightLineWith )
+                        pathNode.original.controlPoint1.straightLineWith = pathNode.original.controlPoint2;
+                    if ( pathNode.original.controlPoint2.straightLineWith )
+                        pathNode.original.controlPoint2.straightLineWith = pathNode.original.controlPoint1;
 
                     this.nodes.push( { inControlPoint: pathNode.controlPoint1,
                                        point: pathNode.point.p,
@@ -44,8 +60,6 @@ class SplinePathInteractive extends DrawingObject {
         }
 
         this.setCurve();
-
-        this.originalNodes = //TODO a deep copy of this.nodes
 
         this.midPoint = this.curve.pointAlongPathFraction( 0.5 );        
         this.p = this.midPoint;
@@ -148,6 +162,11 @@ class SplinePathInteractive extends DrawingObject {
             pathNode.controlPoint1 = { ...pathNode.original.controlPoint1 };
             pathNode.controlPoint2 = { ...pathNode.original.controlPoint2 };
 
+            if ( pathNode.controlPoint1.straightLineWith )
+                pathNode.controlPoint1.straightLineWith = pathNode.controlPoint2;
+            if ( pathNode.controlPoint2.straightLineWith )
+                pathNode.controlPoint2.straightLineWith = pathNode.controlPoint1;
+
             this.nodes.push( {  inControlPoint: pathNode.controlPoint1,
                                 point:     pathNode.point.p,
                                 outControlPoint: pathNode.controlPoint2
@@ -156,17 +175,19 @@ class SplinePathInteractive extends DrawingObject {
         this.setCurve();
     }
 
-//TODO keep in and out control points linked to 180deg difference if already 180 deg diff and not shift pressed
+
     getControlPoints() 
     {
         const controlPoints = [];
         //let seq = 0;
         for( const n of this.nodes )
         {
-            controlPoints.push( { //seq: seq++, 
-                obj: this, bp: n.point, cp: n.inControlPoint } );
-            controlPoints.push( { //seq: seq++, 
-                obj: this, bp: n.point, cp: n.outControlPoint } );
+            const cp1 = { obj: this, bp: n.point, cp: n.inControlPoint };
+            const cp2 = { obj: this, bp: n.point, cp: n.outControlPoint };
+            cp1.partnerOf = cp2;
+            cp2.partnerOf = cp1;
+            controlPoints.push( cp1 );
+            controlPoints.push( cp2 );
         }
         return controlPoints;
     }
@@ -178,11 +199,9 @@ class SplinePathInteractive extends DrawingObject {
 
         const data = {
             ControlPoints: [] };
-
-        //let seq = 0; //TODO do we actually need seq? 
+ 
         for( const n of this.nodes )
         {
-
             const line1 = new GeoLine( n.point, n.inControlPoint );
             const line2 = new GeoLine( n.point, n.outControlPoint );
         

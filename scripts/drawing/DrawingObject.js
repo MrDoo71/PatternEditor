@@ -413,4 +413,16 @@ s
     {
         return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
     }
+
+    //For curve editing
+    getControlPoint( p, length, angle )
+    {
+        const cp = p.pointAtDistanceAndAngleDeg( length.value(), angle.value() );
+
+        cp.fixedLength = length.constant === undefined ? length.value() : undefined;
+        cp.fixedAngle = angle.constant === undefined ? angle.value() : undefined;
+
+        return cp;
+    }
+
 }

@@ -233,7 +233,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
     options.setDrawingTableSplit( options.drawingTableSplit ); //shouln't cause a server update
 
-    let focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable )
+    let focusDrawingObject = ! options.interactive ? undefined : function( d, scrollTable, options )
     {        
         if (    ( d3.event?.originalTarget?.className === "ps-ref" )
              && ( selectedObject === d )
@@ -386,30 +386,85 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             }
         }
         
-        //TODO only if editable
-        if (    ( selectedObject instanceof SplineSimple ) 
-             || ( selectedObject instanceof SplinePathInteractive ) )
+        if (    (    ( selectedObject instanceof SplineSimple ) 
+                  || ( selectedObject instanceof SplinePathInteractive ) )
+             && selectedObject.drawingSvg )
         {
             const controlPoints = selectedObject.getControlPoints();
-        //TODO have a flag on a control point to indicate whether it is free in length and angle, angle only, or not at all 
-        //based on whether the current value is a constant, or a formula
 
             selectedObject.controlPointData = controlPoints;
 
             const drag = d3.drag()
                 .on("start", function (r) {
-                    console.log("dragStart x " + d3.event.x + " y " + d3.event.y );                    
+                    //console.log("dragStart x " + d3.event.x + " y " + d3.event.y );                    
                     d3.select(this).raise();
                     d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
+                    r.breakSmoothCurve = d3.event.sourceEvent.shiftKey;
                 })
                 .on("drag", function (r) {
                     //r is the data, this is the svg
-                    const x = d3.event.x;
-                    const y = d3.event.y;
+                    let x = d3.event.x;
+                    let y = d3.event.y;
 
-                    //TODO if the angle was a formula, and the length wasn't then keep the angle
+                    //if the angle was a formula, and the length wasn't, then keep the angle
                     //whilst allowing the length to be changed
+                    if ( r.cp.fixedAngle ) 
+                    {
+                        //measure the length to the drag point
+                        const l = new GeoLine( r.bp, new GeoPoint( x,y ) );
+                        const p = r.bp.pointAtDistanceAndAngleDeg( l.getLength(), r.cp.fixedAngle );
+                        //replace drag point by original angle and this length
+                        x = p.x;
+                        y = p.y;
+                    }
+                    else if ( ! d3.event.sourceEvent.shiftKey )
+                    {
+                        const l = new GeoLine( r.bp, new GeoPoint( x,y ) );
+                        const m90 = l.angleDeg() % 90;
+                        let snapAngle;                        
+                        if ( m90 < 3 )
+                            snapAngle = l.angleDeg() - m90;
+                        else if ( m90 > 87 )
+                            snapAngle = l.angleDeg() + (90-m90);
+                        
+                        //also allow snapping to a straight line with its partner
+                        if ( ( snapAngle === undefined ) && ( r.partnerOf ) )
+                        {
+                            const partner = r.partnerOf;
+                            const partnerLine = new GeoLine( partner.bp, partner.cp );
+                            const partnerAnglePlus180 = ( partnerLine.angleDeg() + 180 ) % 360;
+                            const angleDiff = Math.abs( partnerAnglePlus180 - l.angleDeg() );
+                            if ( angleDiff < 3 )
+                                snapAngle = partnerAnglePlus180;
+                        }
 
+                        if ( snapAngle !== undefined )
+                        {                            
+                            //snap to the multiple of 0
+                            const p = r.bp.pointAtDistanceAndAngleDeg( l.getLength(), snapAngle );
+                            x = p.x;
+                            y = p.y;
+                        }
+                    }
+                    //if not pressing shift when I start dragging
+                    if (( r.cp.straightLineWith ) && ( ! r.breakSmoothCurve ))
+                    {
+                        const l = new GeoLine( r.bp, new GeoPoint( x,y ) );
+                        const partnerAngle = ( l.angleDeg() + 180 ) % 360;
+                        const l2 = new GeoLine( r.bp, r.cp.straightLineWith );
+                        const p2 = r.bp.pointAtDistanceAndAngleDeg( l2.getLength(), partnerAngle );
+                        r.cp.straightLineWith.x = p2.x;
+                        r.cp.straightLineWith.y = p2.y;
+                        //also need to update the svg related to r.partnerOf
+                        const otherControlPointGroup = d3.select( r.partnerOf.svg );
+                        otherControlPointGroup.select( "line" )
+                            .attr( "x2", p2.x )
+                            .attr( "y2", p2.y );
+                        otherControlPointGroup.select( "circle" )
+                            .attr("cx", p2.x )
+                            .attr("cy", p2.y );
+                    }
+                    
                     d3.select(this)
                         .attr("cx", x )
                         .attr("cy", y );
@@ -421,29 +476,24 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
                     const d3drawingG = d3.select( this.parentNode.parentNode );
                     d3drawingG.select( "path.edited-curve" ).remove(); 
-
                     r.cp.x = x;
                     r.cp.y = y;
                     r.obj.setCurve();
                     r.obj.draw( d3drawingG, { overrideLineStyle : "edited-curve" } );
                 })
-                .on("end", function (d) {
+                .on("end", function (r) {
+                    r.breakSmoothCurve = undefined;
                     const funcYes = function() {
-                        console.log("funcYes!*************" );
-                        console.log(d);
-                        const o = d.obj;                   
+                        const o = r.obj;                   
                         const dataJSON = JSON.stringify( o.getControlPointDataForUpdate() );
-                        console.log( dataJSON );
                         const kvpSet = newkvpSet(false);
                         kvpSet.add( 'json', dataJSON );
                         goGraph( options.interactionPrefix + ':' + o.data.directUpdate, fakeEvent(), kvpSet);                        
                     };
 
                     const funcNo = function() {
-                        console.log("funcNo!*************" );
-                        console.log(d);
                         //restore the original curve.  
-                        const o = d.obj;
+                        const o = r.obj;
                         o.revert();
                         o.drawingSvg.select( "path.edited-curve" ).remove();  
                         o.drawingSvg.selectAll( ".curve-control-point" ).remove();
@@ -467,6 +517,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 .selectAll( "g.curve-control-point" )
                 .each( function(d,i) { 
                     const d3this = d3.select(this);
+
+                    d.svg = this;
                     
                     if ( d3this.select("line").size() === 0 )
                     {
@@ -475,13 +527,19 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                             .attr("y1", d.bp.y )
                             .attr("x2", d.cp.x )
                             .attr("y2", d.cp.y )
-                            .attr("stroke-width", d.obj.getStrokeWidth( true, true ) );
+                            .attr("stroke-width", d.obj.getStrokeWidth( false, true ) );
 
-                        d3this.append("circle")
-                            .attr( "cx", d.cp.x )
-                            .attr( "cy", d.cp.y )
-                            .attr( "r", Math.round( 400  / scale ) /100 )
-                            .call( drag );    
+                        if (     ! d.cp.fixedAngle 
+                              || ! d.cp.fixedLength )
+                        {
+                            const c = d3this.append("circle")
+                                .attr( "cx", d.cp.x )
+                                .attr( "cy", d.cp.y )
+                                .attr( "r", Math.round( 600  / scale ) /100 );
+
+                            if ( options.editable )    
+                                c.call( drag );    
+                        }
                     }
                 } );
         }
@@ -515,7 +573,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
 
                                     if ( retainFocus )
                                         //e.g. if doing show/hide functions button
-                                        focusDrawingObject( selectedObject, true );
+                                        focusDrawingObject( selectedObject, true, options );
                                 };
 
     doDrawingAndTable();                   
@@ -594,11 +652,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                 a = pattern.getVariable( options.focus );
 
             if ( a )
-                focusDrawingObject(a, true);
+                focusDrawingObject(a, true, options);
         }
         else
         {
-            focusDrawingObject(firstDrawingObject, true);
+            focusDrawingObject(firstDrawingObject, true, options);
         }
     }
 }
@@ -1229,7 +1287,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
     //Clicking on an object in the drawing should highlight it in the table.
     const onclick = ! editorOptions.interactive ? undefined : function(d) {
         d3.event.preventDefault();
-        focusDrawingObject(d,true);
+        focusDrawingObject(d,true,editorOptions);
     };
 
     for( const drawing of pattern.drawings )
@@ -1330,6 +1388,9 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
 
                                 g.selectAll( "ellipse" )
                                     .attr( "stroke-width", strokeWidth );
+
+                                g.selectAll( ".confirmation-lozenge line,.confirmation-lozenge path" )
+                                    .attr( "stroke-width", 8 ); //don't change these
                             }
 
                             g = a.outlineSvg;
@@ -1910,7 +1971,7 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
 
     const onclick = function(d) {
         d3.event.preventDefault();
-        focusDrawingObject(d,false);
+        focusDrawingObject(d,false,editorOptions);
     }
 
     graphdiv.select("div.pattern-table").remove();
