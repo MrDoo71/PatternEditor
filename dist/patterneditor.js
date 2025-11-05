@@ -7501,8 +7501,43 @@ function doPieces( drawing, transformGroup3, editorOptions )
             piecesToDraw = drawing.pieces; //revert back to all pieces
     }
 
+    const drag = d3.drag()
+    .on("start", function( p ) {
+        console.log("dragStart");
+        p.dragStartX = d3.event.x;
+        p.dragStartY = d3.event.y;
+        p.originalmx = p.data.mx;
+        p.originalmy = p.data.my;
+    })
+    .on("drag", function( p ) { //p - piece data
+        console.log("drag: " + d3.event.x + " , " + d3.event.y  );
+        const g = d3.select(this); //this is the g
+        g.attr("transform", "translate(" + ( Number(p.data.mx) + d3.event.x - p.dragStartX ) + "," +  ( Number( p.data.my ) + d3.event.y - p.dragStartY ) + ")");    
+    })
+    .on("end", function( p ){
+        console.log("dragEnd: " + d3.event.x + " , " + d3.event.y  );
+        const g = d3.select(this); //this is the g
+            p.data.mx = Number(p.data.mx) + d3.event.x - p.dragStartX;
+            p.data.my = Number(p.data.my) + d3.event.y - p.dragStartY; 
+        
+        const funcYes = function() {
+            const kvpSet = newkvpSet(false);
+            kvpSet.add( 'mx', p.data.mx );
+            kvpSet.add( 'my', p.data.my );
+            goGraph( editorOptions.interactionPrefix + ':' + p.data.updateMxMy, fakeEvent(), kvpSet); 
+        };
+
+        const funcNo = function() {
+            p.data.mx = p.originalmx;
+            p.data.my = p.originalmy;
+            g.attr("transform", "translate(" + Number(p.data.mx) + "," + Number( p.data.my ) + ")");    
+        };
+
+        drawConfirmationLozenge( d3.select(this.parentNode), d3.event.x, d3.event.y, funcYes, funcNo );
+    });
+
     const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
-    pieceGroup.selectAll("g")
+    const pieces = pieceGroup.selectAll("g")
                 .data( piecesToDraw )
                 .enter()
                 .append("g")        
@@ -7515,7 +7550,7 @@ function doPieces( drawing, transformGroup3, editorOptions )
                     //if doing an export of multiple pieces then take the piece.mx/my into account
                     if ( editorOptions.targetPiece === "all" ) //OR AN ARRAY WITH >1 length
                     {
-                        g.attr("transform", "translate(" + ( 1.0 * p.data.mx ) + "," +  (1.0 * p.data.my ) + ")");    
+                        g.attr("transform", "translate(" + Number( p.data.mx ) + "," + Number( p.data.my ) + ")");    
                     }
 
                     p.svg = g;
@@ -7528,6 +7563,9 @@ function doPieces( drawing, transformGroup3, editorOptions )
                         }
                     }
             });
+    //Draggable if we used the mx/my to position them
+    if ( editorOptions.targetPiece === "all" )            
+        pieces.call( drag );
 }
 
 
