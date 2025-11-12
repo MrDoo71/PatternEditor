@@ -6399,6 +6399,7 @@ function drawConfirmationLozenge( svg, x, y, funcyes, funcno )
 
   // Tick icon (checkmark)
   const tickGroup = lozenge.append("g")
+    .attr("class","tick")
     .attr("transform", "translate(0, 0)")
     .on( "click", function(d,i) {
         console.log(  d );
@@ -6410,6 +6411,7 @@ function drawConfirmationLozenge( svg, x, y, funcyes, funcno )
         funcyes();
      });
   const crossGroup = lozenge.append("g")
+    .attr("class","cross")  
     .attr("transform", "translate(0, 0)")
     .on( "click", function(d,i) {
         d3.event.preventDefault(); d3.event.stopPropagation();         
@@ -6565,6 +6567,38 @@ function doControls( graphdiv, editorOptions, pattern )
 
     if ( editorOptions.downloadOption )
     {
+        const switchToFullsize = function() { 
+            //switch primary/default
+            $("a.display-fittopage").removeClass("btn-primary").addClass("btn-default");
+            $("a.display-fullsize").addClass("btn-primary").removeClass("btn-default");
+            const $svg = $("svg.pattern-drawing");
+            $svg.attr("width", $svg.attr("data-orig-width") );
+            $svg.attr("height", $svg.attr("data-orig-height") );
+        };
+        const switchToFitToPage = function() {
+            //switch primary/default
+            //disable the download button
+            $("a.display-fullsize").removeClass("btn-primary").addClass("btn-default");
+            $("a.display-fittopage").addClass("btn-primary").removeClass("btn-default");
+            const $svg = $("svg.pattern-drawing");
+            if ( $svg.attr("data-orig-width") === undefined )
+            {
+                $svg.attr("data-orig-width", $svg.attr("width") );
+                $svg.attr("data-orig-height", $svg.attr("height") );
+            }
+            $svg.attr("width", "90%");
+            $svg.attr("height", "90%");
+        };
+        const sizeGrp = controls.append("div").attr("class","btn-group").attr("style","margin-right:16px");
+        sizeGrp.append("a") 
+                .attr("class", "btn btn-primary display-fullsize")
+                .html( 'Fullsize' )
+                .on("click", switchToFullsize );
+        sizeGrp.append("a") 
+                .attr("class", "btn btn-default display-fittopage")
+                .html( 'Fit-to-page' )
+                .on("click", switchToFitToPage );
+        
         const downloadFunction = function() {
             const serializer = new XMLSerializer();
             const xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + serializer.serializeToString( graphdiv.select("svg.pattern-drawing").node() );
@@ -7504,6 +7538,9 @@ function doPieces( drawing, transformGroup3, editorOptions )
     const drag = d3.drag()
     .on("start", function( p ) {
         console.log("dragStart");
+        //todo cancel any confirmed drags
+        d3.selectAll( "svg.pattern-drawing .confirmation-lozenge g.cross").dispatch('click');
+        d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
         p.dragStartX = d3.event.x;
         p.dragStartY = d3.event.y;
         p.originalmx = p.data.mx;
@@ -7517,23 +7554,26 @@ function doPieces( drawing, transformGroup3, editorOptions )
     .on("end", function( p ){
         console.log("dragEnd: " + d3.event.x + " , " + d3.event.y  );
         const g = d3.select(this); //this is the g
-            p.data.mx = Number(p.data.mx) + d3.event.x - p.dragStartX;
-            p.data.my = Number(p.data.my) + d3.event.y - p.dragStartY; 
+        p.data.mx = Number(p.data.mx) + d3.event.x - p.dragStartX; //do this outside of funcYes otherwise it doesn't work
+        p.data.my = Number(p.data.my) + d3.event.y - p.dragStartY; 
         
-        const funcYes = function() {
-            const kvpSet = newkvpSet(false);
-            kvpSet.add( 'mx', p.data.mx );
-            kvpSet.add( 'my', p.data.my );
-            goGraph( editorOptions.interactionPrefix + ':' + p.data.updateMxMy, fakeEvent(), kvpSet); 
-        };
+        if ( p.data.allowDragCallback )
+        {
+            const funcYes = function() {
+                const kvpSet = newkvpSet(true);
+                kvpSet.add( 'mx', p.data.mx );
+                kvpSet.add( 'my', p.data.my );
+                goGraph( editorOptions.interactionPrefix + ':' + p.data.updateMxMy, fakeEvent(), kvpSet); 
+            };
 
-        const funcNo = function() {
-            p.data.mx = p.originalmx;
-            p.data.my = p.originalmy;
-            g.attr("transform", "translate(" + Number(p.data.mx) + "," + Number( p.data.my ) + ")");    
-        };
+            const funcNo = function() {
+                p.data.mx = p.originalmx;
+                p.data.my = p.originalmy;
+                g.attr("transform", "translate(" + Number(p.data.mx) + "," + Number( p.data.my ) + ")");    
+            };
 
-        drawConfirmationLozenge( d3.select(this.parentNode), d3.event.x, d3.event.y, funcYes, funcNo );
+            drawConfirmationLozenge( d3.select(this.parentNode), d3.event.x, d3.event.y, funcYes, funcNo );
+        }
     });
 
     const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
