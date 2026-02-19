@@ -127,7 +127,7 @@ g.j-drawing circle {
     stroke-width: 0px;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-drawing circle {
     fill:#4992b6; 
 }
@@ -157,7 +157,7 @@ g.j-drawing text {
     fill:#000;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-drawing text {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; /*TODO other font?*/
     fill:#d8d8d8;
@@ -167,7 +167,7 @@ g.j-drawing g.j-active > circle {
     fill:#000;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-drawing g.j-active > circle {
     fill:#67cdff;
 }
@@ -185,7 +185,7 @@ g.j-item.j-measurement div.desc {
     background-color: #ffe7ef;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-item.j-measurement div.desc {
     color:#000;
 }
@@ -196,7 +196,7 @@ g.j-item.j-variable div.desc {
     background-color:#e7faff;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-item.j-variable div.desc {
     color:#000;
 }
@@ -208,7 +208,7 @@ g.j-item.j-piece div.desc {
     opacity: 0.5;
 }
 
-body.k-dark-mode g.j-item.j-piece div.desc {
+html[data-bs-theme="dark"] g.j-item.j-piece div.desc {
     color: white !important;
 }
 
@@ -222,7 +222,7 @@ g.j-item.j-active:not(.j-piece) div.desc {
     background-color: #ffc;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-item.j-active div.desc {
     color:#000;
 }
@@ -233,7 +233,7 @@ g.j-item.error div.desc {
     background-color: #fcc;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-item.error div.desc {
     color:#000;
 }
@@ -242,7 +242,7 @@ g.j-item.error.j-active div.desc {
     background-color: #fcc; 
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-item.error.j-active div.desc {    
     color: #000;
 }
@@ -283,19 +283,19 @@ path.link {
     stroke-width: 1px;    
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 path.link {
     stroke: #444;
 }
 
 path.link.source,
-body.k-dark-mode path.link.source {
+html[data-bs-theme="dark"] path.link.source {
     stroke:#449fdc;
     stroke-width: 3px;    
 }
 
 path.link.target, 
-body.k-dark-mode path.link.target
+html[data-bs-theme="dark"] path.link.target
 {
     stroke:#4ddc44;
     stroke-width: 3px;    
@@ -303,8 +303,8 @@ body.k-dark-mode path.link.target
 
 path.link.source.piece,
 path.link.target.piece,
-body.k-dark-mode path.link.source.piece,
-body.k-dark-mode path.link.target.piece
+html[data-bs-theme="dark"] path.link.source.piece,
+html[data-bs-theme="dark"] path.link.target.piece
 {
     stroke:#ba85e5;
 }
@@ -360,7 +360,7 @@ g.j-outline g.j-active > circle {
     opacity: 1;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-outline g.j-active > circle {
     opacity: 0.5;
 }   
@@ -381,7 +381,7 @@ g.j-pieces path.seamline {
     stroke:#929292;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-pieces path.seamline {
     fill: #505050;
     stroke: #f0f0f0;
@@ -398,7 +398,7 @@ g.j-pieces path.seamallowance {
     stroke: black;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-pieces path.seamallowance {
     fill: #303030;
     stroke: #f8f8f8;
@@ -408,7 +408,7 @@ g.j-pieces line.grainline {
     stroke: black;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 g.j-pieces line.grainline {
     stroke: white;
 }
@@ -417,7 +417,7 @@ g.j-pieces line.grainline {
     stroke: black;    
 }
 
-body.k-dark-mode 
+html[data-bs-theme="dark"] 
 .arrow path
 {
     stroke: white;
@@ -430,10 +430,10 @@ g.j-drawing path[stroke="white"]{
     stroke:black;
 }
 
-body.k-dark-mode g.j-pieces path.internalpath,
-body.k-dark-mode g.j-pieces path.notch, 
-body.k-dark-mode g.j-drawing line[stroke="black"],
-body.k-dark-mode g.j-drawing path[stroke="black"] {
+html[data-bs-theme="dark"] g.j-pieces path.internalpath,
+html[data-bs-theme="dark"] g.j-pieces path.notch, 
+html[data-bs-theme="dark"] g.j-drawing line[stroke="black"],
+html[data-bs-theme="dark"] g.j-drawing path[stroke="black"] {
     stroke:white;
 }
 
@@ -442,8 +442,8 @@ g.j-pieces text.alongPath {
     fill: black;
 }
 
-body.k-dark-mode g.j-pieces text.patternlabel,
-body.k-dark-mode g.j-pieces text.alongPath {
+html[data-bs-theme="dark"] g.j-pieces text.patternlabel,
+html[data-bs-theme="dark"] g.j-pieces text.alongPath {
     fill: white;
 }
 
@@ -453,7 +453,7 @@ line.labelLine {
     stroke:#d0d0d0;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 line.labelLine {
     stroke:#999;
 }
@@ -474,7 +474,7 @@ div.pattern-editor-resize {
     position: relative;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 div.pattern-editor-resize {
     border:1px solid #666;
 }
@@ -484,7 +484,7 @@ div.pattern-editor-resize:hover{
     cursor: ew-resize;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 div.pattern-editor-resize:hover{
     border-color: #eee;
 }
@@ -526,7 +526,7 @@ div.pattern-editor.full-page {
     background-color: white;
 }
 
-body.k-dark-mode
+html[data-bs-theme="dark"]
 div.pattern-editor.full-page {
     background-color:#222222;
 }
