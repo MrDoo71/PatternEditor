@@ -5835,7 +5835,7 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                     d3.event, 
                     v ) ;
         }
-    } : undefined; //function(d){};     
+    } : undefined;
 
     options.layoutConfig = { drawingWidth: 400,
                              drawingHeight: 600,
@@ -6596,7 +6596,7 @@ function doControls( graphdiv, editorOptions, pattern )
                 .on("click", switchToFullsize );
         sizeGrp.append("a") 
                 .attr("class", "btn btn-default display-fittopage")
-                .html( 'Fit-to-page' )
+                .html( 'Fit to page' )
                 .on("click", switchToFitToPage );
         
         const downloadFunction = function() {
@@ -7049,7 +7049,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         //if they are clicked in the table. 
         //if ( ! editorOptions.skipPieces )
         //{
-            doPieces( drawing, transformGroup3, editorOptions );
+            doPieces( drawing, transformGroup3, editorOptions, contextMenu );
         //}
 
         if ( ! editorOptions.skipDrawing )
@@ -7518,7 +7518,7 @@ function doDrawing( drawing, transformGroup3, editorOptions, onclick, contextMen
 }
 
 
-function doPieces( drawing, transformGroup3, editorOptions )
+function doPieces( drawing, transformGroup3, editorOptions, contextMenu )
 {
     let piecesToDraw = drawing.pieces;
 
@@ -7537,23 +7537,40 @@ function doPieces( drawing, transformGroup3, editorOptions )
 
     const drag = d3.drag()
     .on("start", function( p ) {
+
+        if (d3.event.sourceEvent.button === 2) return;
+
         console.log("dragStart");
-        //todo cancel any confirmed drags
+        //Cancel any un-confirmed drags
         d3.selectAll( "svg.pattern-drawing .confirmation-lozenge g.cross").dispatch('click');
         d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").remove();
         p.dragStartX = d3.event.x;
         p.dragStartY = d3.event.y;
         p.originalmx = p.data.mx;
         p.originalmy = p.data.my;
+        p.notMovedYet = true;
     })
     .on("drag", function( p ) { //p - piece data
         console.log("drag: " + d3.event.x + " , " + d3.event.y  );
+        const movementX = d3.event.x - p.dragStartX; //movement since drag start, this is in drawing units (mm/cm/inch)
+        const movementY = d3.event.y - p.dragStartY;
+        console.log( movementX );
+        if ( p.noveMovedYet && ( Math.abs(movementX)+Math.abs(movementY) < p.drawing.pattern.getPatternEquivalentOfMM(2) ) )
+            return;
+        p.notMovedYet = false;
         const g = d3.select(this); //this is the g
-        g.attr("transform", "translate(" + ( Number(p.data.mx) + d3.event.x - p.dragStartX ) + "," +  ( Number( p.data.my ) + d3.event.y - p.dragStartY ) + ")");    
+        g.attr("transform", "translate(" + ( Number(p.data.mx) + movementX ) + "," +  ( Number( p.data.my ) + movementY ) + ")");    
     })
     .on("end", function( p ){
         console.log("dragEnd: " + d3.event.x + " , " + d3.event.y  );
         const g = d3.select(this); //this is the g
+
+        if ( p.notMovedYet )
+        {
+            p.data.mx = p.originalmx;
+            p.data.my = p.originalmy;
+            return;
+        }
         p.data.mx = Number(p.data.mx) + d3.event.x - p.dragStartX; //do this outside of funcYes otherwise it doesn't work
         p.data.my = Number(p.data.my) + d3.event.y - p.dragStartY; 
         
@@ -7573,7 +7590,7 @@ function doPieces( drawing, transformGroup3, editorOptions )
             };
 
             drawConfirmationLozenge( d3.select(this.parentNode), d3.event.x, d3.event.y, funcYes, funcNo );
-        }
+        }        
     });
 
     const pieceGroup = transformGroup3.append("g").attr("class","j-pieces");
@@ -7604,8 +7621,16 @@ function doPieces( drawing, transformGroup3, editorOptions )
                     }
             });
     //Draggable if we used the mx/my to position them
-    if ( editorOptions.targetPiece === "all" )            
-        pieces.call( drag );
+
+    if ( editorOptions.targetPiece === "all" )
+        pieces.call( drag )
+    .on("contextmenu", function (d) {
+    d3.event.preventDefault();   // <-- important
+    console.log("Right-click!");
+    contextMenu(d.data);
+  });
+  
+  console.log( "Added contextMenu to " + pieces.size() );
 }
 
 
