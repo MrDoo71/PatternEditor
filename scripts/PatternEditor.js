@@ -42,6 +42,19 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     let pattern;
     try {
         pattern = new Pattern( dataAndConfig, graphOptions );            
+
+        //If the pattern display worked, but we have an alert showing from a previous failure
+        //then clear the failure.
+        if (    document.getElementById('has-drawing-error-message')   
+             && options.reportFailure 
+             && options.returnID )
+        {
+            const kvpSet = newkvpSet(true);
+            kvpSet.add( 'failureJSON', 'none' );
+            kvpSet.add( 'id', options.returnID ) ;
+            goGraph( options.interactionPrefix + ':' + options.reportFailure, fakeEvent(), kvpSet);
+        }
+
     } catch ( e ) {
         if ( ! options.thumbnail )
             targetdiv.append("div")
