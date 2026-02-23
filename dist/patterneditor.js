@@ -10034,10 +10034,10 @@ class GeoSpline {
                 const node2 = this.nodeData[i+1];
 
                 if ( node1.point.equals( p ) )
-                    return i * 1.0;
+                    return Number( i );
 
                 if ( node2.point.equals( p ) )
-                    return (i+1) *1.0;
+                    return Number(i+1);
 
                 const segment = new GeoSpline( [ node1, node2 ] );
                 const bounds = new Bounds();
@@ -10060,16 +10060,16 @@ class GeoSpline {
         //sometimes we're testing whether point p is on the arc. 
 
         if ( this.nodeData[0].point.equals( p ) )
-            return 0.0;
+            return 0;
 
         if ( this.nodeData[1].point.equals( p ) )
-            return 1.0;        
+            return 1;        
 
-        let minT = 0.0,
-            maxT = 1.0,
+        let minT = 0,
+            maxT = 1,
             iter = 0;
 
-        const threshold = 0.0001;
+        const threshold = 0.001; //Safari, especially in mm isn't that accurate doing a point at distance along path
 
         let t;
         let closestDistance;
@@ -10082,7 +10082,10 @@ class GeoSpline {
             for( t = minT; t<=maxT; t+= interval ) //five iterations the first time, 0, 0.25, 0.5, 0.75, 1.0
             {
                 const pt = this.getPointForT( t );
-                const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+                //if dx and dy are really really small, then the rounding error can cause them to flip to be negative!
+                const dx = pt.x - p.x;
+                const dy = pt.y - p.y;
+                const d = Math.sqrt( Math.max( 0, dx*dx + dy*dy ) );
                 if (( closestDistance === undefined ) || ( d < closestDistance ))
                 {
                     closestT = t;
@@ -10091,28 +10094,29 @@ class GeoSpline {
 
                 if ( d < threshold )
                 {
-                    //console.log( "findT i:" + iter + " t:" + t + " d:" + d + " FOUND" );
+                    console.log( "findT i:" + iter + " t:" + t + " d:" + d + " FOUND" );
                     return t;
                 }
 
             }
-            minT = Math.max( closestT - (interval*1.001), 0.0 ); //So at the end of iteration 1 we'll be setting up a span next time that is 0.5 wide, which we'll cut into five slots 
-            maxT = Math.min( closestT + (interval*1.001), 1.0 );
+            minT = Math.max( closestT - (interval*1.001), 0 ); //So at the end of iteration 1 we'll be setting up a span next time that is 0.5 wide, which we'll cut into five slots 
+            maxT = Math.min( closestT + (interval*1.001), 1 );
             //console.log( "i:" + iter + " minT:" + minT + " maxT:" + maxT + " closestT:" + closestT + " threshold:" + threshold + " closestDistance: " + closestDistance  );
         }
         
-        if (   ( closestT >= 0.0 ) 
-            && ( closestT <= 1.0 ) )
+        if (   ( closestT >= 0 ) 
+            && ( closestT <= 1 ) )
         {
             const pt = this.getPointForT( closestT );
-            const d = Math.sqrt( Math.pow( pt.x - p.x, 2) + Math.pow( pt.y - p.y, 2) );
+            const dx = pt.x - p.x;
+            const dy = pt.y - p.y;
+            const d = Math.sqrt( Math.max( 0, dx*dx + dy*dy ) );
 
             if ( d <= (threshold*10) ) //Stocking top appears to need threshold*2
             {
                 //console.warn("Iter max reached. interval:" + (maxT-minT) + " d:" + d + " threshold:" + threshold + " closestT"+ closestT + " FOUND");    
                 return t; 
             }
-
         }
 
         //console.warn("Point not on curve. interval:" + (maxT-minT) + " d:" + closestDistance + " threshold:" + threshold + " closestT"+ closestT);    
