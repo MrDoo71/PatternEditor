@@ -567,6 +567,25 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
     if ( ! options.thumbnail ) 
         drawingAndTableDiv.attr("class", "pattern-main")
 
+    //Determine which drawing object is the sequencing target
+    //this will also be where new objects are created. 
+    if ( options.editable )
+    {
+        let insertAfterObject;
+        if ( options.insertionPoint )
+        {
+            insertAfterObject = pattern.getObject( options.insertionPoint );
+            //find the point with this name, and flag it as the insertionPoint
+        }
+        else
+        {
+            const lastDrawing = pattern.drawings[ pattern.drawings.length-1 ];
+            insertAfterObject = lastDrawing.drawingObjects.length > 0 ? lastDrawing.drawingObjects[ lastDrawing.drawingObjects.length - 1 ] : undefined;
+        }
+        if ( insertAfterObject )
+            insertAfterObject.insertAfterHere = true;
+    }    
+
     doDrawingAndTable = function( retainFocus ) {
                                     if ( options.layoutConfig.drawingWidth )
                                         doDrawings( drawingAndTableDiv, pattern, options, contextMenu, controls, focusDrawingObject );
@@ -2147,7 +2166,15 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
             return h;
         };
 
-        const g = d3.select( this );
+        let g = d3.select( this );
+
+        let insertAfterHereLine;
+        if ( d.insertAfterHere )
+        {
+            g.attr( "class", "insertAfterHere" ) ;    
+            insertAfterHereLine = g.append( "path" ).attr("stroke","orange").attr("stroke-width","2").attr("fill","orange").attr("stroke-linejoin","round");
+            g = g.append( "g" );
+        }        
 
         let classes = "j-item";
 
@@ -2206,9 +2233,13 @@ function doTable( graphdiv, pattern, editorOptions, contextMenu, focusDrawingObj
         g.attr( "height", divHeight )
          .attr( "y", function (d) { //Get the height of the foreignObject.
                                     const h = this.childNodes[0].getBoundingClientRect().height;
-                                    ypos += h + itemMargin; 
+                                    ypos += h + itemMargin + ( d.insertAfterHere ? 5 : 0 ); 
                                     //console.log("y: " + ypos );
                                     return ypos } )
+
+        //We need to do this after we've incremented ypos above                                    
+        if ( insertAfterHereLine )
+            insertAfterHereLine.attr("d", `M${itemWidth-4},${ypos-8} L${itemWidth+4},${ypos-4} L${itemWidth+4},${ypos-12} Z`);//attr("y1", ypos-8 ).attr("y2", ypos-8  );
 
         g.on("contextmenu", contextMenu)
          .on("click", onclick )
