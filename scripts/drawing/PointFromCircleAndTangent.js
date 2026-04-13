@@ -1,24 +1,20 @@
-class PointFromCircleAndTangent extends DrawingObject {
+class PointFromCircleAndTangent extends PointDrawingObject {
 
     //center
     //tangent
     //crossPoint
     //radius
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.tangent === "undefined")
+        if ( this.tangent === undefined )
             this.tangent = this.drawing.getObject(d.tangent);
 
-        if (typeof this.arc === "undefined")
+        if ( this.arc ===  undefined )
             this.center = this.drawing.getObject(d.center); 
 
-        if (typeof this.radius === "undefined")
+        if ( this.radius === undefined )
             this.radius = this.drawing.newFormula(d.radius);
 
         this.crossPoint = d.crossPoint;
@@ -66,5 +62,10 @@ class PointFromCircleAndTangent extends DrawingObject {
         dependencies.add( this, this.center );
         dependencies.add( this, this.radius );
     }    
+
+	getLinePointsNames()
+	{
+		return [ this.tangent.data.name, this.data.name ];
+	}    
 
 }

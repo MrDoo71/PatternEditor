@@ -1,31 +1,26 @@
 
 
-class PointOfTriangle extends DrawingObject {
+class PointOfTriangle extends PointDrawingObject {
 
     //firstPoint
     //secondPoint
     //p1Line1
     //p2Line1
 
-    constructor(data) {
-        super(data);
-    }
-
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
 
-        if (typeof this.p1Line1 === "undefined")
+        if ( this.p1Line1 === undefined )
             this.p1Line1 = this.drawing.getObject(d.p1Line1);
-        if (typeof this.p2Line1 === "undefined")
+        if ( this.p2Line1 === undefined )
             this.p2Line1 = this.drawing.getObject(d.p2Line1);
 
-            
         const axisLine = new GeoLine( this.p1Line1.p, this.p2Line1.p );    
 
         //otherLine is the hypotenous of the right angled triangle

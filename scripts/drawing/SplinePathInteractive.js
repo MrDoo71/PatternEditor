@@ -5,7 +5,7 @@ class SplinePathInteractive extends DrawingObject {
     constructor(data) {
         super(data);
 
-        if ( typeof this.data.name === "undefined" )
+        if ( this.data.name === undefined )
             this.data.name = this.data.derivedName;        
     }
 
@@ -13,7 +13,7 @@ class SplinePathInteractive extends DrawingObject {
     calculate(bounds) {
         const d = this.data;
 
-        if ( typeof this.nodes === "undefined" )
+        if ( this.nodes === undefined )
         {
             this.nodes = [];
 
@@ -216,4 +216,14 @@ class SplinePathInteractive extends DrawingObject {
         }
         return data;
     }        
+
+    isControlPoint( o )
+    {
+        for( const pathNode of this.data.pathNode )
+        {
+            if ( o === pathNode.point )
+                return true;
+        }    
+        return false;    
+    }    
 }

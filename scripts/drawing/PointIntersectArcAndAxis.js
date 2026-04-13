@@ -1,23 +1,19 @@
-class PointIntersectArcAndAxis extends DrawingObject {
+class PointIntersectArcAndAxis extends PointDrawingObject {
 
     //arc (provided as "curve"), and may be an arc or a spline (by observation)
     //basePoint
     //angle
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.basePoint === "undefined")
+        if ( this.basePoint === undefined )
             this.basePoint = this.drawing.getObject(d.basePoint);
 
-        if (typeof this.arc === "undefined")
+        if ( this.arc === undefined )
             this.arc = this.drawing.getObject(d.curve); //An anomaly, would be better if this were arc.
 
-        if (typeof this.angle === "undefined")
+        if ( this.angle === undefined )
             this.angle = this.drawing.newFormula(d.angle);
 
         let angleDeg = this.angle.value();

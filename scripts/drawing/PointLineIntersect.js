@@ -1,27 +1,22 @@
 
 
-class PointLineIntersect extends DrawingObject {
+class PointLineIntersect extends PointDrawingObject {
 
     //p1Line1
     //p2Line1
     //p1Line2
     //p2Line2
 
-    constructor(data) {
-        super(data);
-    }
-
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.p1Line1 === "undefined")
+        if ( this.p1Line1 === undefined )
             this.p1Line1 = this.drawing.getObject(d.p1Line1);
-        if (typeof this.p2Line1 === "undefined")
+        if ( this.p2Line1 === undefined )
             this.p2Line1 = this.drawing.getObject(d.p2Line1);
-        if (typeof this.p1Line2 === "undefined")
+        if ( this.p1Line2 === undefined )
             this.p1Line2 = this.drawing.getObject(d.p1Line2);
-        if (typeof this.p2Line2 === "undefined")
+        if ( this.p2Line2 === undefined )
             this.p2Line2 = this.drawing.getObject(d.p2Line2);
 
         this.line1 = new GeoLine(this.p1Line1.p, this.p2Line1.p);

@@ -1,25 +1,21 @@
-class PointAlongPerpendicular extends DrawingObject {
+class PointAlongPerpendicular extends PointDrawingObject {
 
     //firstPoint
     //secondPoint
     //length
     //angle
 
-    constructor(data) {
-        super(data);
-    }
-
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
-        if (typeof this.length === "undefined")
+        if ( this.length === undefined )
             this.length = this.drawing.newFormula(d.length);
-        if (typeof this.angle === "undefined")
+        if ( this.angle === undefined )
             this.angle = this.drawing.newFormula(d.angle);
             
         const baseLine = new GeoLine( this.firstPoint.p, this.secondPoint.p );    
@@ -66,4 +62,11 @@ class PointAlongPerpendicular extends DrawingObject {
         dependencies.add( this, this.angle );
     }    
 
+
+	//Return [ a, b ] where a and b are the names of the drawing objects at either end of the line
+	//This is used when suggesting possible intersection points. 
+	getLinePointsNames()
+	{
+		return [ this.firstPoint.data.name, this.data.name ];
+	}    
 }

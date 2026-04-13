@@ -1,27 +1,24 @@
-class PointIntersectArcAndLine extends DrawingObject {
+class PointIntersectArcAndLine extends PointDrawingObject {
 
     //firstPoint
     //secondPoint
     //center
     //radius
 
-    constructor(data) {
-        super(data);
-    }
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
             
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
 
-        if (typeof this.center === "undefined")
+        if ( this.center === undefined )
             this.center = this.drawing.getObject(d.center);
 
-        if (typeof this.radius === "undefined")
+        if ( this.radius === undefined )
             this.radius = this.drawing.newFormula(d.radius);
 
         const line = new GeoLine( this.firstPoint.p, this.secondPoint.p );

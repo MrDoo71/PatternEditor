@@ -1,24 +1,20 @@
-class PointEndLine extends DrawingObject {
+class PointEndLine extends PointDrawingObject {
 
     //basePoint
     //length
     //angle
 
-    constructor(data) {
-        super(data);
-    }
-
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.basePoint === "undefined")
+        if ( this.basePoint === undefined )
             this.basePoint = this.drawing.getObject(d.basePoint);
 
-        if (typeof this.length === "undefined")
+        if ( this.length ===  undefined )
             this.length = this.drawing.newFormula(d.length);
             
-        if (typeof this.angle === "undefined")
+        if ( this.angle === undefined )
             this.angle = this.drawing.newFormula(d.angle);
 
         this.p = this.basePoint.p.pointAtDistanceAndAngleDeg( this.length.value(), this.angle.value() );

@@ -166,7 +166,9 @@ class Pattern {
                          || ( target.isIncrement ) 
                          || ( target.isVariable ) 
                          )
+                {
                     this.dependencies.push( { source: source, target: target } ); 
+                }
             }  
         };
         

@@ -12,10 +12,10 @@ class Line extends DrawingObject {
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
             
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.line = new GeoLine(this.firstPoint.p, this.secondPoint.p);
@@ -51,4 +51,10 @@ class Line extends DrawingObject {
         dependencies.add( this, this.firstPoint );
         dependencies.add( this, this.secondPoint );
     }    
+
+
+	getLinePointsNames()
+	{
+		return [ this.firstPoint.data.name, this.secondPoint.data.name ];
+	}    
 }

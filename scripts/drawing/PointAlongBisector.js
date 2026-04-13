@@ -1,25 +1,20 @@
-class PointAlongBisector extends DrawingObject {
+class PointAlongBisector extends PointDrawingObject {
 
     //firstPoint
     //secondPoint
     //thirdPoint
     //length
 
-    constructor(data) {
-        super(data);
-    }
-
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
-        if (typeof this.thirdPoint === "undefined")
+        if ( this.thirdPoint === undefined )
             this.thirdPoint = this.drawing.getObject(d.thirdPoint);
-        if (typeof this.length === "undefined")
+        if ( this.length === undefined )
             this.length = this.drawing.newFormula(d.length);
             
         const line1 = new GeoLine( this.secondPoint.p, this.firstPoint.p );    

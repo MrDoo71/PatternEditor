@@ -1,21 +1,17 @@
-class PointIntersectCurves extends DrawingObject {
+class PointIntersectCurves extends PointDrawingObject {
 
     //curve1
     //curve2
     //verticalCrossPoint
     //horizontalCrossPoint
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.curve1 === "undefined")
+        if ( this.curve1 === undefined )
             this.curve1 = this.drawing.getObject(d.curve1);
             
-        if (typeof this.curve2 === "undefined")
+        if ( this.curve2 === undefined )
             this.curve2 = this.drawing.getObject(d.curve2);
 
         const curve1SI = this.curve1.asShapeInfo();

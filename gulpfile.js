@@ -43,6 +43,7 @@ function jsTask(){
             "Expression.js",
             "Geometry.js",
             "drawing/DrawingObject.js",
+            "drawing/PointDrawingObject.js",
             "drawing/*.js",
             "Pattern.js",
             "Group.js",

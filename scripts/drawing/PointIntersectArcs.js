@@ -1,20 +1,16 @@
-class PointIntersectArcs extends DrawingObject {
+class PointIntersectArcs extends PointDrawingObject {
 
     //firstArc
     //secondArc
     //crossPoint
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstArc === "undefined")
+        if ( this.firstArc === undefined )
             this.firstArc = this.drawing.getObject(d.firstArc);
             
-        if (typeof this.secondArc === "undefined")
+        if ( this.secondArc === undefined )
             this.secondArc = this.drawing.getObject(d.secondArc);
 
         const arc1SI = this.firstArc.asShapeInfo();

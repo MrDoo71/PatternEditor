@@ -1,19 +1,15 @@
-class PointCutArc extends DrawingObject {
+class PointCutArc extends PointDrawingObject {
 
     //arc
     //length
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.arc === "undefined")
+        if ( this.arc === undefined )
             this.arc = this.drawing.getObject(d.arc);
 
-        if (typeof this.length === "undefined")
+        if ( this.length === undefined )
             this.length = this.drawing.newFormula(d.length);
 
         this.p = this.arc.pointAlongPath( this.length.value() );

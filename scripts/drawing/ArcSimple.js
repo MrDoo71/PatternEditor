@@ -8,7 +8,7 @@ class ArcSimple extends DrawingObject {
     constructor(data) {
         super(data);
 
-        if ( typeof this.data.name === "undefined" )
+        if ( this.data.name === undefined )
             this.data.name = data.derivedName;
     }
 
@@ -16,13 +16,13 @@ class ArcSimple extends DrawingObject {
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.center === "undefined")
+        if ( this.center === undefined )
             this.center = this.drawing.getObject(d.center);
-        if (typeof this.angle1 === "undefined")
+        if ( this.angle1 === undefined )
             this.angle1 = this.drawing.newFormula(d.angle1);
-        if (typeof this.angle2 === "undefined")
+        if ( this.angle2 === undefined )
             this.angle2 = this.drawing.newFormula(d.angle2);
-        if (typeof this.radius === "undefined")
+        if ( this.radius === undefined )
             this.radius = this.drawing.newFormula(d.radius);
 
         this.arc = new GeoArc( this.center.p, this.radius.value(), this.angle1.value(), this.angle2.value() );

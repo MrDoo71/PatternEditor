@@ -1,23 +1,19 @@
-class PointIntersectCurveAndAxis extends DrawingObject {
+class PointIntersectCurveAndAxis extends PointDrawingObject {
 
     //basePoint
     //curve
     //angle
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.basePoint === "undefined")
+        if ( this.basePoint === undefined )
             this.basePoint = this.drawing.getObject(d.basePoint);
 
-        if (typeof this.curve === "undefined")
+        if ( this.curve === undefined )
             this.curve = this.drawing.getObject(d.curve);
 
-        if (typeof this.angle === "undefined")
+        if ( this.angle === undefined )
             this.angle = this.drawing.newFormula(d.angle);
 
         let angleDeg = this.angle.value();
@@ -50,7 +46,20 @@ class PointIntersectCurveAndAxis extends DrawingObject {
         }
         else
         {
-            this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
+            //nb, there may be multiple intersect points, but we only use the first. 
+            //2026 March - (closest)
+            const from = this.basePoint.p;
+            const closest = intersections.points.reduce((best, p) => {
+            const dx = p.x - from.x, dy = p.y - from.y;
+            const d = dx * dx + dy * dy;
+            if (!best || d < best.d) {
+                return { p: p, d: d };
+            }
+            return best;
+            }, null);
+
+            this.p = new GeoPoint( closest.p.x, closest.p.y );
+            //this.p = new GeoPoint( intersections.points[0].x, intersections.points[0].y );
         }
         this.line = new GeoLine( this.basePoint.p, this.p );
 
@@ -64,7 +73,7 @@ class PointIntersectCurveAndAxis extends DrawingObject {
     }
 
     
-    draw(g, drawOptions ) {
+    draw( g, drawOptions ) {
         //g is the svg group
         this.drawLine(g, drawOptions ); 
         this.drawDot(g, drawOptions );

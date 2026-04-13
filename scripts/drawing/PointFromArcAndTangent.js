@@ -1,20 +1,16 @@
-class PointFromArcAndTangent extends DrawingObject {
+class PointFromArcAndTangent extends PointDrawingObject {
 
     //arc
     //tangent
     //crossPoint
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.tangent === "undefined")
+        if ( this.tangent === undefined )
             this.tangent = this.drawing.getObject(d.tangent);
 
-        if (typeof this.arc === "undefined")
+        if ( this.arc === undefined )
             this.arc = this.drawing.getObject(d.arc); 
 
         this.crossPoint = d.crossPoint;

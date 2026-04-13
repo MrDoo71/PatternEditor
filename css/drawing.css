@@ -632,3 +632,18 @@ table#measurementsTable td:last-child {
     text-align: right;
     white-space: nowrap;
 }
+
+g.intersection-target {
+    stroke: orange;
+    pointer-events: all;
+}
+
+g.intersection-target line {
+    stroke-linecap: round;
+}
+
+g.intersection-target circle {
+    fill: none;
+}
+
+

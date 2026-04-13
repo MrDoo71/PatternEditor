@@ -1,22 +1,17 @@
-class PerpendicularPointAlongLine extends DrawingObject {
+class PerpendicularPointAlongLine extends PointDrawingObject {
 
     //basePoint
     //firstPoint
     //secondPoint
 
-    constructor(data) {
-        super(data);
-    }
-
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.basePoint === "undefined")
+        if ( this.basePoint === undefined )
             this.basePoint = this.drawing.getObject(d.basePoint);
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.p1Line1);
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.p2Line1);
 
         const line = new GeoLine(this.firstPoint.p, this.secondPoint.p);        

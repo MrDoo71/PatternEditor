@@ -384,5 +384,42 @@ class PatternDrawing {
             console.log( "Failed to show length. ", e );            
         }
     }    
+
+    //This check here would prevent creating a duplicate intersection point where one exists that is hidden
+    hasExistingObject( data ) 
+    {
+        const isSubset = function(superset, subset) {
+
+            if (typeof subset !== 'object' || subset === null) {
+
+                //console.log( "Comparing " + superset + " with " + subset );
+
+                return superset === subset;
+            }
+
+            if (typeof superset !== 'object' || superset === null) {
+                return false;
+            }
+
+            return Object.keys(subset).every(key => {
+                if (key === 'name') return true;
+                if (!(key in superset)) return false;
+                const subVal = subset[key];
+                if (typeof subVal === 'function') return true;
+                const superVal = superset[key];
+                if ( subVal instanceof Expression )
+                    return isSubset(superVal.dataDebug, subVal.dataDebug);
+                else
+                    return isSubset(superVal, subVal);
+            });
+        }
+
+        const exists = this.drawingObjects.some(obj =>            
+            isSubset(obj.data, data)
+        );
+
+        console.log( "hasExistingObject? " +exists );
+        return exists;
+    }
 }
 

@@ -1,10 +1,6 @@
 
 
-class PointSingle extends DrawingObject {
-
-    constructor(data) {
-        super(data);
-    }
+class PointSingle extends PointDrawingObject {
 
 
     calculate(bounds) {

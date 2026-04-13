@@ -1,19 +1,15 @@
-class PointFromXandYOfTwoOtherPoints extends DrawingObject {
+class PointFromXandYOfTwoOtherPoints extends PointDrawingObject {
 
     //firstPoint
     //secondPoint
-
-    constructor(data) {
-        super(data);
-    }
 
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.firstPoint === "undefined")
+        if ( this.firstPoint === undefined )
             this.firstPoint = this.drawing.getObject(d.firstPoint);
-        if (typeof this.secondPoint === "undefined")
+        if ( this.secondPoint === undefined )
             this.secondPoint = this.drawing.getObject(d.secondPoint);
 
         this.p = new GeoPoint( this.firstPoint.p.x, this.secondPoint.p.y );

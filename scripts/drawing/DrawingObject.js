@@ -14,6 +14,7 @@ class DrawingObject /*abstract*/ {
     constructor(data) {
         this.data = data;
         this.contextMenu = data.contextMenu;
+        //this.dependencies = [];
     }
 
     drawLabel( g, drawingOptions ) {
@@ -424,5 +425,13 @@ s
 
         return cp;
     }
+
+
+    asShapeInfo()
+    {
+        if ( this.line )
+            return this.line.asShapeInfo();
+    }
+
 
 }

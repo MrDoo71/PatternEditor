@@ -1,19 +1,16 @@
-class PointCutSplinePath extends DrawingObject {
+class PointCutSplinePath extends PointDrawingObject {
 
     //splinePath
     //length
 
-    constructor(data) {
-        super(data);
-    }
 
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.curve === "undefined")
+        if ( this.curve === undefined )
             this.curve = this.drawing.getObject(d.splinePath);
 
-        if (typeof this.length === "undefined")
+        if ( this.length === undefined )
             this.length = this.drawing.newFormula(d.length);
 
         this.p = this.curve.pointAlongPath( this.length.value() );

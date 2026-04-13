@@ -15,7 +15,7 @@ class Expression {
         this.drawing = drawing;
 
         //divide, multiply etc. and functions too
-        if (typeof data.parameter !== "undefined") 
+        if (data.parameter !== undefined) 
         {
             this.params = data.parameter;
             for ( const a in this.params ) {
@@ -23,12 +23,12 @@ class Expression {
             }            
         }
 
-        if (typeof data.integerValue !== "undefined") 
+        if (data.integerValue !== undefined) 
         {
             this.constant = data.integerValue;
             this.value = this.constantValue; //the method constantValue()
         }
-        else if (typeof data.decimalValue !== "undefined") 
+        else if (data.decimalValue !== undefined) 
         {
             this.constant = data.decimalValue;
             this.value = this.constantValue; //the method constantValue()
@@ -36,12 +36,12 @@ class Expression {
         //else 
         //if (this.operation === "Variable") 
         //{
-            else if (  typeof data.keyword !== "undefined" )
+            else if (data.keyword !== undefined)
             {
                 this.variable = data.keyword;
                 this.value = this.keywordValue;
             }
-            else if ( typeof data.variable !== "undefined")
+            else if (data.variable !== undefined)
             {
                 this.variable = pattern.getVariable( data.variable );
                 this.value = this.variableValue;
@@ -686,7 +686,7 @@ class Expression {
         }
 
         return "???";
-    };
+    }
 
 
     //The dependencies of this expression need adding to the source drawingObject that uses this expression

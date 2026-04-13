@@ -1,4 +1,4 @@
-class PointIntersectCircles extends DrawingObject {
+class PointIntersectCircles extends PointDrawingObject {
 
     //center1     ??? Confirm
     //radiu1   ??? Confirm
@@ -6,23 +6,19 @@ class PointIntersectCircles extends DrawingObject {
     //radius2  ??? Confirm
     //crossPoint    ??? Confirm
 
-    constructor(data) {
-        super(data);
-    }
-
     calculate(bounds) {
         const d = this.data;
 
-        if (typeof this.center1 === "undefined")
+        if ( this.center1 === undefined )
             this.center1 = this.drawing.getObject(d.center1);
             
-        if (typeof this.center2 === "undefined")
+        if ( this.center2 === undefined )
             this.center2 = this.drawing.getObject(d.center2);
 
-        if (typeof this.radius1 === "undefined")
+        if ( this.radius1 === undefined )
             this.radius1 = this.drawing.newFormula(d.radius1);
 
-        if (typeof this.radius2 === "undefined")
+        if ( this.radius2 === undefined )
             this.radius2 = this.drawing.newFormula(d.radius2);
 
         //Also this.data.crossPoint    

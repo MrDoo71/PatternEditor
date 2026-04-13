@@ -9,20 +9,22 @@
 
 let selectedObject;
 let linksGroup;
+let scale;
 let fontsSizedForScale = 1;
 let fontResizeTimer;
 let updateServerTimer;
 let timeOfLastTweak;
 let doDrawingAndTable;
+let targetShowing = false;
 
 function drawPattern( dataAndConfig, ptarget, graphOptions ) 
 {
     //Remove the svg if called by graph_kill
     if ( dataAndConfig === null )
     {
-        const parent = document.getElementById(ptarget).parentNode;
+        hideIntersectionPanel();
         const child = document.getElementById(ptarget);
-        parent.removeChild(child);
+        child.remove();
         return ;
     } 
 
@@ -493,9 +495,11 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
                     r.cp.y = y;
                     r.obj.setCurve();
                     r.obj.draw( d3drawingG, { overrideLineStyle : "edited-curve" } );
+                    r.obj.dragInProgress = true;
                 })
                 .on("end", function (r) {
                     r.breakSmoothCurve = undefined;
+                    r.obj.dragInProgress = false;
                     const funcYes = function() {
                         const o = r.obj;                   
                         const dataJSON = JSON.stringify( o.getControlPointDataForUpdate() );
@@ -1373,8 +1377,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         }
     }
 
-    const updateServerAfterDelay = function()
-    {
+    const updateServerAfterDelay = function() {
         //Lets only update the server if we've stopped panning and zooming for > 1s.
         timeOfLastTweak = (new Date()).getTime();
         if ( ! updateServerTimer )
@@ -1519,7 +1522,532 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                 }
             } );
     }
+
+    if ( editorOptions.editable )
+    {        
+        //Describe as svg - data.name
+        const f = function( s ) {
+            const d = d3.select(s).datum(); 
+            return s.nodeName + " - " + d.data.name;
+        };
+
+        const closeEnough = function( a, b ) {
+            //each of a and b are arrays a[0] = x1 
+            const dx = a[0] - b[0];
+            const dy = a[1] - b[1];
+            const distSquared = dx*dx + dy*dy;
+            const matchRadius = Math.round( 1000 / scale / fontsSizedForScale )/100;
+            const ce = distSquared < (matchRadius*matchRadius);
+            console.log( "Close enough? " + ce + " distance " + Math.sqrt( distSquared ) );
+            return ce;
+        };
+
+        //Return a putative drawing object that would be a workable intersection object for these two svg items
+        const computeIntersection = function( s0, s1, svgEventCoords )
+        {
+            //s0 and s1 are svg objects
+            //especially if there are multiple intersections, we need to know which one
+            //so create a putative drawing object and see how it rolls
+            const o0 = d3.select( s0 ).datum(); 
+            const o1 = d3.select( s1 ).datum(); 
+            console.log( "Considering " + f(s0) + " with " + f(s1) );
+
+            //Test whether this putative drawing object generates an intersection point that is close
+            //to the user's pointer. 
+            const testThis = function( data, o ) {
+                try {
+                    const n = o0.drawing.newDrawingObj( data );
+                    n.drawing = o0.drawing;
+                    n.calculate( new Bounds() ); //this establishes n.p if the intersection works
+                    console.log( "Intersection at " + n.p.x + "," + n.p.y );
+                    console.log( "Hovering at     " + svgEventCoords[0] + "," + svgEventCoords[1] );
+                    if (   ( closeEnough(svgEventCoords,[n.p.x,n.p.y] ) )
+                        && ( ! o.drawing.hasExistingObject( data ) ) ) //Does this drawing object already exist? It might be hidden
+                        return n;                    
+                } catch ( err ) {
+                    console.debug("calculate() failed", err);
+                    return false;
+                }
+            }
+            
+            if (    ( o0.line )
+                 && ( typeof o0.getLinePointsNames === 'function' ) 
+                 && (( o1.curve ) || ( o1.arc )) )
+            {
+                let p1Line1, p2Line1;
+                [p1Line1, p2Line1] = o0.getLinePointsNames();
+                const tryLineWithCurve = function( p1, p2 )
+                {
+                    const data = {  "name": "intersect_line_" + p1 + "_" + p2 + "_with_curve_" + o1.data.name ,
+                                    "objectType": "pointIntersectArcAndAxis",
+                                    "objectTypeId": 1000018,
+                                    "basePoint": p1,
+                                    "curve": o1.data.name,
+                                    "angle": { "expression": { "variableType": "angleOfLine", "drawingObject1": p1, "drawingObject2": p2 } }
+                                    };
+                    return testThis( data, o0 ) || false;
+                }
+                return tryLineWithCurve( p1Line1, p2Line1 ) || tryLineWithCurve( p2Line1, p1Line1 );    
+            }
+            else if ( o0.line 
+                      && o1.line 
+                      && ( typeof o0.getLinePointsNames === 'function' ) 
+                      && ( typeof o1.getLinePointsNames === 'function' ) )
+            {
+                //Anything that generates a line should be able to provide the names of the two 
+                //drawing objects for that line. Commonly, but not always, basePoint.data.name to data.name
+                let p1Line1, p2Line1, p1Line2, p2Line2;
+                [p1Line1, p2Line1] = o0.getLinePointsNames();
+                [p1Line2, p2Line2] = o1.getLinePointsNames();
+
+                if ( ! p1Line1 || ! p2Line1 || ! p1Line2 || ! p2Line2 )
+                    console.log("missing bits");
+
+                //If the two lines are effectively parallel, skip this pair of objects
+                function isParallel(a, b, tolerance = 1e-5) {
+                    const diff = Math.abs(a - b) % Math.PI; // collapse periodicity (π for lines)
+                    return diff < tolerance || Math.abs(diff - Math.PI) < tolerance;
+                }
+                const p = isParallel( o0.line.angle, o1.line.angle);
+
+                console.log("try line intersect " + p1Line1 + "_" + p2Line1 + " with " + p1Line2 + "_" + p2Line2 + " " + (p?"parallel":"ok")); 
+
+                if (p )
+                    return;
+
+                const data = {  "name": "intersect_line_" + p1Line1 + "_" + p2Line1 + "_with_line_" + p1Line2 + "_" + p2Line2 ,
+                                "objectType": "pointLineIntersect",
+                                "objectTypeId": 1000041,
+                                "p1Line1": p1Line1,
+                                "p2Line1": p2Line1,
+                                "p1Line2": p1Line2,
+                                "p2Line2": p2Line2,
+                                };
+                return testThis( data, o0 ) || false;
+                //const t = testThis( data, o0 );
+                //if ( t )
+                //    return t;
+            }
+            else if (    ( o0.arc ) 
+                      && ( o1.arc ) )
+            {
+                console.log("try curve intersect"); 
+                const crossPoints = ["One", "Two"];
+                for (const cp of crossPoints)
+                {
+                    const data = {  "name": "arc" + o0.data.name + "_with_arc_" + o1.data.name ,
+                                    "objectType": "pointIntersectArcs",
+                                    "objectTypeId": 1000121,
+                                    "firstArc": o0.data.name,
+                                    "secondArc": o1.data.name,
+                                    "crossPoint": cp,
+                                    };
+                    const t = testThis( data, o0 );
+                    if ( t )
+                        return t;
+                }
+            }
+            else if (    ( o0.curve ) 
+                      && ( o1.curve ) )
+            {
+                console.log("try curve intersect"); 
+                const crossPoints = ["One", "Two"];
+                for (const hcp of crossPoints)
+                    for (const vcp of crossPoints)
+                    {
+                        const data = {  "name": "intersect_curve_" + o0.data.name + "_with_curve_" + o1.data.name ,
+                                        "objectType": "pointIntersectCurves",
+                                        "objectTypeId": 1000125,
+                                        "curve1": o0.data.name,
+                                        "curve2": o1.data.name,
+                                        "verticalCrossPoint": hcp,
+                                        "horizontalCrossPoint": vcp
+                                        };
+                        const t = testThis( data, o0 );
+                        if ( t )
+                            return t;
+                    }
+            }
+
+            const intersections = Intersection.intersect( o0.asShapeInfo(), o1.asShapeInfo() );
+            if ( intersections.length > 0 )
+            {
+                console.log( "didn't create a suitable intersection object");
+                return "Intersection exists, but no suitable drawing object";
+            }
+        }
+        //We have a map indexed by a, of a map indexed by b, of a map by coordinates that we have processed before
+        //of the result of computeIntersection(), or false if no intersections found.  
+        const pairCache = new WeakMap();
+
+        const getPairResult = function (a, b, svgEventCoords) {
+            //a and b are svg objects
+            if (a === b) return null;
+
+            let inner = pairCache.get(a);
+            if (!inner) {
+                inner = new WeakMap();
+                pairCache.set(a, inner);
+            }
+
+            let pts2 = inner.get(b);
+            if (!pts2) {
+                pts2 = new Map();
+                inner.set(b, pts2);
+            }
+
+            for (const pt of pts2) {
+                if ( closeEnough( pt[0], svgEventCoords ) ) 
+                {
+                    console.log( "already cached" );
+                    return pt[1];
+                }
+            }
+
+            const pt = computeIntersection(a, b, svgEventCoords);
+            if ( pt )
+                pts2.set( [pt.p.x,pt.p.y], pt );
+            else
+                pts2.set( svgEventCoords, false );
+
+            return pt;
+        }
+
+        const sameArray = function (a, b) {
+            if (a === b) return true;          // same reference
+            if (!a || !b) return false;
+            if (a.length !== b.length) return false;
+
+            for (let i = 0; i < a.length; i++) {
+                if (a[i] !== b[i]) return false; // DOM node identity
+            }
+            return true;
+        }
+
+        let lastArray;
+        //let targetShowing = false;
+
+        svg.on("pointermove", function(i) {
+
+            if (    ( selectedObject?.dragInProgress ) 
+                 || ( d3.selectAll( "svg.pattern-drawing .confirmation-lozenge").size() !== 0 ) )
+                 return; //don't allow intersection targetting whilst we're dragging curve control points
+
+
+            const view = svg.node().closest('.views');
+            if ( view?.nextElementSibling !== null )
+                return; //don't allow intersection targetting if a menu or dialog box is showing
+
+            const e = d3.event;
+            const elements = document.elementsFromPoint(e.clientX, e.clientY);
+
+            //We include circles as if we're hoving exactly over an existing point then we shouldn't show
+            //a target as it prevents us clicking on the existing point.
+            let shapes = elements
+                    .map(el => el instanceof SVGGeometryElement ? el : el.closest("path,line,ellipse,circle")) 
+                    .filter(Boolean)
+                    .filter(el => el.closest(".j-outline"));
+
+            //If we're hovering over exactly the same set of shapes, then no need to reprocess
+            //the show/hide of the target won't change. 
+            if ( sameArray( shapes, lastArray ) )
+                return;
+
+            lastArray = shapes;
+            const viableIntersections = []
+
+            if (shapes.length >= 2)
+            {
+                const eventInSVGspace = d3.mouse( shapes[0] );
+
+                console.log("shapes " + shapes.length );
+
+                //remove any shapes that are for points where p is closeEnough to the clicked point, that we don't
+                //want to draw a target
+                const existingPointAtThisCoord = function( s ) {
+                    const o = d3.select( s ).datum();
+                    const p = o.p;
+                    const existingPoint = p && ( closeEnough( [p.x, p.y], eventInSVGspace ) );
+                    if ( existingPoint )
+                        console.log( "abort intersection hover as already a point here: " + o.data.name );
+                    return existingPoint;
+                }
+                for ( const s of shapes )
+                {
+                    if ( s.nodeName === "circle" && existingPointAtThisCoord(s) )
+                        shapes=[]; //disable intersection finding, there is a point here already
+                }
+
+                //Now remove any circles
+                shapes = shapes.filter(s => {
+                    return s.nodeName !== "circle" ; // keep only passing items
+                });
+
+                let onlyPairsIncludingSelected = false; //Optionally allow the user to restrict the search by having a selected object
+                if ( selectedObject )
+                {
+                    for ( const s of shapes ) 
+                    {
+                        const o = d3.select( s ).datum();
+                        if ( selectedObject === o )
+                            onlyPairsIncludingSelected = true;
+                    }
+                }
+
+                for (let i = 0; i < shapes.length - 1; i++) 
+                {
+                    for (let j = i + 1; j < shapes.length; j++) 
+                    {
+                        let s0 = shapes[i];
+                        let s1 = shapes[j];
+
+                        //put the types of object into a predictable order
+                        if ( s1.nodeName < s0.nodeName )
+                            [s0, s1] = [s1, s0];
+
+                        //Get the drawing objects that these relate to
+                        const o0 = d3.select( s0 ).datum();
+                        const o1 = d3.select( s1 ).datum();
+
+                        //if the selected object is in our set of shapes then only 
+                        //consider pairings that include it. 
+                        if ( onlyPairsIncludingSelected )
+                        {
+                            if (( selectedObject !== o0 ) && ( selectedObject !== o1 ))
+                                continue;
+                        }
+
+                        //exclude cases where o0 is a curve and o1 is a point that defines that curve
+                        if (   (    ( o1 instanceof SplinePathUsingPoints )
+                                 || ( o1 instanceof SplinePathInteractive ) )
+                            && ( o1.isControlPoint( o0 ) ) ) 
+                            continue;
+                        
+                        let possibleDrawingObject = getPairResult( s0, s1, eventInSVGspace )
+
+                        if ( possibleDrawingObject )
+                        {
+                            console.log("new intersection possible! ");
+                            viableIntersections.push( {
+                                a: s0, b: s1, putativeDrawingObject: possibleDrawingObject, p: possibleDrawingObject.p  
+                            })
+                        }
+                    }
+                }
+            }
+            if ( viableIntersections.length )
+            {
+                console.log("draw target at " + d3.event.x + "," + d3.event.y + " options: " + viableIntersections.length);
+                const click = function( viableIntersections ) {
+                    console.log( "Clicked on " + viableIntersections );
+                    const pt = {x:viableIntersections[0].p.x, y:viableIntersections[0].p.y};
+                    showIntersectionPanel( viableIntersections[0].a, pt, viableIntersections, editorOptions);
+                    d3.event.stopPropagation(); //check this
+                }
+                showTarget( viableIntersections[0].p.x, viableIntersections[0].p.y, viableIntersections, click );
+                targetShowing = true;
+            }
+            else if ( targetShowing )
+            {
+                console.log("hide target");
+                d3.select( "g.pattern" ).selectAll(".intersection-target").remove();
+                targetShowing = false;
+            }
+        });
+
+        document.addEventListener("click", (e) => {
+            const panel = document.getElementById("intersection-panel");
+            if ( panel && !panel?.contains(e.target)) {
+                hideIntersectionPanel();
+            }
+        });
+    }
 }
+
+function svgToScreen(el, x, y) {
+  const pt = el.ownerSVGElement.createSVGPoint();
+  pt.x = x;
+  pt.y = y;
+  return pt.matrixTransform(el.getScreenCTM());
+}
+
+function createIntersectionPanel() {
+  const panel = document.createElement("div");
+  panel.id = "intersection-panel";
+  panel.className = `
+    position-absolute
+    card
+    border
+    rounded
+    shadow
+    p-2`;
+  panel.style.display = "none";
+  panel.style.zIndex = 1050; // above most UI
+  document.body.appendChild(panel);
+  return panel;
+}
+
+//Once you've click on the intersection target, show a panel that might 
+//propose more than one option
+function showIntersectionPanel(svg, pt, intersectionOptions, drawingOptions) {
+    let panel = document.getElementById("intersection-panel");
+    if (!panel)
+        panel = createIntersectionPanel();
+    const screen = svgToScreen(svg, pt.x, pt.y);
+    panel.style.display = "block";
+    panel.style.left = Math.min(screen.x, window.innerWidth - 150) + "px";
+    panel.style.top = Math.min(screen.y, window.innerHeight - 100) + "px";
+    // clear existing content
+    panel.innerHTML = `
+  <div id="intersection-panel-body" class="card-body p-2">
+    <div class="fw-semibold small text-muted mb-2">
+      Create intersection
+    </div>
+  </div>
+`;
+    const panelbody = document.getElementById("intersection-panel-body");
+    const container = document.createElement("div");
+    container.className = "d-grid gap-1";
+    panelbody.appendChild(container);
+    let optionNo = 1;
+    intersectionOptions.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-outline-primary w-100 mb-1 text-start";
+        option.putativeDrawingObject.data.name = "Option_" + optionNo++;
+        btn.innerHTML = option.putativeDrawingObject.html();
+        btn.onclick = () => {
+            console.log("tell server to create " + option.putativeDrawingObject.drawing.data.addDrawingObject);
+            const d = option.putativeDrawingObject.data;
+            d.objectType = d.objectTypeId;
+            const json = safeStringify(option.putativeDrawingObject.data);
+            console.log(json);
+            const kvpSet = newkvpSet(false);
+            kvpSet.add('json', json);
+            goGraph(drawingOptions.interactionPrefix + ':' + option.putativeDrawingObject.drawing.data.addDrawingObject, fakeEvent(), kvpSet);
+            hideIntersectionPanel();
+        };
+        container.appendChild(btn);
+    });
+}
+
+function safeStringify(obj) {
+
+    const transform = function(root) {
+        const seen = new WeakSet(); // lighter than WeakMap
+
+        function visit(node) {
+            if (node === null || typeof node !== 'object') return node;
+            if (typeof node === 'function') return undefined;
+
+            // Prevent infinite loops, but don't preserve identity
+            if (seen.has(node)) 
+                return undefined;
+
+            seen.add(node);
+
+            const result = Object.create(null);
+
+            // 🔑 Only iterate once, minimal work
+            for (let key in node) {
+                if (
+                    key === 'drawing' ||
+                    key === 'pattern' ||
+                    key === 'dataDebug' ||
+                    key === 'drawingSvg'
+                ) continue;
+
+                const value = node[key];
+                if (typeof value === 'function') continue;
+
+                if (   (( key === "drawingObject1" ) || ( key === "drawingObject2" ))
+                    && ( typeof value === 'object' ) )
+                    continue;
+
+                if ( key === "function" )
+                    key = "variableType";
+
+                const v = visit(value);
+                if (v !== undefined) {
+                    result[key] = v;
+                }
+            }
+
+            // Promotion (no recursion if not needed)
+            const dd = node.dataDebug;
+            if (dd && typeof dd === 'object') {
+                let promoted = visit(dd.drawingObject1);
+                if (promoted !== undefined) {
+                    result.drawingObject1 = promoted;
+                }
+                promoted = visit(dd.drawingObject2);
+                if (promoted !== undefined) {
+                    result.drawingObject2 = promoted;
+                }
+            }
+
+            return result;
+        }
+
+        return visit(root);
+    }
+
+    obj = transform(obj);
+
+    return JSON.stringify(obj);
+}
+
+function hideIntersectionPanel() {
+  const p = document.getElementById("intersection-panel");
+  if ( p)
+    p.style.display = "none";
+}
+
+//Draw the target over prospective intersection opportunities
+function showTarget(x, y, data, handleIntersectionClick) 
+{
+    const targetSize = Math.round(2250 / scale / fontsSizedForScale)/1000;
+    //const overlay = d3.select( "g.pattern" );
+    const overlay = d3.select( data[0].a.closest( "g.pattern" ) );
+    const target = overlay.selectAll(".intersection-target")
+        .data([data]);  // single item
+
+  const enter = target.enter()
+    .append("g")
+    .attr("class", "intersection-target")
+    .style("cursor", "pointer");
+
+  // circle
+  enter.append("circle")
+    .attr("r", 6);
+
+  // crosshair
+  enter.append("line")
+    .attr("x1", -8).attr("y1", 0)
+    .attr("x2", -2).attr("y2", 0);
+
+  enter.append("line")
+    .attr("x1", 2).attr("y1", 0)
+    .attr("x2", 8).attr("y2", 0);
+
+  enter.append("line")
+    .attr("x1", 0).attr("y1", -8)
+    .attr("x2", 0).attr("y2", -2);
+
+  enter.append("line")
+    .attr("x1", 0).attr("y1", 2)
+    .attr("x2", 0).attr("y2", 8);
+
+  // merge + position
+  target.merge(enter)
+    .attr("transform", `translate(${x},${y}) scale(${targetSize})`);
+
+  // click handler
+  target.merge(enter)
+    .on("click", function(d) {
+      handleIntersectionClick(d);
+    });
+}
+
 
 /**
  * Given a piece, drawing object (etc) and a set
@@ -1533,7 +2061,7 @@ function captureRecursiveDependencies( o, visited )
 {
     visited.add( o );
 
-    if ( typeof o.setDependencies === "undefined" )
+    if ( o.setDependencies === undefined )
         return;
     
     const dependencies = { 
