@@ -1547,6 +1547,8 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         };
 
         //Return a putative drawing object that would be a workable intersection object for these two svg items
+        //Return null if they do intersect somewhere but not here
+        //Return false if they do not intersect at all
         const computeIntersection = function( s0, s1, svgEventCoords )
         {
             //s0 and s1 are svg objects
@@ -1567,10 +1569,11 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                     console.log( "Hovering at     " + svgEventCoords[0] + "," + svgEventCoords[1] );
                     if (   ( closeEnough(svgEventCoords,[n.p.x,n.p.y] ) )
                         && ( ! o.drawing.hasExistingObject( data ) ) ) //Does this drawing object already exist? It might be hidden
-                        return n;                    
+                        return n;     
+                    return null; //it did interesct, but not here               
                 } catch ( err ) {
                     console.debug("calculate() failed", err);
-                    return false;
+                    return false; //No intersection
                 }
             }
             
@@ -1589,7 +1592,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                                     "curve": o1.data.name,
                                     "angle": { "expression": { "variableType": "angleOfLine", "drawingObject1": p1, "drawingObject2": p2 } }
                                     };
-                    return testThis( data, o0 ) || false;
+                    return testThis( data, o0 );// || false;
                 }
                 return tryLineWithCurve( p1Line1, p2Line1 ) || tryLineWithCurve( p2Line1, p1Line1 );    
             }
@@ -1617,7 +1620,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                 console.log("try line intersect " + p1Line1 + "_" + p2Line1 + " with " + p1Line2 + "_" + p2Line2 + " " + (p?"parallel":"ok")); 
 
                 if (p )
-                    return;
+                    return false; //No intersection
 
                 const data = {  "name": "intersect_line_" + p1Line1 + "_" + p2Line1 + "_with_line_" + p1Line2 + "_" + p2Line2 ,
                                 "objectType": "pointLineIntersect",
@@ -1637,6 +1640,7 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
             {
                 console.log("try curve intersect"); 
                 const crossPoints = ["One", "Two"];
+                let r = false;
                 for (const cp of crossPoints)
                 {
                     const data = {  "name": "arc" + o0.data.name + "_with_arc_" + o1.data.name ,
@@ -1649,13 +1653,17 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                     const t = testThis( data, o0 );
                     if ( t )
                         return t;
+                    if ( t === null )
+                        r = null; //Intersected, but not here 
                 }
+                return r;
             }
             else if (    ( o0.curve ) 
                       && ( o1.curve ) )
             {
                 console.log("try curve intersect"); 
                 const crossPoints = ["One", "Two"];
+                let r = false;
                 for (const hcp of crossPoints)
                     for (const vcp of crossPoints)
                     {
@@ -1670,15 +1678,20 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                         const t = testThis( data, o0 );
                         if ( t )
                             return t;
+                        if ( t === null )
+                            r = null; //Intersected, but not here, return null instead of false 
+
                     }
+                return r;
             }
 
             const intersections = Intersection.intersect( o0.asShapeInfo(), o1.asShapeInfo() );
             if ( intersections.length > 0 )
             {
                 console.log( "didn't create a suitable intersection object");
-                return "Intersection exists, but no suitable drawing object";
+                return null; //"Intersection exists, but no suitable drawing object";
             }
+            return false;
         }
         //We have a map indexed by a, of a map indexed by b, of a map by coordinates that we have processed before
         //of the result of computeIntersection(), or false if no intersections found.  
@@ -1695,24 +1708,40 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
             }
 
             let pts2 = inner.get(b);
-            if (!pts2) {
-                pts2 = new Map();
-                inner.set(b, pts2);
-            }
 
-            for (const pt of pts2) {
-                if ( closeEnough( pt[0], svgEventCoords ) ) 
-                {
-                    console.log( "already cached" );
-                    return pt[1];
+            //We have previously worked out that there are no intersections between these two 
+            //objects. 
+            if ( pts2 === false )
+                return null;
+
+            if ( pts2 )
+            {
+                for (const pt of pts2) {
+                    if ( closeEnough( pt[0], svgEventCoords ) ) 
+                    {
+                        console.log( "already cached" );
+                        return pt[1];
+                    }
                 }
             }
 
             const pt = computeIntersection(a, b, svgEventCoords);
-            if ( pt )
-                pts2.set( [pt.p.x,pt.p.y], pt );
-            else
-                pts2.set( svgEventCoords, false );
+            if ( pt === false )
+            {
+                inner.set(b, false ); //no intersection anywhere between these two objects
+            }
+            else 
+            {
+                if (!pts2) {
+                    pts2 = new Map();
+                    inner.set(b, pts2);
+                }
+
+                if ( pt )
+                    pts2.set( [pt.p.x,pt.p.y], pt );
+                else
+                    pts2.set( svgEventCoords, false );
+            }
 
             return pt;
         }
