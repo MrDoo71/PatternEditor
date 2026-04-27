@@ -15,7 +15,7 @@ let fontResizeTimer;
 let updateServerTimer;
 let timeOfLastTweak;
 let doDrawingAndTable;
-let targetShowing = false;
+let cancelIntegrationTarget;
 
 function drawPattern( dataAndConfig, ptarget, graphOptions ) 
 {
@@ -257,6 +257,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             //Clicking on a reference to another drawing object, scroll to it. 
             selectedObject = d.drawing.getObject( d3.event.originalTarget.innerHTML );
             scrollTable = true;
+            if ( typeof cancelIntegrationTarget === "function" )
+                cancelIntegrationTarget();
         }
         else if (    ( d3.event?.srcElement?.className === "ps-ref" )
                   && ( selectedObject === d )
@@ -265,6 +267,8 @@ function drawPattern( dataAndConfig, ptarget, graphOptions )
             //Clicking on a reference to another drawing object, scroll to it. 
             selectedObject = d.drawing.getObject( d3.event.srcElement.innerHTML );
             scrollTable = true;
+            if ( typeof cancelIntegrationTarget === "function" )
+                cancelIntegrationTarget();
         }
         else
         {
@@ -1725,7 +1729,6 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
         }
 
         let lastArray;
-        //let targetShowing = false;
 
         svg.on("pointermove", function(i) {
 
@@ -1751,7 +1754,12 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
             //If we're hovering over exactly the same set of shapes, then no need to reprocess
             //the show/hide of the target won't change. 
             if ( sameArray( shapes, lastArray ) )
+            {
+                if ( ( typeof cancelIntegrationTarget === "function" ) && shapes.length < 2 ) 
+                    cancelIntegrationTarget();
+
                 return;
+            }
 
             lastArray = shapes;
             const viableIntersections = []
@@ -1845,16 +1853,22 @@ function doDrawings( graphdiv, pattern, editorOptions, contextMenu, controls, fo
                     d3.event.stopPropagation(); //check this
                 }
                 showTarget( viableIntersections[0].p.x, viableIntersections[0].p.y, viableIntersections, click );
-                targetShowing = true;
+                cancelIntegrationTarget = function() {
+                    const panel = document.getElementById("intersection-panel");
+                    if ( panel )
+                        return; //don't hide the target if we're showing the panel
+                    console.log("hide target");
+                    d3.select( "g.pattern" ).selectAll(".intersection-target").remove();
+                    cancelIntegrationTarget = null;
+                }
             }
-            else if ( targetShowing )
+            else if ( typeof cancelIntegrationTarget === "function" )
             {
-                console.log("hide target");
-                d3.select( "g.pattern" ).selectAll(".intersection-target").remove();
-                targetShowing = false;
+                cancelIntegrationTarget();
             }
         });
 
+        //If the intersection-panel is showing, then clicking outside of it should dismiss it, and the target
         document.addEventListener("click", (e) => {
             const panel = document.getElementById("intersection-panel");
             if ( panel && !panel?.contains(e.target)) {
@@ -1999,7 +2013,12 @@ function safeStringify(obj) {
 function hideIntersectionPanel() {
   const p = document.getElementById("intersection-panel");
   if ( p)
-    p.style.display = "none";
+  {
+    p.remove();//style.display = "none";
+
+    if ( typeof cancelIntegrationTarget === "function" )
+        cancelIntegrationTarget();
+  }
 }
 
 //Draw the target over prospective intersection opportunities
