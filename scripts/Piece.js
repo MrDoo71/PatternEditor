@@ -83,9 +83,12 @@ class Piece {
 
                 for( const n of ip.node )
                 {
-                    const dObj = resolve( n, true );
+                    const name = typeof n === "object" ? n.nodeName : n;
+                    const direction = typeof n === "object" ? n.direction : undefined;
+
+                    const dObj = resolve( name, true );
                     if ( dObj ) 
-                        ip.nodes.push( dObj );
+                        ip.nodes.push( { o: dObj, d: direction } );
                     else
                         console.log("Couldn't match internal path node to drawing object: ", n );
                 }
@@ -173,12 +176,12 @@ class Piece {
 
             if ( ! (( dObj.curve instanceof GeoSpline ) || ( dObj.arc instanceof GeoArc )) )
             {
-                if ( typeof n.before !== "undefined" )
+                if ( n.before !== undefined )
                     n.sa1 = 1.0 * n.before; //TODO formulas?
                 else 
                     n.sa1 = this.defaultSeamAllowance;
 
-                if ( typeof n.after !== "undefined" ) //string
+                if ( n.after !== undefined )
                     n.sa2 = 1.0 * n.after; //TODO formulas?
                 else
                     n.sa2 = this.defaultSeamAllowance;
@@ -317,7 +320,7 @@ class Piece {
                             samePoint = true;
                     }
 
-                    if ( ( samePoint ) && ( a == this.detailNodes.length ) ) //we've cycled back to the first node. 
+                    if ( ( samePoint ) && ( a === this.detailNodes.length ) ) //we've cycled back to the first node. 
                     {
                         n.point = thisP;
                         n.line = line;
@@ -951,7 +954,9 @@ class Piece {
         let previousP;
         for  (let a=0; a<internalPath.nodes.length; a++ )
         {
-            const n = internalPath.nodes[ a ];
+            const internalPathNode = internalPath.nodes[ a ];
+            const n = internalPathNode.o;
+            const direction = internalPathNode.d;
             
             let curve;
 
@@ -962,6 +967,9 @@ class Piece {
 
             if ( curve )
             {
+                if ( direction === "Reverse" )
+                    curve = curve.reverse();
+
                 if ( previousP )
                 {
                     const cut = curve.cutAtPoint( previousP );
