@@ -377,37 +377,37 @@ class Expression {
                 r = Math.max( p1, p2 );
                 break;
             }
-            case "sin":
+            case "sinD":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.sin( p1 * Math.PI / 180 );
                 break;
             }
-            case "cos":
+            case "cosD":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.cos( p1 * Math.PI / 180 );
                 break;
             }
-            case "tan":
+            case "tanD":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.tan( p1 * Math.PI / 180 );
                 break;
             }
-            case "sinD":
+            case "sin":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.sin( p1 );
                 break;
             }
-            case "cosD":
+            case "cos":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.cos( p1 );
                 break;
             }
-            case "tanD":
+            case "tan":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.tan( p1 );
@@ -416,16 +416,34 @@ class Expression {
             case "asin":
             {
                 const p1 = this.params[0].value(currentLength);
+                r = Math.asin( p1 );
+                break;
+            }
+            case "asinD":
+            {
+                const p1 = this.params[0].value(currentLength);
                 r = Math.asin( p1 ) * 180 / Math.PI;
                 break;
             }
             case "acos":
             {
                 const p1 = this.params[0].value(currentLength);
+                r = Math.acos( p1 );
+                break;
+            }
+            case "acosD":
+            {
+                const p1 = this.params[0].value(currentLength);
                 r = Math.acos( p1 ) * 180 / Math.PI;
                 break;
             }
             case "atan":
+            {
+                const p1 = this.params[0].value(currentLength);
+                r = Math.atan( p1 );
+                break;
+            }        
+            case "atanD":
             {
                 const p1 = this.params[0].value(currentLength);
                 r = Math.atan( p1 ) * 180 / Math.PI;
@@ -614,6 +632,10 @@ class Expression {
             case "asin":
             case "acos":
             case "atan": 
+            case "asinD":
+            case "acosD":
+            case "atanD": 
+
             case "abs":
                 return ( this.function + "(" + this.params[0].html( asFormula, currentLength ) + ")" ); 
 

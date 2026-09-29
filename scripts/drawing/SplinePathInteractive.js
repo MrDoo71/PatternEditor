@@ -76,7 +76,9 @@ class SplinePathInteractive extends DrawingObject {
     adjustBounds( bounds )
     {
         bounds.adjust( this.p );
-        this.curve.adjustBounds( bounds );
+
+        if ( this.curve )
+            this.curve.adjustBounds( bounds );
     }
 
     

@@ -40,7 +40,8 @@ class SplineUsingControlPoints extends DrawingObject {
 
     adjustBounds( bounds )
     {
-        this.curve.adjustBounds( bounds );
+        if ( this.curve )
+            this.curve.adjustBounds( bounds );
     }
 
     
